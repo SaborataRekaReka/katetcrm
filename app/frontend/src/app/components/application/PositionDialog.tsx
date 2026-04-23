@@ -1,0 +1,449 @@
+/**
+ * PositionDialog — shell-модалка позиции заявки (добавление + редактирование).
+ *
+ * Тот же EntityModalFramework, что у детального лид/брони. Save disabled пока
+ * не заполнены обязательные поля (тип техники + количество ≥1 + смен ≥1).
+ */
+
+import { useEffect, useMemo, useState } from 'react';
+import {
+  Calendar,
+  ClipboardList,
+  Clock,
+  DollarSign,
+  FileText,
+  Layers,
+  MapPin,
+  Package,
+  Truck,
+} from 'lucide-react';
+import { Button } from '../ui/button';
+import {
+  EntityMetaGrid,
+  EntityModalHeader,
+  EntityModalShell,
+  EntitySection,
+} from '../detail/EntityModalFramework';
+import { PropertyRow } from '../detail/DetailShell';
+import {
+  FieldCheckbox,
+  FieldInput,
+  FieldSelect,
+  FieldTextarea,
+  ShellDialog,
+} from '../detail/ShellFormPrimitives';
+import {
+  useAddApplicationItem,
+  useUpdateApplicationItem,
+} from '../../hooks/useApplicationMutations';
+import { useEquipmentTypesQuery } from '../../hooks/useDirectoriesQuery';
+import type { ApplicationPosition, SourcingType } from '../../types/application';
+
+type PositionDialogMode = 'add' | 'edit';
+
+type PositionDialogProps = {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  mode: PositionDialogMode;
+  applicationId: string;
+  position?: ApplicationPosition;
+};
+
+type FormState = {
+  equipmentTypeId: string; // '' = ручной ввод по label
+  equipmentTypeLabel: string;
+  quantity: string;
+  shiftCount: string;
+  plannedDate: string;
+  plannedTimeFrom: string;
+  plannedTimeTo: string;
+  address: string;
+  comment: string;
+  sourcingType: SourcingType;
+  pricePerShift: string;
+  deliveryPrice: string;
+  surcharge: string;
+  readyForReservation: boolean;
+};
+
+const EMPTY_FORM: FormState = {
+  equipmentTypeId: '',
+  equipmentTypeLabel: '',
+  quantity: '1',
+  shiftCount: '1',
+  plannedDate: '',
+  plannedTimeFrom: '',
+  plannedTimeTo: '',
+  address: '',
+  comment: '',
+  sourcingType: 'undecided',
+  pricePerShift: '',
+  deliveryPrice: '',
+  surcharge: '',
+  readyForReservation: false,
+};
+
+const SOURCING_OPTIONS: { value: SourcingType; label: string }[] = [
+  { value: 'undecided', label: 'Не выбран' },
+  { value: 'own_fleet', label: 'Свой парк' },
+  { value: 'subcontractor', label: 'Подрядчик' },
+];
+
+function positionToForm(pos: ApplicationPosition): FormState {
+  return {
+    equipmentTypeId: '',
+    equipmentTypeLabel: pos.equipmentType,
+    quantity: String(pos.quantity),
+    shiftCount: String(pos.shiftCount),
+    plannedDate: pos.plannedDate ?? '',
+    plannedTimeFrom: pos.plannedTimeFrom ?? '',
+    plannedTimeTo: pos.plannedTimeTo ?? '',
+    address: pos.address ?? '',
+    comment: pos.comment ?? '',
+    sourcingType: pos.sourcingType,
+    pricePerShift: pos.pricePerShift !== undefined ? String(pos.pricePerShift) : '',
+    deliveryPrice: pos.deliveryPrice !== undefined ? String(pos.deliveryPrice) : '',
+    surcharge: pos.surcharge !== undefined ? String(pos.surcharge) : '',
+    readyForReservation: pos.readyForReservation,
+  };
+}
+
+export function PositionDialog({
+  open,
+  onOpenChange,
+  mode,
+  applicationId,
+  position,
+}: PositionDialogProps) {
+  const [form, setForm] = useState<FormState>(EMPTY_FORM);
+  const [touched, setTouched] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const addMutation = useAddApplicationItem();
+  const updateMutation = useUpdateApplicationItem();
+  const mutation = mode === 'add' ? addMutation : updateMutation;
+  const typesQuery = useEquipmentTypesQuery(undefined, open);
+
+  useEffect(() => {
+    if (!open) return;
+    if (mode === 'edit' && position) {
+      setForm(positionToForm(position));
+    } else {
+      setForm(EMPTY_FORM);
+    }
+    setTouched(false);
+    setError(null);
+    addMutation.reset();
+    updateMutation.reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, mode, position?.id]);
+
+  const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  const label = form.equipmentTypeLabel.trim();
+  const qty = Number(form.quantity);
+  const shifts = Number(form.shiftCount);
+  const labelValid = label.length >= 1;
+  const qtyValid = Number.isFinite(qty) && qty >= 1;
+  const shiftsValid = Number.isFinite(shifts) && shifts >= 1;
+  const canSave = labelValid && qtyValid && shiftsValid && !mutation.isPending;
+
+  const typeOptions = useMemo(
+    () => [
+      { value: '__manual__', label: 'Ручной ввод' },
+      ...(typesQuery.data ?? []).map((t) => ({
+        value: t.id,
+        label: t.category ? `${t.name} · ${t.category.name}` : t.name,
+      })),
+    ],
+    [typesQuery.data],
+  );
+
+  const handleTypeSelect = (value: string) => {
+    if (value === '__manual__') {
+      set('equipmentTypeId', '');
+      return;
+    }
+    const picked = typesQuery.data?.find((t) => t.id === value);
+    if (picked) {
+      setForm((prev) => ({
+        ...prev,
+        equipmentTypeId: picked.id,
+        equipmentTypeLabel: picked.name,
+      }));
+      setTouched(true);
+    }
+  };
+
+  const buildBody = () => {
+    const body: Record<string, unknown> = {
+      equipmentTypeLabel: label,
+      quantity: qty,
+      shiftCount: shifts,
+      sourcingType: form.sourcingType,
+      readyForReservation: form.readyForReservation,
+    };
+    if (form.equipmentTypeId) body.equipmentTypeId = form.equipmentTypeId;
+    if (form.plannedDate) body.plannedDate = form.plannedDate;
+    if (form.plannedTimeFrom) body.plannedTimeFrom = form.plannedTimeFrom;
+    if (form.plannedTimeTo) body.plannedTimeTo = form.plannedTimeTo;
+    if (form.address.trim()) body.address = form.address.trim();
+    if (form.comment.trim()) body.comment = form.comment.trim();
+    if (form.pricePerShift.trim()) body.pricePerShift = form.pricePerShift.trim();
+    if (form.deliveryPrice.trim()) body.deliveryPrice = form.deliveryPrice.trim();
+    if (form.surcharge.trim()) body.surcharge = form.surcharge.trim();
+    return body;
+  };
+
+  const submit = async () => {
+    setTouched(true);
+    if (!canSave) return;
+    setError(null);
+    try {
+      const body = buildBody();
+      if (mode === 'add') {
+        await addMutation.mutateAsync({ applicationId, body });
+      } else if (position) {
+        await updateMutation.mutateAsync({ itemId: position.id, body });
+      }
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось сохранить позицию');
+    }
+  };
+
+  const isEdit = mode === 'edit';
+
+  return (
+    <ShellDialog open={open} onOpenChange={onOpenChange}>
+      <EntityModalShell>
+        <EntityModalHeader
+          entityIcon={<ClipboardList className="h-3 w-3 text-gray-500" />}
+          entityLabel="Позиция заявки"
+          title={isEdit ? position?.equipmentType || 'Позиция' : 'Новая позиция'}
+          subtitle={
+            isEdit
+              ? `${form.quantity || 1} шт · ${form.shiftCount || 1} смен`
+              : 'Укажите тип техники, количество и смены.'
+          }
+          primaryAction={{
+            label: mutation.isPending ? 'Сохраняем…' : isEdit ? 'Сохранить' : 'Добавить',
+            render: (
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] disabled:bg-gray-200 disabled:text-gray-400"
+                onClick={submit}
+                disabled={!canSave}
+              >
+                {mutation.isPending ? 'Сохраняем…' : isEdit ? 'Сохранить' : 'Добавить'}
+              </Button>
+            ),
+          }}
+          secondaryAction={{ label: 'Закрыть', onClick: () => onOpenChange(false) }}
+        />
+
+        <div className="mt-5 space-y-5">
+          <EntitySection title="Тип техники">
+            <EntityMetaGrid>
+              <PropertyRow
+                icon={<Layers className="h-3 w-3" />}
+                label="Из справочника"
+                value={
+                  <FieldSelect
+                    value={form.equipmentTypeId || '__manual__'}
+                    onChange={handleTypeSelect}
+                    options={typeOptions}
+                    disabled={typesQuery.isLoading}
+                    placeholder={typesQuery.isLoading ? 'Загружаем…' : 'Выберите тип'}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Package className="h-3 w-3" />}
+                label="Название *"
+                value={
+                  <FieldInput
+                    value={form.equipmentTypeLabel}
+                    onChange={(v) => {
+                      set('equipmentTypeLabel', v);
+                      setTouched(true);
+                    }}
+                    placeholder="Экскаватор 1.5т"
+                    invalid={touched && !labelValid}
+                  />
+                }
+              />
+            </EntityMetaGrid>
+          </EntitySection>
+
+          <EntitySection title="Объём">
+            <EntityMetaGrid>
+              <PropertyRow
+                icon={<Package className="h-3 w-3" />}
+                label="Кол-во *"
+                value={
+                  <FieldInput
+                    type="number"
+                    min={1}
+                    value={form.quantity}
+                    onChange={(v) => {
+                      set('quantity', v);
+                      setTouched(true);
+                    }}
+                    invalid={touched && !qtyValid}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Clock className="h-3 w-3" />}
+                label="Смен *"
+                value={
+                  <FieldInput
+                    type="number"
+                    min={1}
+                    value={form.shiftCount}
+                    onChange={(v) => {
+                      set('shiftCount', v);
+                      setTouched(true);
+                    }}
+                    invalid={touched && !shiftsValid}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Truck className="h-3 w-3" />}
+                label="Источник"
+                value={
+                  <FieldSelect
+                    value={form.sourcingType}
+                    onChange={(v) => set('sourcingType', v as SourcingType)}
+                    options={SOURCING_OPTIONS}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<ClipboardList className="h-3 w-3" />}
+                label="Готова к брони"
+                value={
+                  <FieldCheckbox
+                    checked={form.readyForReservation}
+                    onChange={(v) => set('readyForReservation', v)}
+                    label="Отметить как готовую"
+                  />
+                }
+              />
+            </EntityMetaGrid>
+          </EntitySection>
+
+          <EntitySection title="Расписание">
+            <EntityMetaGrid>
+              <PropertyRow
+                icon={<Calendar className="h-3 w-3" />}
+                label="Дата"
+                value={
+                  <FieldInput
+                    type="date"
+                    value={form.plannedDate}
+                    onChange={(v) => set('plannedDate', v)}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<MapPin className="h-3 w-3" />}
+                label="Адрес"
+                value={
+                  <FieldInput
+                    value={form.address}
+                    onChange={(v) => set('address', v)}
+                    placeholder="Москва, ул. ..."
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Clock className="h-3 w-3" />}
+                label="С"
+                value={
+                  <FieldInput
+                    type="time"
+                    value={form.plannedTimeFrom}
+                    onChange={(v) => set('plannedTimeFrom', v)}
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Clock className="h-3 w-3" />}
+                label="До"
+                value={
+                  <FieldInput
+                    type="time"
+                    value={form.plannedTimeTo}
+                    onChange={(v) => set('plannedTimeTo', v)}
+                  />
+                }
+              />
+            </EntityMetaGrid>
+          </EntitySection>
+
+          <EntitySection title="Стоимость">
+            <EntityMetaGrid>
+              <PropertyRow
+                icon={<DollarSign className="h-3 w-3" />}
+                label="Цена смены"
+                value={
+                  <FieldInput
+                    value={form.pricePerShift}
+                    onChange={(v) => set('pricePerShift', v)}
+                    placeholder="20000"
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<DollarSign className="h-3 w-3" />}
+                label="Доставка"
+                value={
+                  <FieldInput
+                    value={form.deliveryPrice}
+                    onChange={(v) => set('deliveryPrice', v)}
+                    placeholder="5000"
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<DollarSign className="h-3 w-3" />}
+                label="Надбавка"
+                value={
+                  <FieldInput
+                    value={form.surcharge}
+                    onChange={(v) => set('surcharge', v)}
+                    placeholder="0"
+                  />
+                }
+              />
+            </EntityMetaGrid>
+          </EntitySection>
+
+          <EntitySection title="Комментарий">
+            <PropertyRow
+              icon={<FileText className="h-3 w-3" />}
+              label="Заметки"
+              value={
+                <FieldTextarea
+                  value={form.comment}
+                  onChange={(v) => set('comment', v)}
+                  placeholder="Детали, пожелания клиента"
+                  rows={3}
+                />
+              }
+            />
+          </EntitySection>
+
+          {error && (
+            <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+              {error}
+            </div>
+          )}
+        </div>
+      </EntityModalShell>
+    </ShellDialog>
+  );
+}

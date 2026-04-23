@@ -1,0 +1,176 @@
+import { Lead } from '../types/kanban';
+
+/**
+ * Reservation records for the `/reservations` workspace.
+ *
+ * We keep them as `Lead` objects at stage='reservation' because the existing
+ * ReservationWorkspace detail modal and `buildMockReservation` helper both
+ * consume a `Lead`. This way we avoid duplicating detail wiring and keep the
+ * detail pattern symmetric with how kanban cards already open the same modal.
+ *
+ * Ids 6, 7, 8 duplicate entries from `mockLeads` so the kanban-opened modal
+ * and the /reservations-opened modal land on the same record. The rest are
+ * fresh reservations that only live in the operations workspace.
+ */
+export const mockReservations: Lead[] = [
+  // Готовые к выезду
+  {
+    id: '6',
+    stage: 'reservation',
+    client: 'Попов Алексей',
+    company: 'ООО РемСтрой',
+    phone: '+7 (999) 678-90-12',
+    source: 'Сайт',
+    sourceChannel: 'site',
+    equipmentType: 'Экскаватор JCB',
+    date: '2026-04-27',
+    timeWindow: '09:00-18:00',
+    address: 'г. Москва, ул. Гагарина, 15',
+    manager: 'Сидоров Б.',
+    lastActivity: '1 час назад',
+    reservationStage: 'ready',
+    ownOrSubcontractor: 'own',
+    equipmentUnit: 'EXC-001',
+    readyForDeparture: true,
+  },
+  // Подрядчик
+  {
+    id: '7',
+    stage: 'reservation',
+    client: 'Федоров Дмитрий',
+    phone: '+7 (999) 789-01-23',
+    source: 'Mango',
+    sourceChannel: 'mango',
+    equipmentType: 'Кран 25т',
+    date: '2026-04-28',
+    manager: 'Иванова С.',
+    lastActivity: '2 часа назад',
+    reservationStage: 'subcontractor',
+    ownOrSubcontractor: 'subcontractor',
+    subcontractor: 'ООО Кран-Сервис',
+  },
+  // Конфликт, источник не выбран
+  {
+    id: '8',
+    stage: 'reservation',
+    client: 'Николаев Игорь',
+    company: 'ООО Техпром',
+    phone: '+7 (999) 890-12-34',
+    source: 'Telegram',
+    sourceChannel: 'telegram',
+    equipmentType: 'Бульдозер',
+    date: '2026-04-26',
+    address: 'г. Москва',
+    manager: 'Петров А.',
+    lastActivity: '3 часа назад',
+    reservationStage: 'own_equipment',
+    ownOrSubcontractor: 'undecided',
+    hasConflict: true,
+    isUrgent: true,
+  },
+  // Unit уточнён, без конфликта
+  {
+    id: 'r20',
+    stage: 'reservation',
+    client: 'Захаров Максим',
+    company: 'ООО СтройКом',
+    phone: '+7 (999) 111-22-33',
+    source: 'Сайт',
+    sourceChannel: 'site',
+    equipmentType: 'Экскаватор CAT',
+    date: '2026-04-28',
+    timeWindow: '08:00-16:00',
+    address: 'г. Москва, ул. Профсоюзная, 84',
+    manager: 'Петров А.',
+    lastActivity: '30 мин назад',
+    reservationStage: 'unit_confirmed',
+    ownOrSubcontractor: 'own',
+    equipmentUnit: 'EXC-014',
+  },
+  // Тип забронирован, unit ещё не выбран
+  {
+    id: 'r21',
+    stage: 'reservation',
+    client: 'Орлова Светлана',
+    company: 'ИП Орлова',
+    phone: '+7 (999) 444-55-66',
+    source: 'Mango',
+    sourceChannel: 'mango',
+    equipmentType: 'Погрузчик',
+    date: '2026-04-29',
+    timeWindow: '10:00-14:00',
+    address: 'Московская обл., Балашиха',
+    manager: 'Иванова С.',
+    lastActivity: '45 мин назад',
+    reservationStage: 'type_reserved',
+    ownOrSubcontractor: 'own',
+  },
+  // Подбор подрядчика — ещё не выбран
+  {
+    id: 'r22',
+    stage: 'reservation',
+    client: 'Белов Артём',
+    phone: '+7 (999) 777-88-99',
+    source: 'Telegram',
+    sourceChannel: 'telegram',
+    equipmentType: 'Кран 50т',
+    date: '2026-04-30',
+    address: 'г. Химки',
+    manager: 'Сидоров Б.',
+    lastActivity: '1 час назад',
+    reservationStage: 'subcontractor',
+    ownOrSubcontractor: 'subcontractor',
+  },
+  // Подбор своей техники — ещё не выбран unit
+  {
+    id: 'r23',
+    stage: 'reservation',
+    client: 'Григорьев Роман',
+    company: 'ООО ТрансСтрой',
+    phone: '+7 (999) 222-33-44',
+    source: 'Сайт',
+    sourceChannel: 'site',
+    equipmentType: 'Экскаватор JCB',
+    date: '2026-05-02',
+    timeWindow: '07:00-19:00',
+    address: 'г. Москва, МКАД 38 км',
+    manager: 'Петров А.',
+    lastActivity: '2 часа назад',
+    reservationStage: 'own_equipment',
+    ownOrSubcontractor: 'own',
+  },
+  // Нужен выбор источника
+  {
+    id: 'r24',
+    stage: 'reservation',
+    client: 'Дмитриев Олег',
+    phone: '+7 (999) 555-66-77',
+    source: 'Сайт',
+    sourceChannel: 'site',
+    equipmentType: 'Бульдозер',
+    date: '2026-05-03',
+    manager: 'Иванова С.',
+    lastActivity: '10 мин назад',
+    ownOrSubcontractor: 'undecided',
+  },
+  // Готово к выезду у подрядчика
+  {
+    id: 'r25',
+    stage: 'reservation',
+    client: 'Миронов Павел',
+    company: 'ООО Магистраль',
+    phone: '+7 (999) 888-99-00',
+    source: 'Mango',
+    sourceChannel: 'mango',
+    equipmentType: 'Автокран 40т',
+    date: '2026-04-29',
+    timeWindow: '06:00-18:00',
+    address: 'г. Подольск',
+    manager: 'Сидоров Б.',
+    lastActivity: '15 мин назад',
+    reservationStage: 'ready',
+    ownOrSubcontractor: 'subcontractor',
+    subcontractor: 'ООО АвтоКранРент',
+    readyForDeparture: true,
+  },
+];

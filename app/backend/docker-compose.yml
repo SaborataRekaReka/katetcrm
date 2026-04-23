@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: katet-crm-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: katet
+      POSTGRES_PASSWORD: katet
+      POSTGRES_DB: katet_crm
+    ports:
+      - "5433:5432"
+    volumes:
+      - katet_crm_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U katet -d katet_crm"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  katet_crm_pgdata:

@@ -1,0 +1,183 @@
+Сделай точечный polishing-pass по Reservation screen.
+
+Важно:
+- не менять общий detail shell;
+- не придумывать новый layout;
+- не отходить от screen family Lead / Application;
+- Reservation должен оставаться тем же самым clickup-like detail screen, только с reservation-specific содержанием.
+
+Главная задача:
+Не редизайн.
+Не новая версия.
+Только правки по логике, консистентности и визуальной точности.
+
+1. Исправить логическую ошибку текущей стадии
+Сейчас в некоторых состояниях экран показывает:
+- stage = "Готово к выезду"
+- одновременно source = "Не определено" или source = "Подрядчик" без выбранного подрядчика
+- readiness CTA disabled
+
+Это противоречие.
+
+Нужно:
+- current stage в header/meta/sidebar должен вычисляться из реального состояния брони;
+- если source не выбран → stage не может быть "Готово к выезду";
+- если source=subcontractor и подрядчик не выбран → stage не может быть "Готово к выезду";
+- если source=own и unit не выбран там, где он обязателен → stage не может быть "Готово к выезду".
+
+Пример правильной логики:
+- source not selected → `needs_selection`
+- source=own and unit not selected → `searching_own_equipment`
+- source=subcontractor and contractor not selected → `searching_subcontractor`
+- equipment type reserved but unit not finalized → `type_reserved`
+- unit selected → `unit_defined`
+- all conditions met → `ready_for_departure`
+
+Эта логика должна одновременно обновлять:
+- stage pill в верхней metadata row
+- stage field в sidebar
+- highlighted internal stage section
+- primary CTA
+- readiness checklist
+
+2. Сделать conditional rendering по source
+Сейчас экран всё ещё слишком универсален в одном состоянии.
+
+Нужно:
+- `own` state → показывать таблицу candidate units;
+- `subcontractor` state → показывать таблицу подрядчиков;
+- `undecided` state → не показывать ни units table, ни contractors table, а показывать compact source decision block.
+
+То есть:
+- own → section "Кандидатные юниты"
+- subcontractor → section "Подрядчики"
+- undecided → section "Выберите источник техники"
+
+Не показывать блоки, которые не относятся к текущему source state.
+
+3. Убрать лишние и противоречивые чипы в верхней metadata row
+Сейчас верхняя metadata line местами перегружена и дублирует состояние.
+
+Нужно привести её к жёсткому правилу:
+- всегда показывать stage/status
+- показывать assignee
+- показывать planned date
+- показывать source
+- показывать unit только если source=own или unit реально выбран
+- показывать subcontractor только если source=subcontractor или подрядчик реально выбран
+- не показывать чипы вида "Подрядчик: нет" или "Unit: ..." если они неуместны для текущего состояния
+
+Нужна короткая чистая clickup-like metadata line без мусора.
+
+4. Синхронизировать primary CTA со stage
+На экране должен быть только один очевидный следующий шаг.
+
+Правило:
+- `undecided` → primary CTA = "Выбрать источник"
+- `searching_own_equipment` → primary CTA = "Назначить unit"
+- `searching_subcontractor` → primary CTA = "Выбрать подрядчика"
+- `type_reserved / unit_defined` → primary CTA = "Подтвердить бронь" или следующий допустимый шаг
+- `ready_for_departure` → primary CTA = "Перевести в выезд"
+- `released` → не показывать active progress CTA
+
+Top CTA и sidebar CTA должны отражать один и тот же следующий шаг, а не жить своей жизнью.
+
+5. Исправить readiness checklist
+Сейчас checklist визуально хороший, но должен стать условным и логичным.
+
+Нужно:
+- показывать только релевантные проверки;
+- не вводить в заблуждение пунктами "если применимо", когда можно вычислить применимость сразу;
+- source=own → чеклист должен проверять unit, а не подрядчика;
+- source=subcontractor → чеклист должен проверять подрядчика, а не unit;
+- source=undecided → первый пункт должен быть "источник не выбран";
+- CTA disabled state должен сопровождаться коротким reason/helper.
+
+6. Добавить нормальный conflict state
+Сейчас в примерах нет хорошего конфликтного состояния, а это обязательный сценарий.
+
+Нужно добавить отдельный визуальный state для conflict warning:
+- warning banner в левой canvas near relevant section;
+- короткий warning item в sidebar;
+- CTA "Открыть конфликтующую бронь" или "Посмотреть конфликт";
+- conflict не должен ломать экран и не должен превращаться в hard-block;
+- warning должен быть заметен, но не доминировать над всем layout.
+
+7. Убрать остатки dashboard/admin ощущения
+Сейчас экран уже близко к ClickUp, но ещё есть ощущение “слишком аккуратной админки”.
+
+Нужно:
+- ещё немного уменьшить визуальную весомость boxed sections;
+- сделать разделители более тонкими;
+- чуть сильнее приблизить секции к flat detail canvas;
+- не усиливать рамки, бордеры и контейнерность;
+- сохранять тот же visual family, что на Lead/Application.
+
+8. Сделать sidebar ещё более похожей на Lead/Application
+Sidebar должна быть тем же семейством, что на предыдущих detail screens.
+
+Нужно:
+- оставить ту же ширину;
+- тот же ритм заголовков секций;
+- тот же стиль rows;
+- те же отступы;
+- те же action patterns.
+
+Нельзя делать так, чтобы Reservation sidebar ощущалась “особенной”.
+Она должна быть тем же шаблоном, но с reservation-specific данными.
+
+9. Добавить history / activity section в левую часть
+Сейчас экран всё ещё слишком статичный.
+Нужна нижняя секция в левой части:
+- последние изменения брони
+- выбор source
+- назначение unit
+- выбор подрядчика
+- conflict detected
+- release
+- переход к выезду
+
+Не raw log.
+Не новая карточка.
+Использовать тот же lightweight activity pattern, что и в предыдущих detail screens.
+
+10. Подчистить linked records
+Блок "Связанные записи" хороший, но нужно:
+- выровнять приоритет ссылок;
+- сначала Заявка;
+- потом Позиция;
+- потом Клиент;
+- потом Лид;
+- убрать визуальный шум;
+- сделать его более scan-friendly.
+
+11. Подчистить section "Позиция заявки"
+Сделать этот блок чуть более process-oriented:
+- акцент на технику, дату/время, адрес;
+- comment вторичнее;
+- source selection area должна быть визуально главнее, чем comment;
+- строка "Следующий шаг" должна быть более явной и всегда соответствовать текущему состоянию.
+
+12. Главное правило консистентности
+Reservation screen должен визуально ощущаться как:
+- тот же экранный шаблон, что Lead и Application;
+- тот же shell;
+- тот же layout family;
+- тот же visual language;
+- та же clickup-like detail logic.
+
+Меняется только начинка:
+- Lead → duplicates / source / convert readiness
+- Application → positions / reserve readiness
+- Reservation → source / unit / subcontractor / conflict / departure readiness
+
+Acceptance criteria:
+- stage больше не противоречит фактическому состоянию;
+- source state условно переключает контент;
+- верхняя metadata line стала чище;
+- CTA всегда совпадает с текущим следующим шагом;
+- checklist стал логичным и conditional;
+- появился корректный conflict state;
+- sidebar осталась в той же screen family, что Lead/Application;
+- экран не выглядит новым типом страницы;
+- Reservation ощущается как продолжение уже собранной системы экранов.

@@ -1,0 +1,185 @@
+import { useMemo, useState } from 'react';
+import { FileText } from 'lucide-react';
+import { Lead } from '../../types/kanban';
+import { mockReservations } from '../../data/mockReservations';
+import { WorkspaceHeader } from '../shell/WorkspaceHeader';
+import { ReservationsToolbar } from '../shell/ReservationsToolbar';
+import {
+  DEFAULT_RESERVATIONS_FILTERS,
+  ReservationsFiltersState,
+} from '../shell/filterTypes';
+import {
+  applyReservationsFilters,
+  buildReservationRows,
+  ReservationRow,
+} from '../shell/reservationHelpers';
+import { useLayout } from '../shell/layoutStore';
+import { ReservationsListView } from '../views/ReservationsListView';
+import { ReservationsTableView } from '../views/ReservationsTableView';
+import { Dialog, DialogContent } from '../ui/dialog';
+import { ReservationWorkspace } from './ReservationWorkspace';
+import { ClientWorkspace } from '../client/ClientWorkspace';
+import { Button } from '../ui/button';
+import { USE_API } from '../../lib/featureFlags';
+import { useReservationsQuery } from '../../hooks/useReservationsQuery';
+import { toReservationRows } from '../../lib/reservationAdapter';
+
+/**
+ * Routed page for /reservations (and the ops saved-view aliases). Hosts both
+ * list and table views over the same reservation dataset and opens the
+ * existing ReservationWorkspace detail modal on row click so the detail
+ * experience matches what users see when clicking a reservation card in the
+ * leads kanban.
+ *
+ * There is no "New reservation" CTA: in MVP брони всегда живут в контексте
+ * позиции заявки. Вместо этого в шапке списка висит secondary-ссылка
+ * «Создать из заявки», переводящая в раздел Заявок.
+ */
+export function ReservationsWorkspacePage() {
+  const { activeSecondaryNav, currentView, setActiveSecondaryNav } = useLayout();
+  const [filters, setFilters] = useState<ReservationsFiltersState>(DEFAULT_RESERVATIONS_FILTERS);
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState<Lead | null>(null);
+  const [selectedReservationId, setSelectedReservationId] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [clientLead, setClientLead] = useState<Lead | null>(null);
+  const [isClientOpen, setIsClientOpen] = useState(false);
+
+  const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
+
+  // Источник: либо projected API (с derived stage/nextStep/CTA/reason уже на
+  // бэке), либо mock (fallback без флага USE_API). Оба пути приводятся к
+  // единому ReservationRow, так что фильтры/рендер не разветвляются.
+  const reservationsQuery = useReservationsQuery({ isActive: undefined }, USE_API);
+  const allRows = useMemo(() => {
+    if (USE_API && reservationsQuery.data) {
+      return toReservationRows(reservationsQuery.data.items);
+    }
+    return buildReservationRows(mockReservations);
+  }, [reservationsQuery.data]);
+
+  // Saved-view aliases pre-apply a filter so page content matches nav context.
+  const aliasFiltered = useMemo(() => {
+    switch (activeSecondaryNav) {
+      case 'view-conflict':
+        return allRows.filter((r) => r.reservation.hasConflict);
+      case 'view-need-confirm':
+        return allRows.filter(
+          (r) =>
+            r.reservation.status === 'active' &&
+            (r.reservation.internalStage === 'type_reserved' ||
+              r.reservation.internalStage === 'unit_defined'),
+        );
+      case 'view-no-unit':
+        return allRows.filter(
+          (r) => r.reservation.source === 'own' && !r.reservation.equipmentUnit,
+        );
+      case 'view-no-subcontractor':
+        return allRows.filter(
+          (r) => r.reservation.source === 'subcontractor' && !r.reservation.subcontractor,
+        );
+      case 'view-ready-departure':
+        return allRows.filter((r) => r.reservation.readyForDeparture);
+      case 'view-released':
+        return allRows.filter((r) => r.reservation.status === 'released');
+      default:
+        return allRows;
+    }
+  }, [allRows, activeSecondaryNav]);
+
+  const filtered = useMemo(
+    () => applyReservationsFilters(aliasFiltered, filters, query),
+    [aliasFiltered, filters, query],
+  );
+
+  const hasActiveFilter =
+    filters.scope !== 'all' ||
+    filters.manager !== 'all' ||
+    filters.status !== 'all' ||
+    filters.internalStage !== 'all' ||
+    filters.source !== 'all' ||
+    filters.equipment !== 'all' ||
+    filters.subcontractor !== 'all' ||
+    filters.unitSelection !== 'all' ||
+    filters.conflict ||
+    filters.readyForDeparture ||
+    query.length > 0;
+
+  const handleRowClick = (row: ReservationRow) => {
+    setSelected(row.lead);
+    setSelectedReservationId(row.reservation.id);
+    setIsOpen(true);
+  };
+  const handleClose = () => {
+    setIsOpen(false);
+    setSelected(null);
+    setSelectedReservationId(null);
+  };
+  const handleOpenClient = (lead: Lead) => {
+    setClientLead(lead);
+    setIsClientOpen(true);
+  };
+  const handleCloseClient = () => {
+    setIsClientOpen(false);
+    setClientLead(null);
+  };
+
+  return (
+    <div className="flex h-full min-h-0 min-w-0 flex-col">
+      <WorkspaceHeader />
+      <ReservationsToolbar
+        filters={filters}
+        onFiltersChange={setFilters}
+        query={query}
+        onQueryChange={setQuery}
+      />
+      <div className="flex h-8 shrink-0 items-center gap-2 border-b border-border/40 bg-muted/20 px-4 text-[11px] text-muted-foreground">
+        <span>
+          Новые брони создаются из карточки заявки. Откройте заявку, чтобы забронировать позицию.
+        </span>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="h-6 gap-1 px-2 text-[11px] text-[#2a6af0] hover:bg-[#e7f1ff] hover:text-[#2a6af0]"
+          onClick={() => setActiveSecondaryNav('applications')}
+        >
+          <FileText className="h-3 w-3" />
+          Перейти к заявкам
+        </Button>
+      </div>
+
+      {effectiveView === 'list' ? (
+        <ReservationsListView
+          rows={filtered}
+          onRowClick={handleRowClick}
+          isFiltered={hasActiveFilter || activeSecondaryNav.startsWith('view-')}
+        />
+      ) : (
+        <ReservationsTableView
+          rows={filtered}
+          onRowClick={handleRowClick}
+          isFiltered={hasActiveFilter || activeSecondaryNav.startsWith('view-')}
+        />
+      )}
+
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+          {selected ? (
+            <ReservationWorkspace
+              lead={selected}
+              onClose={handleClose}
+              onOpenClient={handleOpenClient}
+              apiReservationId={selectedReservationId ?? undefined}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isClientOpen} onOpenChange={setIsClientOpen}>
+        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+          {clientLead && <ClientWorkspace lead={clientLead} onClose={handleCloseClient} />}
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

@@ -1,0 +1,602 @@
+// Katet CRM — Prisma schema
+// Реализует доменную модель MVP (см. docs/tz-final.md §5 и DOMAIN_MODEL.md).
+//
+// Соглашения:
+//   * snake_case для таблиц/колонок в БД (@map / @@map),
+//     camelCase в коде Prisma-клиента.
+//   * Ключевые инварианты enforced через partial unique indexes.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum UserRole {
+  admin
+  manager
+}
+
+enum SourceChannel {
+  site
+  mango
+  telegram
+  max
+  manual
+  other
+}
+
+enum PipelineStage {
+  lead
+  application
+  reservation
+  departure
+  completed
+  unqualified
+  cancelled
+}
+
+enum SourcingType {
+  own
+  subcontractor
+  undecided
+}
+
+enum ReservationInternalStage {
+  needs_source_selection
+  searching_own_equipment
+  searching_subcontractor
+  subcontractor_selected
+  type_reserved
+  unit_defined
+  ready_for_departure
+  released
+}
+
+enum SubcontractorConfirmationStatus {
+  not_requested
+  requested
+  confirmed
+  declined
+  no_response
+}
+
+enum EquipmentUnitStatus {
+  active
+  inactive
+  archived
+}
+
+enum SubcontractorStatus {
+  active
+  inactive
+  archived
+}
+
+enum DepartureStatus {
+  scheduled
+  in_transit
+  arrived
+  completed
+  cancelled
+}
+
+enum CompletionOutcome {
+  completed
+  unqualified
+}
+
+enum DeliveryMode {
+  pickup
+  delivery
+}
+
+enum TagTone {
+  success
+  caution
+  progress
+  warning
+  muted
+  source
+}
+
+enum IntegrationChannel {
+  site
+  mango
+  telegram
+  max
+}
+
+enum IntegrationEventStatus {
+  received
+  processed
+  failed
+  duplicate
+}
+
+enum ActivityAction {
+  created
+  updated
+  stage_changed
+  reservation_set
+  reservation_released
+  completed
+  unqualified
+  imported
+  note_added
+}
+
+// ---------------------------------------------------------------------------
+// Auth / Users
+// ---------------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  fullName     String   @map("full_name")
+  role         UserRole @default(manager)
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  managedLeads         Lead[]             @relation("LeadManager")
+  managedApplications  Application[]      @relation("ApplicationManager")
+  createdReservations  Reservation[]      @relation("ReservationCreatedBy")
+  completedCompletions Completion[]       @relation("CompletionCompletedBy")
+  assignedClientTags   ClientTag[]        @relation("ClientTagAssignedBy")
+  activityEntries      ActivityLogEntry[]
+
+  @@map("users")
+}
+
+// ---------------------------------------------------------------------------
+// Clients
+// ---------------------------------------------------------------------------
+
+model Client {
+  id                String   @id @default(cuid())
+  name              String
+  company           String?
+  phone             String
+  phoneNormalized   String   @map("phone_normalized")
+  companyNormalized String?  @map("company_normalized")
+  email             String?
+  notes             String?
+  workingNotes      String?  @map("working_notes")
+  favoriteEquipment String[] @default([]) @map("favorite_equipment")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  leads        Lead[]
+  applications Application[]
+  contacts     ClientContact[]
+  requisites   ClientRequisites?
+  tags         ClientTag[]
+
+  @@index([phoneNormalized])
+  @@index([companyNormalized])
+  @@map("clients")
+}
+
+model ClientContact {
+  id         String   @id @default(cuid())
+  clientId   String   @map("client_id")
+  client     Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  name       String
+  role       String?
+  phone      String?
+  email      String?
+  isPrimary  Boolean  @default(false) @map("is_primary")
+
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([clientId])
+  @@map("client_contacts")
+}
+
+model ClientRequisites {
+  clientId              String   @id @map("client_id")
+  client                Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  inn                   String?
+  kpp                   String?
+  ogrn                  String?
+  legalAddress          String?  @map("legal_address")
+  bankName              String?  @map("bank_name")
+  bankAccount           String?  @map("bank_account")
+  correspondentAccount  String?  @map("correspondent_account")
+  bik                   String?
+
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@map("client_requisites")
+}
+
+// ---------------------------------------------------------------------------
+// Tags
+// ---------------------------------------------------------------------------
+
+model Tag {
+  id        String   @id @default(cuid())
+  label     String   @unique
+  tone      TagTone  @default(muted)
+  isSystem  Boolean  @default(false) @map("is_system")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  clientTags ClientTag[]
+
+  @@map("tags")
+}
+
+model ClientTag {
+  clientId     String   @map("client_id")
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  tagId        String   @map("tag_id")
+  tag          Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  assignedById String?  @map("assigned_by_id")
+  assignedBy   User?    @relation("ClientTagAssignedBy", fields: [assignedById], references: [id])
+
+  assignedAt   DateTime @default(now()) @map("assigned_at")
+
+  @@id([clientId, tagId])
+  @@index([tagId])
+  @@map("client_tags")
+}
+
+// ---------------------------------------------------------------------------
+// Leads
+// ---------------------------------------------------------------------------
+
+model Lead {
+  id              String        @id @default(cuid())
+  stage           PipelineStage @default(lead)
+  source          SourceChannel @default(manual)
+  sourceLabel     String?       @map("source_label")
+
+  clientId        String?       @map("client_id")
+  client          Client?       @relation(fields: [clientId], references: [id])
+
+  contactName     String        @map("contact_name")
+  contactCompany  String?       @map("contact_company")
+  contactPhone    String        @map("contact_phone")
+  phoneNormalized String        @map("phone_normalized")
+
+  equipmentTypeHint String?     @map("equipment_type_hint")
+  requestedDate   DateTime?     @map("requested_date")
+  timeWindow      String?       @map("time_window")
+  address         String?
+  comment         String?
+
+  managerId       String?       @map("manager_id")
+  manager         User?         @relation("LeadManager", fields: [managerId], references: [id])
+
+  isDuplicate     Boolean       @default(false) @map("is_duplicate")
+  isUrgent        Boolean       @default(false) @map("is_urgent")
+  isStale         Boolean       @default(false) @map("is_stale")
+  hasNoContact    Boolean       @default(false) @map("has_no_contact")
+  incompleteData  Boolean       @default(false) @map("incomplete_data")
+  unqualifiedReason String?     @map("unqualified_reason")
+
+  lastActivityAt  DateTime      @default(now()) @map("last_activity_at")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  applications    Application[]
+
+  @@index([stage])
+  @@index([managerId])
+  @@index([phoneNormalized])
+  @@map("leads")
+}
+
+// ---------------------------------------------------------------------------
+// Applications & Items
+// ---------------------------------------------------------------------------
+
+model Application {
+  id                String        @id @default(cuid())
+  number            String        @unique
+  stage             PipelineStage @default(application)
+
+  leadId            String        @map("lead_id")
+  lead              Lead          @relation(fields: [leadId], references: [id])
+
+  clientId          String        @map("client_id")
+  client            Client        @relation(fields: [clientId], references: [id])
+
+  responsibleManagerId String?    @map("responsible_manager_id")
+  responsibleManager User?        @relation("ApplicationManager", fields: [responsibleManagerId], references: [id])
+
+  requestedDate     DateTime?     @map("requested_date")
+  requestedTimeFrom String?       @map("requested_time_from")
+  requestedTimeTo   String?       @map("requested_time_to")
+  address           String?
+  comment           String?
+  isUrgent          Boolean       @default(false) @map("is_urgent")
+  deliveryMode      DeliveryMode? @map("delivery_mode")
+  nightWork         Boolean       @default(false) @map("night_work")
+
+  isActive          Boolean       @default(true) @map("is_active")
+  cancelledAt       DateTime?     @map("cancelled_at")
+  completedAt       DateTime?     @map("completed_at")
+
+  lastActivityAt    DateTime      @default(now()) @map("last_activity_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  items             ApplicationItem[]
+
+  @@index([leadId])
+  @@index([stage])
+  @@map("applications")
+}
+
+model ApplicationItem {
+  id                 String            @id @default(cuid())
+  applicationId      String            @map("application_id")
+  application        Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  equipmentTypeId    String?           @map("equipment_type_id")
+  equipmentType      EquipmentType?    @relation(fields: [equipmentTypeId], references: [id])
+  equipmentTypeLabel String            @map("equipment_type_label")
+
+  quantity           Int               @default(1)
+  shiftCount         Int               @default(1) @map("shift_count")
+  overtimeHours      Int?              @map("overtime_hours")
+  downtimeHours      Int?              @map("downtime_hours")
+
+  plannedDate        DateTime?         @map("planned_date")
+  plannedTimeFrom    String?           @map("planned_time_from")
+  plannedTimeTo      String?           @map("planned_time_to")
+  address            String?
+  comment            String?
+
+  sourcingType       SourcingType      @default(undecided) @map("sourcing_type")
+
+  pricePerShift      Decimal?          @map("price_per_shift") @db.Decimal(12, 2)
+  deliveryPrice      Decimal?          @map("delivery_price") @db.Decimal(12, 2)
+  surcharge          Decimal?          @db.Decimal(12, 2)
+
+  readyForReservation Boolean          @default(false) @map("ready_for_reservation")
+
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  reservations       Reservation[]
+
+  @@index([applicationId])
+  @@map("application_items")
+}
+
+// ---------------------------------------------------------------------------
+// Reservations
+// ---------------------------------------------------------------------------
+
+model Reservation {
+  id                     String                          @id @default(cuid())
+  applicationItemId      String                          @map("application_item_id")
+  applicationItem        ApplicationItem                 @relation(fields: [applicationItemId], references: [id], onDelete: Cascade)
+
+  sourcingType           SourcingType                    @map("sourcing_type")
+  internalStage          ReservationInternalStage        @default(needs_source_selection) @map("internal_stage")
+
+  equipmentTypeId        String?                         @map("equipment_type_id")
+  equipmentType          EquipmentType?                  @relation(fields: [equipmentTypeId], references: [id])
+
+  equipmentUnitId        String?                         @map("equipment_unit_id")
+  equipmentUnit          EquipmentUnit?                  @relation(fields: [equipmentUnitId], references: [id])
+
+  subcontractorId        String?                         @map("subcontractor_id")
+  subcontractor          Subcontractor?                  @relation(fields: [subcontractorId], references: [id])
+
+  subcontractorConfirmation SubcontractorConfirmationStatus @default(not_requested) @map("subcontractor_confirmation")
+  promisedModelOrUnit    String?                         @map("promised_model_or_unit")
+  subcontractorNote      String?                         @map("subcontractor_note")
+
+  comment                String?
+
+  plannedStart           DateTime                        @map("planned_start")
+  plannedEnd             DateTime                        @map("planned_end")
+
+  hasConflictWarning     Boolean                         @default(false) @map("has_conflict_warning")
+
+  isActive               Boolean                         @default(true) @map("is_active")
+
+  createdById            String?                         @map("created_by_id")
+  createdBy              User?                           @relation("ReservationCreatedBy", fields: [createdById], references: [id])
+
+  releasedAt             DateTime?                       @map("released_at")
+  releaseReason          String?                         @map("release_reason")
+
+  createdAt              DateTime                        @default(now()) @map("created_at")
+  updatedAt              DateTime                        @updatedAt @map("updated_at")
+
+  departures             Departure[]
+
+  @@index([applicationItemId])
+  @@index([equipmentUnitId])
+  @@index([subcontractorId])
+  @@index([createdById])
+  @@index([plannedStart, plannedEnd])
+  @@map("reservations")
+}
+
+// ---------------------------------------------------------------------------
+// Directories
+// ---------------------------------------------------------------------------
+
+model EquipmentCategory {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  types     EquipmentType[]
+
+  @@map("equipment_categories")
+}
+
+model EquipmentType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+
+  categoryId  String?  @map("category_id")
+  category    EquipmentCategory? @relation(fields: [categoryId], references: [id])
+
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  units       EquipmentUnit[]
+  applicationItems ApplicationItem[]
+  reservations Reservation[]
+
+  @@map("equipment_types")
+}
+
+model EquipmentUnit {
+  id              String              @id @default(cuid())
+  name            String
+  equipmentTypeId String              @map("equipment_type_id")
+  equipmentType   EquipmentType       @relation(fields: [equipmentTypeId], references: [id])
+
+  year            Int?
+  plateNumber     String?             @map("plate_number")
+  notes           String?
+  status          EquipmentUnitStatus @default(active)
+
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  reservations    Reservation[]
+
+  @@index([equipmentTypeId])
+  @@map("equipment_units")
+}
+
+model Subcontractor {
+  id              String              @id @default(cuid())
+  name            String              @unique
+  specialization  String?
+  region          String?
+  contactPhone    String?             @map("contact_phone")
+  contactEmail    String?             @map("contact_email")
+  notes           String?
+  rating          Int?
+  status          SubcontractorStatus @default(active)
+
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  reservations    Reservation[]
+
+  @@map("subcontractors")
+}
+
+// ---------------------------------------------------------------------------
+// Departures / Completion
+// ---------------------------------------------------------------------------
+
+model Departure {
+  id                  String          @id @default(cuid())
+  reservationId       String          @map("reservation_id")
+  reservation         Reservation     @relation(fields: [reservationId], references: [id])
+
+  scheduledAt         DateTime        @map("scheduled_at")
+  startedAt           DateTime?       @map("started_at")
+  arrivedAt           DateTime?       @map("arrived_at")
+  completedAt         DateTime?       @map("completed_at")
+  cancelledAt         DateTime?       @map("cancelled_at")
+  cancellationReason  String?         @map("cancellation_reason")
+
+  status              DepartureStatus @default(scheduled)
+  notes               String?
+  deliveryNotes       String?         @map("delivery_notes")
+
+  createdAt           DateTime        @default(now()) @map("created_at")
+  updatedAt           DateTime        @updatedAt @map("updated_at")
+
+  completion          Completion?
+
+  @@index([reservationId])
+  @@index([scheduledAt])
+  @@index([status])
+  @@map("departures")
+}
+
+model Completion {
+  id                String            @id @default(cuid())
+  departureId       String            @unique @map("departure_id")
+  departure         Departure         @relation(fields: [departureId], references: [id])
+
+  outcome           CompletionOutcome
+  completionNote    String?           @map("completion_note")
+  unqualifiedReason String?           @map("unqualified_reason")
+
+  completedById     String?           @map("completed_by_id")
+  completedBy       User?             @relation("CompletionCompletedBy", fields: [completedById], references: [id])
+
+  completedAt       DateTime          @default(now()) @map("completed_at")
+
+  @@index([completedById])
+  @@map("completions")
+}
+
+// ---------------------------------------------------------------------------
+// Activity Log
+// ---------------------------------------------------------------------------
+
+model ActivityLogEntry {
+  id           String         @id @default(cuid())
+  action       ActivityAction
+  entityType   String         @map("entity_type")
+  entityId     String         @map("entity_id")
+  summary      String
+  payload      Json?
+
+  actorId      String?        @map("actor_id")
+  actor        User?          @relation(fields: [actorId], references: [id])
+
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  @@index([entityType, entityId])
+  @@index([createdAt])
+  @@map("activity_log")
+}
+
+// ---------------------------------------------------------------------------
+// Integration events
+// ---------------------------------------------------------------------------
+
+model IntegrationEvent {
+  id           String                 @id @default(cuid())
+  channel      IntegrationChannel
+  externalId   String?                @map("external_id")
+  payload      Json
+  status       IntegrationEventStatus @default(received)
+  errorMessage String?                @map("error_message")
+  relatedLeadId String?               @map("related_lead_id")
+
+  receivedAt   DateTime               @default(now()) @map("received_at")
+  processedAt  DateTime?              @map("processed_at")
+
+  @@unique([channel, externalId], map: "uniq_channel_external_id")
+  @@index([status])
+  @@map("integration_events")
+}
+
