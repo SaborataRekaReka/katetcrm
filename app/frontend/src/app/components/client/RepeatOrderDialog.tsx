@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   AlertCircle,
   ArrowRight,
@@ -30,7 +30,14 @@ interface RepeatOrderDialogProps {
   source: ClientOrderHistoryItem | null;
   clientName: string;
   defaultManager?: string;
-  onConfirm: (newApplicationId: string) => void;
+  onConfirm: (payload: RepeatOrderPayload) => void;
+}
+
+export interface RepeatOrderPayload {
+  date: string;
+  time: string;
+  address: string;
+  note: string;
 }
 
 function nextStamp() {
@@ -61,10 +68,6 @@ export function RepeatOrderDialog({
   }, [source?.id]);
 
   const positionsCount = source?.positions.length ?? 0;
-  const newAppId = useMemo(() => {
-    const seed = Math.floor(100 + Math.random() * 900);
-    return `APP-00${seed}`;
-  }, [source?.id, open]);
 
   if (!source) return null;
 
@@ -208,16 +211,25 @@ export function RepeatOrderDialog({
           {/* Footer hint */}
           <div className="flex items-center gap-1 text-[10px] text-gray-500">
             <ArrowRight className="w-3 h-3 text-blue-500" />
-            После создания откроется новая заявка
+            После создания откроется новый лид
             {defaultManager ? <> · ответственный <span className="text-gray-700">{defaultManager}</span></> : null}
           </div>
         </div>
 
         <AlertDialogFooter>
           <AlertDialogCancel>Отмена</AlertDialogCancel>
-          <AlertDialogAction onClick={() => onConfirm(newAppId)}>
+          <AlertDialogAction
+            onClick={() =>
+              onConfirm({
+                date,
+                time,
+                address,
+                note,
+              })
+            }
+          >
             <Copy className="w-3 h-3 mr-1" />
-            Создать заявку {newAppId}
+            Создать лид
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

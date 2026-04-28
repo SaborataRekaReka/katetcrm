@@ -2,6 +2,8 @@
 
 Пошаговое сравнение полей интерфейсов фронтенда (`app/frontend/src/app/types/*.ts`) и моделей БД / DTO бэкенда (`app/backend/prisma/schema.prisma`, `modules/*/dto/*.ts`). Составлено 23.04.2026 на основе Pass C.
 
+> **Обновление (27.04.2026):** документ частично устарел и ниже сохранён как исторический baseline 23.04. Ключевые закрытые расхождения: `PipelineStage.cancelled`, enum `DeliveryMode`, модели `ClientContact` / `ClientRequisites` / `Tag` / `ClientTag`, `Reservation.createdById`, синхронизированный `DepartureStatus`, поля `Departure.arrivedAt/cancelledAt/cancellationReason/deliveryNotes`, поля `Completion.completedById/completionNote/unqualifiedReason`, а также полноценные `/departures` и `/completions` контракты.
+
 ## Легенда
 
 - **✅ match** — поле совпадает по имени и типу.
@@ -69,7 +71,7 @@ API: `Application`, `ApplicationItem` в schema + `applicationsApi.ts`
 |---|---|---|---|
 | `id` | `id` | ✅ | |
 | `number` | `number` | ✅ | |
-| `stage` | `stage` | ⚠ enum-diff | UI: `application/reservation/departure/completed/cancelled`; API (PipelineStage): `application/reservation/departure/completed/unqualified`. **`cancelled` ≠ `unqualified`** |
+| `stage` | `stage` | ✅ match | `cancelled` присутствует в `PipelineStage` |
 | `leadId` | `leadId` | ✅ | |
 | `clientId` | `clientId` | ✅ | |
 | `clientName` | `client.name` | 🔁 rename | include |
@@ -82,7 +84,7 @@ API: `Application`, `ApplicationItem` в schema + `applicationsApi.ts`
 | `address` | `address` | ✅ | |
 | `comment` | `comment` | ✅ | |
 | `isUrgent` | `isUrgent` | ✅ | |
-| `deliveryMode` (`pickup`/`delivery`) | `deliveryMode` (string) | ⚠ enum-diff | в БД просто string без enum — нужно формализовать |
+| `deliveryMode` (`pickup`/`delivery`) | `deliveryMode` (`DeliveryMode`) | ✅ match | enum формализован в Prisma |
 | `nightWork` | `nightWork` | ✅ | |
 | `positions[]` | `items[]` | 🔁 rename | |
 | `createdAt` | `createdAt` | ✅ | |
@@ -114,8 +116,7 @@ API: `Application`, `ApplicationItem` в schema + `applicationsApi.ts`
 | `status` ('no_reservation'/'unit_selected'/'reserved'/'conflict') | — | 🧮 derived |
 
 **Product-решение нужно:**
-1. `Application.stage = 'cancelled'` — добавить в enum PipelineStage или убрать из UI?
-2. `Application.deliveryMode` — формализовать enum (`pickup`/`delivery`) в Prisma?
+1. Decimal-стратегия для ценовых полей (`pricePerShift`, `deliveryPrice`, `surcharge`) — единый формат в adapter-е и форме редактирования.
 
 ---
 
@@ -138,11 +139,11 @@ API: `Client` в schema.
 | `totalOrders` | — | 🧮 derived | count applications where stage in [...] |
 | `totalRevenue` | — | 🧮 derived | sum(items.pricePerShift * shiftCount + ...) |
 | `daysSinceLastOrder` | — | 🧮 derived | |
-| `tags[]` | — | ➕ schema-add | **нет модели тегов** |
-| `contacts[]` | — | ➕ schema-add | **нет модели ClientContact** |
-| `requisites` (inn/kpp/ogrn/bank*) | — | ➕ schema-add | **нет реквизитов** |
+| `tags[]` | `tags[]` через `ClientTag -> Tag` | 🔁 rename | нужна adapter-нормализация в UI-модель |
+| `contacts[]` | `contacts[]` | ✅ / 🔁 | базовые поля есть, роли/label приводятся adapter-ом |
+| `requisites` (inn/kpp/ogrn/bank*) | `requisites` | ✅ / 🔁 | схема есть, UI-объект шире и маппится adapter-ом |
 | `favoriteCategories[]` | `favoriteEquipment[]` (string[]) | 🔁 rename | UI структурно отличается (с count) |
-| `workingNotes` | — | ➕ schema-add | нет (есть только `notes`) |
+| `workingNotes` | `workingNotes` | ✅ | |
 | `comment` | `notes` | 🔁 | |
 | `leadsHistory[]` | — | 🧮 derived | include leads |
 | `ordersHistory[]` | — | 🧮 derived | include applications + nested |
@@ -152,12 +153,11 @@ API: `Client` в schema.
 
 ### Решения нужны продуктово
 
-1. **Contacts**: добавить `ClientContact { id, clientId, name, role, phone, email, isPrimary }`?
-2. **Requisites**: добавить `ClientRequisites` (одна к одному с Client)?
-3. **Tags**: добавить `ClientTag`?
-4. **FavoriteCategories**: оставить как простой `string[]` + считать `count` по applications, или сделать явный `ClientFavoriteCategory { clientId, categoryId, count, lastUsedAt }`?
+1. **FavoriteCategories**: оставить как простой `string[]` + считать `count` по applications, или сделать явный `ClientFavoriteCategory { clientId, categoryId, count, lastUsedAt }`?
+2. **History/aggregates**: зафиксировать объём и формулу полей `totalOrders`, `totalRevenue`, `daysSinceLastOrder`.
+3. **Repeat-order UX**: финально определить контракт сценария "создать лид из клиента".
 
-Без этих решений ClientWorkspace подключить к API невозможно — он рассыплется.
+Критические schema-gaps по Client закрыты на уровне Prisma; остаётся добить полный UI wiring и adapter-слой для историй/агрегатов.
 
 ---
 
@@ -170,17 +170,17 @@ API: `Reservation` в schema + `reservationsApi.ts`
 |---|---|---|
 | `id` | `id` | ✅ |
 | `status` (`active`/`released`) | `isActive` (bool) + `releasedAt` | 🧮 derived |
-| `internalStage` | `internalStage` | ⚠ enum-diff |
+| `internalStage` | `internalStage` | ✅ match |
 | `reservationType` (`equipment_type`/`specific_unit`) | — | 🧮 derived | by `equipmentUnitId` is set |
 | `equipmentType` (string) | `equipmentType.name` | 🔁 rename | include |
 | `equipmentUnit` | `equipmentUnit.name` | 🔁 rename | |
 | `source` (`own`/`subcontractor`/`undecided`) | `sourcingType` | 🔁 rename |
 | `subcontractor` | `subcontractor.name` | 🔁 rename | |
-| `reservedBy` (string ФИО) | — | ➕ schema-add / 🧮 derived | нет `createdById` поля; только в activity log |
+| `reservedBy` (string ФИО) | `createdById` + `createdBy.fullName` | 🔁 rename | поле есть в схеме, нужен include в API-проекции |
 | `reservedAt` | `createdAt` | 🔁 | |
 | `releasedAt` | `releasedAt` | ✅ |
-| `releaseReason` | `releasedReason` | 🔁 | (typo в bd: `releasedReason` vs UI `releaseReason`) |
-| `comment` | `subcontractorNote` или — | 🔁 | двусмысленно |
+| `releaseReason` | `releaseReason` | ✅ |
+| `comment` | `comment` | ✅ |
 | `lastActivity` | `updatedAt` | 🔁 |
 | `hasConflict` | `hasConflictWarning` | 🔁 |
 | `conflict` (детали) | — | 🧮 derived | detectConflict результат не возвращается вместе с сущностью |
@@ -194,20 +194,16 @@ API: `Reservation` в schema + `reservationsApi.ts`
 
 | UI | API |
 |---|---|
-| `needs_selection` | `needs_source_selection` |
+| `needs_source_selection` | `needs_source_selection` |
 | `searching_own_equipment` | `searching_own_equipment` |
 | `searching_subcontractor` | `searching_subcontractor` |
+| `subcontractor_selected` | `subcontractor_selected` |
 | `type_reserved` | `type_reserved` |
 | `unit_defined` | `unit_defined` |
 | `ready_for_departure` | `ready_for_departure` |
 | `released` | `released` |
-| — | `subcontractor_selected` (есть в API, нет в UI) |
 
-**Решение:** переименовать UI `needs_selection` → `needs_source_selection` + добавить `subcontractor_selected`.
-
-### Ещё нужно в схему
-
-- `Reservation.createdById` (string, ref User) — **bug, нужно добавить**.
+**Результат:** enum-расхождение закрыто.
 
 ---
 
@@ -216,59 +212,28 @@ API: `Reservation` в schema + `reservationsApi.ts`
 UI: `Departure` в `types/departure.ts` + `departureStatus` в Lead
 API: `Departure` в schema.
 
-### Enum полностью разный
+### Enum sync
 
-| UI `DepartureStatus` | API `DepartureStatus` |
-|---|---|
-| `planned` | `scheduled` |
-| `on_the_way` | `in_progress` |
-| `arrived` | — (нет отдельного!) |
-| `completed` | `done` |
-| `cancelled` | — (нет!) |
-| — | `overdue` (в БД статус, в UI — alert) |
+`DepartureStatus` синхронизирован между UI/API: `scheduled | in_transit | arrived | completed | cancelled`.
 
-**Решения продуктово:**
-
-Рекомендую расширить БД до:
-```prisma
-enum DepartureStatus {
-  scheduled
-  in_transit   // == on_the_way
-  arrived
-  completed
-  cancelled
-}
-```
-А `overdue` перенести в `Departure.alert` (derived).
-
-Альтернативно: упростить UI до `scheduled/in_progress/done/cancelled`, `arrived` вывести через `startedAt + finishedAt`.
-
-### Остальные поля
+### Поля
 
 | UI | API | Статус |
 |---|---|---|
 | `id` | `id` | ✅ |
-| `alert` (none/overdue_start/overdue_arrival/stale) | — | 🧮 derived |
-| `manager` (ФИО) | — | 🧮 derived | manager активной Application |
-| `createdAt`/`updatedAt`/`lastActivity` | — | 🔁 | |
-| `comment` | `notes` | 🔁 |
-| `linked.*` | — | 🧮 derived | join через reservation |
-| `plan.plannedDate` | `scheduledAt` | 🔁 |
-| `plan.plannedTimeFrom/To` | — | ➖/➕ | **в БД нет** (в ApplicationItem есть plannedTimeFrom/To) — derived через reservation.applicationItem? |
-| `plan.address` | — | 🧮 derived | через applicationItem.address |
-| `plan.contactName/Phone` | — | 🧮 derived | через client |
-| `plan.deliveryNotes` | — | ➕ schema-add | нет такого поля |
-| `fact.departedAt` | `startedAt` | 🔁 |
-| `fact.arrivedAt` | — | ➕ schema-add | нет (только `startedAt` + `finishedAt`) |
-| `fact.completedAt` | `finishedAt` | 🔁 |
-| `fact.cancelledAt` | — | ➕ schema-add | нет |
-| `fact.cancellationReason` | — | ➕ schema-add | нет |
+| `status` | `status` | ✅ |
+| `scheduledAt` | `scheduledAt` | ✅ |
+| `startedAt` | `startedAt` | ✅ |
+| `arrivedAt` | `arrivedAt` | ✅ |
+| `completedAt` | `completedAt` | ✅ |
+| `cancelledAt` | `cancelledAt` | ✅ |
+| `cancellationReason` | `cancellationReason` | ✅ |
+| `notes`/`comment` | `notes` | 🔁 rename |
+| `deliveryNotes` | `deliveryNotes` | ✅ |
+| `linked.*` | `linked.*` (projection) | ✅ / 🧮 |
+| `alert` (none/overdue_start/overdue_arrival/stale) | `derived.alert` | 🧮 derived |
 
-### Решения продуктово
-
-1. Enum DepartureStatus — см. выше.
-2. Добавить `arrivedAt`, `cancelledAt`, `cancellationReason` в `Departure`?
-3. `deliveryNotes` — добавить как отдельное поле или в `comment/notes`?
+Оставшиеся отличия по Departure — в основном UI-friendly denormalized поля (`manager`, humanized `lastActivity`) и не требуют schema-change.
 
 ---
 
@@ -280,25 +245,23 @@ API: `Completion` в schema (очень минимальная).
 | UI | API | Статус |
 |---|---|---|
 | `id` | `id` | ✅ |
-| `status` (`ready_to_complete`/`blocked`/`completed`/`unqualified`) | `outcome` (`completed`/`unqualified`) | 🧮 derived + ⚠ | `ready_to_complete` и `blocked` — derived состояние «можно ли кликнуть Завершить» |
+| `status` (`ready_to_complete`/`blocked`/`completed`/`unqualified`) | `outcome` (`completed`/`unqualified`) + `derived.status` | 🧮 derived |
 | `alert` (none/stale/missing_arrival/reservation_mismatch) | — | 🧮 derived |
 | `manager` (ФИО) | — | 🧮 derived |
 | `createdAt`/`updatedAt`/`lastActivity` | — | 🔁 (есть `completedAt`) |
-| `comment` | `reason` | 🔁 |
-| `linked.*` | — | 🧮 derived |
-| `context.plannedDate/Times/address/contacts` | — | 🧮 derived |
+| `comment` | `completionNote` | 🔁 rename |
+| `linked.*` | `linked.*` (projection) | ✅ / 🧮 |
+| `context.plannedDate/Times/address/contacts` | `context.*` (projection) | ✅ / 🧮 |
 | `context.departedAt/arrivedAt` | — | 🧮 derived | через departure |
 | `context.operationalNote` | — | ➕ schema-add | нет |
 | `fact.completedAt` | `completedAt` | ✅ |
-| `fact.completedBy` | — | ➕ schema-add | нет `completedById` ссылки |
-| `fact.completionNote` | `reason` | 🔁 |
-| `fact.unqualifiedReason` | `reason` | 🔁 | (двойная роль) |
+| `fact.completedBy` | `completedById` + `completedByName` | ✅ / 🔁 |
+| `fact.completionNote` | `completionNote` | ✅ |
+| `fact.unqualifiedReason` | `unqualifiedReason` | ✅ |
 
 ### Решения продуктово
 
-1. Добавить `completedById` (ref User)?
-2. Разделить `reason` на два поля: `completionNote` + `unqualifiedReason`?
-3. `operationalNote` — где сохраняется?
+1. `operationalNote` — где хранится и нужен ли как отдельное поле?
 
 ---
 
@@ -354,23 +317,14 @@ UI kinds (смешанные по типам detail-сущностей): `plan_c
 
 ---
 
-## Краткий список решений продуктово, которые нужны до Stage 4
+## Краткий список решений продуктово, которые остаются актуальными
 
-1. `Application.stage = 'cancelled'` — оставить ли? → **определить.**
-2. `Application.deliveryMode` enum в Prisma — **формализовать.**
-3. `Reservation.internalStage` — привести написание к одному варианту + добавить `subcontractor_selected` в UI.
-4. `Reservation.createdById` — **добавить в схему.**
-5. `Reservation.releasedReason` vs `releaseReason` — выбрать одно.
-6. `Client.contacts[]` — **добавить модель?** (если нет — убрать из UI)
-7. `Client.requisites` — **добавить модель?**
-8. `Client.tags[]` — **добавить модель?** (или генерить теги по бизнес-правилам из UI)
-9. `Client.favoriteEquipment` — оставить как string[] или сделать структуру с count?
-10. `Departure` enum — **привести к одному enum.**
-11. `Departure.arrivedAt / cancelledAt / cancellationReason / deliveryNotes` — добавить?
-12. `Completion.completedById` — добавить?
-13. `Subcontractor.rating` — добавить или убрать из UI?
-14. `ActivityAction` — оставить общий или расширить?
-15. Aggregate endpoints (`GET /stats`, расширенный `GET /activity` с фильтрами) — запланировать.
+1. `Client.favoriteEquipment` — оставить как `string[]` или делать структуру с count/lastUsed.
+2. Политика отображения `Application.stage`: как UX трактует `cancelled` vs `unqualified` в списках/фильтрах.
+3. `Subcontractor.rating` — подтверждаем поле как часть MVP или убираем из UI.
+4. `ActivityAction` — фиксируем адаптерную стратегию маппинга action -> UI-kind.
+5. Aggregate endpoints (`GET /stats`, расширенный `GET /activity` с фильтрами) — планируем отдельной итерацией.
+6. Для completion workspace: оставить primary source через departures-adapter или переключить на `/completions` list как основной источник.
 
 ---
 
@@ -379,9 +333,11 @@ UI kinds (смешанные по типам detail-сущностей): `plan_c
 По этому diff-у — в подключении без решений продуктово:
 
 1. **Auth** — подключено, DONE.
-2. **Leads list + kanban** — ✅ подключено полностью: server-side query, DnD между стадиями (native HTML5, mirror `ALLOWED_TRANSITIONS`), detail-modal `GET /leads/:id`, `POST /leads/:id/stage` (unqualify + convert-to-application), inline-edit всех persisted полей, `useEntityActivity` журнал. Остаются: server-side filters + CTA «Создать лид».
-3. **Applications detail** — ✅ header подключён: inline-edit (address/comment/requestedDate), `POST /applications/:id/cancel` из header.secondaryActions, activity журнал. Остаются: CRUD позиций (hooks уже готовы).
-4. **Reservations detail** — ✅ подключены: stage toggle, source select, subcontractorConfirmation, promisedModelOrUnit, plannedStart/End (дата + окно времени HH:MM–HH:MM), comment, release. Остаются: unit/subcontractor typeahead.
-5. **Directories list** — **100% match**. Можно подключить list прямо сейчас без каких-либо решений.
+2. **Leads list + kanban** — ✅ подключено: list/detail, DnD stage transitions, inline-edit, `POST /leads`, activity.
+3. **Applications detail** — ✅ header и базовые mutation-сценарии подключены; остаются UI-триггеры item CRUD.
+4. **Reservations detail** — ✅ подключены stage/source/update/release + create reservation from application-ready positions.
+5. **Departures** — ✅ backend + frontend API wiring подключены (list/detail + start/arrive/cancel/complete/update).
+6. **Completion** — ✅ backend + frontend API wiring подключены (create/get/update + completion flow from departure).
+7. **Directories list** — endpoint-совместимость высокая, остаётся UI wiring create/edit модалок.
 
-Всё остальное — **ждёт продуктовых решений** из списка выше (Clients schema, Departure enum, Completion endpoints).
+Крупные остатки уже не в schema-ядре, а в UI wiring и aggregate/reporting сценариях.

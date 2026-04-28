@@ -53,6 +53,7 @@ export interface LeadListParams {
   stage?: PipelineStage;
   source?: SourceChannel;
   managerId?: string;
+  clientId?: string;
   query?: string;
   scope?: 'all' | 'mine';
 }
@@ -69,6 +70,7 @@ export function createLead(body: {
   contactName: string;
   contactCompany?: string;
   contactPhone: string;
+  clientId?: string;
   source?: SourceChannel;
   equipmentTypeHint?: string;
   requestedDate?: string;

@@ -612,6 +612,7 @@ type SubForm = {
   name: string;
   specialization: string;
   region: string;
+  rating: string;
   contactPhone: string;
   contactEmail: string;
   notes: string;
@@ -622,6 +623,7 @@ const EMPTY_SUB: SubForm = {
   name: '',
   specialization: '',
   region: '',
+  rating: '',
   contactPhone: '',
   contactEmail: '',
   notes: '',
@@ -648,6 +650,7 @@ export function SubcontractorDialog({
         name: subcontractor.name,
         specialization: subcontractor.specialization ?? '',
         region: subcontractor.region ?? '',
+        rating: subcontractor.rating != null ? String(subcontractor.rating) : '',
         contactPhone: subcontractor.contactPhone ?? '',
         contactEmail: subcontractor.contactEmail ?? '',
         notes: subcontractor.notes ?? '',
@@ -672,12 +675,13 @@ export function SubcontractorDialog({
     ? form.name.trim() !== subcontractor.name.trim()
       || form.specialization !== (subcontractor.specialization ?? '')
       || form.region !== (subcontractor.region ?? '')
+      || form.rating !== (subcontractor.rating != null ? String(subcontractor.rating) : '')
       || form.contactPhone !== (subcontractor.contactPhone ?? '')
       || form.contactEmail !== (subcontractor.contactEmail ?? '')
       || form.notes !== (subcontractor.notes ?? '')
       || form.status !== subcontractor.status
     : nameValid || form.specialization !== '' || form.region !== ''
-      || form.contactPhone !== '' || form.contactEmail !== '' || form.notes !== ''
+      || form.rating !== '' || form.contactPhone !== '' || form.contactEmail !== '' || form.notes !== ''
       || form.status !== 'active';
   const canSave = nameValid && dirty && !mut.isPending;
 
@@ -691,6 +695,12 @@ export function SubcontractorDialog({
     };
     if (form.specialization.trim()) body.specialization = form.specialization.trim();
     if (form.region.trim()) body.region = form.region.trim();
+    if (form.rating.trim()) {
+      const parsed = Number(form.rating.trim());
+      if (Number.isFinite(parsed)) {
+        body.rating = Math.max(0, Math.min(5, Math.round(parsed)));
+      }
+    }
     if (form.contactPhone.trim()) body.contactPhone = form.contactPhone.trim();
     if (form.contactEmail.trim()) body.contactEmail = form.contactEmail.trim();
     if (form.notes.trim()) body.notes = form.notes.trim();
@@ -786,6 +796,21 @@ export function SubcontractorDialog({
                     value={form.region}
                     onChange={(v) => set('region', v)}
                     placeholder="Москва"
+                  />
+                }
+              />
+              <PropertyRow
+                icon={<Info className="h-3 w-3" />}
+                label="Рейтинг (0-5)"
+                value={
+                  <FieldInput
+                    type="number"
+                    min={0}
+                    max={5}
+                    step={1}
+                    value={form.rating}
+                    onChange={(v) => set('rating', v)}
+                    placeholder="4"
                   />
                 }
               />

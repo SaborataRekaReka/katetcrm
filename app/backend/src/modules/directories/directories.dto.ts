@@ -3,6 +3,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Max,
   MaxLength,
   Min,
   MinLength,
@@ -145,6 +146,12 @@ export class CreateSubcontractorDto {
   notes?: string;
 
   @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(5)
+  rating?: number;
+
+  @IsOptional()
   @IsEnum(SubcontractorStatus)
   status?: SubcontractorStatus;
 }
@@ -173,6 +180,12 @@ export class UpdateSubcontractorDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(5)
+  rating?: number;
 
   @IsOptional()
   @IsEnum(SubcontractorStatus)

@@ -1,0 +1,62 @@
+import { Body, Controller, Get, Headers, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { CurrentUser } from '../../common/current-user.decorator';
+import { JwtAuthGuard } from '../../common/jwt-auth.guard';
+import { Roles } from '../../common/roles.decorator';
+import { RolesGuard } from '../../common/roles.guard';
+import type { JwtPayload } from '../auth/jwt.strategy';
+import {
+  IntegrationEventListQueryDto,
+  ReceiveIntegrationEventDto,
+  RetryOrReplayIntegrationEventDto,
+} from './integrations.dto';
+import { IntegrationsService } from './integrations.service';
+
+@Controller('integrations')
+export class IntegrationsController {
+  constructor(private readonly integrations: IntegrationsService) {}
+
+  @Post('events/ingest')
+  ingest(
+    @Body() dto: ReceiveIntegrationEventDto,
+    @Headers('x-integration-signature') signature?: string,
+    @Headers('x-integration-timestamp') timestamp?: string,
+  ) {
+    return this.integrations.ingest(dto, { signature, timestamp });
+  }
+
+  @Get('events')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  list(@Query() query: IntegrationEventListQueryDto) {
+    return this.integrations.list(query);
+  }
+
+  @Get('events/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  getById(@Param('id') id: string) {
+    return this.integrations.getById(id);
+  }
+
+  @Post('events/:id/retry')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  retry(
+    @Param('id') id: string,
+    @Body() dto: RetryOrReplayIntegrationEventDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.integrations.retryFailedEvent(id, user.sub, dto.reason);
+  }
+
+  @Post('events/:id/replay')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  replay(
+    @Param('id') id: string,
+    @Body() dto: RetryOrReplayIntegrationEventDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.integrations.replayFailedEvent(id, user.sub, dto.reason);
+  }
+}

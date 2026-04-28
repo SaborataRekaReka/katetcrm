@@ -40,6 +40,7 @@ export interface SubcontractorApi {
   name: string;
   specialization: string | null;
   region: string | null;
+  rating: number | null;
   contactPhone: string | null;
   contactEmail: string | null;
   notes: string | null;

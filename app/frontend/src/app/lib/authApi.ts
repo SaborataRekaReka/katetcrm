@@ -34,13 +34,19 @@ export function meRequest() {
 export function persistTokens(tokens: AuthTokens) {
   localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
   localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+  window.dispatchEvent(new CustomEvent('katet:auth-changed'));
 }
 
 export function clearTokens() {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
+  window.dispatchEvent(new CustomEvent('katet:auth-changed'));
 }
 
 export function readStoredAccessToken(): string | null {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+export function readStoredRefreshToken(): string | null {
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
 }

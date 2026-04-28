@@ -18,33 +18,60 @@ NestJS + Prisma + PostgreSQL. Modular monolith per `ARCHITECTURE.md`.
    cp .env.example .env
    ```
 
-2. Подними Postgres:
-
-   ```bash
-   docker compose up -d db
-   ```
-
-3. Установи зависимости и сгенерируй Prisma client:
+2. Установи зависимости:
 
    ```bash
    npm install
-   npm run prisma:generate
    ```
 
-4. Накати миграции и сидируй:
+3. Подготовь БД, Prisma и seed (рекомендуемый путь):
 
    ```bash
-   npm run prisma:migrate
-   npm run seed
+   npm run prepare:dev
    ```
 
-5. Запусти dev-сервер:
+   Что делает `prepare:dev`:
+
+- поднимает `docker-compose` БД (если нужна);
+- если порт `5433` уже занят, пытается использовать существующий PostgreSQL из `DATABASE_URL`;
+- применяет миграции, генерирует Prisma client, выполняет seed.
+
+4. Запусти dev-сервер:
 
    ```bash
    npm run start:dev
    ```
 
    Проверь: `GET http://localhost:3001/api/v1/health` → `{ "status": "ok" }`.
+
+## Fallback runbook: порт 5433 занят
+
+1. Проверь, кто слушает порт:
+
+   ```powershell
+   Get-NetTCPConnection -LocalPort 5433 -State Listen
+   ```
+
+2. Если это ваш локальный PostgreSQL и вы хотите использовать его:
+
+- оставьте порт как есть;
+- приведите `DATABASE_URL` в `app/backend/.env` к реальным `user/password/dbname` этого инстанса;
+- снова запустите `npm run prepare:dev`.
+
+3. Если нужен именно контейнер из `docker-compose.yml`:
+
+- остановите конфликтующий процесс/инстанс на `5433`;
+- затем запустите `npm run prepare:dev`.
+
+4. Если получили `P1000` (auth failed):
+
+- проверьте пароль/пользователя в `DATABASE_URL`;
+- при необходимости пересоздайте контейнер и volume осознанно (`docker compose down -v`), затем повторите `prepare:dev`.
+
+5. Если `prisma generate` падает с `EPERM ... query_engine-windows.dll.node`:
+
+- остановите запущенные Node/Nest процессы, которые могут держать Prisma DLL;
+- повторно запустите `npm run prepare:dev`.
 
 ## Структура
 
@@ -63,27 +90,43 @@ prisma/
   seed.ts               # сид: admin + мин. справочники
 ```
 
-## Модули (дорожная карта)
+## Модули (текущее состояние)
 
-Реализовано в Stage 1:
+Реализовано и подключено:
 
 - `health` — healthcheck.
-- `auth` — каркас JWT-стратегии (без login endpoint — появится в Stage 2).
+- `auth` — JWT strategy и guard-слой.
 - `prisma` — общий сервис доступа к БД.
+- `leads`, `clients`, `activity`, `users`.
+- `applications`, `reservations`, `directories`.
+- `departures`, `completions`.
+- `integrations` — ingest/retry/replay + idempotency event log.
 
-Ожидается в Stage 2 (ТЗ §3.1–3.7):
+В работе / следующий этап:
 
-- `leads`, `clients`, `activity-log`, `users` (login/refresh), server-side RBAC.
+- `imports` (CSV/XLSX) и сценарии миграции.
+- `analytics` и aggregate-reporting endpoints.
+- Расширенные audit-фильтры на уровне API.
 
-Ожидается в Stage 3:
+## Integrations ingest auth
 
-- `applications`, `application-items`, `reservations`, `directories` (equipment-types,
-  equipment-units, subcontractors), `departures`, `completion`.
+`POST /integrations/events/ingest` требует HMAC-подпись:
 
-Post-Stage 3:
+- `x-integration-timestamp`: unix seconds или millis.
+- `x-integration-signature`: `sha256=<hex>`.
 
-- `integrations` (site/mango/telegram/max webhooks),
-  `imports` (CSV/XLSX), `analytics`.
+Подписываемая строка:
+
+```
+<timestamp>.<channel>.<stable-json-payload>
+```
+
+Секреты задаются per-channel через env-переменные:
+
+- `INTEGRATION_SITE_SECRET`
+- `INTEGRATION_MANGO_SECRET`
+- `INTEGRATION_TELEGRAM_SECRET`
+- `INTEGRATION_MAX_SECRET`
 
 ## Инварианты, которые enforced на уровне БД
 

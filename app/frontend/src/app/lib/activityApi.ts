@@ -1,24 +1,17 @@
 import { apiRequest } from './apiClient';
 
 export type ActivityAction =
-  | 'LEAD_CREATED'
-  | 'LEAD_UPDATED'
-  | 'LEAD_STAGE_CHANGED'
-  | 'LEAD_QUALIFIED'
-  | 'LEAD_UNQUALIFIED'
-  | 'APPLICATION_CREATED'
-  | 'APPLICATION_UPDATED'
-  | 'APPLICATION_CANCELLED'
-  | 'APPLICATION_ITEM_ADDED'
-  | 'APPLICATION_ITEM_UPDATED'
-  | 'APPLICATION_ITEM_REMOVED'
-  | 'RESERVATION_CREATED'
-  | 'RESERVATION_UPDATED'
-  | 'RESERVATION_RELEASED'
-  | 'RESERVATION_CONFIRMED'
-  | 'CLIENT_CREATED'
-  | 'CLIENT_UPDATED'
+  | 'created'
+  | 'updated'
+  | 'stage_changed'
+  | 'cancelled'
+  | 'completed'
+  | 'unqualified'
+  | 'imported'
+  | 'note_added'
   | string;
+
+export type ActivityModule = 'sales' | 'ops' | 'admin';
 
 export interface ActivityLogEntryApi {
   id: string;
@@ -27,8 +20,31 @@ export interface ActivityLogEntryApi {
   entityId: string;
   summary: string;
   actorId: string | null;
+  actor?: {
+    id: string;
+    fullName: string;
+    email: string;
+  } | null;
   payload: unknown;
   createdAt: string;
+}
+
+export interface ActivitySearchParams {
+  entityType?: string;
+  entityId?: string;
+  actorId?: string;
+  action?: ActivityAction;
+  module?: ActivityModule;
+  query?: string;
+  from?: string;
+  to?: string;
+  take?: number;
+  skip?: number;
+}
+
+export interface ActivitySearchResponse {
+  items: ActivityLogEntryApi[];
+  total: number;
 }
 
 export async function listActivityForEntity(
@@ -38,4 +54,23 @@ export async function listActivityForEntity(
 ): Promise<ActivityLogEntryApi[]> {
   const params = new URLSearchParams({ entityType, entityId, take: String(take) });
   return apiRequest<ActivityLogEntryApi[]>(`/activity?${params.toString()}`);
+}
+
+export async function searchActivity(
+  params: ActivitySearchParams = {},
+): Promise<ActivitySearchResponse> {
+  return apiRequest<ActivitySearchResponse>('activity/search', {
+    query: {
+      entityType: params.entityType,
+      entityId: params.entityId,
+      actorId: params.actorId,
+      action: params.action,
+      module: params.module,
+      query: params.query,
+      from: params.from,
+      to: params.to,
+      take: params.take,
+      skip: params.skip,
+    },
+  });
 }

@@ -85,9 +85,19 @@ const EMPTY_FORM: FormState = {
 
 const SOURCING_OPTIONS: { value: SourcingType; label: string }[] = [
   { value: 'undecided', label: 'Не выбран' },
-  { value: 'own_fleet', label: 'Свой парк' },
+  { value: 'own', label: 'Свой парк' },
   { value: 'subcontractor', label: 'Подрядчик' },
 ];
+
+function parseMoneyInput(value: string): { valid: boolean; normalized?: string } {
+  const raw = value.trim();
+  if (!raw) return { valid: true };
+  const normalized = raw.replace(',', '.');
+  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+    return { valid: false };
+  }
+  return { valid: true, normalized };
+}
 
 function positionToForm(pos: ApplicationPosition): FormState {
   return {
@@ -146,7 +156,11 @@ export function PositionDialog({
   const labelValid = label.length >= 1;
   const qtyValid = Number.isFinite(qty) && qty >= 1;
   const shiftsValid = Number.isFinite(shifts) && shifts >= 1;
-  const canSave = labelValid && qtyValid && shiftsValid && !mutation.isPending;
+  const priceCheck = parseMoneyInput(form.pricePerShift);
+  const deliveryCheck = parseMoneyInput(form.deliveryPrice);
+  const surchargeCheck = parseMoneyInput(form.surcharge);
+  const moneyValid = priceCheck.valid && deliveryCheck.valid && surchargeCheck.valid;
+  const canSave = labelValid && qtyValid && shiftsValid && moneyValid && !mutation.isPending;
 
   const typeOptions = useMemo(
     () => [
@@ -189,9 +203,9 @@ export function PositionDialog({
     if (form.plannedTimeTo) body.plannedTimeTo = form.plannedTimeTo;
     if (form.address.trim()) body.address = form.address.trim();
     if (form.comment.trim()) body.comment = form.comment.trim();
-    if (form.pricePerShift.trim()) body.pricePerShift = form.pricePerShift.trim();
-    if (form.deliveryPrice.trim()) body.deliveryPrice = form.deliveryPrice.trim();
-    if (form.surcharge.trim()) body.surcharge = form.surcharge.trim();
+    if (priceCheck.normalized) body.pricePerShift = priceCheck.normalized;
+    if (deliveryCheck.normalized) body.deliveryPrice = deliveryCheck.normalized;
+    if (surchargeCheck.normalized) body.surcharge = surchargeCheck.normalized;
     return body;
   };
 
@@ -392,8 +406,12 @@ export function PositionDialog({
                 value={
                   <FieldInput
                     value={form.pricePerShift}
-                    onChange={(v) => set('pricePerShift', v)}
+                    onChange={(v) => {
+                      set('pricePerShift', v);
+                      setTouched(true);
+                    }}
                     placeholder="20000"
+                    invalid={touched && !priceCheck.valid}
                   />
                 }
               />
@@ -403,8 +421,12 @@ export function PositionDialog({
                 value={
                   <FieldInput
                     value={form.deliveryPrice}
-                    onChange={(v) => set('deliveryPrice', v)}
+                    onChange={(v) => {
+                      set('deliveryPrice', v);
+                      setTouched(true);
+                    }}
                     placeholder="5000"
+                    invalid={touched && !deliveryCheck.valid}
                   />
                 }
               />
@@ -414,12 +436,21 @@ export function PositionDialog({
                 value={
                   <FieldInput
                     value={form.surcharge}
-                    onChange={(v) => set('surcharge', v)}
+                    onChange={(v) => {
+                      set('surcharge', v);
+                      setTouched(true);
+                    }}
                     placeholder="0"
+                    invalid={touched && !surchargeCheck.valid}
                   />
                 }
               />
             </EntityMetaGrid>
+            {!moneyValid && touched ? (
+              <div className="text-[11px] text-rose-600">
+                Используйте формат суммы `12345` или `12345.67`.
+              </div>
+            ) : null}
           </EntitySection>
 
           <EntitySection title="Комментарий">

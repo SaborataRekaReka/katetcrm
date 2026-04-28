@@ -14,6 +14,7 @@ import { useClientsQuery } from '../../hooks/useClientsQuery';
 import { toClientsListItems } from '../../lib/clientAdapter';
 import { useRegisterPrimaryCta } from '../shell/primaryCtaStore';
 import { NewClientDialog } from './NewClientDialog';
+import { saveViewSnapshot } from '../../lib/viewSnapshots';
 
 /**
  * Clients = one entity module with saved views (ClickUp pattern):
@@ -114,10 +115,20 @@ export function ClientsWorkspacePage() {
     setQuery('');
   };
 
+  const handleSaveView = () => {
+    void saveViewSnapshot({
+      moduleId: activeSecondaryNav,
+      view: effectiveView,
+      query,
+      filters,
+      preset,
+    });
+  };
+
   const managers = Array.from(new Set(sourceRows.map((c) => c.manager))).sort();
 
   const toolbar = (
-    <SimpleToolbar
+      <SimpleToolbar
       searchPlaceholder={meta.searchPlaceholder}
       query={query}
       onQueryChange={setQuery}
@@ -146,10 +157,10 @@ export function ClientsWorkspacePage() {
           onChange: (v) => setFilters((p) => ({ ...p, type: v as Filters['type'] })),
         },
       ]}
-      hasActive={hasActive}
-      onReset={reset}
-      onSaveView={() => {}}
-    />
+        hasActive={hasActive}
+        onReset={reset}
+        onSaveView={handleSaveView}
+      />
   );
 
   return (

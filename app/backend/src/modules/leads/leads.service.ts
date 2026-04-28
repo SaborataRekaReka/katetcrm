@@ -45,6 +45,7 @@ export class LeadsService {
     const where: Prisma.LeadWhereInput = {};
     if (params.stage) where.stage = params.stage;
     if (params.source) where.source = params.source;
+    if (params.clientId) where.clientId = params.clientId;
     // manager сам фильтрует "мои" через scope; admin видит всё.
     if (actor.role === 'manager' && params.scope !== 'all') {
       where.managerId = actor.id;
@@ -213,6 +214,58 @@ export class LeadsService {
         });
       }
 
+      // Автосоздание Departure при reservation→departure по всем активным броням
+      // этого лида (если у конкретной брони ещё нет активного выезда).
+      if (existing.stage === 'reservation' && dto.stage === 'departure') {
+        const apps = await tx.application.findMany({
+          where: { leadId: id, isActive: true },
+          select: { id: true },
+        });
+        if (apps.length > 0) {
+          const appIds = apps.map((a) => a.id);
+          const reservations = await tx.reservation.findMany({
+            where: {
+              isActive: true,
+              applicationItem: { applicationId: { in: appIds } },
+            },
+            select: {
+              id: true,
+              plannedStart: true,
+              comment: true,
+              departures: {
+                where: { status: { in: ['scheduled', 'in_transit', 'arrived'] } },
+                select: { id: true },
+                take: 1,
+              },
+            },
+          });
+          for (const r of reservations) {
+            if (r.departures.length > 0) continue;
+            const dep = await tx.departure.create({
+              data: {
+                reservationId: r.id,
+                scheduledAt: r.plannedStart,
+                notes: r.comment,
+                status: 'scheduled',
+              },
+            });
+            await tx.activityLogEntry.create({
+              data: {
+                action: 'created',
+                entityType: 'departure',
+                entityId: dep.id,
+                summary: 'Departure auto-created from lead transition to departure',
+                actorId: actor.id,
+                payload: {
+                  leadId: id,
+                  reservationId: r.id,
+                },
+              },
+            });
+          }
+        }
+      }
+
       // Автоснятие активных броней при completed/unqualified (ТЗ §3.3)
       if (dto.stage === 'completed' || dto.stage === 'unqualified') {
         const apps = await tx.application.findMany({
@@ -237,7 +290,8 @@ export class LeadsService {
                 isActive: false,
                 completedAt: dto.stage === 'completed' ? new Date() : null,
                 cancelledAt: dto.stage === 'unqualified' ? new Date() : null,
-                stage: dto.stage === 'completed' ? 'completed' : 'unqualified',
+                // Application domain keeps terminal states as completed/cancelled.
+                stage: dto.stage === 'completed' ? 'completed' : 'cancelled',
               },
             });
           }

@@ -70,7 +70,7 @@ function RouteOutlet() {
     'view-active-reservations',
     'view-manager-load',
   ]);
-  const ADMIN_IDS = new Set(['imports', 'settings', 'users', 'permissions']);
+  const ADMIN_IDS = new Set(['imports', 'integrations', 'settings', 'users', 'permissions']);
 
   if (LEADS_IDS.has(activeSecondaryNav)) return <LeadsKanbanPage />;
   if (APPLICATIONS_IDS.has(activeSecondaryNav)) return <ApplicationsWorkspacePage />;

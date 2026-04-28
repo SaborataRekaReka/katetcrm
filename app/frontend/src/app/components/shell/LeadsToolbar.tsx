@@ -26,15 +26,25 @@ interface LeadsToolbarProps {
   onFiltersChange?: (next: LeadsFiltersState) => void;
   query?: string;
   onQueryChange?: (q: string) => void;
+  onSaveView?: () => void;
+  managerOptions?: { value: string; label: string }[];
   /** Show a stage filter (used in table view for funnel context). */
   showStageFilter?: boolean;
 }
+
+const DEFAULT_MANAGER_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Петров А.', label: 'Петров А.' },
+  { value: 'Сидоров Б.', label: 'Сидоров Б.' },
+  { value: 'Иванова С.', label: 'Иванова С.' },
+];
 
 export function LeadsToolbar({
   filters: filtersProp,
   onFiltersChange,
   query: queryProp,
   onQueryChange,
+  onSaveView,
+  managerOptions,
   showStageFilter,
 }: LeadsToolbarProps = {}) {
   const { activeSecondaryNav } = useLayout();
@@ -45,6 +55,7 @@ export function LeadsToolbar({
 
   const filters = filtersProp ?? localFilters;
   const query = queryProp ?? localQuery;
+  const effectiveManagerOptions = managerOptions ?? DEFAULT_MANAGER_OPTIONS;
 
   const updateFilters = (next: LeadsFiltersState) => {
     if (onFiltersChange) onFiltersChange(next);
@@ -79,6 +90,7 @@ export function LeadsToolbar({
       <div className="relative w-[220px] shrink-0">
         <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
+          data-crm-search-input="true"
           value={query}
           onChange={(e) => updateQuery(e.target.value)}
           placeholder={meta.searchPlaceholder}
@@ -102,9 +114,11 @@ export function LeadsToolbar({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Все менеджеры</SelectItem>
-          <SelectItem value="Петров А.">Петров А.</SelectItem>
-          <SelectItem value="Сидоров Б.">Сидоров Б.</SelectItem>
-          <SelectItem value="Иванова С.">Иванова С.</SelectItem>
+          {effectiveManagerOptions.map((manager) => (
+            <SelectItem key={manager.value} value={manager.value}>
+              {manager.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 
@@ -178,22 +192,32 @@ export function LeadsToolbar({
             onClick={reset}
           />
         )}
-        <ToolbarUtilityButton
-          label="Сохранить вид"
-          icon={<Bookmark className="h-3.5 w-3.5" />}
-          iconOnlyOnNarrow
-        />
+        {onSaveView ? (
+          <ToolbarUtilityButton
+            label="Сохранить вид"
+            icon={<Bookmark className="h-3.5 w-3.5" />}
+            iconOnlyOnNarrow
+            onClick={onSaveView}
+          />
+        ) : null}
       </div>
     </div>
   );
 }
 
 /** Filter a Lead list using the shared LeadsFiltersState + free-text query. */
-export function applyLeadsFilters(leads: Lead[], filters: LeadsFiltersState, query: string): Lead[] {
+export function applyLeadsFilters(
+  leads: Lead[],
+  filters: LeadsFiltersState,
+  query: string,
+  options: { skipManagerFilter?: boolean } = {},
+): Lead[] {
   const q = query.trim().toLowerCase();
+  const skipManagerFilter = options.skipManagerFilter ?? false;
+
   return leads.filter((l) => {
     if (filters.stage !== 'all' && l.stage !== filters.stage) return false;
-    if (filters.manager !== 'all' && l.manager !== filters.manager) return false;
+    if (!skipManagerFilter && filters.manager !== 'all' && l.manager !== filters.manager) return false;
     if (filters.source !== 'all' && (l.sourceChannel ?? '') !== filters.source) return false;
     if (filters.equipment !== 'all' && !(l.equipmentType || '').toLowerCase().includes(filters.equipment.toLowerCase())) return false;
     if (filters.urgent && !l.isUrgent) return false;

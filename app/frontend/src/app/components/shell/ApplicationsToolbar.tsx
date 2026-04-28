@@ -28,6 +28,7 @@ interface ApplicationsToolbarProps {
   onFiltersChange?: (next: ApplicationsFiltersState) => void;
   query?: string;
   onQueryChange?: (q: string) => void;
+  onSaveView?: () => void;
 }
 
 export function ApplicationsToolbar({
@@ -35,6 +36,7 @@ export function ApplicationsToolbar({
   onFiltersChange,
   query: queryProp,
   onQueryChange,
+  onSaveView,
 }: ApplicationsToolbarProps) {
   const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
@@ -81,6 +83,7 @@ export function ApplicationsToolbar({
       <div className="relative w-[220px] shrink-0">
         <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
+          data-crm-search-input="true"
           value={query}
           onChange={(e) => updateQuery(e.target.value)}
           placeholder={meta.searchPlaceholder}
@@ -190,11 +193,14 @@ export function ApplicationsToolbar({
             onClick={reset}
           />
         )}
-        <ToolbarUtilityButton
-          label="Сохранить вид"
-          icon={<Bookmark className="h-3.5 w-3.5" />}
-          iconOnlyOnNarrow
-        />
+        {onSaveView ? (
+          <ToolbarUtilityButton
+            label="Сохранить вид"
+            icon={<Bookmark className="h-3.5 w-3.5" />}
+            iconOnlyOnNarrow
+            onClick={onSaveView}
+          />
+        ) : null}
       </div>
     </div>
   );

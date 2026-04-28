@@ -10,10 +10,29 @@ export function SecondarySidebar() {
     setSidebarExpanded,
     activePrimaryNav,
     activeSecondaryNav,
+    setActivePrimaryNav,
     setActiveSecondaryNav,
   } = useLayout();
 
   const domain = getDomainConfig(activePrimaryNav);
+
+  const focusWorkspaceSearch = () => {
+    if (typeof document === 'undefined') return;
+    const input = document.querySelector<HTMLInputElement>('[data-crm-search-input="true"]');
+    if (!input) {
+      setActivePrimaryNav('sales');
+      setActiveSecondaryNav('leads');
+      window.setTimeout(() => {
+        const fallbackInput = document.querySelector<HTMLInputElement>('[data-crm-search-input="true"]');
+        if (!fallbackInput) return;
+        fallbackInput.focus();
+        fallbackInput.select();
+      }, 0);
+      return;
+    }
+    input.focus();
+    input.select();
+  };
 
   return (
     <aside
@@ -36,7 +55,11 @@ export function SecondarySidebar() {
             </h2>
           </div>
           <div className="flex shrink-0 items-center gap-0.5">
-            <SidebarUtilityButton icon={Search} label="Поиск по меню" />
+            <SidebarUtilityButton
+              icon={Search}
+              label="Поиск по меню"
+              onClick={focusWorkspaceSearch}
+            />
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
@@ -94,10 +117,15 @@ export function SecondarySidebar() {
 }
 
 function SidebarFooter() {
+  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   return (
     <div className="shrink-0 px-2 pb-2 pt-2">
       <button
         type="button"
+        onClick={() => {
+          setActivePrimaryNav('home');
+          setActiveSecondaryNav('my-tasks');
+        }}
         className={cn(
           'flex h-7 w-full items-center gap-1.5 rounded-md px-2 text-[12px] font-medium',
           'bg-[var(--shell-footer-bg)] text-foreground/80',
@@ -115,15 +143,18 @@ function SidebarFooter() {
 function SidebarUtilityButton({
   icon: Icon,
   label,
+  onClick,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
+  onClick: () => void;
 }) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
         <button
           type="button"
+          onClick={onClick}
           className="flex h-6 w-6 items-center justify-center rounded text-muted-foreground opacity-0 transition-opacity hover:bg-accent/70 hover:text-foreground group-hover:opacity-100"
           aria-label={label}
         >

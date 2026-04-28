@@ -93,6 +93,11 @@ Mandatory:
    - status chip (non-action)
 3. Keep next-step hint aligned with primary CTA semantics.
 4. Keep client linking behavior consistent across detail types.
+5. Shell coverage policy:
+   - Entity detail workspaces must render via `DetailShell`.
+   - API-specific detail implementations (`*WorkspaceApi.tsx`) must also render via `DetailShell`.
+   - Full-screen create/edit forms must render via `ShellDialog` from `ShellFormPrimitives`.
+   - Small confirm/alert dialogs are allowed to use lightweight local `Dialog` wrappers.
 
 ## 9. State handling standards
 

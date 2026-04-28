@@ -82,6 +82,23 @@ export class ClientsService {
             },
           },
         },
+        contacts: {
+          orderBy: [{ isPrimary: 'desc' }, { createdAt: 'asc' }],
+        },
+        requisites: true,
+        tags: {
+          orderBy: { assignedAt: 'desc' },
+          include: {
+            tag: {
+              select: {
+                id: true,
+                label: true,
+                tone: true,
+                isSystem: true,
+              },
+            },
+          },
+        },
       },
     });
     if (!c) throw new NotFoundException('Клиент не найден');
@@ -122,16 +139,89 @@ export class ClientsService {
   }
 
   async update(id: string, dto: UpdateClientDto, actorId: string | null) {
-    await this.get(id);
-    const updated = await this.prisma.client.update({
+    const existing = await this.prisma.client.findUnique({
       where: { id },
-      data: {
-        ...dto,
-        phoneNormalized: dto.phone !== undefined ? normalizePhone(dto.phone) : undefined,
-        companyNormalized:
-          dto.company !== undefined ? (dto.company ? normalizeCompany(dto.company) : null) : undefined,
-      },
+      select: { id: true },
     });
+    if (!existing) throw new NotFoundException('Клиент не найден');
+
+    const { contacts, requisites, ...clientPatch } = dto;
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.client.update({
+        where: { id },
+        data: {
+          ...clientPatch,
+          phoneNormalized:
+            clientPatch.phone !== undefined
+              ? normalizePhone(clientPatch.phone)
+              : undefined,
+          companyNormalized:
+            clientPatch.company !== undefined
+              ? (clientPatch.company ? normalizeCompany(clientPatch.company) : null)
+              : undefined,
+        },
+      });
+
+      if (contacts !== undefined) {
+        const normalizedContacts = contacts
+          .map((contact) => ({
+            name: contact.name.trim(),
+            role: contact.role?.trim() || null,
+            phone: contact.phone?.trim() || null,
+            email: contact.email?.trim() || null,
+            isPrimary: contact.isPrimary ?? false,
+          }))
+          .filter((contact) => contact.name.length > 0);
+
+        const hasPrimaryContact = normalizedContacts.some((contact) => contact.isPrimary);
+        const contactsForCreate = normalizedContacts.map((contact, index) => ({
+          clientId: id,
+          name: contact.name,
+          role: contact.role,
+          phone: contact.phone,
+          email: contact.email,
+          isPrimary: hasPrimaryContact ? contact.isPrimary : index === 0,
+        }));
+
+        await tx.clientContact.deleteMany({ where: { clientId: id } });
+        if (contactsForCreate.length > 0) {
+          await tx.clientContact.createMany({ data: contactsForCreate });
+        }
+      }
+
+      if (requisites !== undefined) {
+        const requisitesPatch = {
+          inn: requisites.inn?.trim() || null,
+          kpp: requisites.kpp?.trim() || null,
+          ogrn: requisites.ogrn?.trim() || null,
+          legalAddress: requisites.legalAddress?.trim() || null,
+          bankName: requisites.bankName?.trim() || null,
+          bankAccount: requisites.bankAccount?.trim() || null,
+          correspondentAccount: requisites.correspondentAccount?.trim() || null,
+          bik: requisites.bik?.trim() || null,
+        };
+
+        const hasAnyRequisitesValue = Object.values(requisitesPatch).some(
+          (value) => value !== null,
+        );
+
+        if (hasAnyRequisitesValue) {
+          await tx.clientRequisites.upsert({
+            where: { clientId: id },
+            update: requisitesPatch,
+            create: {
+              clientId: id,
+              ...requisitesPatch,
+            },
+          });
+        } else {
+          await tx.clientRequisites.deleteMany({ where: { clientId: id } });
+        }
+      }
+    });
+
+    const updated = await this.get(id);
     await this.activity.log({
       action: 'updated',
       entityType: 'client',

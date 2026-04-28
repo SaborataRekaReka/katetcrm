@@ -1,23 +1,14 @@
 import type { ActivityLogEntryApi } from '../lib/activityApi';
 
 const ACTION_LABELS: Record<string, string> = {
-  LEAD_CREATED: 'создал(а) лид',
-  LEAD_UPDATED: 'изменил(а) лид',
-  LEAD_STAGE_CHANGED: 'сменил(а) стадию',
-  LEAD_QUALIFIED: 'перевёл(ла) в заявку',
-  LEAD_UNQUALIFIED: 'пометил(а) некачественным',
-  APPLICATION_CREATED: 'создал(а) заявку',
-  APPLICATION_UPDATED: 'изменил(а) заявку',
-  APPLICATION_CANCELLED: 'отменил(а) заявку',
-  APPLICATION_ITEM_ADDED: 'добавил(а) позицию',
-  APPLICATION_ITEM_UPDATED: 'изменил(а) позицию',
-  APPLICATION_ITEM_REMOVED: 'удалил(а) позицию',
-  RESERVATION_CREATED: 'создал(а) бронь',
-  RESERVATION_UPDATED: 'изменил(а) бронь',
-  RESERVATION_RELEASED: 'снял(а) бронь',
-  RESERVATION_CONFIRMED: 'подтвердил(а) бронь',
-  CLIENT_CREATED: 'создал(а) клиента',
-  CLIENT_UPDATED: 'изменил(а) клиента',
+  created: 'создано',
+  updated: 'обновлено',
+  stage_changed: 'изменена стадия',
+  cancelled: 'отменено',
+  completed: 'завершено',
+  unqualified: 'помечено как некачественное',
+  imported: 'импортировано',
+  note_added: 'добавлена заметка',
 };
 
 function formatRelativeTime(iso: string): string {
@@ -43,8 +34,8 @@ export interface MappedActivityEntry {
 export function mapActivityEntries(entries: ActivityLogEntryApi[]): MappedActivityEntry[] {
   return entries.map((e) => ({
     id: e.id,
-    actor: ACTION_LABELS[e.action] ?? e.action,
-    text: e.summary,
+    actor: e.actor?.fullName ?? 'Система',
+    text: ACTION_LABELS[e.action] ? `${ACTION_LABELS[e.action]} · ${e.summary}` : e.summary,
     time: formatRelativeTime(e.createdAt),
   }));
 }

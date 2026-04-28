@@ -27,6 +27,7 @@ import {
 import { Lead } from '../../types/kanban';
 import { Departure, DepartureStatus } from '../../types/departure';
 import { buildMockDeparture } from '../../data/mockDeparture';
+import { USE_API } from '../../lib/featureFlags';
 import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -55,11 +56,14 @@ import {
 } from '../detail/DetailShell';
 import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
 import { PhoneLink } from '../detail/ContactAtoms';
+import { useLayout } from '../shell/layoutStore';
+import { DepartureWorkspaceApi } from './DepartureWorkspaceApi';
 
 interface Props {
   lead: Lead;
   onClose: () => void;
   onOpenClient?: (lead: Lead) => void;
+  apiDepartureId?: string;
 }
 
 const statusLabel: Record<DepartureStatus, string> = {
@@ -102,7 +106,19 @@ function fmt(value?: string) {
   return value ?? '—';
 }
 
-export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
+export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId }: Props) {
+  if (USE_API && apiDepartureId) {
+    return (
+      <DepartureWorkspaceApi
+        departureId={apiDepartureId}
+        lead={lead}
+        onClose={onClose}
+        onOpenClient={onOpenClient}
+      />
+    );
+  }
+
+  const { setActiveSecondaryNav } = useLayout();
   const base: Departure = useMemo(() => buildMockDeparture(lead), [lead]);
 
   // Local operational state — single source of truth for manual fact tracking
@@ -180,6 +196,11 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
 
   const plan = base.plan;
   const linked = base.linked;
+
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
 
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
@@ -346,18 +367,26 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
             icon={<FileText className="w-3 h-3" />}
             label="Бронь"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('reservations')}
+              >
                 {linked.reservationTitle}
-              </span>
+              </button>
             }
           />
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="Заявка"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('applications')}
+              >
                 {linked.applicationTitle}
-              </span>
+              </button>
             }
           />
           <PropertyRow
@@ -410,7 +439,11 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1.5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">План выезда</div>
-          <button className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline"
+            onClick={() => openSecondary('reservations')}
+          >
             <ExternalLink className="w-3 h-3" /> Открыть бронь
           </button>
         </div>
@@ -560,11 +593,23 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
 
       {/* Quick link actions — ordered by process hierarchy; "Дублировать выезд" moved to sidebar overflow */}
       <div className="space-y-0.5 mb-6">
-        <ActionButton icon={<ExternalLink className="w-3.5 h-3.5" />} label="Открыть бронь" />
-        <ActionButton icon={<FileText className="w-3.5 h-3.5" />} label="Открыть заявку" />
+        <ActionButton
+          icon={<ExternalLink className="w-3.5 h-3.5" />}
+          label="Открыть бронь"
+          onClick={() => openSecondary('reservations')}
+        />
+        <ActionButton
+          icon={<FileText className="w-3.5 h-3.5" />}
+          label="Открыть заявку"
+          onClick={() => openSecondary('applications')}
+        />
         <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(lead)} />
         {linked.leadTitle && (
-          <ActionButton icon={<UserPlus className="w-3.5 h-3.5" />} label="Открыть лид" />
+          <ActionButton
+            icon={<UserPlus className="w-3.5 h-3.5" />}
+            label="Открыть лид"
+            onClick={() => openSecondary('leads')}
+          />
         )}
       </div>
 
@@ -731,17 +776,25 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
         <SidebarField
           label="Бронь"
           value={
-            <span className="text-blue-600 hover:underline cursor-pointer">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('reservations')}
+            >
               {linked.reservationTitle}
-            </span>
+            </button>
           }
         />
         <SidebarField
           label="Заявка"
           value={
-            <span className="text-blue-600 hover:underline cursor-pointer">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('applications')}
+            >
               {linked.applicationTitle}
-            </span>
+            </button>
           }
         />
         <SidebarField
@@ -756,9 +809,13 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
           <SidebarField
             label="Лид"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('leads')}
+              >
                 {linked.leadTitle}
-              </span>
+              </button>
             }
           />
         )}
@@ -819,6 +876,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient }: Props) {
             size="sm"
             variant="outline"
             className="h-6 w-full justify-start text-[11px] text-gray-500"
+            onClick={() => openSecondary('applications')}
           >
             <Copy className="w-3 h-3 mr-1" /> Дублировать выезд
           </Button>

@@ -34,6 +34,13 @@ export interface ReservationDerivedState {
   reason: string | null;
 }
 
+export interface ReservationConflictView {
+  id: string;
+  summary: string;
+  conflictingReservationId: string;
+  conflictingAt: string;
+}
+
 export interface ReservationView {
   id: string;
   applicationItemId: string;
@@ -43,6 +50,8 @@ export interface ReservationView {
   clientName: string | null;
   clientCompany: string | null;
   clientPhone: string | null;
+  reservedById: string | null;
+  reservedByName: string | null;
   responsibleManagerId: string | null;
   responsibleManagerName: string | null;
   positionLabel: string;
@@ -60,6 +69,7 @@ export interface ReservationView {
   plannedStart: string;
   plannedEnd: string;
   hasConflict: boolean;
+  conflict: ReservationConflictView | null;
   readyForDeparture: boolean;
   subcontractorConfirmation: string;
   promisedModelOrUnit: string | null;
@@ -94,11 +104,16 @@ type WithIncludes = Prisma.ReservationGetPayload<{
         };
       };
     };
+    createdBy: { select: { id: true; fullName: true } };
     equipmentType: { select: { id: true; name: true } };
     equipmentUnit: { select: { id: true; name: true } };
     subcontractor: { select: { id: true; name: true } };
   };
 }>;
+
+type ReservationProjectionInput = WithIncludes & {
+  conflictContext?: ReservationConflictView | null;
+};
 
 function toSource(
   sourcingType: SourcingType,
@@ -195,14 +210,21 @@ export function deriveReservationState(input: {
   };
 }
 
-export function projectReservation(r: WithIncludes): ReservationView {
+export function projectReservation(r: ReservationProjectionInput): ReservationView {
   const status: ReservationUiStatus = r.isActive ? 'active' : 'released';
   const source = toSource(r.sourcingType, r.internalStage);
   const hasConflict = r.hasConflictWarning;
+  const conflict = r.conflictContext ?? null;
   const readyForDeparture = r.internalStage === 'ready_for_departure';
   const equipmentTypeLabel = r.equipmentType?.name ?? r.applicationItem?.equipmentTypeLabel ?? null;
   const equipmentUnitLabel = r.equipmentUnit?.name ?? null;
   const subcontractorLabel = r.subcontractor?.name ?? null;
+  const reservedById =
+    r.createdBy?.id ?? r.applicationItem?.application?.responsibleManager?.id ?? null;
+  const reservedByName =
+    r.createdBy?.fullName ??
+    r.applicationItem?.application?.responsibleManager?.fullName ??
+    null;
 
   const derived = deriveReservationState({
     status,
@@ -222,6 +244,8 @@ export function projectReservation(r: WithIncludes): ReservationView {
     clientName: r.applicationItem?.application?.client?.name ?? null,
     clientCompany: r.applicationItem?.application?.client?.company ?? null,
     clientPhone: r.applicationItem?.application?.client?.phone ?? null,
+    reservedById,
+    reservedByName,
     responsibleManagerId: r.applicationItem?.application?.responsibleManager?.id ?? null,
     responsibleManagerName:
       r.applicationItem?.application?.responsibleManager?.fullName ?? null,
@@ -239,6 +263,7 @@ export function projectReservation(r: WithIncludes): ReservationView {
     plannedStart: r.plannedStart.toISOString(),
     plannedEnd: r.plannedEnd.toISOString(),
     hasConflict,
+    conflict,
     readyForDeparture,
     subcontractorConfirmation: r.subcontractorConfirmation,
     promisedModelOrUnit: r.promisedModelOrUnit,

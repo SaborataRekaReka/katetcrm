@@ -28,6 +28,7 @@ import {
 import { Lead } from '../../types/kanban';
 import { Completion, CompletionStatus } from '../../types/completion';
 import { buildMockCompletion } from '../../data/mockCompletion';
+import { USE_API } from '../../lib/featureFlags';
 import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -56,11 +57,15 @@ import {
 } from '../detail/DetailShell';
 import { EntityModalHeader, EntitySection, type EntityModalAction } from '../detail/EntityModalFramework';
 import { PhoneLink } from '../detail/ContactAtoms';
+import { useLayout } from '../shell/layoutStore';
+import { CompletionWorkspaceApi } from './CompletionWorkspaceApi';
 
 interface Props {
   lead: Lead;
   onClose: () => void;
   onOpenClient?: (lead: Lead) => void;
+  apiCompletionId?: string;
+  apiDepartureId?: string;
 }
 
 const statusLabel: Record<CompletionStatus, string> = {
@@ -104,7 +109,26 @@ function nowStamp() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
+export function CompletionWorkspace({
+  lead,
+  onClose,
+  onOpenClient,
+  apiCompletionId,
+  apiDepartureId,
+}: Props) {
+  if (USE_API && (apiCompletionId || apiDepartureId)) {
+    return (
+      <CompletionWorkspaceApi
+        lead={lead}
+        completionId={apiCompletionId}
+        departureId={apiDepartureId}
+        onClose={onClose}
+        onOpenClient={onOpenClient}
+      />
+    );
+  }
+
+  const { setActiveSecondaryNav } = useLayout();
   const base: Completion = useMemo(() => buildMockCompletion(lead), [lead]);
 
   const [status, setStatus] = useState<CompletionStatus>(base.status);
@@ -118,6 +142,11 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
 
   const linked = base.linked;
   const ctx = base.context;
+
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
 
   // Readiness checks
   const readinessChecks: { label: string; ok: boolean; hint?: string }[] = [
@@ -214,6 +243,7 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
           {
             label: 'Открыть выезд',
             iconBefore: <ExternalLink className="w-3 h-3" />,
+            onClick: () => openSecondary('departures'),
           },
           ...(!isFinal
             ? [
@@ -222,7 +252,7 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
                   render: (
                     <AlertDialog open={unqualifyOpen} onOpenChange={setUnqualifyOpen}>
                       <AlertDialogTrigger asChild>
-                        <Button size="sm" variant="outline" className="h-7 text-[11px]">
+                        <Button size="sm" variant="outline" className="h-7 text-[11px]" onClick={() => setUnqualifyOpen(true)}>
                           Пометить некачественным
                         </Button>
                       </AlertDialogTrigger>
@@ -353,27 +383,39 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
             icon={<Truck className="w-3 h-3" />}
             label="Выезд"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('departures')}
+              >
                 {linked.departureTitle}
-              </span>
+              </button>
             }
           />
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="Бронь"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('reservations')}
+              >
                 {linked.reservationTitle}
-              </span>
+              </button>
             }
           />
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="Заявка"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('applications')}
+              >
                 {linked.applicationTitle}
-              </span>
+              </button>
             }
           />
           <PropertyRow
@@ -426,7 +468,11 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1.5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Контекст выезда</div>
-          <button className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline"
+            onClick={() => openSecondary('departures')}
+          >
             <ExternalLink className="w-3 h-3" /> Открыть выезд
           </button>
         </div>
@@ -646,12 +692,28 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
           client card and repeat order; "Открыть лид" is moved to sidebar only. */}
       <div className="mb-6">
         <div className="space-y-0.5">
-          <ActionButton icon={<ExternalLink className="w-3.5 h-3.5" />} label="Открыть выезд" />
-          <ActionButton icon={<FileText className="w-3.5 h-3.5" />} label="Открыть бронь" />
-          <ActionButton icon={<FileText className="w-3.5 h-3.5" />} label="Открыть заявку" />
+          <ActionButton
+            icon={<ExternalLink className="w-3.5 h-3.5" />}
+            label="Открыть выезд"
+            onClick={() => openSecondary('departures')}
+          />
+          <ActionButton
+            icon={<FileText className="w-3.5 h-3.5" />}
+            label="Открыть бронь"
+            onClick={() => openSecondary('reservations')}
+          />
+          <ActionButton
+            icon={<FileText className="w-3.5 h-3.5" />}
+            label="Открыть заявку"
+            onClick={() => openSecondary('applications')}
+          />
           <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(lead)} />
           {!isCompleted && linked.leadTitle && (
-            <ActionButton icon={<UserPlus className="w-3.5 h-3.5" />} label="Открыть лид" />
+            <ActionButton
+              icon={<UserPlus className="w-3.5 h-3.5" />}
+              label="Открыть лид"
+              onClick={() => openSecondary('leads')}
+            />
           )}
         </div>
         {/* Next-step business actions after completion: repeat order pairs with client context */}
@@ -665,7 +727,11 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
               Заказ клиента закрыт — можно сразу запустить повтор или вернуться в карточку клиента.
             </div>
             <div className="flex items-center gap-1.5">
-              <Button size="sm" className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]">
+              <Button
+                size="sm"
+                className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
+                onClick={() => (onOpenClient ? onOpenClient(lead) : openSecondary('clients'))}
+              >
                 <Copy className="w-3 h-3" />
                 Создать повторный заказ
               </Button>
@@ -801,25 +867,37 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
         <SidebarField
           label="Выезд"
           value={
-            <span className="text-blue-600 hover:underline cursor-pointer">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('departures')}
+            >
               {linked.departureTitle}
-            </span>
+            </button>
           }
         />
         <SidebarField
           label="Бронь"
           value={
-            <span className="text-blue-600 hover:underline cursor-pointer">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('reservations')}
+            >
               {linked.reservationTitle}
-            </span>
+            </button>
           }
         />
         <SidebarField
           label="Заявка"
           value={
-            <span className="text-blue-600 hover:underline cursor-pointer">
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('applications')}
+            >
               {linked.applicationTitle}
-            </span>
+            </button>
           }
         />
         <SidebarField
@@ -834,9 +912,13 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
           <SidebarField
             label="Лид"
             value={
-              <span className="text-blue-600 hover:underline cursor-pointer">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('leads')}
+              >
                 {linked.leadTitle}
-              </span>
+              </button>
             }
           />
         )}
@@ -872,6 +954,7 @@ export function CompletionWorkspace({ lead, onClose, onOpenClient }: Props) {
             size="sm"
             variant="outline"
             className="h-6 w-full justify-start text-[11px]"
+            onClick={() => openSecondary('departures')}
           >
             <ExternalLink className="w-3 h-3 mr-1" /> Открыть выезд
           </Button>
@@ -933,3 +1016,4 @@ function EffectRow({ text }: { text: string }) {
     </div>
   );
 }
+

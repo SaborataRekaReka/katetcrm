@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Activity,
   AlertCircle,
@@ -51,8 +51,10 @@ import {
 } from './EntityModalFramework';
 import { useChangeLeadStage, useUpdateLead } from '../../hooks/useLeadMutations';
 import { useUpdateApplication, useDeleteApplicationItem } from '../../hooks/useApplicationMutations';
+import { useCreateReservation } from '../../hooks/useReservationMutations';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { useApplicationQuery } from '../../hooks/useApplicationsQuery';
+import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { mapActivityEntries } from '../../lib/activityMapper';
 import { toKanbanLead } from '../../lib/leadAdapter';
@@ -78,6 +80,7 @@ import { InlineText, InlineSelect, InlineDate } from './InlineEdit';
 import type { SourceChannel } from '../../lib/leadsApi';
 import { updateLead as updateLeadApi } from '../../lib/leadsApi';
 import { updateApplication } from '../../lib/applicationsApi';
+import { useLayout } from '../shell/layoutStore';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
 
@@ -89,6 +92,13 @@ const LEAD_SOURCE_OPTIONS: { value: SourceChannel; label: string }[] = [
   { value: 'max', label: 'MAX' },
   { value: 'other', label: 'Другое' },
 ];
+
+const BOOL_OPTIONS: { value: string; label: string }[] = [
+  { value: 'true', label: 'Да' },
+  { value: 'false', label: 'Нет' },
+];
+
+const UNASSIGNED_MANAGER_OPTION = '__unassigned_manager__';
 
 interface LeadDetailModalProps {
   lead?: Lead;
@@ -169,6 +179,53 @@ function deriveAppReadiness(app: Application) {
   if (hasNoData) return { label: 'Нет данных', tone: badgeTones.warning, Icon: AlertCircle };
 
   return { label: 'Ждёт sourcing', tone: badgeTones.caution, Icon: Clock };
+}
+
+function normalizeDatePart(value?: string | null): string | null {
+  if (!value) return null;
+  const day = value.slice(0, 10);
+  return /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : null;
+}
+
+function normalizeTimePart(value: string | null | undefined, fallback: string): string {
+  if (!value) return fallback;
+  const m = /^([01]\d|2[0-3]):([0-5]\d)/.exec(value.trim());
+  return m ? `${m[1]}:${m[2]}` : fallback;
+}
+
+function buildReservationWindow(position: ApplicationPosition, app: Application) {
+  const day =
+    normalizeDatePart(position.plannedDate) ??
+    normalizeDatePart(app.requestedDate) ??
+    new Date().toISOString().slice(0, 10);
+  const from = normalizeTimePart(
+    position.plannedTimeFrom ?? app.requestedTimeFrom,
+    '09:00',
+  );
+  let to = normalizeTimePart(position.plannedTimeTo ?? app.requestedTimeTo, '18:00');
+
+  if (to <= from) {
+    const [hour, minute] = from.split(':').map(Number);
+    const nextHour = (hour + 1) % 24;
+    to = `${String(nextHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+  }
+
+  return {
+    plannedStart: `${day}T${from}:00`,
+    plannedEnd: `${day}T${to}:00`,
+  };
+}
+
+function resolveInitialReservationStage(sourcing: ApplicationPosition['sourcingType']) {
+  switch (sourcing) {
+    case 'own':
+      return 'searching_own_equipment' as const;
+    case 'subcontractor':
+      return 'searching_subcontractor' as const;
+    case 'undecided':
+    default:
+      return 'needs_source_selection' as const;
+  }
 }
 
 function PositionCard({
@@ -285,6 +342,7 @@ function PositionCard({
 }
 
 export function LeadDetailModal({ lead: initialLead, application: initialApplication, onClose, onOpenClient, onOpenLead, onEditApplication }: LeadDetailModalProps) {
+  const { setActiveSecondaryNav } = useLayout();
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUnqualOpen, setIsUnqualOpen] = useState(false);
@@ -297,6 +355,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const [stageError, setStageError] = useState<string | null>(null);
   const changeStage = useChangeLeadStage();
   const updateLead = useUpdateLead();
+  const createReservation = useCreateReservation();
   const updateAppMutation = useUpdateApplication();
   const deleteItemMutation = useDeleteApplicationItem();
 
@@ -312,6 +371,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     initialApplication?.id,
     USE_API && !!initialApplication?.id,
   );
+  const managersQuery = useManagersQuery(USE_API && !!initialApplication?.id);
 
   // Используем свежие данные из query, если доступны — иначе prop как seed.
   const lead = leadDetailQuery.data
@@ -320,6 +380,30 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const application = applicationDetailQuery.data
     ? toUiApplication(applicationDetailQuery.data)
     : initialApplication;
+
+  const managerOptions = useMemo(() => {
+    const options = (managersQuery.data ?? []).map((manager) => ({
+      value: manager.id,
+      label: manager.fullName,
+    }));
+
+    if (application?.responsibleManagerId) {
+      const exists = options.some((option) => option.value === application.responsibleManagerId);
+      if (!exists) {
+        options.unshift({
+          value: application.responsibleManagerId,
+          label: application.responsibleManager || 'Текущий менеджер',
+        });
+      }
+    } else {
+      options.unshift({
+        value: UNASSIGNED_MANAGER_OPTION,
+        label: 'Не назначен',
+      });
+    }
+
+    return options;
+  }, [application?.responsibleManager, application?.responsibleManagerId, managersQuery.data]);
 
   if (!lead && !application) return null;
 
@@ -380,6 +464,77 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     if (!lead) return;
     setStageError(null);
     setIsUnqualOpen(true);
+  };
+
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
+
+  const handleMarkDuplicate = async () => {
+    if (!lead || !USE_API || lead.isDuplicate) return;
+    setStageError(null);
+    try {
+      await updateLead.mutateAsync({ id: lead.id, patch: { isDuplicate: true } });
+    } catch (err) {
+      setStageError(err instanceof Error ? err.message : 'Не удалось пометить как дубль');
+    }
+  };
+
+  const canPrepareReservation =
+    !!application &&
+    USE_API &&
+    application.stage !== 'departure' &&
+    application.stage !== 'completed' &&
+    application.stage !== 'cancelled';
+
+  const canMoveLeadToReservation =
+    !!application?.leadId &&
+    USE_API &&
+    application.stage !== 'reservation' &&
+    application.stage !== 'departure' &&
+    application.stage !== 'completed' &&
+    application.stage !== 'cancelled';
+
+  const handlePrepareReservation = async () => {
+    if (!application || !canPrepareReservation) return;
+
+    setStageError(null);
+
+    const toCreate = application.positions.filter(
+      (p) => p.readyForReservation && (!p.status || p.status === 'no_reservation'),
+    );
+    const hasAnyReservation = application.positions.some(
+      (p) => p.status === 'unit_selected' || p.status === 'reserved' || p.status === 'conflict',
+    );
+
+    if (toCreate.length === 0 && !hasAnyReservation) {
+      setStageError('Нет готовых позиций без брони. Отметьте позицию как готовую к брони.');
+      return;
+    }
+
+    try {
+      for (const position of toCreate) {
+        const { plannedStart, plannedEnd } = buildReservationWindow(position, application);
+        await createReservation.mutateAsync({
+          applicationItemId: position.id,
+          sourcingType: position.sourcingType,
+          internalStage: resolveInitialReservationStage(position.sourcingType),
+          plannedStart,
+          plannedEnd,
+        });
+      }
+
+      if (canMoveLeadToReservation && application.leadId) {
+        await changeStage.mutateAsync({ id: application.leadId, stage: 'reservation' });
+      }
+    } catch (err) {
+      setStageError(
+        err instanceof Error
+          ? err.message
+          : 'Не удалось создать бронь из готовых позиций',
+      );
+    }
   };
 
   const toolbarChips = [
@@ -728,7 +883,22 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                   <PropertyRow
                     icon={<UserPlus className="w-3 h-3" />}
                     label="Менеджер"
-                    value={<InlineValue>{application!.responsibleManager}</InlineValue>}
+                    value={
+                      canInlineEditApp && managerOptions.length > 0 ? (
+                        <InlineSelect<string>
+                          value={application!.responsibleManagerId ?? UNASSIGNED_MANAGER_OPTION}
+                          options={managerOptions}
+                          onSave={makeAppFieldSaver((v) => ({
+                            responsibleManagerId:
+                              v === UNASSIGNED_MANAGER_OPTION ? undefined : v,
+                          }))}
+                          ariaLabel="Ответственный менеджер"
+                          disabled={!canInlineEditApp || managersQuery.isPending}
+                        />
+                      ) : (
+                        <InlineValue>{application!.responsibleManager}</InlineValue>
+                      )
+                    }
                   />
                   <PropertyRow
                     icon={<Building2 className="w-3 h-3" />}
@@ -791,6 +961,32 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                         ariaLabel="Желаемая дата"
                         disabled={!canInlineEditApp}
                         emptyDisplay={<EmptyValue />}
+                      />
+                    }
+                  />
+                  <PropertyRow
+                    icon={<AlertCircle className="w-3 h-3" />}
+                    label="Срочно"
+                    value={
+                      <InlineSelect<string>
+                        value={application!.isUrgent ? 'true' : 'false'}
+                        options={BOOL_OPTIONS}
+                        onSave={makeAppFieldSaver((v) => ({ isUrgent: v === 'true' }))}
+                        ariaLabel="Признак срочности"
+                        disabled={!canInlineEditApp}
+                      />
+                    }
+                  />
+                  <PropertyRow
+                    icon={<Clock className="w-3 h-3" />}
+                    label="Ночная работа"
+                    value={
+                      <InlineSelect<string>
+                        value={application!.nightWork ? 'true' : 'false'}
+                        options={BOOL_OPTIONS}
+                        onSave={makeAppFieldSaver((v) => ({ nightWork: v === 'true' }))}
+                        ariaLabel="Ночная работа"
+                        disabled={!canInlineEditApp}
                       />
                     }
                   />
@@ -993,7 +1189,12 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             {application!.positions.filter((p) => p.readyForReservation).length} из {application!.positions.length} позиций готовы
           </div>
           <div className="pt-2">
-            <Button size="sm" className="h-7 w-full text-[11px]">
+            <Button
+              size="sm"
+              className="h-7 w-full text-[11px]"
+              onClick={() => void handlePrepareReservation()}
+              disabled={!canPrepareReservation || changeStage.isPending || createReservation.isPending}
+            >
               Подготовить к брони
             </Button>
           </div>
@@ -1014,7 +1215,20 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
               </button>
             }
           />
-          {application!.leadId && <SidebarField label="Лид" value={<span className="text-blue-600">LEAD-{application!.leadId}</span>} />}
+          {application!.leadId && (
+            <SidebarField
+              label="Лид"
+              value={
+                <button
+                  type="button"
+                  className="text-blue-600 hover:underline text-left"
+                  onClick={onOpenLead ? () => onOpenLead(application!.leadId!) : () => openSecondary('leads')}
+                >
+                  LEAD-{application!.leadId}
+                </button>
+              }
+            />
+          )}
         </>
       ),
     },
@@ -1053,10 +1267,22 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       quickActionsTitle="Быстрые действия"
       quickActions={
         <div className="space-y-1">
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px]"
+            onClick={() => void handleMarkDuplicate()}
+            disabled={!USE_API || lead!.isDuplicate || updateLead.isPending}
+          >
             Отметить как дубль
           </Button>
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px]"
+            onClick={handleOpenUnqualify}
+            disabled={!USE_API}
+          >
             Пометить некачественным
           </Button>
         </div>
@@ -1068,8 +1294,13 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       quickActionsTitle="Быстрые действия"
       quickActions={
         <div className="space-y-1">
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
-            Дублировать заявку
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px]"
+            onClick={() => openSecondary('applications')}
+          >
+            Открыть список заявок
           </Button>
           <Button
             size="sm"

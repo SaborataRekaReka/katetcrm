@@ -270,6 +270,9 @@ function StatusPill({ status }: { status: Status }) {
 }
 
 function RatingCell({ value }: { value: number }) {
+  if (value <= 0) {
+    return <span className="text-muted-foreground">—</span>;
+  }
   const tone = value >= 4.5 ? 'text-emerald-600' : value >= 4 ? 'text-amber-600' : 'text-rose-600';
   return (
     <span className={cn('inline-flex items-center gap-1 tabular-nums', tone)}>
@@ -606,7 +609,7 @@ function mapSubcontractorApi(api: SubcontractorApi): SubcontractorRow {
     phone: api.contactPhone ?? '—',
     contractValidUntil: undefined,
     activeBookings: 0,
-    rating: 0,
+    rating: api.rating ?? 0,
     status: api.status,
   };
 }

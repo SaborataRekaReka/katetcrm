@@ -1,11 +1,44 @@
 
-  # Канбан для CRM спецтехники
+# Frontend (Katet CRM)
 
-  This is a code bundle for Канбан для CRM спецтехники. The original project is available at https://www.figma.com/design/ankL0V5R1pzsSA0dYojZzb/%D0%9A%D0%B0%D0%BD%D0%B1%D0%B0%D0%BD-%D0%B4%D0%BB%D1%8F-CRM-%D1%81%D0%BF%D0%B5%D1%86%D1%82%D0%B5%D1%85%D0%BD%D0%B8%D0%BA%D0%B8.
+## Установка
 
-  ## Running the code
+```bash
+npm install
+```
 
-  Run `npm i` to install the dependencies.
+## Запуск
 
-  Run `npm run dev` to start the development server.
-  
+```bash
+npm run dev
+```
+
+Также доступен алиас:
+
+```bash
+npm run dev:frontend
+```
+
+## API-режим (без mock)
+
+По умолчанию проект может запускаться в mock-режиме. Для работы с backend API
+создайте `app/frontend/.env` на основе `.env.example` и установите:
+
+```dotenv
+VITE_USE_API=true
+VITE_API_BASE_URL=http://localhost:3001/api/v1
+```
+
+Backend должен быть запущен на `http://localhost:3001`.
+
+## Текущий охват API-режима
+
+На 27.04.2026 в API-режиме подключены основные потоки:
+
+- Leads (list/detail/create/stage transitions)
+- Applications (list/detail/header mutations)
+- Reservations (list/detail/update/release)
+- Departures (list/detail/start/arrive/cancel/complete)
+- Completion (detail/create/update; completion-flow через departure)
+
+Оставшиеся крупные зоны: aggregate-дашборды (`/stats`), расширенные audit-фильтры и отдельные UI-модалки CRUD для directories/import/admin.

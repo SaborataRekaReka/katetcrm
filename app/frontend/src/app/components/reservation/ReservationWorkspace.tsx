@@ -23,6 +23,7 @@ import { buildMockReservation } from '../../data/mockReservation';
 import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { deriveReservationState } from '../shell/reservationHelpers';
 import { useReleaseReservation, useUpdateReservation } from '../../hooks/useReservationMutations';
+import { useChangeLeadStage } from '../../hooks/useLeadMutations';
 import { useReservationQuery } from '../../hooks/useReservationsQuery';
 import {
   useEquipmentUnitsQuery,
@@ -37,6 +38,7 @@ import { InlineText } from '../detail/InlineEdit/InlineText';
 import { InlineDate } from '../detail/InlineEdit/InlineDate';
 import { InlineSelect } from '../detail/InlineEdit/InlineSelect';
 import { Button } from '../ui/button';
+import { Input } from '../ui/input';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group';
 import {
@@ -72,6 +74,7 @@ import {
   NextStepLine,
 } from '../detail/DetailShell';
 import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { useLayout } from '../shell/layoutStore';
 
 interface Props {
   lead: Lead;
@@ -110,6 +113,8 @@ const sourceMeta = {
 };
 
 export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservationId }: Props) {
+  const { setActiveSecondaryNav } = useLayout();
+  const isApiDetail = USE_API && !!apiReservationId;
   const reservationQuery = useReservationQuery(apiReservationId, USE_API && !!apiReservationId);
   const mockReservation: Reservation = useMemo(() => buildMockReservation(lead), [lead]);
 
@@ -127,8 +132,8 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
   );
 
   // Real data (когда есть) поверх структуры мока: candidateUnits/subcontractorOptions
-  // приходят из /equipment-units и /subcontractors, активность пока mock
-  // (отдельного endpoint'а нет), detail конфликта — mock (бэк-ещё не считает).
+  // приходят из /equipment-units и /subcontractors. Для API-режима не подставляем
+  // mock-активность/конфликты: показываем только то, что пришло с бэка.
   const reservation: Reservation = useMemo(() => {
     if (reservationQuery.data) {
       const fresh = toReservationEntity(reservationQuery.data);
@@ -145,7 +150,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
               | 'maintenance',
             note: undefined,
           }))
-        : mockReservation.candidateUnits;
+        : [];
       const subcontractorOptions = subsQuery.data
         ? subsQuery.data.map((s) => ({
             id: s.id,
@@ -154,23 +159,26 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
             priceNote: undefined,
             usage: undefined,
           }))
-        : mockReservation.subcontractorOptions;
+        : [];
       return {
         ...fresh,
         candidateUnits,
         subcontractorOptions,
-        activity: mockReservation.activity,
-        conflict: fresh.hasConflict ? mockReservation.conflict : undefined,
+        activity: [],
+        conflict: undefined,
       };
     }
     return mockReservation;
   }, [reservationQuery.data, unitsQuery.data, subsQuery.data, mockReservation]);
   const [localSource, setLocalSource] = useState(reservation.source);
+  const [unitSearch, setUnitSearch] = useState('');
+  const [subSearch, setSubSearch] = useState('');
   const [releaseOpen, setReleaseOpen] = useState(false);
   const [releaseReason, setReleaseReason] = useState('');
   const [releaseError, setReleaseError] = useState<string | null>(null);
   const releaseMutation = useReleaseReservation();
   const updateResMutation = useUpdateReservation();
+  const changeLeadStage = useChangeLeadStage();
 
   // Журнал изменений: подтягиваем реальные записи activity-лога по этой брони.
   const activityQuery = useEntityActivity(
@@ -180,15 +188,35 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
   );
   const activityEntries = activityQuery.data
     ? mapActivityEntries(activityQuery.data)
-    : reservation.activity.map((a) => ({
-        id: a.id,
-        actor: a.actor,
-        text: a.message,
-        time: a.at,
-      }));
+    : isApiDetail
+      ? []
+      : reservation.activity.map((a) => ({
+          id: a.id,
+          actor: a.actor,
+          text: a.message,
+          time: a.at,
+        }));
 
   const canRelease = USE_API && !!apiReservationId && reservation.status === 'active';
   const canInlineEditRes = USE_API && !!apiReservationId && reservation.status === 'active';
+
+  const filteredUnits = useMemo(() => {
+    const q = unitSearch.trim().toLowerCase();
+    if (!q) return reservation.candidateUnits;
+    return reservation.candidateUnits.filter((u) =>
+      `${u.name} ${u.plate ?? ''} ${u.note ?? ''}`.toLowerCase().includes(q),
+    );
+  }, [reservation.candidateUnits, unitSearch]);
+
+  const filteredSubcontractors = useMemo(() => {
+    const q = subSearch.trim().toLowerCase();
+    if (!q) return reservation.subcontractorOptions;
+    return reservation.subcontractorOptions.filter((s) =>
+      `${s.name} ${s.category ?? ''} ${s.priceNote ?? ''} ${s.usage ?? ''}`
+        .toLowerCase()
+        .includes(q),
+    );
+  }, [reservation.subcontractorOptions, subSearch]);
 
   // Источник: если можно сохранять — берём актуальный с API (через reservation.source),
   // иначе управляем локально (для mock / kanban-контекста без apiReservationId).
@@ -229,6 +257,90 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
     }
   };
 
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
+
+  const handleOpenApplication = () => openSecondary('applications');
+  const handleOpenLead = () => openSecondary('leads');
+  const handleOpenConflict = () => openSecondary('view-conflict');
+  const handleOpenDeparture = () => openSecondary('departures');
+  const handleDuplicateReservation = () => openSecondary('applications');
+
+  const selectFirstAvailableUnit = async () => {
+    if (canInlineEditRes && apiReservationId) {
+      const unit = reservation.candidateUnits.find((u) => u.status === 'available');
+      await updateResMutation.mutateAsync({
+        id: apiReservationId,
+        patch: {
+          sourcingType: 'own',
+          equipmentUnitId: unit?.id ?? null,
+        } as any,
+      });
+      return;
+    }
+    setLocalSource('own');
+  };
+
+  const selectFirstSubcontractor = async () => {
+    if (canInlineEditRes && apiReservationId) {
+      const subcontractor = reservation.subcontractorOptions[0];
+      await updateResMutation.mutateAsync({
+        id: apiReservationId,
+        patch: {
+          sourcingType: 'subcontractor',
+          subcontractorId: subcontractor?.id ?? null,
+        } as any,
+      });
+      return;
+    }
+    setLocalSource('subcontractor');
+  };
+
+  const handlePickAlternative = async () => {
+    if (source === 'own') {
+      await selectFirstSubcontractor();
+      return;
+    }
+    await selectFirstAvailableUnit();
+  };
+
+  const handlePrimaryAction = async () => {
+    if (derived.ctaDisabled) return;
+    if (conflict) {
+      handleOpenConflict();
+      return;
+    }
+
+    switch (derived.stage) {
+      case 'needs_source_selection':
+      case 'searching_own_equipment':
+        await selectFirstAvailableUnit();
+        return;
+      case 'searching_subcontractor':
+        await selectFirstSubcontractor();
+        return;
+      case 'type_reserved':
+      case 'unit_defined':
+        if (canInlineEditRes && apiReservationId) {
+          await updateResMutation.mutateAsync({
+            id: apiReservationId,
+            patch: { internalStage: 'ready_for_departure' } as any,
+          });
+        }
+        return;
+      case 'ready_for_departure':
+        if (USE_API && lead.id) {
+          await changeLeadStage.mutateAsync({ id: lead.id, stage: 'departure' });
+        }
+        handleOpenDeparture();
+        return;
+      default:
+        return;
+    }
+  };
+
   const src = sourceMeta[source];
   const SrcIcon = src.Icon;
 
@@ -236,6 +348,17 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
   const subSelected = !!reservation.subcontractor;
   const conflict = !!reservation.hasConflict;
   const readyFlag = !!reservation.readyForDeparture;
+
+  const clientLeadContext: Lead = useMemo(
+    () => ({
+      ...lead,
+      id: reservation.linked.clientId,
+      client: reservation.linked.clientName,
+      equipmentType: reservation.linked.equipmentType,
+      address: reservation.linked.address ?? lead.address,
+    }),
+    [lead, reservation.linked],
+  );
 
   // Единый источник правды: stage / nextStep / CTA выводятся из одного места.
   const derived = deriveReservationState({
@@ -271,6 +394,28 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
     reason: derived.reason,
   };
 
+  if (isApiDetail && reservationQuery.isPending && !reservationQuery.data) {
+    return (
+      <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+        Загрузка брони...
+      </div>
+    );
+  }
+
+  if (isApiDetail && reservationQuery.isError && !reservationQuery.data) {
+    const message = reservationQuery.error instanceof Error
+      ? reservationQuery.error.message
+      : 'Не удалось загрузить бронь';
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-3 px-6 text-center text-sm text-muted-foreground">
+        <span>{message}</span>
+        <Button size="sm" variant="outline" onClick={onClose}>
+          Закрыть
+        </Button>
+      </div>
+    );
+  }
+
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
       <EntityModalHeader
@@ -299,6 +444,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
               size="sm"
               className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
               disabled={primary.disabled}
+              onClick={() => void handlePrimaryAction()}
             >
               {primary.label}
               {!primary.disabled && <ArrowRight className="w-3 h-3" />}
@@ -355,13 +501,13 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           ),
         }}
         chips={[
-          <button
+          <span
             key="stage"
-            className="inline-flex items-center gap-1 h-6 px-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition-colors text-[11px]"
+            className="inline-flex items-center gap-1 h-6 px-2 rounded bg-blue-500 text-white text-[11px]"
           >
             <span>{stageLabel[computedStage]}</span>
             <ChevronDown className="w-3 h-3 opacity-80" />
-          </button>,
+          </span>,
           <ToolbarPill key="by" icon={<UserPlus className="w-3 h-3" />} label={reservation.reservedBy} />,
           <ToolbarPill
             key="date"
@@ -399,15 +545,31 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
         className="mb-5"
       />
 
-      {reservation.hasConflict && reservation.conflict && (
+      {reservation.hasConflict && (
         <Alert variant="destructive" className="mb-5 py-2 px-3">
           <AlertCircle className="h-4 w-4" />
           <AlertTitle className="text-[12px]">Обнаружен конфликт</AlertTitle>
           <AlertDescription className="text-[11px] mt-0.5">
-            {reservation.conflict.summary} — {reservation.conflict.conflictingReservationId} ({reservation.conflict.conflictingAt})
+            {reservation.conflict
+              ? `${reservation.conflict.summary} — ${reservation.conflict.conflictingReservationId} (${reservation.conflict.conflictingAt})`
+              : 'Обнаружено пересечение по интервалу брони. Подробные данные конфликта будут доступны после расширения backend-проекции.'}
             <div className="mt-1.5 flex gap-2">
-              <Button size="sm" variant="outline" className="h-6 px-2 text-[11px]">Открыть конфликт</Button>
-              <Button size="sm" variant="outline" className="h-6 px-2 text-[11px]">Выбрать альтернативу</Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                onClick={handleOpenConflict}
+              >
+                Открыть конфликт
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                onClick={() => void handlePickAlternative()}
+              >
+                Выбрать альтернативу
+              </Button>
             </div>
           </AlertDescription>
         </Alert>
@@ -488,7 +650,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1.5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Позиция заявки · {reservation.linked.positionTitle}</div>
-          <button className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+          <button
+            type="button"
+            onClick={handleOpenApplication}
+            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
             <ExternalLink className="w-3 h-3" /> Открыть заявку
           </button>
         </div>
@@ -635,7 +800,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                   <Wrench className="w-3 h-3" /> Сменить unit
                 </summary>
                 <div className="mt-2">
-                  {reservation.candidateUnits.length > 0 ? (
+                  <div className="mb-2">
+                    <Input
+                      value={unitSearch}
+                      onChange={(e) => setUnitSearch(e.target.value)}
+                      placeholder="Поиск unit по названию/номеру"
+                      className="h-7 text-[11px]"
+                    />
+                  </div>
+                  {filteredUnits.length > 0 ? (
                     <div className="border border-gray-200 rounded-md overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -648,7 +821,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {reservation.candidateUnits.map((u) => {
+                          {filteredUnits.map((u) => {
                             const isSelected = u.name === reservation.equipmentUnit;
                             const inConflict = isSelected && conflict;
                             return (
@@ -717,7 +890,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                       </Table>
                     </div>
                   ) : (
-                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Нет кандидатов</div>
+                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Кандидаты не найдены</div>
                   )}
                 </div>
               </details>
@@ -725,7 +898,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           ) : (
             <>
               <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Кандидатные юниты</div>
-              {reservation.candidateUnits.length > 0 ? (
+              <div className="mb-2">
+                <Input
+                  value={unitSearch}
+                  onChange={(e) => setUnitSearch(e.target.value)}
+                  placeholder="Поиск unit по названию/номеру"
+                  className="h-7 text-[11px]"
+                />
+              </div>
+              {filteredUnits.length > 0 ? (
                 <div className="border border-gray-200 rounded-md overflow-hidden">
                   <Table>
                     <TableHeader>
@@ -738,7 +919,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {reservation.candidateUnits.map((u) => (
+                      {filteredUnits.map((u) => (
                         <TableRow key={u.id} className="text-[11px]">
                           <TableCell className="py-1.5">{u.name}</TableCell>
                           <TableCell className="py-1.5 text-gray-500">{u.plate ?? '—'}</TableCell>
@@ -771,7 +952,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                   </Table>
                 </div>
               ) : (
-                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Нет кандидатов</div>
+                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Кандидаты не найдены</div>
               )}
             </>
           )}
@@ -791,7 +972,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                   <Building2 className="w-3 h-3" /> Сменить подрядчика
                 </summary>
                 <div className="mt-2">
-                  {reservation.subcontractorOptions.length > 0 ? (
+                  <div className="mb-2">
+                    <Input
+                      value={subSearch}
+                      onChange={(e) => setSubSearch(e.target.value)}
+                      placeholder="Поиск подрядчика"
+                      className="h-7 text-[11px]"
+                    />
+                  </div>
+                  {filteredSubcontractors.length > 0 ? (
                     <div className="border border-gray-200 rounded-md overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -804,7 +993,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {reservation.subcontractorOptions.map((s) => {
+                          {filteredSubcontractors.map((s) => {
                             const isSelected = s.name === reservation.subcontractor;
                             return (
                               <TableRow key={s.id} className="text-[11px]">
@@ -840,7 +1029,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                       </Table>
                     </div>
                   ) : (
-                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Нет доступных подрядчиков</div>
+                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Подрядчики не найдены</div>
                   )}
                 </div>
               </details>
@@ -848,7 +1037,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           ) : (
             <>
               <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Подрядчики</div>
-              {reservation.subcontractorOptions.length > 0 ? (
+              <div className="mb-2">
+                <Input
+                  value={subSearch}
+                  onChange={(e) => setSubSearch(e.target.value)}
+                  placeholder="Поиск подрядчика"
+                  className="h-7 text-[11px]"
+                />
+              </div>
+              {filteredSubcontractors.length > 0 ? (
                 <div className="border border-gray-200 rounded-md overflow-hidden">
                   <Table>
                     <TableHeader>
@@ -861,7 +1058,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {reservation.subcontractorOptions.map((s) => (
+                      {filteredSubcontractors.map((s) => (
                         <TableRow key={s.id} className="text-[11px]">
                           <TableCell className="py-1.5">{s.name}</TableCell>
                           <TableCell className="py-1.5 text-gray-500">{s.category ?? '—'}</TableCell>
@@ -890,7 +1087,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
                   </Table>
                 </div>
               ) : (
-                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Нет доступных подрядчиков</div>
+                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Подрядчики не найдены</div>
               )}
             </>
           )}
@@ -932,10 +1129,18 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       )}
 
       <div className="space-y-0.5 mb-6">
-        <ActionButton icon={<ExternalLink className="w-3.5 h-3.5" />} label="Открыть заявку" />
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(lead)} />
+        <ActionButton
+          icon={<ExternalLink className="w-3.5 h-3.5" />}
+          label="Открыть заявку"
+          onClick={handleOpenApplication}
+        />
+        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(clientLeadContext)} />
         {reservation.linked.leadTitle && (
-          <ActionButton icon={<UserPlus className="w-3.5 h-3.5" />} label="Открыть лид" />
+          <ActionButton
+            icon={<UserPlus className="w-3.5 h-3.5" />}
+            label="Открыть лид"
+            onClick={handleOpenLead}
+          />
         )}
       </div>
 
@@ -982,7 +1187,14 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           ))}
         </div>
         <div className="pt-2">
-          <Button size="sm" className="h-7 w-full text-[11px]" disabled={!ready || primary.disabled}>{primary.label}</Button>
+          <Button
+            size="sm"
+            className="h-7 w-full text-[11px]"
+            onClick={() => void handlePrimaryAction()}
+            disabled={!ready || primary.disabled || updateResMutation.isPending || changeLeadStage.isPending}
+          >
+            {primary.label}
+          </Button>
           {!ready && primary.reason && (
             <div className="text-[10px] text-gray-500 mt-1">{primary.reason}</div>
           )}
@@ -995,7 +1207,14 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           <div className="text-[10px] text-gray-500">
             {reservation.conflict.conflictingReservationId} · {reservation.conflict.conflictingAt}
           </div>
-          <Button size="sm" variant="outline" className="h-6 w-full text-[11px] mt-1">Открыть конфликт</Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full text-[11px] mt-1"
+            onClick={handleOpenConflict}
+          >
+            Открыть конфликт
+          </Button>
         </SidebarSection>
       )}
 
@@ -1014,23 +1233,60 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        <SidebarField label="Заявка" value={<span className="text-blue-600 hover:underline cursor-pointer">{reservation.linked.applicationTitle}</span>} />
+        <SidebarField
+          label="Заявка"
+          value={
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={handleOpenApplication}
+            >
+              {reservation.linked.applicationTitle}
+            </button>
+          }
+        />
         <SidebarField label="Позиция" value={reservation.linked.positionTitle} />
-        <SidebarField label="Клиент" value={<button type="button" onClick={() => onOpenClient?.(lead)} className="text-blue-600 hover:underline cursor-pointer text-left">{reservation.linked.clientName}</button>} />
+        <SidebarField label="Клиент" value={<button type="button" onClick={() => onOpenClient?.(clientLeadContext)} className="text-blue-600 hover:underline cursor-pointer text-left">{reservation.linked.clientName}</button>} />
         {reservation.linked.leadTitle && (
-          <SidebarField label="Лид" value={<span className="text-blue-600 hover:underline cursor-pointer">{reservation.linked.leadTitle}</span>} />
+          <SidebarField
+            label="Лид"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={handleOpenLead}
+              >
+                {reservation.linked.leadTitle}
+              </button>
+            }
+          />
         )}
       </SidebarSection>
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>
         <div className="space-y-1">
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px]"
+            onClick={() => void selectFirstAvailableUnit()}
+          >
             <Wrench className="w-3 h-3 mr-1" /> Назначить unit
           </Button>
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px]"
+            onClick={() => void selectFirstSubcontractor()}
+          >
             <Building2 className="w-3 h-3 mr-1" /> Выбрать подрядчика
           </Button>
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px] text-gray-500">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-6 w-full justify-start text-[11px] text-gray-500"
+            onClick={handleDuplicateReservation}
+          >
             <Copy className="w-3 h-3 mr-1" /> Дублировать бронь
           </Button>
           <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]" onClick={() => setReleaseOpen(true)}>
@@ -1050,3 +1306,4 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
     />
   );
 }
+

@@ -232,12 +232,13 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
     icon: Shield,
     allowedRoles: ['admin'],
     defaultSecondary: 'imports',
-    searchPlaceholder: 'Поиск по настройкам и импортам',
+    searchPlaceholder: 'Поиск по настройкам, импортам и журналу событий',
     groups: [
       {
         id: 'admin-main',
         items: [
           { id: 'imports', label: 'Импорт', icon: Upload },
+          { id: 'integrations', label: 'Журнал событий', icon: Activity },
           { id: 'settings', label: 'Настройки', icon: Settings },
           { id: 'users', label: 'Пользователи', icon: UserCog },
           { id: 'permissions', label: 'Права доступа', icon: KeyRound },
@@ -469,13 +470,37 @@ export const MODULE_META: Record<string, ModuleMeta> = {
       { id: 'feed', label: 'Лента' },
     ],
   },
+  'view-stale-leads': {
+    domain: 'control',
+    title: 'Аналитика · Зависшие лиды',
+    searchPlaceholder: 'Поиск по аналитике',
+  },
+  'view-lost-leads': {
+    domain: 'control',
+    title: 'Аналитика · Потерянные лиды',
+    searchPlaceholder: 'Поиск по аналитике',
+  },
+  'view-active-reservations': {
+    domain: 'control',
+    title: 'Аналитика · Активные брони',
+    searchPlaceholder: 'Поиск по аналитике',
+  },
+  'view-manager-load': {
+    domain: 'control',
+    title: 'Аналитика · Нагрузка менеджеров',
+    searchPlaceholder: 'Поиск по аналитике',
+  },
 
   // admin
   imports: {
     domain: 'admin',
     title: 'Импорт',
-    searchPlaceholder: 'Поиск импортов',
-    ctaLabel: 'Новый импорт',
+    searchPlaceholder: 'Поиск по журналу импорта',
+  },
+  integrations: {
+    domain: 'admin',
+    title: 'Журнал событий',
+    searchPlaceholder: 'Поиск по событиям интеграций',
   },
   settings: { domain: 'admin', title: 'Настройки', searchPlaceholder: 'Поиск настроек' },
   users: { domain: 'admin', title: 'Пользователи', searchPlaceholder: 'Поиск пользователей', ctaLabel: 'Новый пользователь' },

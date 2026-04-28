@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, type ActivityAction } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
+import type { ActivityModuleFilter } from './activity.dto';
 
 export interface LogInput {
   action: ActivityAction;
@@ -11,9 +12,38 @@ export interface LogInput {
   payload?: Prisma.InputJsonValue;
 }
 
+export interface ActivitySearchParams {
+  entityType?: string;
+  entityId?: string;
+  actorId?: string;
+  action?: ActivityAction;
+  module?: ActivityModuleFilter;
+  query?: string;
+  from?: Date;
+  to?: Date;
+  take?: number;
+  skip?: number;
+}
+
+const MODULE_ENTITY_TYPES: Record<ActivityModuleFilter, string[]> = {
+  sales: ['lead', 'application', 'application_item', 'client'],
+  ops: ['reservation', 'departure', 'completion'],
+  admin: ['equipment_category', 'equipment_type', 'equipment_unit', 'subcontractor', 'user'],
+};
+
 @Injectable()
 export class ActivityService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private readonly actorSelect = {
+    actor: {
+      select: {
+        id: true,
+        fullName: true,
+        email: true,
+      },
+    },
+  } as const;
 
   async log(input: LogInput) {
     const data = {
@@ -56,6 +86,7 @@ export class ActivityService {
       where: { entityType, entityId },
       orderBy: { createdAt: 'desc' },
       take,
+      include: this.actorSelect,
     });
   }
 
@@ -63,6 +94,67 @@ export class ActivityService {
     return this.prisma.activityLogEntry.findMany({
       orderBy: { createdAt: 'desc' },
       take,
+      include: this.actorSelect,
+    });
+  }
+
+  async listFiltered(params: ActivitySearchParams) {
+    const take = Math.min(Math.max(params.take ?? 100, 1), 500);
+    const skip = Math.max(params.skip ?? 0, 0);
+
+    const where: Prisma.ActivityLogEntryWhereInput = {};
+
+    if (params.entityType) where.entityType = params.entityType;
+    if (params.entityId) where.entityId = params.entityId;
+    if (params.actorId) where.actorId = params.actorId;
+    if (params.action) where.action = params.action;
+
+    if (params.module) {
+      where.entityType = {
+        in: MODULE_ENTITY_TYPES[params.module],
+      };
+    }
+
+    if (params.from || params.to) {
+      where.createdAt = {
+        ...(params.from ? { gte: params.from } : {}),
+        ...(params.to ? { lte: params.to } : {}),
+      };
+    }
+
+    const q = params.query?.trim();
+    if (q) {
+      where.AND = [
+        {
+          OR: [
+            { summary: { contains: q, mode: 'insensitive' } },
+            { entityId: { contains: q, mode: 'insensitive' } },
+            { entityType: { contains: q, mode: 'insensitive' } },
+          ],
+        },
+      ];
+    }
+
+    const [items, total] = await Promise.all([
+      this.prisma.activityLogEntry.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        take,
+        skip,
+        include: this.actorSelect,
+      }),
+      this.prisma.activityLogEntry.count({ where }),
+    ]);
+
+    return { items, total };
+  }
+
+  listRecentForActor(actorId: string, take = 100) {
+    return this.prisma.activityLogEntry.findMany({
+      where: { actorId },
+      orderBy: { createdAt: 'desc' },
+      take,
+      include: this.actorSelect,
     });
   }
 }

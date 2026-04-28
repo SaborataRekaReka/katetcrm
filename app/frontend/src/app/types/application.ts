@@ -34,6 +34,7 @@ export interface Application {
   clientName: string;
   clientCompany?: string;
   clientPhone: string;
+  responsibleManagerId?: string;
   responsibleManager: string;
   requestedDate?: string;
   requestedTimeFrom?: string;

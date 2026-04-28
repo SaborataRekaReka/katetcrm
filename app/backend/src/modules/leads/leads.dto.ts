@@ -137,6 +137,10 @@ export class LeadListQueryDto {
   managerId?: string;
 
   @IsOptional()
+  @IsString()
+  clientId?: string;
+
+  @IsOptional()
   @IsEnum(SourceChannel)
   source?: SourceChannel;
 

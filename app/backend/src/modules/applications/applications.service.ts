@@ -127,9 +127,16 @@ export class ApplicationsService {
 
   // --------------- Items ---------------
 
-  private toDecimal(value: number | string | undefined): any {
+  private toDecimal(value: number | string | undefined, field: string): string | undefined {
     if (value === undefined || value === null || value === '') return undefined;
-    return value;
+
+    const normalized = String(value).trim().replace(',', '.');
+    if (!/^\d+(\.\d{1,2})?$/.test(normalized)) {
+      throw new BadRequestException(
+        `Поле ${field} должно быть числом с максимум двумя знаками после запятой`,
+      );
+    }
+    return normalized;
   }
 
   async addItem(appId: string, dto: CreateApplicationItemDto, actor: ActorContext) {
@@ -156,9 +163,9 @@ export class ApplicationsService {
         address: dto.address,
         comment: dto.comment,
         sourcingType: dto.sourcingType ?? 'undecided',
-        pricePerShift: this.toDecimal(dto.pricePerShift),
-        deliveryPrice: this.toDecimal(dto.deliveryPrice),
-        surcharge: this.toDecimal(dto.surcharge),
+        pricePerShift: this.toDecimal(dto.pricePerShift, 'pricePerShift'),
+        deliveryPrice: this.toDecimal(dto.deliveryPrice, 'deliveryPrice'),
+        surcharge: this.toDecimal(dto.surcharge, 'surcharge'),
         readyForReservation: dto.readyForReservation ?? false,
       },
     });
@@ -210,9 +217,9 @@ export class ApplicationsService {
         address: dto.address,
         comment: dto.comment,
         sourcingType: dto.sourcingType,
-        pricePerShift: this.toDecimal(dto.pricePerShift),
-        deliveryPrice: this.toDecimal(dto.deliveryPrice),
-        surcharge: this.toDecimal(dto.surcharge),
+        pricePerShift: this.toDecimal(dto.pricePerShift, 'pricePerShift'),
+        deliveryPrice: this.toDecimal(dto.deliveryPrice, 'deliveryPrice'),
+        surcharge: this.toDecimal(dto.surcharge, 'surcharge'),
         readyForReservation: dto.readyForReservation,
       },
     });

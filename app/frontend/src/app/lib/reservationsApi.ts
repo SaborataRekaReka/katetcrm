@@ -29,6 +29,13 @@ export interface ReservationDerivedState {
   reason: string | null;
 }
 
+export interface ReservationConflictApi {
+  id: string;
+  summary: string;
+  conflictingReservationId: string;
+  conflictingAt: string;
+}
+
 export interface ReservationApi {
   id: string;
   applicationItemId: string;
@@ -38,6 +45,8 @@ export interface ReservationApi {
   clientName: string | null;
   clientCompany: string | null;
   clientPhone: string | null;
+  reservedById: string | null;
+  reservedByName: string | null;
   responsibleManagerId: string | null;
   responsibleManagerName: string | null;
   positionLabel: string;
@@ -55,6 +64,7 @@ export interface ReservationApi {
   plannedStart: string;
   plannedEnd: string;
   hasConflict: boolean;
+  conflict: ReservationConflictApi | null;
   readyForDeparture: boolean;
   subcontractorConfirmation: SubcontractorConfirmationStatus;
   promisedModelOrUnit: string | null;

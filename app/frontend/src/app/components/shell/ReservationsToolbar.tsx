@@ -32,6 +32,7 @@ interface ReservationsToolbarProps {
   managers?: string[];
   equipmentTypes?: string[];
   subcontractors?: string[];
+  onSaveView?: () => void;
 }
 
 export function ReservationsToolbar({
@@ -42,6 +43,7 @@ export function ReservationsToolbar({
   managers = ['Петров А.', 'Сидоров Б.', 'Иванова С.'],
   equipmentTypes = ['Экскаватор', 'Бульдозер', 'Кран', 'Погрузчик', 'Автокран'],
   subcontractors = [],
+  onSaveView,
 }: ReservationsToolbarProps) {
   const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
@@ -90,6 +92,7 @@ export function ReservationsToolbar({
       <div className="relative w-[220px] shrink-0">
         <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
+          data-crm-search-input="true"
           value={query}
           onChange={(e) => updateQuery(e.target.value)}
           placeholder={meta.searchPlaceholder}
@@ -188,11 +191,14 @@ export function ReservationsToolbar({
             onClick={reset}
           />
         )}
-        <ToolbarUtilityButton
-          label="Сохранить вид"
-          icon={<Bookmark className="h-3.5 w-3.5" />}
-          iconOnlyOnNarrow
-        />
+        {onSaveView ? (
+          <ToolbarUtilityButton
+            label="Сохранить вид"
+            icon={<Bookmark className="h-3.5 w-3.5" />}
+            iconOnlyOnNarrow
+            onClick={onSaveView}
+          />
+        ) : null}
       </div>
     </div>
   );

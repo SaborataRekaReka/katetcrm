@@ -56,6 +56,9 @@ $end = (Get-Date).AddDays(1).AddHours(8).ToString("s")
 $resBody = @{ applicationItemId=$item1.id; sourcingType='own'; equipmentUnitId=$unit1.id; equipmentTypeId=$excavatorType.id; plannedStart=$start; plannedEnd=$end; internalStage='unit_defined' } | ConvertTo-Json
 $res1 = Invoke-RestMethod -Method Post -Uri "$base/reservations" -Headers $T -ContentType 'application/json' -Body $resBody
 Write-Host "RES1 id=$($res1.id) conflict=$($res1.hasConflict) stage=$($res1.internalStage)"
+if (-not $res1.reservedByName) {
+  throw "RES1 projection must include reservedByName"
+}
 
 # Duplicate reservation on same item → should fail (partial unique)
 try {
@@ -69,6 +72,12 @@ try {
 $res2Body = @{ applicationItemId=$item2.id; sourcingType='own'; equipmentUnitId=$unit1.id; plannedStart=$start; plannedEnd=$end } | ConvertTo-Json
 $res2 = Invoke-RestMethod -Method Post -Uri "$base/reservations" -Headers $T -ContentType 'application/json' -Body $res2Body
 Write-Host "RES2 id=$($res2.id) conflict=$($res2.hasConflict) (expected True)"
+if (-not $res2.hasConflict) {
+  throw "RES2 must expose hasConflict=true for overlap"
+}
+if (-not $res2.conflict -or -not $res2.conflict.conflictingReservationId) {
+  throw "RES2 projection must include conflict context"
+}
 
 # List reservations for app
 $resList = Invoke-RestMethod -Uri "$base/reservations?applicationId=$appId" -Headers $T
@@ -109,5 +118,17 @@ try {
 } catch {
   Write-Host "DELETE-WITH-RES blocked OK"
 }
+
+# Policy check: lead unqualified closes active application as cancelled.
+$pLeadBody = @{ contactName='Policy Stage3'; contactPhone='+7 (495) 100-00-02'; source='manual' } | ConvertTo-Json
+$pLead = Invoke-RestMethod -Method Post -Uri "$base/leads" -Headers $T -ContentType 'application/json' -Body $pLeadBody
+$null = Invoke-RestMethod -Method Post -Uri "$base/leads/$($pLead.lead.id)/stage" -Headers $T -ContentType 'application/json' -Body (@{stage='application'} | ConvertTo-Json)
+$pApps = Invoke-RestMethod -Uri "$base/applications?scope=all&leadId=$($pLead.lead.id)" -Headers $T
+$pAppId = $pApps.items[0].id
+$null = Invoke-RestMethod -Method Post -Uri "$base/leads/$($pLead.lead.id)/stage" -Headers $T -ContentType 'application/json' -Body (@{stage='unqualified'; reason='policy_smoke'} | ConvertTo-Json)
+$pApp = Invoke-RestMethod -Uri "$base/applications/$pAppId" -Headers $T
+if ($pApp.stage -ne 'cancelled') { throw "Policy fail: expected cancelled application after lead unqualified, got $($pApp.stage)" }
+if ($pApp.isActive) { throw "Policy fail: application must be inactive after lead unqualified" }
+Write-Host "POLICY OK lead->unqualified => application=cancelled"
 
 Write-Host "=== STAGE 3 SMOKE OK ==="

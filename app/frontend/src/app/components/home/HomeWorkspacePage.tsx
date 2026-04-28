@@ -41,6 +41,9 @@ import { mockLeads } from '../../data/mockLeads';
 import { mockTasks, groupTasksByDue, Task, TaskDomain } from '../../data/mockTasks';
 import { TaskDetailView } from '../detail/TaskDetailView';
 import { Button } from '../ui/button';
+import { USE_API } from '../../lib/featureFlags';
+import { useStatsQuery } from '../../hooks/useStatsQuery';
+import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
 
 export function HomeWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -66,8 +69,24 @@ export function HomeWorkspacePage() {
 
 function OverviewPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const statsQuery = useStatsQuery(USE_API);
+  const recentActivityQuery = useActivitySearchQuery({ take: 6 }, USE_API);
 
   const stats = useMemo(() => {
+    if (USE_API && statsQuery.data) {
+      return {
+        leads: statsQuery.data.pipeline.lead,
+        applications: statsQuery.data.pipeline.application,
+        reservations: statsQuery.data.pipeline.reservation,
+        departures: statsQuery.data.pipeline.departure,
+        completed: statsQuery.data.pipeline.completed,
+        urgent: statsQuery.data.operations.urgentLeads,
+        conflicts: statsQuery.data.operations.conflicts,
+        today: statsQuery.data.operations.departuresToday,
+        stale: statsQuery.data.operations.staleLeads,
+      };
+    }
+
     const byStage = (s: string) => mockLeads.filter((l) => l.stage === s).length;
     return {
       leads: byStage('lead'),
@@ -80,7 +99,30 @@ function OverviewPage() {
       today: mockLeads.filter((l) => l.departureStatus === 'today').length,
       stale: mockLeads.filter((l) => l.isStale).length,
     };
-  }, []);
+  }, [statsQuery.data]);
+
+  const recentRows = useMemo(() => {
+    if (USE_API && recentActivityQuery.data?.items?.length) {
+      return recentActivityQuery.data.items.slice(0, 6).map((e) => ({
+        id: e.id,
+        leading: <Activity className="h-3.5 w-3.5 text-violet-500" />,
+        primary: e.summary,
+        secondary: `${e.entityType} · ${e.actor?.fullName ?? 'Система'}`,
+        trailing: new Date(e.createdAt).toLocaleTimeString('ru-RU', {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      }));
+    }
+
+    return mockLeads.slice(0, 6).map((l) => ({
+      id: l.id,
+      leading: <StageDot stage={l.stage} />,
+      primary: l.company ?? l.client,
+      secondary: `${stageLabel(l.stage)} · ${l.manager}`,
+      trailing: l.lastActivity,
+    }));
+  }, [recentActivityQuery.data]);
 
   const go = (primary: string, secondary: string) => {
     setActivePrimaryNav(primary);
@@ -148,13 +190,13 @@ function OverviewPage() {
           className="lg:col-span-2"
         >
           <InsightList>
-            {mockLeads.slice(0, 6).map((l) => (
+            {recentRows.map((row) => (
               <InsightRow
-                key={l.id}
-                leading={<StageDot stage={l.stage} />}
-                primary={l.company ?? l.client}
-                secondary={`${stageLabel(l.stage)} · ${l.manager}`}
-                trailing={l.lastActivity}
+                key={row.id}
+                leading={row.leading}
+                primary={row.primary}
+                secondary={row.secondary}
+                trailing={row.trailing}
               />
             ))}
           </InsightList>
@@ -193,9 +235,28 @@ const DUE_GROUPS: Array<{
 ];
 
 function MyTasksPage() {
-  const grouped = useMemo(() => groupTasksByDue(mockTasks), []);
-  const [selected, setSelected] = useState<Task | null>(null);
+  const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const grouped = useMemo(() => groupTasksByDue(tasks), [tasks]);
+  const selectedTask = useMemo(
+    () => tasks.find((t) => t.id === selectedTaskId) ?? null,
+    [tasks, selectedTaskId],
+  );
+
+  const nextTaskId = (rows: Task[]) => {
+    const max = rows.reduce((acc, t) => {
+      const num = Number(t.id.replace(/[^0-9]/g, ''));
+      return Number.isFinite(num) ? Math.max(acc, num) : acc;
+    }, 0);
+    return `TASK-${String(max + 1).padStart(5, '0')}`;
+  };
+
+  const nowStamp = () => {
+    const d = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  };
 
   const openLinked = (domain: TaskDomain, _id: string) => {
     // Navigate to the domain workspace. Detail-specific routing is not yet wired,
@@ -226,7 +287,124 @@ function MyTasksPage() {
         setActiveSecondaryNav('completion');
         break;
     }
-    setSelected(null);
+    setSelectedTaskId(null);
+  };
+
+  const handleCreateTask = () => {
+    let createdId: string | null = null;
+    setTasks((prev) => {
+      createdId = nextTaskId(prev);
+      const draft: Task = {
+        id: createdId,
+        title: 'Новая задача',
+        status: 'open',
+        priority: 'normal',
+        assignee: 'Петров А.',
+        reporter: 'Петров А.',
+        dueLabel: 'Без срока',
+        dueKind: 'none',
+        tags: ['черновик'],
+        subtasks: [],
+        comments: [],
+        activity: [
+          {
+            id: `a-create-${Date.now()}`,
+            actor: 'Петров А.',
+            text: 'создал задачу',
+            time: 'только что',
+          },
+        ],
+        createdAt: nowStamp(),
+        createdBy: 'Петров А.',
+      };
+      return [draft, ...prev];
+    });
+    if (createdId) setSelectedTaskId(createdId);
+  };
+
+  const handleSetStatus = (taskId: string, status: 'open' | 'in_progress' | 'blocked' | 'done') => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+        return {
+          ...t,
+          status,
+          activity: [
+            {
+              id: `a-status-${Date.now()}`,
+              actor: 'Петров А.',
+              text: `изменил статус на ${status === 'done' ? 'Выполнена' : status === 'in_progress' ? 'В работе' : status === 'blocked' ? 'Заблокирована' : 'Открыта'}`,
+              time: 'только что',
+            },
+            ...t.activity,
+          ],
+        };
+      }),
+    );
+  };
+
+  const handleDuplicateTask = (taskId: string) => {
+    let duplicatedId: string | null = null;
+    setTasks((prev) => {
+      const source = prev.find((t) => t.id === taskId);
+      if (!source) return prev;
+      duplicatedId = nextTaskId(prev);
+      const duplicated: Task = {
+        ...source,
+        id: duplicatedId,
+        title: `${source.title} (копия)`,
+        status: 'open',
+        dueLabel: 'Без срока',
+        dueKind: 'none',
+        createdAt: nowStamp(),
+        createdBy: 'Петров А.',
+        activity: [
+          {
+            id: `a-dup-${Date.now()}`,
+            actor: 'Петров А.',
+            text: `создал копию из ${source.id}`,
+            time: 'только что',
+          },
+        ],
+      };
+      return [duplicated, ...prev];
+    });
+    if (duplicatedId) setSelectedTaskId(duplicatedId);
+  };
+
+  const handleArchiveTask = (taskId: string) => {
+    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+    setSelectedTaskId((prev) => (prev === taskId ? null : prev));
+  };
+
+  const handleAddSubtask = (taskId: string) => {
+    setTasks((prev) =>
+      prev.map((t) => {
+        if (t.id !== taskId) return t;
+        const nextIndex = t.subtasks.length + 1;
+        return {
+          ...t,
+          subtasks: [
+            ...t.subtasks,
+            {
+              id: `st-${nextIndex}`,
+              title: `Новая подзадача ${nextIndex}`,
+              assignee: t.assignee,
+              priority: 'normal',
+            },
+          ],
+          activity: [
+            {
+              id: `a-sub-${Date.now()}`,
+              actor: 'Петров А.',
+              text: 'добавил подзадачу',
+              time: 'только что',
+            },
+            ...t.activity,
+          ],
+        };
+      }),
+    );
   };
 
   return (
@@ -238,9 +416,9 @@ function MyTasksPage() {
           <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
           <SummaryChip label="Позже" value={grouped.later.length} />
           <SummaryChip label="Без срока" value={grouped.none.length} />
-          <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {mockTasks.length}</span>
+          <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {tasks.length}</span>
         </div>
-        <Button variant="outline" size="sm" className="h-7 gap-1 text-[12px]">
+        <Button variant="outline" size="sm" className="h-7 gap-1 text-[12px]" onClick={handleCreateTask}>
           <PlusCircle className="h-3.5 w-3.5" />
           Новая задача
         </Button>
@@ -266,7 +444,7 @@ function MyTasksPage() {
                     dueKind={t.dueKind}
                     linkedDomain={t.linkedEntity?.domain}
                     linkedId={t.linkedEntity?.id}
-                    onClick={() => setSelected(t)}
+                    onClick={() => setSelectedTaskId(t.id)}
                   />
                 ))}
               </ListGroup>
@@ -276,10 +454,14 @@ function MyTasksPage() {
       </GroupedListPage>
 
       <TaskDetailView
-        task={selected}
-        open={selected != null}
-        onClose={() => setSelected(null)}
+        task={selectedTask}
+        open={selectedTaskId != null}
+        onClose={() => setSelectedTaskId(null)}
         onOpenLinkedEntity={openLinked}
+        onSetStatus={handleSetStatus}
+        onDuplicateTask={handleDuplicateTask}
+        onArchiveTask={handleArchiveTask}
+        onAddSubtask={handleAddSubtask}
       />
     </div>
   );
@@ -499,6 +681,7 @@ function UrgentTodayPage() {
 /* --------------------------- Recent activity ---------------------------- */
 
 function RecentActivityPage() {
+  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const items = useMemo(
     () => [
       { id: 'a1', at: '10 мин назад', actor: 'Сидоров Б.', text: 'создал лид', entity: 'ИП Морозов', kind: 'lead' as const, icon: <PlusCircle className="h-3.5 w-3.5" /> },
@@ -513,6 +696,33 @@ function RecentActivityPage() {
     ],
     [],
   );
+
+  const openEntity = (kind: 'lead' | 'application' | 'reservation' | 'departure' | 'completed') => {
+    switch (kind) {
+      case 'lead':
+        setActivePrimaryNav('sales');
+        setActiveSecondaryNav('leads');
+        return;
+      case 'application':
+        setActivePrimaryNav('sales');
+        setActiveSecondaryNav('applications');
+        return;
+      case 'reservation':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('reservations');
+        return;
+      case 'departure':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('departures');
+        return;
+      case 'completed':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('completion');
+        return;
+      default:
+        return;
+    }
+  };
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -530,6 +740,7 @@ function RecentActivityPage() {
               actor={it.actor}
               text={it.text}
               entity={it.entity}
+              onEntityClick={() => openEntity(it.kind)}
               time={it.at}
             />
           ))}
@@ -543,6 +754,7 @@ function RecentActivityPage() {
               actor={it.actor}
               text={it.text}
               entity={it.entity}
+              onEntityClick={() => openEntity(it.kind)}
               time={it.at}
             />
           ))}

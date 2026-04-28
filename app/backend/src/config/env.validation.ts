@@ -35,11 +35,38 @@ class EnvVars {
   @IsString()
   @IsOptional()
   CORS_ORIGINS = '';
+
+  @IsString()
+  @IsOptional()
+  INTEGRATION_SITE_SECRET = '';
+
+  @IsString()
+  @IsOptional()
+  INTEGRATION_MANGO_SECRET = '';
+
+  @IsString()
+  @IsOptional()
+  INTEGRATION_TELEGRAM_SECRET = '';
+
+  @IsString()
+  @IsOptional()
+  INTEGRATION_MAX_SECRET = '';
+
+  @IsInt()
+  @Min(1)
+  @IsOptional()
+  INTEGRATION_HMAC_TOLERANCE_SEC = 300;
 }
 
 export function validateEnv(config: Record<string, unknown>) {
   const coerced: Record<string, unknown> = { ...config };
   if (typeof coerced.PORT === 'string') coerced.PORT = Number.parseInt(coerced.PORT, 10);
+  if (typeof coerced.INTEGRATION_HMAC_TOLERANCE_SEC === 'string') {
+    coerced.INTEGRATION_HMAC_TOLERANCE_SEC = Number.parseInt(
+      coerced.INTEGRATION_HMAC_TOLERANCE_SEC,
+      10,
+    );
+  }
 
   const validated = plainToInstance(EnvVars, coerced, { enableImplicitConversion: true });
   const errors = validateSync(validated, { skipMissingProperties: false });

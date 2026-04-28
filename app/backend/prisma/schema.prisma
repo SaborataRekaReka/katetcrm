@@ -119,6 +119,7 @@ enum IntegrationEventStatus {
   processed
   failed
   duplicate
+  replayed
 }
 
 enum ActivityAction {
@@ -584,19 +585,29 @@ model ActivityLogEntry {
 // ---------------------------------------------------------------------------
 
 model IntegrationEvent {
-  id           String                 @id @default(cuid())
-  channel      IntegrationChannel
-  externalId   String?                @map("external_id")
-  payload      Json
-  status       IntegrationEventStatus @default(received)
-  errorMessage String?                @map("error_message")
-  relatedLeadId String?               @map("related_lead_id")
+  id             String                 @id @default(cuid())
+  channel        IntegrationChannel
+  externalId     String?                @map("external_id")
+  idempotencyKey String                 @map("idempotency_key")
+  correlationId  String?                @map("correlation_id")
+  payload        Json
+  payloadSummary Json?                  @map("payload_summary")
+  status         IntegrationEventStatus @default(received)
+  retryCount     Int                    @default(0) @map("retry_count")
+  errorCode      String?                @map("error_code")
+  errorClass     String?                @map("error_class")
+  errorMessage   String?                @map("error_message")
+  relatedLeadId  String?                @map("related_lead_id")
 
-  receivedAt   DateTime               @default(now()) @map("received_at")
-  processedAt  DateTime?              @map("processed_at")
+  receivedAt     DateTime               @default(now()) @map("received_at")
+  processedAt    DateTime?              @map("processed_at")
+  replayedAt     DateTime?              @map("replayed_at")
 
   @@unique([channel, externalId], map: "uniq_channel_external_id")
+  @@unique([idempotencyKey])
   @@index([status])
+  @@index([channel, receivedAt])
+  @@index([retryCount])
   @@map("integration_events")
 }
 

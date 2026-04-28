@@ -39,6 +39,7 @@ export const ROUTED_SECONDARY_IDS = [
   'dashboard',
   // admin
   'imports',
+  'integrations',
   'settings',
   'users',
   'permissions',
@@ -70,6 +71,7 @@ const PATHNAME_BY_ID: Record<string, string> = {
   audit: '/audit',
   dashboard: '/dashboard',
   imports: '/admin/imports',
+  integrations: '/admin/integrations',
   settings: '/admin/settings',
   users: '/admin/users',
   permissions: '/admin/permissions',

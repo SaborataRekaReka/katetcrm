@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ClientDetailApi,
   CreateClientInput,
+  UpdateClientInput,
   createClient,
   updateClient,
 } from '../lib/clientsApi';
@@ -23,7 +24,7 @@ export function useCreateClient() {
 
 export function useUpdateClient() {
   const qc = useQueryClient();
-  return useMutation<ClientDetailApi, Error, { id: string; patch: Partial<CreateClientInput> }>({
+  return useMutation<ClientDetailApi, Error, { id: string; patch: UpdateClientInput }>({
     mutationFn: ({ id, patch }) => updateClient(id, patch),
     onSuccess: (fresh) => {
       qc.setQueryData(clientsQueryKeys.detail(fresh.id), fresh);

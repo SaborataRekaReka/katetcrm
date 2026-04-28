@@ -22,7 +22,13 @@ import { ClientWorkspace } from '../client/ClientWorkspace';
 import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
 import { useReservationsQuery } from '../../hooks/useReservationsQuery';
+import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toReservationRows } from '../../lib/reservationAdapter';
+import { saveViewSnapshot } from '../../lib/viewSnapshots';
+import {
+  CreateReservationDialog,
+  type ReservationCreateCandidate,
+} from './CreateReservationDialog';
 
 /**
  * Routed page for /reservations (and the ops saved-view aliases). Hosts both
@@ -44,6 +50,7 @@ export function ReservationsWorkspacePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [clientLead, setClientLead] = useState<Lead | null>(null);
   const [isClientOpen, setIsClientOpen] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
 
@@ -51,6 +58,27 @@ export function ReservationsWorkspacePage() {
   // бэке), либо mock (fallback без флага USE_API). Оба пути приводятся к
   // единому ReservationRow, так что фильтры/рендер не разветвляются.
   const reservationsQuery = useReservationsQuery({ isActive: undefined }, USE_API);
+  const applicationsQuery = useApplicationsQuery({ scope: 'all' }, USE_API);
+
+  const reservationCandidates = useMemo<ReservationCreateCandidate[]>(() => {
+    if (!USE_API || !applicationsQuery.data) return [];
+    return applicationsQuery.data.items.flatMap((app) =>
+      app.positions
+        .filter((p) => p.readyForReservation && p.status === 'no_reservation')
+        .map((p) => ({
+          applicationItemId: p.id,
+          applicationId: app.id,
+          applicationNumber: app.number,
+          clientName: app.clientCompany ?? app.clientName,
+          equipmentTypeLabel: p.equipmentTypeLabel,
+          equipmentTypeId: p.equipmentTypeId,
+          address: p.address ?? app.address,
+          plannedDate: p.plannedDate,
+          plannedTimeFrom: p.plannedTimeFrom,
+          plannedTimeTo: p.plannedTimeTo,
+        })),
+    );
+  }, [applicationsQuery.data]);
   const allRows = useMemo(() => {
     if (USE_API && reservationsQuery.data) {
       return toReservationRows(reservationsQuery.data.items);
@@ -124,6 +152,15 @@ export function ReservationsWorkspacePage() {
     setClientLead(null);
   };
 
+  const handleSaveView = () => {
+    void saveViewSnapshot({
+      moduleId: activeSecondaryNav,
+      view: effectiveView,
+      query,
+      filters,
+    });
+  };
+
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
       <WorkspaceHeader />
@@ -132,11 +169,24 @@ export function ReservationsWorkspacePage() {
         onFiltersChange={setFilters}
         query={query}
         onQueryChange={setQuery}
+        onSaveView={handleSaveView}
       />
       <div className="flex h-8 shrink-0 items-center gap-2 border-b border-border/40 bg-muted/20 px-4 text-[11px] text-muted-foreground">
         <span>
-          Новые брони создаются из карточки заявки. Откройте заявку, чтобы забронировать позицию.
+          Новые брони можно создать прямо здесь из готовых позиций заявки.
         </span>
+        {USE_API ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-6 gap-1 px-2 text-[11px] text-[#2a6af0] hover:bg-[#e7f1ff] hover:text-[#2a6af0]"
+            onClick={() => setIsCreateOpen(true)}
+            disabled={reservationCandidates.length === 0}
+          >
+            <FileText className="h-3 w-3" />
+            Новая бронь
+          </Button>
+        ) : null}
         <Button
           size="sm"
           variant="ghost"
@@ -177,9 +227,21 @@ export function ReservationsWorkspacePage() {
 
       <Dialog open={isClientOpen} onOpenChange={setIsClientOpen}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
-          {clientLead && <ClientWorkspace lead={clientLead} onClose={handleCloseClient} />}
+          {clientLead && (
+            <ClientWorkspace
+              lead={clientLead}
+              onClose={handleCloseClient}
+              apiClientId={USE_API ? clientLead.id : undefined}
+            />
+          )}
         </DialogContent>
       </Dialog>
+
+      <CreateReservationDialog
+        open={isCreateOpen}
+        onOpenChange={setIsCreateOpen}
+        candidates={reservationCandidates}
+      />
     </div>
   );
 }

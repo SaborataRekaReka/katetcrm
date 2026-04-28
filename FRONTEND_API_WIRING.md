@@ -4,6 +4,8 @@
 
 > **Обновление (23.04.2026, sessions 10–13):** Leads / Applications / Reservations / Activity прошли полный wiring-проход. Разделы 2, 3, 5 ниже актуализированы. Readiness-матрица в конце также обновлена.
 
+> **Обновление (27.04.2026, iterations 1–3):** Backend/Frontend wiring для Departures + Completion выполнен. Добавлены API-клиенты, query/mutation hooks, adapters и API-detail ветки в workspace-компонентах. Разделы 6, 7, матрица готовности и приоритеты ниже актуализированы.
+
 ## Легенда статуса
 
 - **match** — UI-интеракция имеет готовый endpoint, контракт типов совпадает.
@@ -40,7 +42,7 @@
 | Drag-n-drop между стадиями (native HTML5) | `LeadsKanbanBoard` → `useChangeLeadStage` | **match** ✅ | `POST /leads/:id/stage` (mirror `ALLOWED_TRANSITIONS` на фронте) |
 | Фильтры scope/manager/source/stage | `applyLeadsFilters(clientSide)` | **adapter** | `GET /leads` поддерживает server-side filters, но вызов делается без них |
 | Toggle board/list/table | layoutStore | match (UI) | — |
-| Кнопка "Создать лид" | — | **no-wiring** | `POST /leads` есть |
+| Кнопка "Создать лид" | `NewLeadDialog` → `useCreateLead` | **match** ✅ | `POST /leads` |
 | Lead detail → "Перевести в заявку" | `useChangeLeadStage` (+ DnD) | **match** ✅ | `POST /leads/:id/stage {stage:'application'}` (auto-create Application+Client в транзакции) |
 | Lead detail → "Неквалифицирован" | `UnqualifyLeadDialog` → `useChangeLeadStage` | **match** ✅ | `POST /leads/:id/stage {stage:'unqualified', reason}` |
 | Lead detail → inline-edit основных полей | `InlineText/InlineDate/InlineSelect` → `useUpdateLead` | **match** ✅ | `PATCH /leads/:id` (contactName/contactCompany/contactPhone/equipmentTypeHint/address/requestedDate/timeWindow/source/comment) |
@@ -87,9 +89,9 @@
 - `ApplicationPosition.subcontractor`, `unit` (строки) → должны быть id + label через include
 - `Application.clientName/clientCompany/clientPhone` → денормализация из Client (include)
 - `Application.responsibleManager` (строка ФИО) → должно быть id+fullName через include
-- `Application.stage` включает `'cancelled'` которого нет в PipelineStage enum → **несоответствие**
+- `Application.stage` UX-policy (`cancelled` vs `unqualified`) зафиксирована: UI и backend трактуют `unqualified` как lead/completion outcome, а terminal для application = `cancelled`
 
-**Решение:** adapter `toApplicationUi(api)` с join-полями. Enum `cancelled` на фронте заменить на `unqualified` ИЛИ добавить `cancelled` в PipelineStage (нужно решение продукта).
+**Решение:** adapter `toApplicationUi(api)` с join-полями + явная UX-policy для `cancelled`/`unqualified`.
 
 ---
 
@@ -101,27 +103,23 @@
 |---|---|---|---|
 | Список клиентов | `mockClientsList` | **adapter** | `GET /clients` |
 | Row click → ClientWorkspace | detail modal | **adapter** | `GET /clients/:id` |
-| Preset tabs (new/repeat/vip/debt) | tag-based фильтр | **schema-gap** | tags не в Client |
+| Preset tabs (new/repeat/vip/debt) | tag-based фильтр | **adapter** | требуется маппинг на `ClientTag`/derived признаки |
 | Manager filter | setState | **no-backend-field** | у Client нет manager (есть у Lead/Application) |
 | RepeatOrderDialog submit | `onConfirm` | **no-wiring** | нужен endpoint «создать лид из клиента» или reuse `POST /leads` с `clientId` |
 | "Создать клиента" | — | **no-wiring** | `POST /clients` |
-| Редактирование реквизитов | — | **no-wiring** + **schema-gap** | `Client.requisites` (inn/kpp/ogrn/bank…) — **нет в Prisma** |
-| Контакты (несколько ролей) | — | **schema-gap** | `Client.contacts[]` — нет в Prisma, только одиночный phone/email |
+| Редактирование реквизитов | — | **no-wiring** | `Client.requisites` есть в Prisma, не подключено в UI |
+| Контакты (несколько ролей) | — | **no-wiring** | `Client.contacts[]` есть в Prisma, не подключено в UI |
 | История лидов/заказов | mock | **adapter** | derived через `include: {leads, applications}` |
 | possibleDuplicates | mock | **match** | `GET /clients/duplicates?phone&company` |
-| tags (ClientTag[]) | mock | **schema-gap** | нет |
+| tags (ClientTag[]) | mock | **adapter** | есть `Tag` + `ClientTag`, требуется UI wiring |
 
-**Schema-gaps суммарно — самый большой дефицит**:
-1. `Client.contacts[]` (id, name, role, phone, email, isPrimary) — **отсутствует модель**
-2. `Client.requisites` (inn/kpp/ogrn/legalAddress/bank*) — **отсутствует**
-3. `Client.tags[]` (label, tone) — **отсутствует**
-4. `Client.workingNotes` vs `Client.notes` — у нас только `notes`
-5. `Client.totalOrders`, `totalRevenue`, `daysSinceLastOrder` — derived (агрегаты)
-6. `Client.manager` — нет прямой связи; можно выводить как manager последней активной Application
-7. `Client.type` ('company' / 'person') — derived от наличия `company`
-8. `Client.activeRecords` (counts + top records) — derived
+**Client gaps сейчас в основном adapter/UI, не schema**:
+1. `Client.totalOrders`, `totalRevenue`, `daysSinceLastOrder` — derived (агрегаты) и пока не собраны в одном adapter-е.
+2. `Client.manager` — нет прямой связи; выводится как derived от активных записей.
+3. `Client.type` ('company' / 'person') и `activeRecords` — derived для UI.
+4. UI-слой контактов/реквизитов/тегов пока частично mock, несмотря на наличие моделей в Prisma.
 
-**Решение продукта нужно**: добавляем отдельные модели `ClientContact`, `ClientRequisites`, `ClientTag` или урезаем UI? Это самое большое product-решение в плане.
+**Решение продукта нужно**: согласовать уровень детализации Client history/aggregates и правила для repeat-order сценария.
 
 ---
 
@@ -131,7 +129,7 @@
 
 | Элемент | Handler | Статус | Endpoint |
 |---|---|---|---|
-| Список | mock (list endpoint всё ещё не подключён к UI) | **adapter** | `GET /reservations` |
+| Список | `useReservationsQuery` + adapter (mock fallback only when `USE_API=false`) | **adapter** | `GET /reservations` |
 | Row click | detail modal | **match** ✅ | `GET /reservations/:id` |
 | Internal stage toggle | ToggleGroup → `useUpdateReservation` | **match** ✅ | `PATCH /reservations/:id {internalStage}` |
 | Source select (own/sub/undecided) | `handleSourceChange` → `useUpdateReservation` | **match** ✅ | `PATCH /reservations/:id {sourcingType}` |
@@ -142,61 +140,60 @@
 | Плановая дата (plannedStart/End) | `InlineDate` с сохранением времени | **match** ✅ | `PATCH /reservations/:id {plannedStart, plannedEnd}` |
 | Окно времени `HH:MM–HH:MM` | `InlineText` с regex-парсингом | **match** ✅ | `PATCH /reservations/:id {plannedStart, plannedEnd}` |
 | Комментарий | `InlineText` multiline | **match** ✅ | `PATCH /reservations/:id {comment}` |
-| "Готово к выезду" CTA | alert only | **no-wiring** | `PATCH /reservations/:id {internalStage:'ready_for_departure'}` — легко добить |
+| "Готово к выезду" CTA | `handlePrimaryAction()` | **match** ✅ | `PATCH /reservations/:id {internalStage:'ready_for_departure'}` + `POST /leads/:id/stage {stage:'departure'}` |
 | "Снять бронь" | `useReleaseReservation` + AlertDialog с причиной | **match** ✅ | `POST /reservations/:id/release` |
 | Conflict warning badge | computed on mock | **match** | Backend уже выставляет `hasConflictWarning` |
-| Создать бронь | — | **no-wiring** | `POST /reservations` |
+| Создать бронь | `LeadDetailModal.handlePrepareReservation` | **match** ✅ | `POST /reservations` |
 | Журнал изменений | `useEntityActivity('reservation', id)` | **match** ✅ | `GET /activity?entityType=reservation&entityId=…` |
 
 **Schema-gaps:**
-- `Reservation.internalStage` enum на фронте: `needs_selection` → на бэке `needs_source_selection` (**разное написание**)
+- `Reservation.internalStage` enum синхронизирован (`needs_source_selection`, `subcontractor_selected` присутствуют на фронте и бэке)
 - `Reservation.reservationType` ('equipment_type' / 'specific_unit') — derived (если `equipmentUnitId` задан — specific)
 - `Reservation.status` ('active' / 'released') — derived от `isActive`
 - `Reservation.candidateUnits[]` / `subcontractorOptions[]` — не реляционные поля, это **подсказки от UI**, тянуть из `GET /equipment-units?equipmentTypeId=X&status=active`
 - `Reservation.readyForDeparture` — derived от `internalStage === 'ready_for_departure'`
-- `Reservation.reservedBy` (строка) — должно быть id+fullName (сейчас вообще нет `createdById` в модели Reservation — **bug в схеме**, activity log есть, но прямая ссылка нет)
+- `Reservation.reservedBy` (строка) — UI использует denormalized label; в схеме есть `createdById`, для полного match нужен join-projection в API-ответе
 
 ---
 
 ## 6. Departures
 
-**Файлы:** `departure/DeparturesWorkspacePage.tsx`, `DepartureWorkspace.tsx`, `data/mockDeparture.ts`
+**Файлы:** `departure/DeparturesWorkspacePage.tsx`, `DepartureWorkspace.tsx`, `DepartureWorkspaceApi.tsx`, `hooks/useDeparturesQuery.ts`, `hooks/useDepartureMutations.ts`, `lib/departuresApi.ts`, `lib/departureAdapter.ts`
 
 | Элемент | Handler | Статус | Endpoint |
 |---|---|---|---|
-| Список | mock | **no-endpoint** | `GET /departures` — **не реализован в бэке** |
-| Row click | detail | **no-endpoint** | `GET /departures/:id` — нет |
-| Status toggle | ToggleGroup → setState | **no-endpoint** | `PATCH /departures/:id {status}` — нет |
-| "Начать выезд" | setState + alert | **no-endpoint** | нет |
-| "Прибыл" | setState + alert | **no-endpoint** | нет |
-| "Завершить выезд" + notes | confirm → setState | **no-endpoint** | нет (Completion есть, но Departure/Complete flow разрознен) |
-| Создать выезд | — | **no-endpoint** | нет |
+| Список | `useDeparturesQuery` + `toDepartureLead` | **match** ✅ | `GET /departures` |
+| Row click → detail | `DepartureWorkspace` → `DepartureWorkspaceApi` | **match** ✅ | `GET /departures/:id` |
+| Обновление полей выезда | `useUpdateDeparture` | **match** ✅ | `PATCH /departures/:id` |
+| "Начать выезд" | `useStartDeparture` | **match** ✅ | `POST /departures/:id/start` |
+| "Прибыл" | `useArriveDeparture` | **match** ✅ | `POST /departures/:id/arrive` |
+| "Отменить" | `useCancelDeparture` | **match** ✅ | `POST /departures/:id/cancel` |
+| "Завершить/Некачественный" | `useCompleteDeparture` | **match** ✅ | `POST /departures/:id/complete` |
+| Создание выезда из воронки | lead stage transition | **match** ✅ | server-side auto-create при `reservation -> departure` |
 
-**Schema-gaps / enum mismatch:**
-- UI enum: `planned | on_the_way | arrived | completed | cancelled`
-- DB enum: `scheduled | in_progress | done | overdue`
-- **Полное несоответствие.** Нужно решение: синхронизировать либо в UI, либо в схеме. Рекомендация — расширить DB enum до `scheduled | in_transit | arrived | completed | cancelled | overdue` (overdue = derived alert, а не терминальный status — подумать).
-- `Departure.alert` (none/overdue_start/overdue_arrival/stale) — derived на сервере
-- `Departure.linked.*` — JOIN через reservation → applicationItem → application → client + lead
-- `Departure.plan.deliveryNotes` — есть `Application.deliveryMode`, но не `deliveryNotes` — **schema-gap**
+**Schema-gaps:**
+- Критический enum gap закрыт: `DepartureStatus` синхронизирован (`scheduled | in_transit | arrived | completed | cancelled`).
+- `Departure.alert` остаётся derived-полем (это ожидаемо).
+- `linked.*` и плановые поля отдаются через проекцию и adapter (ожидаемый adapter-слой).
 
 ---
 
 ## 7. Completion
 
-**Файлы:** `completion/CompletionWorkspace*.tsx`, `data/mockCompletion.ts`
+**Файлы:** `completion/CompletionWorkspacePage.tsx`, `CompletionWorkspace.tsx`, `CompletionWorkspaceApi.tsx`, `hooks/useCompletionsQuery.ts`, `hooks/useCompletionMutations.ts`, `lib/completionsApi.ts`, `lib/departureAdapter.ts`
 
 | Элемент | Handler | Статус | Endpoint |
 |---|---|---|---|
-| Список | mock | **no-endpoint** | `GET /completions` — нет (Completion создаётся через каскад) |
-| Outcome toggle | setState | **no-endpoint** | `POST /departures/:id/complete` — нет |
-| Reason textarea | setState | — | — |
-| "Завершить" | alert only | **no-endpoint** | нет |
+| Список (API-режим) | `useDeparturesQuery` + `toCompletionLeadFromDeparture` | **adapter** | `GET /departures` (completion rows derived от departure+completion) |
+| Detail existing completion | `useCompletionQuery` | **match** ✅ | `GET /completions/:id` |
+| Создать completion из departure | `useCreateCompletion` | **match** ✅ | `POST /completions` |
+| Завершить через departure flow | `useCompleteDeparture` | **match** ✅ | `POST /departures/:id/complete` |
+| Update notes/reason | `useUpdateCompletion` | **match** ✅ | `PATCH /completions/:id` |
 
 **Schema-gaps:**
 - `Completion.status` UI enum `ready_to_complete | blocked | completed | unqualified` vs DB только `outcome: completed | unqualified` + отсутствие статуса «готов к завершению» — derived
 - `Completion.alert` (stale / missing_arrival / reservation_mismatch) — derived
-- `Completion.fact.completedBy` — **нет в схеме** (activity log покрывает, но прямой ссылки нет)
+- `Completion.fact.completedBy` — в схеме есть `completedById` (+ join `completedBy.fullName` в проекции)
 - `Completion.context.*` (plannedDate, departedAt, arrivedAt) — derived из Departure
 
 ---
@@ -261,13 +258,13 @@
 | Домен | Backend | UI read | UI mutations | Schema match | Готовность |
 |---|---|---|---|---|---|
 | Auth | ✅ | ✅ | ✅ | — | **DONE** |
-| Leads | ✅ | ✅ | ✅ (stage DnD, inline-edit, unqualify) | ⚠️ derived fields | **75%** |
-| Applications | ✅ | ✅ header | ✅ header inline-edit + cancel; items ❌ | ⚠️ enum `cancelled` | **55%** |
-| Reservations | ✅ | ✅ | ✅ (stage/source/confirm/dates/comment/release); unit/sub ❌ | ⚠️ enum mismatch `internalStage` | **65%** |
-| Clients | ✅ (базовый) | ❌ mock | ❌ | ❌ contacts/requisites/tags не в схеме | 10% |
+| Leads | ✅ | ✅ | ✅ (stage DnD, inline-edit, unqualify, create lead) | ⚠️ derived fields | **80%** |
+| Applications | ✅ | ✅ header | ✅ header inline-edit + cancel; items ❌ | ⚠️ adapter gaps (items) | **62%** |
+| Reservations | ✅ | ✅ | ✅ (stage/source/confirm/dates/comment/release/create-from-application); unit/sub ❌ | ⚠️ adapter gaps | **72%** |
+| Clients | ✅ (schema расширена) | ❌ mixed (API+mock) | ❌ | ⚠️ adapter/history gaps | 28% |
 | Directories | ✅ | ❌ mock | ❌ (UI нет modals) | ✅ (кроме rating) | 20% |
-| Departures | ❌ endpoints нет | ❌ | ❌ | ❌ enum полностью другой | 5% |
-| Completion | ❌ endpoints нет | ❌ | ❌ | ⚠️ alert/status derived | 5% |
+| Departures | ✅ | ✅ (API mode) | ✅ (start/arrive/cancel/complete/update) | ⚠️ derived fields | **75%** |
+| Completion | ✅ | ✅ (API mode) | ✅ (create/update + departure complete flow) | ⚠️ alert/status derived | **68%** |
 | Activity/Audit | ✅ | ✅ в detail-модалках | — | — | **40%** |
 | Home dashboard | ❌ aggregate endpoints | ❌ | — | — | 5% |
 | Admin | ❌ endpoints нет | ❌ | — | — | 0% |
@@ -278,20 +275,16 @@
 
 ### Stage 4a: закрываем schema-gaps (решения продукта)
 
-1. **Client**: добавить модели `ClientContact`, `ClientRequisites`, `ClientTag`? ИЛИ убрать из UI? **Требует решения.**
-2. **Departure**: синхронизировать enum (UI vs DB). Рекомендация: расширить DB до `scheduled | in_transit | arrived | completed | cancelled`.
-3. **Reservation**: исправить enum написание `needs_selection` ↔ `needs_source_selection` (привести к одному).
-4. **Application.stage**: решить судьбу `cancelled`.
-5. **Reservation**: добавить `createdById` (сейчас только в activity).
-6. **Subcontractor.rating**: добавить поле? Или убрать из UI?
+1. **Client**: перевести UI на уже существующие модели (`ClientContact`, `ClientRequisites`, `Tag/ClientTag`) и закрыть history/aggregate adapters.
+2. **Application/Reservation adapters**: закрыть все join-поля в едином style-guide (чтобы убрать локальные преобразования в UI).
+3. **Application.stage**: ✅ policy зафиксирована (27.04.2026), убрать legacy неоднозначность `cancelled`/`unqualified` из новых изменений.
+4. **Subcontractor.rating**: добавить поле? Или убрать из UI?
 
 ### Stage 4b: новые endpoints
 
-1. `GET/POST/PATCH /departures`, transitions + auto-Completion.
-2. `POST /departures/:id/complete` (outcome+reason).
-3. `GET /stats` (aggregates для Home и Control).
-4. Расширенные фильтры `GET /activity`.
-5. Excel-импорт (Clients/Catalogs) — Stage 5.
+1. `GET /stats` (aggregates для Home и Control).
+2. Расширенные фильтры `GET /activity`.
+3. Excel-импорт (Clients/Catalogs) — Stage 5.
 
 ### Stage 4c: UI wiring по доменам (после решения gap-ов)
 
@@ -302,8 +295,8 @@
 3. **Applications items** (добавить/редактировать/удалить позиции; header уже подключён).
 4. **Reservations** unit/subcontractor dropdowns (нужны typeahead по каталогам).
 5. **Clients** (после product-решения по gaps).
-6. **Departures** (после backend).
-7. **Completion** (после backend).
+6. ~~**Departures**~~ ✅ backend+frontend API wiring done.
+7. ~~**Completion**~~ ✅ backend+frontend API wiring done.
 8. **Home / Control** (после aggregate endpoints).
 
 ### \u{1f195} \u0421\u0432\u0435\u0436\u0438\u0435 \u0443\u043b\u0443\u0447\u0448\u0435\u043d\u0438\u044f (sessions 10\u201313, 23.04.2026)

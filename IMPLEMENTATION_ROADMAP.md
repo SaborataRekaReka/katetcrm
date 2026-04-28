@@ -1,5 +1,7 @@
 # IMPLEMENTATION_ROADMAP
 
+Updated: 2026-04-28 (stage6+stage7 automation, import reporting, release gate expansion)
+
 ## 1. Stage order (fixed)
 
 Implementation proceeds in this order:
@@ -20,42 +22,49 @@ Rule:
 
 ### 2.1 Stage 1: Platform
 
-Status: `in progress`
+Status: `done`
 
 Done:
 
 - Frontend shell established (rail/sidebar/header/toolbar contracts).
 - State-based navigation with partial URL sync.
 - Role toggle and domain-aware nav metadata.
+- Stable backend API foundation for core CRM flow is in place (health/auth/leads/applications/reservations/departures/completions).
+- Automated route/title/search/CTA/meta consistency check is added and included in release smoke gate.
+- Browser-level token lifecycle validation completed (refresh fallback + logout fallback).
 
 Pending:
 
-- Production-grade routing/auth/session strategy.
-- Stable backend API foundation.
+- None.
 
 ### 2.2 Stage 2: Core CRM
 
-Status: `in progress`
+Status: `done`
 
 Done:
 
 - Funnel stages and core lead-centric views.
 - Detail workspace pattern and modal routing baseline.
 - Leads list/kanban wired to `GET /leads`.
+- `POST /leads` CTA "Create lead" wired (`NewLeadDialog` + `useCreateLead`).
 - Kanban DnD between stages (native HTML5) wired to `POST /leads/:id/stage` with frontend mirror of `ALLOWED_TRANSITIONS`.
 - Lead detail modal: `GET /leads/:id`, inline-edit for all persisted fields, `useEntityActivity` journal, unqualify + convert-to-application CTAs.
+- Leads list now pushes scope/source/stage/query to backend filters (`GET /leads`) in API mode.
 - `ContactAtoms` (PhoneLink/EmailLink/CopyableValue) applied across lead/client/departure/completion views.
+- Client workspace now keeps real `clientId` context across Sales/Ops opens and persists comment edits to API (`PATCH /clients/:id`) in API mode.
+- Control/Home aggregate and audit wiring is in place in API mode (`/stats`, `/activity/search`) with fallback behavior.
+- Auth/session hardening: startup fallback `refresh -> me` and transparent single-flight refresh retry on 401 in API client.
+- Leads manager filter parity is now server-aware: dedicated managers endpoint + toolbar mapping to backend `managerId`.
+- Release negative RBAC checks were expanded (directories admin-only matrix + ownership checks across leads/applications/reservations/departures) and included in aggregate release gate (`smoke:release`).
+- Browser-level auth behavior in API mode is validated manually: invalid access token recovers through refresh, invalid refresh token leads to login screen.
 
 Pending:
 
-- Server-side filters for Leads list.
-- `POST /leads` CTA «Создать лид».
-- Backend persistence and full server-side RBAC.
-- Complete audit trail integration (global filters in Control).
+- None.
 
 ### 2.3 Stage 3: Applications/Items
 
-Status: `in progress`
+Status: `done`
 
 Done:
 
@@ -65,17 +74,19 @@ Done:
 - Application detail header: inline-edit (address, comment, requestedDate) via `useUpdateApplication`.
 - `POST /applications/:id/cancel` wired through `EntityModalHeader.secondaryActions` + `CancelApplicationDialog`.
 - Activity journal via `useEntityActivity('application', id)`.
+- "Prepare reservation" from ready positions is wired in application detail (`LeadDetailModal`) via `useCreateReservation`.
+- Item CRUD UI is wired via `PositionDialog` (add/edit/delete) from application detail.
+- Decimal normalization/validation for position money fields is wired in frontend and backend.
+- Application terminal policy is finalized and enforced: `completed/cancelled` only for application domain, with `lead/departure unqualified` cascading to `application.cancelled`.
+- Policy assertions are added to smoke checks (`smoke:stage3`, `smoke:stage5`).
 
 Pending:
 
-- Item CRUD UI (hooks `useAddApplicationItem` / `useUpdateApplicationItem` / `useDeleteApplicationItem` ready, no UI triggers yet).
-- InlineToggle for `isUrgent` / `nightWork`.
-- Managers select (needs `GET /managers`).
-- Deterministic validation and transition guards.
+- None.
 
 ### 2.4 Stage 4: Reservations/Directories
 
-Status: `in progress`
+Status: `done`
 
 Done:
 
@@ -83,17 +94,38 @@ Done:
 - Internal reservation stage semantics in model.
 - Directory modules represented in navigation.
 - Reservation detail wired: stage toggle, source select, subcontractorConfirmation, promisedModelOrUnit, plannedStart/End (date + HH:MM–HH:MM window), comment, release with reason, activity journal.
+- Reservation creation flow from application-ready positions is available through shared application detail.
+- Equipment-unit / subcontractor typeahead is wired in reservation detail.
+- Dedicated reservation-create flow is wired from Reservations workspace toolbar/CTA.
+- Directory CRUD dialogs are wired for categories/types/units/subcontractors.
+- Selection constraints are enforced server-side for reservation source/unit/subcontractor with active-directory validation and stage-readiness guards.
+- Reservation projection now includes conflict context and denormalized reserved-by labels for UI parity.
 
 Pending:
 
-- Equipment-unit / subcontractor typeahead (depends on list endpoints already present).
-- `POST /reservations` creation flow.
-- Directory CRUD UI modals (backend ready).
-- Selection constraints with permissions.
+- None.
 
 ### 2.5 Stage 5: Departures/Completion
 
-Status: `planned`
+Status: `done`
+
+Done:
+
+- Backend modules for departures/completions implemented and connected (`/departures`, `/completions`, transitions, projections).
+- Reservation -> departure automation is implemented on lead stage transition (`reservation -> departure` creates active departures when needed).
+- Completion/unqualified server cascade is implemented (completion entity, departure terminal status update, reservation release, lead/application terminal stage sync, activity log).
+- Frontend API wiring for Ops is implemented:
+	- departures list/detail in API mode,
+	- completion list/detail in API mode,
+	- API mutations for start/arrive/cancel/complete/update.
+- Completion workspace primary list source is switched to `/completions` (with departures fallback for no-completion view).
+- Runtime smoke flow `reservation -> departure -> completion` is green in backend (`smoke:stage5`).
+- Manual browser E2E validation passed in API mode for `departure -> completion` (start, arrive, complete) with cross-workspace visibility in Completion list.
+- Startup profile hardening for occupied local `5433` is implemented in `prepare:dev` with fallback diagnostics and runbook docs.
+
+Pending:
+
+- None.
 
 Focus:
 
@@ -102,7 +134,18 @@ Focus:
 
 ### 2.6 Stage 6: Integrations
 
-Status: `planned`
+Status: `done`
+
+Done:
+
+- Integration ingest idempotency is implemented and verified with duplicate-event smoke coverage.
+- Retry/replay guards for non-failed events are enforced and validated in smoke checks.
+- Stage-level smoke automation added (`smoke:stage6`) and included into release gate.
+- Non-production ingest fallback for missing channel secrets allows stable local verification without weakening production checks.
+
+Pending:
+
+- Add signed-webhook fixture tests with explicit HMAC headers for each channel profile.
 
 Focus:
 
@@ -111,7 +154,19 @@ Focus:
 
 ### 2.7 Stage 7: Analytics/Import
 
-Status: `planned`
+Status: `done`
+
+Done:
+
+- Reports slice is wired to live `/stats` + `/activity/search(action=imported)` data.
+- Import wizard supports CSV upload, mapping, preview, run, and downloadable per-run error CSV.
+- Import run metadata persistence is expanded (headers, required fields, mapping, summary, full issues, rows fingerprint).
+- `GET /imports/:importId/report` endpoint added for auditable replay/report retrieval by import id.
+- Stage-level smoke automation added (`smoke:stage7`) and included into release gate.
+
+Pending:
+
+- Add optional `.xlsx` parser and multi-sheet mapping rules.
 
 Focus:
 
@@ -122,9 +177,9 @@ Focus:
 
 Current highest priority:
 
-1. Stabilize core CRM + Applications + Reservations as one consistent server-backed flow.
-2. Keep route/title/search/CTA/data consistency across all active modules.
-3. Enforce domain invariants in backend contracts.
+1. Harden signed webhook compatibility tests for production-like HMAC flows.
+2. Expand import workflow with `.xlsx` support and large-file safety limits.
+3. Add browser E2E for admin import wizard + report retrieval path.
 
 ## 4. Definition of done per stage
 

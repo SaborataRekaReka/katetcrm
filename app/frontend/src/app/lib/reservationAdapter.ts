@@ -42,12 +42,14 @@ function humanizeSince(iso: string): string {
 
 export function toReservationRow(api: ReservationApi): ReservationRow {
   const manager = api.responsibleManagerName ?? '—';
+  const reservedBy = api.reservedByName ?? manager;
   const clientName = api.clientName ?? '—';
   const clientCompany = api.clientCompany ?? undefined;
   const equipmentType = api.equipmentTypeLabel ?? api.positionLabel;
 
   const lead: Lead = {
     id: api.applicationItemId,
+    apiClientId: api.clientId ?? undefined,
     stage: 'reservation',
     client: clientName,
     company: clientCompany,
@@ -73,7 +75,7 @@ export function toReservationRow(api: ReservationApi): ReservationRow {
     equipmentUnit: api.equipmentUnitLabel ?? undefined,
     source: api.source,
     subcontractor: api.subcontractorLabel ?? undefined,
-    reservedBy: manager,
+    reservedBy,
     reservedAt: api.createdAt,
     releasedAt: api.releasedAt ?? undefined,
     releaseReason: api.releaseReason ?? undefined,
@@ -110,11 +112,12 @@ export function toReservationRows(list: ReservationApi[]): ReservationRow[] {
  * Adapter: ReservationApi → UI Reservation (для detail-модалки).
  *
  * Источник правды для persisted полей — бэк. candidateUnits/subcontractorOptions/
- * activity/conflict-details пока пустые: эндпоинтов нет, и добавляем их не здесь,
- * а в отдельной сессии. UI корректно отображает пустые массивы.
+ * activity остаются пустыми: соответствующие endpoint-ы подключаются отдельно.
+ * Conflict-context уже приходит в projection и переносится в `Reservation.conflict`.
  */
 export function toReservationEntity(api: ReservationApi): Reservation {
   const manager = api.responsibleManagerName ?? '—';
+  const reservedBy = api.reservedByName ?? manager;
   const clientName = api.clientName ?? '—';
   const clientCompany = api.clientCompany ?? undefined;
   const equipmentType = api.equipmentTypeLabel ?? api.positionLabel;
@@ -138,14 +141,21 @@ export function toReservationEntity(api: ReservationApi): Reservation {
     equipmentUnit: api.equipmentUnitLabel ?? undefined,
     source: api.source,
     subcontractor: api.subcontractorLabel ?? undefined,
-    reservedBy: manager,
+    reservedBy,
     reservedAt: formatDateTime(api.createdAt),
     releasedAt: api.releasedAt ? formatDateTime(api.releasedAt) : undefined,
     releaseReason: api.releaseReason ?? undefined,
     comment: api.comment ?? undefined,
     lastActivity: humanizeSince(api.updatedAt),
     hasConflict: api.hasConflict,
-    conflict: undefined,
+    conflict: api.conflict
+      ? {
+          id: api.conflict.id,
+          summary: api.conflict.summary,
+          conflictingReservationId: api.conflict.conflictingReservationId,
+          conflictingAt: api.conflict.conflictingAt,
+        }
+      : undefined,
     readyForDeparture: api.readyForDeparture,
     linked: {
       applicationId: api.applicationId,

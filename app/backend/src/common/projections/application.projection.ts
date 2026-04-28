@@ -237,6 +237,8 @@ function computeApplicationGroup(
   hasAnyConflict: boolean,
 ): ApplicationGroup {
   if (stage === 'completed') return 'completed';
+  // Legacy compatibility: historical rows may still contain "unqualified",
+  // but application UI/domain terminal state is "cancelled".
   if (stage === 'cancelled' || stage === 'unqualified') return 'cancelled';
   if (stage === 'departure') return 'on_departure';
   const total = positions.length;

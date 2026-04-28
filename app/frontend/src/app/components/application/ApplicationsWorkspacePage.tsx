@@ -23,6 +23,7 @@ import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
+import { saveViewSnapshot } from '../../lib/viewSnapshots';
 
 /**
  * Adapt an Application row into a Lead-shaped object so the stage-specific
@@ -33,10 +34,10 @@ import { toKanbanLead } from '../../lib/leadAdapter';
  */
 function applicationToLead(a: Application): Lead {
   const pos0 = a.positions[0];
-  const stage: StageType =
-    a.stage === 'cancelled' ? 'unqualified' : (a.stage as StageType);
+  const stage: StageType = a.stage as StageType;
   return {
     id: a.leadId ?? a.id,
+    apiClientId: a.clientId,
     stage,
     client: a.clientName,
     company: a.clientCompany,
@@ -139,6 +140,15 @@ export function ApplicationsWorkspacePage() {
     setClientLead(null);
   };
 
+  const handleSaveView = () => {
+    void saveViewSnapshot({
+      moduleId: activeSecondaryNav,
+      view: effectiveView,
+      query,
+      filters,
+    });
+  };
+
   const handleOpenLead = (leadId: string) => {
     setLeadOverlayId(leadId);
     setIsLeadOverlayOpen(true);
@@ -164,6 +174,7 @@ export function ApplicationsWorkspacePage() {
         onFiltersChange={setFilters}
         query={query}
         onQueryChange={setQuery}
+        onSaveView={handleSaveView}
       />
 
       {effectiveView === 'list' ? (
@@ -195,7 +206,7 @@ export function ApplicationsWorkspacePage() {
                 onClose={handleClose}
                 onOpenClient={handleOpenClient}
               />
-            ) : selected.stage === 'completed' || selected.stage === 'cancelled' ? (
+            ) : selected.stage === 'completed' ? (
               <CompletionWorkspace
                 lead={applicationToLead(selected)}
                 onClose={handleClose}

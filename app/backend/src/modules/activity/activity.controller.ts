@@ -1,11 +1,28 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ActivityService } from './activity.service';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
+import { ActivitySearchQueryDto } from './activity.dto';
 
 @Controller('activity')
 @UseGuards(JwtAuthGuard)
 export class ActivityController {
   constructor(private readonly activity: ActivityService) {}
+
+  @Get('search')
+  listFiltered(@Query() query: ActivitySearchQueryDto) {
+    return this.activity.listFiltered({
+      entityType: query.entityType,
+      entityId: query.entityId,
+      actorId: query.actorId,
+      action: query.action,
+      module: query.module,
+      query: query.query,
+      from: query.from ? new Date(query.from) : undefined,
+      to: query.to ? new Date(query.to) : undefined,
+      take: query.take,
+      skip: query.skip,
+    });
+  }
 
   @Get()
   list(

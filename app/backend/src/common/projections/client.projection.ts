@@ -114,7 +114,32 @@ export function projectClientListItems(arr: WithAggregates[]): ClientListView[] 
 
 export interface ClientDetailView extends ClientListView {
   notes: string | null;
+  workingNotes: string | null;
   favoriteEquipment: string[];
+  contacts: Array<{
+    id: string;
+    name: string;
+    role: string | null;
+    phone: string | null;
+    email: string | null;
+    isPrimary: boolean;
+  }>;
+  requisites: {
+    inn: string | null;
+    kpp: string | null;
+    ogrn: string | null;
+    legalAddress: string | null;
+    bankName: string | null;
+    bankAccount: string | null;
+    correspondentAccount: string | null;
+    bik: string | null;
+  } | null;
+  assignedTags: Array<{
+    id: string;
+    label: string;
+    tone: 'success' | 'caution' | 'progress' | 'warning' | 'muted' | 'source';
+    isSystem: boolean;
+  }>;
 }
 
 /**
@@ -123,12 +148,48 @@ export interface ClientDetailView extends ClientListView {
  */
 export function projectClientDetail(c: WithAggregates & {
   notes: string | null;
+  workingNotes: string | null;
   favoriteEquipment: string[];
+  contacts: Array<{
+    id: string;
+    name: string;
+    role: string | null;
+    phone: string | null;
+    email: string | null;
+    isPrimary: boolean;
+  }>;
+  requisites: {
+    inn: string | null;
+    kpp: string | null;
+    ogrn: string | null;
+    legalAddress: string | null;
+    bankName: string | null;
+    bankAccount: string | null;
+    correspondentAccount: string | null;
+    bik: string | null;
+  } | null;
+  tags: Array<{
+    tag: {
+      id: string;
+      label: string;
+      tone: 'success' | 'caution' | 'progress' | 'warning' | 'muted' | 'source';
+      isSystem: boolean;
+    };
+  }>;
 }): ClientDetailView {
   const base = projectClientListItem(c);
   return {
     ...base,
     notes: c.notes ?? null,
+    workingNotes: c.workingNotes ?? null,
     favoriteEquipment: c.favoriteEquipment ?? [],
+    contacts: c.contacts ?? [],
+    requisites: c.requisites ?? null,
+    assignedTags: (c.tags ?? []).map((t) => ({
+      id: t.tag.id,
+      label: t.tag.label,
+      tone: t.tag.tone,
+      isSystem: t.tag.isSystem,
+    })),
   };
 }

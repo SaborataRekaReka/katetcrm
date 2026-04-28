@@ -91,14 +91,11 @@ export function EntityModalHeader({
   ];
   return (
     <header className={cn('space-y-3', className)}>
-      <button
-        type="button"
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 -ml-1.5 rounded text-[11px] text-gray-500 hover:bg-gray-100 transition-colors"
-      >
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 -ml-1.5 rounded text-[11px] text-gray-500">
         {entityIcon}
         <span>{entityLabel}</span>
         <ChevronDown className="w-3 h-3" />
-      </button>
+      </span>
 
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-[22px] leading-[1.25] text-gray-900">{title}</h1>
@@ -353,8 +350,22 @@ function EntityTabButton({
   count?: number;
   onClick?: () => void;
 }) {
+  if (!onClick) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1 h-6 px-1.5 rounded text-[11px] ${
+          active ? 'bg-gray-100 text-gray-800' : 'text-gray-500'
+        }`}
+      >
+        {icon}
+        <span>{label}</span>
+        {typeof count === 'number' && <span className="text-[10px] text-gray-400">{count}</span>}
+      </span>
+    );
+  }
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1 h-6 px-1.5 rounded text-[11px] transition-colors ${
         active ? 'bg-gray-100 text-gray-800' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'

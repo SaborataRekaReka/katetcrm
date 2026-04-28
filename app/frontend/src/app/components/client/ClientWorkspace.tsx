@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   AlertCircle,
@@ -35,7 +35,12 @@ import {
 import { buildMockClient } from '../../data/mockClient';
 import { useClientQuery } from '../../hooks/useClientsQuery';
 import { useUpdateClient } from '../../hooks/useClientMutations';
+import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
+import { useLeadsQuery } from '../../hooks/useLeadsQuery';
+import { useEntityActivity } from '../../hooks/useActivityQuery';
+import { useCreateLead } from '../../hooks/useLeadMutations';
 import { USE_API } from '../../lib/featureFlags';
+import { toClientWorkspaceModel } from '../../lib/clientWorkspaceAdapter';
 import { InlineText } from '../detail/InlineEdit/InlineText';
 import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
@@ -54,7 +59,7 @@ import {
 } from '../detail/DetailShell';
 import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
 import { PhoneLink, EmailLink } from '../detail/ContactAtoms';
-import { RepeatOrderDialog } from './RepeatOrderDialog';
+import { RepeatOrderDialog, type RepeatOrderPayload } from './RepeatOrderDialog';
 import { EditClientDialog } from './EditClientDialog';
 import { NewLeadDialog } from '../leads/NewLeadDialog';
 
@@ -90,41 +95,55 @@ const leadStatusMeta: Record<ClientLeadStatus, { label: string; tone: string }> 
 
 export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const mockBase: Client = useMemo(() => buildMockClient(lead), [lead]);
+  const resolvedApiClientId = apiClientId ?? lead?.apiClientId;
 
-  // Real detail (когда есть apiClientId) — persisted-поля (name, company, phone, email,
-  // notes) перекрывают mock. Остальное (orders/leads/contacts/requisites/activity) —
-  // остаётся из мока, т.к. отдельных endpoints нет. См. docs/dead-buttons-session-10.md §5.
-  const clientQuery = useClientQuery(apiClientId, USE_API && !!apiClientId);
+  const clientQuery = useClientQuery(resolvedApiClientId, USE_API && !!resolvedApiClientId);
+  const applicationsQuery = useApplicationsQuery(
+    { clientId: resolvedApiClientId, scope: 'all' },
+    USE_API && !!resolvedApiClientId,
+  );
+  const leadsQuery = useLeadsQuery(
+    { clientId: resolvedApiClientId, scope: 'all' },
+    USE_API && !!resolvedApiClientId,
+  );
+  const activityQuery = useEntityActivity(
+    'client',
+    resolvedApiClientId,
+    USE_API && !!resolvedApiClientId,
+  );
+
   const updateClientMutation = useUpdateClient();
+  const createLeadMutation = useCreateLead();
 
   const base: Client = useMemo(() => {
-    if (clientQuery.data) {
-      const api = clientQuery.data;
-      const isCompany = !!api.company;
-      return {
-        ...mockBase,
-        id: api.id,
-        type: isCompany ? 'company' : 'person',
-        displayName: isCompany ? api.company ?? api.name : api.name,
-        shortName: isCompany ? api.name : undefined,
-        primaryPhone: api.phone,
-        primaryEmail: api.email ?? undefined,
-        totalOrders: api.totalOrders,
-        workingNotes: api.notes ?? mockBase.workingNotes,
-      };
+    if (clientQuery.data && resolvedApiClientId) {
+      return toClientWorkspaceModel({
+        detail: clientQuery.data,
+        applications: applicationsQuery.data?.items ?? [],
+        leads: leadsQuery.data?.items ?? [],
+        activity: activityQuery.data ?? [],
+        fallback: mockBase,
+      });
     }
     return mockBase;
-  }, [clientQuery.data, mockBase]);
+  }, [
+    clientQuery.data,
+    applicationsQuery.data,
+    leadsQuery.data,
+    activityQuery.data,
+    mockBase,
+    resolvedApiClientId,
+  ]);
 
-  const canInlineEditClient = USE_API && !!apiClientId;
+  const canInlineEditClient = USE_API && !!resolvedApiClientId;
 
   /** Фабрика save-обработчиков для инлайн-полей клиента. */
   const makeClientFieldSaver = (
     apply: (next: string) => Parameters<typeof updateClientMutation.mutateAsync>[0]['patch'],
   ) => {
     return async (next: string) => {
-      if (!apiClientId) return;
-      await updateClientMutation.mutateAsync({ id: apiClientId, patch: apply(next) });
+      if (!resolvedApiClientId) return;
+      await updateClientMutation.mutateAsync({ id: resolvedApiClientId, patch: apply(next) });
     };
   };
 
@@ -133,12 +152,36 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const [notes, setNotes] = useState<string>(base.workingNotes ?? '');
   const [notesEditing, setNotesEditing] = useState(false);
 
+  useEffect(() => {
+    setComment(base.comment ?? '');
+    setNotes(base.workingNotes ?? '');
+  }, [base.comment, base.workingNotes]);
+
   const [repeatOpen, setRepeatOpen] = useState(false);
   const [repeatSource, setRepeatSource] = useState<ClientOrderHistoryItem | null>(null);
-  const [createdAppId, setCreatedAppId] = useState<string | null>(null);
+  const [createdLeadId, setCreatedLeadId] = useState<string | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const toggleCommentEditing = async () => {
+    if (
+      commentEditing
+      && canInlineEditClient
+      && resolvedApiClientId
+      && comment.trim() !== (base.comment ?? '').trim()
+    ) {
+      try {
+        await updateClientMutation.mutateAsync({
+          id: resolvedApiClientId,
+          patch: { notes: comment.trim() || undefined },
+        });
+      } catch {
+        // Keep local state to avoid losing user text on transient API issues.
+      }
+    }
+    setCommentEditing((v) => !v);
+  };
 
   const handleCopy = async (value: string, key: string) => {
     try {
@@ -159,6 +202,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     contactName: base.displayName,
     contactCompany: base.type === 'company' ? base.displayName : (base.shortName ?? ''),
     contactPhone: base.primaryPhone ?? '',
+    clientId: resolvedApiClientId,
   };
 
   const completedOrders = base.ordersHistory.filter((o) => o.status === 'completed');
@@ -183,9 +227,40 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     setRepeatOpen(true);
   };
 
-  const handleConfirmRepeat = (newAppId: string) => {
-    setCreatedAppId(newAppId);
-    setRepeatOpen(false);
+  const handleConfirmRepeat = async (payload: RepeatOrderPayload) => {
+    if (!repeatSource) return;
+
+    try {
+      if (canInlineEditClient && resolvedApiClientId) {
+        const equipmentHint =
+          repeatSource.positions[0]?.equipmentType ?? repeatSource.equipmentSummary ?? undefined;
+        const commentParts = [
+          `Повтор заказа ${repeatSource.number}`,
+          payload.time ? `Окно: ${payload.time}` : null,
+          payload.note.trim() ? payload.note.trim() : null,
+        ].filter(Boolean);
+
+        const created = await createLeadMutation.mutateAsync({
+          contactName: base.shortName ?? base.displayName,
+          contactCompany: base.type === 'company' ? base.displayName : undefined,
+          contactPhone: base.primaryPhone,
+          clientId: resolvedApiClientId,
+          source: 'manual',
+          equipmentTypeHint: equipmentHint,
+          requestedDate: payload.date || undefined,
+          address: payload.address.trim() || repeatSource.address || undefined,
+          comment: commentParts.join(' · ') || undefined,
+        });
+        setCreatedLeadId(created.lead.id);
+      } else {
+        const seed = Math.floor(100 + Math.random() * 900);
+        setCreatedLeadId(`LEAD-00${seed}`);
+      }
+
+      setRepeatOpen(false);
+    } catch {
+      setCreatedLeadId(null);
+    }
   };
 
   const main = (
@@ -307,14 +382,14 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       )}
 
       {/* Repeat-order success banner */}
-      {createdAppId && (
+      {createdLeadId && (
         <Alert className="mb-4 py-1.5 px-2.5 border-emerald-200 bg-emerald-50/60">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <AlertTitle className="text-[12px] text-emerald-900">
-            Создана новая заявка {createdAppId}
+            Создан новый лид {createdLeadId}
           </AlertTitle>
           <AlertDescription className="text-[10px] text-emerald-800/85 mt-0.5 leading-snug">
-            Скопированы клиент, позиции и заметка. Активные брони/выезды не переносились.
+            Лид создан на основе предыдущего заказа с клиентским контекстом и примечанием.
           </AlertDescription>
         </Alert>
       )}
@@ -427,60 +502,66 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Контакты</div>
         </div>
         <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
-          {base.contacts.map((c) => (
-            <div key={c.id} className="flex items-center gap-3 px-3 py-2">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white text-[10px] inline-flex items-center justify-center flex-shrink-0">
-                {c.name.charAt(0)}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] text-gray-900 truncate">{c.name}</span>
-                  {c.isPrimary && (
-                    <span className={`${badgeBase} ${badgeTones.success}`}>
-                      <CheckCircle2 className="w-3 h-3" /> Основной
-                    </span>
-                  )}
-                  {c.role && (
-                    <span className="text-[10px] text-gray-500">· {c.role}</span>
-                  )}
-                </div>
-                <div className="text-[11px] text-gray-500 truncate flex items-center gap-1 flex-wrap">
-                  <PhoneLink value={c.phone} />
-                  {c.email ? <><span className="text-gray-300">·</span><EmailLink value={c.email} /></> : null}
-                </div>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {c.phone && (
-                  <a
-                    href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}
-                    className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
-                  >
-                    <Phone className="w-3 h-3" /> Позвонить
-                  </a>
-                )}
-                {c.email && (
-                  <a
-                    href={`mailto:${c.email}`}
-                    className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
-                  >
-                    <Mail className="w-3 h-3" /> Написать
-                  </a>
-                )}
-                {(c.phone || c.email) && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="h-6 px-2 text-[11px] gap-1"
-                    onClick={() => handleCopy(c.email || c.phone || '', `contact-${c.id}`)}
-                    title="Скопировать"
-                  >
-                    <Copy className="w-3 h-3" />
-                    {copiedKey === `contact-${c.id}` ? 'Ok' : ''}
-                  </Button>
-                )}
-              </div>
+          {base.contacts.length === 0 ? (
+            <div className="px-3 py-2 text-[11px] text-gray-500">
+              Контакты не заполнены.
             </div>
-          ))}
+          ) : (
+            base.contacts.map((c) => (
+              <div key={c.id} className="flex items-center gap-3 px-3 py-2">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white text-[10px] inline-flex items-center justify-center flex-shrink-0">
+                  {c.name.charAt(0)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[12px] text-gray-900 truncate">{c.name}</span>
+                    {c.isPrimary && (
+                      <span className={`${badgeBase} ${badgeTones.success}`}>
+                        <CheckCircle2 className="w-3 h-3" /> Основной
+                      </span>
+                    )}
+                    {c.role && (
+                      <span className="text-[10px] text-gray-500">· {c.role}</span>
+                    )}
+                  </div>
+                  <div className="text-[11px] text-gray-500 truncate flex items-center gap-1 flex-wrap">
+                    <PhoneLink value={c.phone} />
+                    {c.email ? <><span className="text-gray-300">·</span><EmailLink value={c.email} /></> : null}
+                  </div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {c.phone && (
+                    <a
+                      href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}
+                      className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
+                    >
+                      <Phone className="w-3 h-3" /> Позвонить
+                    </a>
+                  )}
+                  {c.email && (
+                    <a
+                      href={`mailto:${c.email}`}
+                      className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
+                    >
+                      <Mail className="w-3 h-3" /> Написать
+                    </a>
+                  )}
+                  {(c.phone || c.email) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-6 px-2 text-[11px] gap-1"
+                      onClick={() => handleCopy(c.email || c.phone || '', `contact-${c.id}`)}
+                      title="Скопировать"
+                    >
+                      <Copy className="w-3 h-3" />
+                      {copiedKey === `contact-${c.id}` ? 'Ok' : ''}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -758,7 +839,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Комментарий</div>
           <button
             className="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-800"
-            onClick={() => setCommentEditing((v) => !v)}
+            onClick={() => {
+              void toggleCommentEditing();
+            }}
           >
             <Edit3 className="w-3 h-3" /> {commentEditing ? 'Готово' : 'Редактировать'}
           </button>
@@ -785,7 +868,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         {lastCompleted ? (
           <ActionButton
             icon={<FileText className="w-3.5 h-3.5" />}
-            label="Создать заявку (повторить заказ)"
+            label="Создать лид (повторить заказ)"
             onClick={() => handleRepeatFromOrder(lastCompleted)}
           />
         ) : null}
@@ -821,11 +904,11 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
               <span className="text-gray-400 ml-auto flex-shrink-0">{a.at}</span>
             </div>
           ))}
-          {createdAppId && (
+          {createdLeadId && (
             <div className="flex items-center gap-2 text-[11px] text-gray-600">
               <Circle className="w-2 h-2 text-emerald-400 fill-emerald-400 flex-shrink-0" />
               <span className="text-gray-900">{base.manager ?? 'Менеджер'}</span>
-              <span className="text-gray-500 truncate">Повтор заказа → {createdAppId}</span>
+              <span className="text-gray-500 truncate">Повтор заказа → {createdLeadId}</span>
               <span className="text-gray-400 ml-auto flex-shrink-0">только что</span>
             </div>
           )}

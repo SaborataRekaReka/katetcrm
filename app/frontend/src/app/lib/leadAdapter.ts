@@ -24,6 +24,7 @@ function humanizeSince(iso: string): string {
 export function toKanbanLead(a: LeadApi): Lead {
   return {
     id: a.id,
+    apiClientId: a.clientId ?? undefined,
     stage: a.stage,
     client: a.contactName,
     company: a.contactCompany ?? undefined,

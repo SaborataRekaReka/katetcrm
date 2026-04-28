@@ -77,12 +77,17 @@ export function ToolbarUtilityButton({
   label,
   iconOnlyOnNarrow,
 }: ToolbarUtilityButtonProps) {
+  const disabled = !onClick;
   return (
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       title={iconOnlyOnNarrow ? label : undefined}
-      className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2 text-[12px] text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+      className={cn(
+        'inline-flex h-7 shrink-0 items-center gap-1.5 rounded-md px-2 text-[12px] text-muted-foreground transition-colors',
+        disabled ? 'opacity-50 cursor-default' : 'hover:bg-muted/50 hover:text-foreground',
+      )}
     >
       {icon}
       <span className={cn(iconOnlyOnNarrow && 'hidden lg:inline')}>{label}</span>

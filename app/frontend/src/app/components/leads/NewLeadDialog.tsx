@@ -16,7 +16,8 @@ import {
   Phone,
   Radio,
   User as UserIcon,
-} from 'lucide-react';import { Button } from '../ui/button';
+} from 'lucide-react';
+import { Button } from '../ui/button';
 import {
   EntityMetaGrid,
   EntityModalHeader,
@@ -37,6 +38,7 @@ type LeadPrefill = Partial<{
   contactName: string;
   contactCompany: string;
   contactPhone: string;
+  clientId: string;
 }>;
 
 type NewLeadDialogProps = {
@@ -112,6 +114,7 @@ export function NewLeadDialog({ open, onOpenChange, prefill }: NewLeadDialogProp
         contactName: form.contactName.trim(),
         contactCompany: form.contactCompany.trim() || undefined,
         contactPhone: form.contactPhone.trim(),
+        clientId: prefill?.clientId,
         source: form.source,
         equipmentTypeHint: form.equipmentTypeHint.trim() || undefined,
         requestedDate: form.requestedDate || undefined,

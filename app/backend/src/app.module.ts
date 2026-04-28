@@ -10,6 +10,11 @@ import { LeadsModule } from './modules/leads/leads.module';
 import { DirectoriesModule } from './modules/directories/directories.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
+import { DeparturesModule } from './modules/departures/departures.module';
+import { CompletionsModule } from './modules/completions/completions.module';
+import { StatsModule } from './modules/stats/stats.module';
+import { IntegrationsModule } from './modules/integrations/integrations.module';
+import { ImportsModule } from './modules/imports/imports.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -28,6 +33,11 @@ import { validateEnv } from './config/env.validation';
     DirectoriesModule,
     ApplicationsModule,
     ReservationsModule,
+    DeparturesModule,
+    CompletionsModule,
+    IntegrationsModule,
+    ImportsModule,
+    StatsModule,
     HealthModule,
   ],
 })

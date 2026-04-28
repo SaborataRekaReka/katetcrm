@@ -41,6 +41,10 @@ import {
   STAGE_ORDER,
   type PipelineStage,
 } from '../../lib/stageTokens';
+import { USE_API } from '../../lib/featureFlags';
+import { useStatsQuery } from '../../hooks/useStatsQuery';
+import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
+import { type ActivityLogEntryApi, type ActivityModule } from '../../lib/activityApi';
 
 export function ControlWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -53,22 +57,55 @@ export function ControlWorkspacePage() {
 /* -------------------------------- Dashboard ------------------------------ */
 
 function ControlDashboardPage() {
-  const counts = STAGE_ORDER.map((s) => ({
-    stage: s,
-    count: mockLeads.filter((l) => (l.stage as PipelineStage) === s).length,
-  }));
+  const statsQuery = useStatsQuery(USE_API);
+
+  const counts = useMemo(() => {
+    if (USE_API && statsQuery.data) {
+      const p = statsQuery.data.pipeline;
+      const map: Record<PipelineStage, number> = {
+        lead: p.lead,
+        application: p.application,
+        reservation: p.reservation,
+        departure: p.departure,
+        completed: p.completed,
+        unqualified: p.unqualified,
+      };
+      return STAGE_ORDER.map((s) => ({ stage: s, count: map[s] ?? 0 }));
+    }
+
+    return STAGE_ORDER.map((s) => ({
+      stage: s,
+      count: mockLeads.filter((l) => (l.stage as PipelineStage) === s).length,
+    }));
+  }, [statsQuery.data]);
+
   const max = Math.max(...counts.map((c) => c.count), 1);
 
-  const total = mockLeads.length;
-  const active = mockLeads.filter((l) => !['completed', 'unqualified'].includes(l.stage)).length;
-  const closed = mockLeads.filter((l) => l.stage === 'completed').length;
-  const lost = mockLeads.filter((l) => l.stage === 'unqualified').length;
+  const total = USE_API && statsQuery.data ? statsQuery.data.pipeline.total : mockLeads.length;
+  const active = USE_API && statsQuery.data
+    ? statsQuery.data.pipeline.active
+    : mockLeads.filter((l) => !['completed', 'unqualified'].includes(l.stage)).length;
+  const closed = USE_API && statsQuery.data
+    ? statsQuery.data.pipeline.completed
+    : mockLeads.filter((l) => l.stage === 'completed').length;
+  const lost = USE_API && statsQuery.data
+    ? statsQuery.data.pipeline.unqualified
+    : mockLeads.filter((l) => l.stage === 'unqualified').length;
 
   const byManager = useMemo(() => {
+    if (USE_API && statsQuery.data?.managers?.length) {
+      return statsQuery.data.managers
+        .map((m) => [
+          m.name,
+          m.openLeads + m.openApplications + m.activeReservations + m.activeDepartures,
+        ] as const)
+        .sort((a, b) => b[1] - a[1]);
+    }
+
     const map = new Map<string, number>();
     for (const l of mockLeads) map.set(l.manager, (map.get(l.manager) ?? 0) + 1);
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
-  }, []);
+  }, [statsQuery.data]);
   const managerMax = Math.max(...byManager.map(([, v]) => v), 1);
 
   return (
@@ -122,31 +159,167 @@ function ControlDashboardPage() {
 interface ReportRow {
   id: string;
   name: string;
-  category: 'Продажи' | 'Операции' | 'Финансы';
+  category: 'Продажи' | 'Операции' | 'Контроль' | 'Импорт';
   period: string;
   owner: string;
+  value: string;
+  targetModule: 'dashboard' | 'audit' | 'imports';
 }
 
-const REPORTS: ReportRow[] = [
-  { id: 'R-001', name: 'Воронка продаж', category: 'Продажи', period: 'Апрель 2026', owner: 'Иванова С.' },
-  { id: 'R-002', name: 'Нагрузка менеджеров', category: 'Продажи', period: 'Апрель 2026', owner: 'Иванова С.' },
-  { id: 'R-003', name: 'Загрузка парка', category: 'Операции', period: 'Апрель 2026', owner: 'Петров А.' },
-  { id: 'R-004', name: 'Конверсия по источникам', category: 'Продажи', period: 'Март 2026', owner: 'Иванова С.' },
-  { id: 'R-005', name: 'Выполнение выездов', category: 'Операции', period: 'Апрель 2026', owner: 'Петров А.' },
-  { id: 'R-006', name: 'Завершённые сделки', category: 'Финансы', period: 'Апрель 2026', owner: 'Admin' },
+const REPORTS_FALLBACK: ReportRow[] = [
+  {
+    id: 'R-001',
+    name: 'Активные записи в воронке',
+    category: 'Продажи',
+    period: 'Сейчас',
+    owner: 'Система',
+    value: '—',
+    targetModule: 'dashboard',
+  },
+  {
+    id: 'R-002',
+    name: 'Конверсия lead → application',
+    category: 'Продажи',
+    period: '30 дней',
+    owner: 'Система',
+    value: '—',
+    targetModule: 'dashboard',
+  },
+  {
+    id: 'R-003',
+    name: 'Конфликты бронирований',
+    category: 'Операции',
+    period: '30 дней',
+    owner: 'Система',
+    value: '—',
+    targetModule: 'dashboard',
+  },
+  {
+    id: 'R-004',
+    name: 'События аудита',
+    category: 'Контроль',
+    period: '30 дней',
+    owner: 'Система',
+    value: '—',
+    targetModule: 'audit',
+  },
+  {
+    id: 'R-005',
+    name: 'Импортированные записи',
+    category: 'Импорт',
+    period: '30 дней',
+    owner: 'Система',
+    value: '—',
+    targetModule: 'imports',
+  },
 ];
 
+type ReportsPeriod = '7d' | '30d';
+
+function reportsPeriodToFromIso(period: ReportsPeriod): string {
+  const now = Date.now();
+  const dayMs = 24 * 60 * 60 * 1000;
+  const days = period === '7d' ? 7 : 30;
+  return new Date(now - days * dayMs).toISOString();
+}
+
 function ReportsCatalogPage() {
+  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const meta = getModuleMeta('reports');
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
+  const [period, setPeriod] = useState<ReportsPeriod>('30d');
 
-  const categories = Array.from(new Set(REPORTS.map((r) => r.category)));
-  const filtered = REPORTS.filter((r) => {
+  const statsQuery = useStatsQuery(USE_API);
+  const fromIso = useMemo(() => reportsPeriodToFromIso(period), [period]);
+  const importLogQuery = useActivitySearchQuery(
+    {
+      action: 'imported',
+      from: USE_API ? fromIso : undefined,
+      take: 1,
+    },
+    USE_API,
+  );
+  const auditCoverageQuery = useActivitySearchQuery(
+    {
+      from: USE_API ? fromIso : undefined,
+      take: 1,
+    },
+    USE_API,
+  );
+
+  const periodLabel = period === '7d' ? '7 дней' : '30 дней';
+  const reports = useMemo<ReportRow[]>(() => {
+    if (!USE_API) return REPORTS_FALLBACK;
+    if (!statsQuery.data) return [];
+
+    const conversion =
+      statsQuery.data.pipeline.lead > 0
+        ? ((statsQuery.data.pipeline.application / statsQuery.data.pipeline.lead) * 100).toFixed(1)
+        : '0.0';
+
+    return [
+      {
+        id: 'KPI-PIPE-ACTIVE',
+        name: 'Активные записи в воронке',
+        category: 'Продажи',
+        period: 'Сейчас',
+        owner: 'Система',
+        value: String(statsQuery.data.pipeline.active),
+        targetModule: 'dashboard',
+      },
+      {
+        id: 'KPI-CONV-LEAD-APP',
+        name: 'Конверсия lead → application',
+        category: 'Продажи',
+        period: periodLabel,
+        owner: 'Система',
+        value: `${conversion}%`,
+        targetModule: 'dashboard',
+      },
+      {
+        id: 'KPI-OPS-CONFLICTS',
+        name: 'Конфликты бронирований',
+        category: 'Операции',
+        period: periodLabel,
+        owner: 'Система',
+        value: String(statsQuery.data.operations.conflicts),
+        targetModule: 'dashboard',
+      },
+      {
+        id: 'KPI-AUDIT-COVERAGE',
+        name: 'События аудита',
+        category: 'Контроль',
+        period: periodLabel,
+        owner: 'Система',
+        value: auditCoverageQuery.isPending ? '...' : String(auditCoverageQuery.data?.total ?? 0),
+        targetModule: 'audit',
+      },
+      {
+        id: 'KPI-IMPORT-TOTAL',
+        name: 'Импортированные записи',
+        category: 'Импорт',
+        period: periodLabel,
+        owner: 'Система',
+        value: importLogQuery.isPending ? '...' : String(importLogQuery.data?.total ?? 0),
+        targetModule: 'imports',
+      },
+    ];
+  }, [
+    auditCoverageQuery.data?.total,
+    auditCoverageQuery.isPending,
+    importLogQuery.data?.total,
+    importLogQuery.isPending,
+    periodLabel,
+    statsQuery.data,
+  ]);
+
+  const categories = Array.from(new Set((reports.length > 0 ? reports : REPORTS_FALLBACK).map((r) => r.category)));
+  const filtered = (reports.length > 0 ? reports : REPORTS_FALLBACK).filter((r) => {
     if (category !== 'all' && r.category !== category) return false;
     const q = query.trim().toLowerCase();
     if (!q) return true;
-    return `${r.id} ${r.name} ${r.category} ${r.owner}`.toLowerCase().includes(q);
+    return `${r.id} ${r.name} ${r.category} ${r.owner} ${r.value}`.toLowerCase().includes(q);
   });
 
   const columns: EntityColumn<ReportRow>[] = [
@@ -162,9 +335,25 @@ function ReportsCatalogPage() {
       ),
     },
     { id: 'category', header: 'Категория', width: '140px', render: (r) => <span className="text-foreground/80">{r.category}</span> },
+    {
+      id: 'value',
+      header: 'Значение',
+      width: '130px',
+      render: (r) => <span className="font-mono text-[11px] text-foreground">{r.value}</span>,
+    },
     { id: 'period', header: 'Период', width: '140px', render: (r) => <span className="text-muted-foreground tabular-nums">{r.period}</span> },
     { id: 'owner', header: 'Ответственный', width: '160px', render: (r) => <span className="text-foreground/80">{r.owner}</span> },
   ];
+
+  const openReport = (row: ReportRow) => {
+    if (row.targetModule === 'imports') {
+      setActivePrimaryNav('admin');
+      setActiveSecondaryNav('imports');
+      return;
+    }
+    setActivePrimaryNav('control');
+    setActiveSecondaryNav(row.targetModule);
+  };
 
   const toolbar = (
     <SimpleToolbar
@@ -183,18 +372,44 @@ function ReportsCatalogPage() {
           ],
           onChange: setCategory,
         },
+        {
+          id: 'period',
+          value: period,
+          placeholder: 'Период',
+          width: 130,
+          options: [
+            { value: '7d', label: '7 дней' },
+            { value: '30d', label: '30 дней' },
+          ],
+          onChange: (value) => setPeriod(value as ReportsPeriod),
+        },
       ]}
-      hasActive={query.length > 0 || category !== 'all'}
+      hasActive={query.length > 0 || category !== 'all' || period !== '30d'}
       onReset={() => {
         setQuery('');
         setCategory('all');
+        setPeriod('30d');
       }}
     />
   );
 
   return (
     <ListScaffold toolbar={toolbar}>
-      <EntityListTable rows={filtered} columns={columns} minWidth={780} onRowClick={() => {}} />
+      {USE_API && statsQuery.isPending && !statsQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загружаем KPI отчёты...
+        </div>
+      ) : null}
+
+      {USE_API && statsQuery.isError && !statsQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          {statsQuery.error instanceof Error ? statsQuery.error.message : 'Не удалось загрузить отчёты.'}
+        </div>
+      ) : null}
+
+      {USE_API && (statsQuery.isPending || statsQuery.isError) && !statsQuery.data
+        ? null
+        : <EntityListTable rows={filtered} columns={columns} minWidth={860} onRowClick={openReport} />}
     </ListScaffold>
   );
 }
@@ -214,6 +429,71 @@ function withinPeriod(at: string, period: AuditPeriod): boolean {
   return true;
 }
 
+function periodToFromIso(period: AuditPeriod): string | undefined {
+  if (period === 'all') return undefined;
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  if (period === 'today') return new Date(now - day).toISOString();
+  if (period === '7d') return new Date(now - 7 * day).toISOString();
+  if (period === '30d') return new Date(now - 30 * day).toISOString();
+  return undefined;
+}
+
+function auditKindByEntry(entry: ActivityLogEntryApi): AuditEventKind {
+  const { action, entityType, summary } = entry;
+  if (entityType === 'lead') {
+    if (action === 'created') return 'lead_created';
+    if (action === 'stage_changed' && summary.toLowerCase().includes('application')) return 'lead_converted';
+    return 'lead_updated';
+  }
+  if (entityType === 'application' || entityType === 'application_item') {
+    return action === 'created' ? 'application_created' : 'application_updated';
+  }
+  if (entityType === 'reservation') {
+    if (action === 'created') return 'reservation_created';
+    if (summary.toLowerCase().includes('снят') || summary.toLowerCase().includes('release')) return 'reservation_released';
+    return 'reservation_confirmed';
+  }
+  if (entityType === 'departure') {
+    return action === 'completed' ? 'departure_completed' : 'departure_started';
+  }
+  if (entityType === 'completion') {
+    return 'completion_signed';
+  }
+  if (entityType === 'user') {
+    return action === 'created' ? 'user_created' : 'user_updated';
+  }
+  if (entityType === 'permissions') {
+    return 'permissions_changed';
+  }
+  return 'lead_updated';
+}
+
+function formatAuditTarget(entityType: string, entityId: string): string {
+  const suffix = entityId.slice(-6).toUpperCase();
+  if (entityType === 'lead') return `LEAD-${suffix}`;
+  if (entityType === 'application' || entityType === 'application_item') return `APP-${suffix}`;
+  if (entityType === 'reservation') return `RSV-${suffix}`;
+  if (entityType === 'departure') return `DEP-${suffix}`;
+  if (entityType === 'completion') return `CMP-${suffix}`;
+  if (entityType === 'client') return `CL-${suffix}`;
+  return `${entityType}:${suffix}`;
+}
+
+function mapActivityToAuditEntry(entry: ActivityLogEntryApi): AuditEntry {
+  const d = new Date(entry.createdAt);
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const at = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return {
+    id: entry.id,
+    at,
+    actor: entry.actor?.fullName ?? 'Система',
+    kind: auditKindByEntry(entry),
+    target: formatAuditTarget(entry.entityType, entry.entityId),
+    detail: entry.summary,
+  };
+}
+
 function AuditPage() {
   const { currentView } = useLayout();
   const meta = getModuleMeta('audit');
@@ -225,6 +505,18 @@ function AuditPage() {
   const [mod, setMod] = useState<'all' | AuditModule>('all');
   const [period, setPeriod] = useState<AuditPeriod>('all');
 
+  const fromIso = useMemo(() => periodToFromIso(period), [period]);
+  const auditQuery = useActivitySearchQuery(
+    {
+      take: 300,
+      query: query.trim() || undefined,
+      actorId: actor !== 'all' && USE_API ? actor : undefined,
+      module: mod !== 'all' && USE_API ? (mod as ActivityModule) : undefined,
+      from: USE_API ? fromIso : undefined,
+    },
+    USE_API,
+  );
+
   useEffect(() => {
     // Reset kind if it doesn't match currently selected module
     if (mod !== 'all' && kind !== 'all' && AUDIT_EVENTS[kind].module !== mod) {
@@ -232,21 +524,50 @@ function AuditPage() {
     }
   }, [mod, kind]);
 
-  const actors = Array.from(new Set(mockAuditLog.map((e) => e.actor)));
+  const apiRows = useMemo(
+    () => (auditQuery.data?.items ?? []).map(mapActivityToAuditEntry),
+    [auditQuery.data],
+  );
+
+  const actorOptions = useMemo(() => {
+    if (USE_API) {
+      const map = new Map<string, string>();
+      for (const e of auditQuery.data?.items ?? []) {
+        if (e.actor?.id && e.actor.fullName) {
+          map.set(e.actor.id, e.actor.fullName);
+        }
+      }
+      return Array.from(map.entries()).map(([value, label]) => ({ value, label }));
+    }
+    return Array.from(new Set(mockAuditLog.map((e) => e.actor))).map((name) => ({
+      value: name,
+      label: name,
+    }));
+  }, [auditQuery.data]);
+
   const kindOptions = (Object.entries(AUDIT_EVENTS) as [AuditEventKind, (typeof AUDIT_EVENTS)[AuditEventKind]][])
     .filter(([, meta]) => mod === 'all' || meta.module === mod)
     .map(([k, m]) => ({ value: k, label: m.label }));
 
-  const filtered = mockAuditLog.filter((e) => {
-    if (actor !== 'all' && e.actor !== actor) return false;
-    if (kind !== 'all' && e.kind !== kind) return false;
-    if (mod !== 'all' && AUDIT_EVENTS[e.kind].module !== mod) return false;
-    if (!withinPeriod(e.at, period)) return false;
-    const q = query.trim().toLowerCase();
-    if (!q) return true;
-    const label = AUDIT_EVENTS[e.kind].label;
-    return `${e.target} ${label} ${e.actor} ${e.detail ?? ''}`.toLowerCase().includes(q);
-  });
+  const filtered = useMemo(() => {
+    const source = USE_API ? apiRows : mockAuditLog;
+    return source.filter((e) => {
+      if (kind !== 'all' && e.kind !== kind) return false;
+
+      if (!USE_API) {
+        if (actor !== 'all' && e.actor !== actor) return false;
+        if (mod !== 'all' && AUDIT_EVENTS[e.kind].module !== mod) return false;
+        if (!withinPeriod(e.at, period)) return false;
+        const q = query.trim().toLowerCase();
+        if (q) {
+          const label = AUDIT_EVENTS[e.kind].label;
+          return `${e.target} ${label} ${e.actor} ${e.detail ?? ''}`.toLowerCase().includes(q);
+        }
+      }
+
+      return true;
+    });
+  }, [apiRows, kind, actor, mod, period, query]);
 
   const hasActive = query.length > 0 || actor !== 'all' || kind !== 'all' || mod !== 'all' || period !== 'all';
 
@@ -295,7 +616,7 @@ function AuditPage() {
           value: actor,
           placeholder: 'Автор',
           width: 140,
-          options: [{ value: 'all', label: 'Все авторы' }, ...actors.map((a) => ({ value: a, label: a }))],
+          options: [{ value: 'all', label: 'Все авторы' }, ...actorOptions],
           onChange: setActor,
         },
       ]}
@@ -312,7 +633,23 @@ function AuditPage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
-      {view === 'table' ? <AuditTable rows={filtered} /> : <AuditFeed rows={filtered} />}
+      {USE_API && auditQuery.isPending && !auditQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загружаем события...
+        </div>
+      ) : null}
+
+      {USE_API && auditQuery.isError && !auditQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          {auditQuery.error instanceof Error ? auditQuery.error.message : 'Не удалось загрузить события'}
+        </div>
+      ) : null}
+
+      {USE_API && (auditQuery.isPending || auditQuery.isError) && !auditQuery.data
+        ? null
+        : view === 'table'
+          ? <AuditTable rows={filtered} />
+          : <AuditFeed rows={filtered} />}
     </ListScaffold>
   );
 }

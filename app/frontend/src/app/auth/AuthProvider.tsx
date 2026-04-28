@@ -5,8 +5,10 @@ import {
   loginRequest,
   persistTokens,
   readStoredAccessToken,
+  readStoredRefreshToken,
+  refreshRequest,
+  meRequest,
 } from '../lib/authApi';
-import { meRequest } from '../lib/authApi';
 
 interface AuthState {
   user: AuthUser | null;
@@ -28,14 +30,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!useApi) return;
-    const token = readStoredAccessToken();
-    if (!token) {
-      setStatus('anonymous');
-      return;
-    }
-    // пробуем валидировать токен через /auth/me
-    meRequest()
-      .then((payload) => {
+    let cancelled = false;
+
+    const hydrateSession = async () => {
+      const accessToken = readStoredAccessToken();
+      const refreshToken = readStoredRefreshToken();
+
+      if (!accessToken && !refreshToken) {
+        if (!cancelled) setStatus('anonymous');
+        return;
+      }
+
+      try {
+        if (!accessToken) throw new Error('Missing access token');
+
+        const payload = await meRequest();
+        if (cancelled) return;
+
         setUser({
           id: payload.sub,
           email: payload.email,
@@ -43,11 +54,54 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           fullName: payload.email,
         });
         setStatus('authenticated');
-      })
-      .catch(() => {
-        clearTokens();
+      } catch {
+        if (!refreshToken) {
+          if (!cancelled) {
+            clearTokens();
+            setUser(null);
+            setStatus('anonymous');
+          }
+          return;
+        }
+
+        try {
+          const tokens = await refreshRequest(refreshToken);
+          if (cancelled) return;
+
+          persistTokens(tokens);
+          setUser(tokens.user);
+          setStatus('authenticated');
+        } catch {
+          if (!cancelled) {
+            clearTokens();
+            setUser(null);
+            setStatus('anonymous');
+          }
+        }
+      }
+    };
+
+    void hydrateSession();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [useApi]);
+
+  useEffect(() => {
+    if (!useApi) return;
+
+    const onAuthChanged = () => {
+      if (!readStoredAccessToken()) {
+        setUser(null);
         setStatus('anonymous');
-      });
+      }
+    };
+
+    window.addEventListener('katet:auth-changed', onAuthChanged);
+    return () => {
+      window.removeEventListener('katet:auth-changed', onAuthChanged);
+    };
   }, [useApi]);
 
   const login = useCallback(async (email: string, password: string) => {

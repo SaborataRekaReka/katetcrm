@@ -45,6 +45,12 @@ function toStage(api: ApplicationApi['stage']): ApplicationStage {
   }
 }
 
+function parseMoney(value: string | null): number | undefined {
+  if (!value) return undefined;
+  const parsed = Number(String(value).replace(',', '.'));
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 function toPosition(it: ApplicationItemApi): ApplicationPosition {
   return {
     id: it.id,
@@ -61,9 +67,9 @@ function toPosition(it: ApplicationItemApi): ApplicationPosition {
     sourcingType: it.sourcingType,
     subcontractor: it.subcontractor ?? undefined,
     unit: it.unit ?? undefined,
-    pricePerShift: it.pricePerShift ? Number(it.pricePerShift) : undefined,
-    deliveryPrice: it.deliveryPrice ? Number(it.deliveryPrice) : undefined,
-    surcharge: it.surcharge ? Number(it.surcharge) : undefined,
+    pricePerShift: parseMoney(it.pricePerShift),
+    deliveryPrice: parseMoney(it.deliveryPrice),
+    surcharge: parseMoney(it.surcharge),
     readyForReservation: it.readyForReservation,
     status: it.status,
     reservationState: it.status === 'conflict' ? 'conflict' : undefined,
@@ -80,6 +86,7 @@ export function toUiApplication(a: ApplicationApi): Application {
     clientName: a.clientName,
     clientCompany: a.clientCompany ?? undefined,
     clientPhone: a.clientPhone,
+    responsibleManagerId: a.responsibleManagerId ?? undefined,
     responsibleManager: a.responsibleManagerName ?? '—',
     requestedDate: a.requestedDate ?? undefined,
     requestedTimeFrom: a.requestedTimeFrom ?? undefined,

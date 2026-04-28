@@ -10,6 +10,14 @@ import { CompletionWorkspace } from './CompletionWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { mockLeads } from '../../data/mockLeads';
 import type { Lead } from '../../types/kanban';
+import { saveViewSnapshot } from '../../lib/viewSnapshots';
+import { USE_API } from '../../lib/featureFlags';
+import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
+import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
+import {
+  toCompletionLeadFromCompletion,
+  toCompletionLeadFromDeparture,
+} from '../../lib/departureAdapter';
 
 interface Filters {
   manager: string;
@@ -21,6 +29,11 @@ const DEFAULT: Filters = { manager: 'all', completion: 'all', equipment: 'all' }
 export function CompletionWorkspacePage() {
   const { activeSecondaryNav, currentView } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
+  const completionsQuery = useCompletionsQuery({}, USE_API);
+  const noCompletionDeparturesQuery = useDeparturesQuery(
+    {},
+    USE_API && activeSecondaryNav === 'view-no-completion',
+  );
   const [filters, setFilters] = useState<Filters>(DEFAULT);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Lead | null>(null);
@@ -28,22 +41,45 @@ export function CompletionWorkspacePage() {
 
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
 
-  // Under «Completion» we show records in the completed terminal state; the
-  // saved view «no-completion» surfaces ones missing completion artifacts.
-  const baseRows = useMemo(
-    () => mockLeads.filter((l) => l.stage === 'completed' || l.stage === 'departure'),
-    [],
+  const apiCompletions = completionsQuery.data?.items ?? [];
+  const departuresWithoutCompletion = (noCompletionDeparturesQuery.data?.items ?? []).filter(
+    (d) => !d.completion,
+  );
+
+  const completionByDepartureId = useMemo(
+    () => new Map(apiCompletions.map((c) => [c.departureId, c.id])),
+    [apiCompletions],
+  );
+
+  const completionRows = useMemo<Lead[]>(
+    () => apiCompletions.map(toCompletionLeadFromCompletion),
+    [apiCompletions],
+  );
+
+  const noCompletionRows = useMemo<Lead[]>(
+    () => departuresWithoutCompletion.map(toCompletionLeadFromDeparture),
+    [departuresWithoutCompletion],
+  );
+
+  const sourceRows = useMemo(
+    () =>
+      USE_API
+        ? activeSecondaryNav === 'view-no-completion'
+          ? noCompletionRows
+          : completionRows
+        : mockLeads.filter((l) => l.stage === 'completed' || l.stage === 'departure'),
+    [completionRows, noCompletionRows, activeSecondaryNav],
   );
 
   const aliasFiltered = useMemo(() => {
     if (activeSecondaryNav === 'view-no-completion') {
-      return baseRows.filter((l) => !l.completionDate);
+      return sourceRows.filter((l) => !l.completionDate);
     }
     if (activeSecondaryNav === 'completion') {
-      return baseRows.filter((l) => l.stage === 'completed');
+      return sourceRows.filter((l) => l.stage === 'completed' || l.stage === 'unqualified');
     }
-    return baseRows;
-  }, [activeSecondaryNav, baseRows]);
+    return sourceRows;
+  }, [activeSecondaryNav, sourceRows]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -73,7 +109,16 @@ export function CompletionWorkspacePage() {
     filters.equipment !== 'all' ||
     query.length > 0;
 
-  const managers = Array.from(new Set(baseRows.map((l) => l.manager))).sort();
+  const managers = Array.from(new Set(sourceRows.map((l) => l.manager))).sort();
+
+  const handleSaveView = () => {
+    void saveViewSnapshot({
+      moduleId: activeSecondaryNav,
+      view: effectiveView,
+      query,
+      filters,
+    });
+  };
 
   const toolbar = (
     <SimpleToolbar
@@ -124,13 +169,39 @@ export function CompletionWorkspacePage() {
         setFilters(DEFAULT);
         setQuery('');
       }}
-      onSaveView={() => {}}
+      onSaveView={handleSaveView}
     />
   );
 
   return (
     <ListScaffold toolbar={toolbar}>
-      {filtered.length === 0 ? (
+      {USE_API && activeSecondaryNav !== 'view-no-completion' && completionsQuery.isPending && !completionsQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загрузка завершений...
+        </div>
+      ) : null}
+
+      {USE_API && activeSecondaryNav === 'view-no-completion' && noCompletionDeparturesQuery.isPending && !noCompletionDeparturesQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загрузка выездов без завершения...
+        </div>
+      ) : null}
+
+      {USE_API && activeSecondaryNav !== 'view-no-completion' && completionsQuery.isError && !completionsQuery.data ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-10 text-[13px] text-muted-foreground">
+          <span>{completionsQuery.error instanceof Error ? completionsQuery.error.message : 'Не удалось загрузить завершения'}</span>
+        </div>
+      ) : null}
+
+      {USE_API && activeSecondaryNav === 'view-no-completion' && noCompletionDeparturesQuery.isError && !noCompletionDeparturesQuery.data ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-10 text-[13px] text-muted-foreground">
+          <span>{noCompletionDeparturesQuery.error instanceof Error ? noCompletionDeparturesQuery.error.message : 'Не удалось загрузить выезды'}</span>
+        </div>
+      ) : null}
+
+      {(USE_API
+        && ((activeSecondaryNav !== 'view-no-completion' && (completionsQuery.isPending || completionsQuery.isError) && !completionsQuery.data)
+        || (activeSecondaryNav === 'view-no-completion' && (noCompletionDeparturesQuery.isPending || noCompletionDeparturesQuery.isError) && !noCompletionDeparturesQuery.data))) ? null : filtered.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
           Записей не найдено
         </div>
@@ -207,6 +278,8 @@ export function CompletionWorkspacePage() {
           {selected ? (
             <CompletionWorkspace
               lead={selected}
+              apiDepartureId={USE_API ? selected.id : undefined}
+              apiCompletionId={USE_API ? completionByDepartureId.get(selected.id) : undefined}
               onClose={() => setSelected(null)}
               onOpenClient={setClientLead}
             />

@@ -2,11 +2,22 @@ import { Lead } from '../../types/kanban';
 import { Sparkles, PhoneOff, FileCheck, Calendar, Clock, Truck, Copy, AlertTriangle } from 'lucide-react';
 import { cn } from '../ui/utils';
 
+export type KpiCardId =
+  | 'new_leads'
+  | 'no_contact'
+  | 'awaiting_application'
+  | 'needs_reservation'
+  | 'departures_today'
+  | 'stale'
+  | 'duplicates'
+  | 'conflicts';
+
 interface KpiRowProps {
   leads: Lead[];
+  onSelect?: (id: KpiCardId) => void;
 }
 
-export function KpiRow({ leads }: KpiRowProps) {
+export function KpiRow({ leads, onSelect }: KpiRowProps) {
   const stats = {
     newLeads: leads.filter((l) => l.stage === 'lead' && l.isNew).length,
     noContact: leads.filter((l) => l.hasNoContact).length,
@@ -21,14 +32,14 @@ export function KpiRow({ leads }: KpiRowProps) {
   };
 
   const cards = [
-    { label: 'Новые лиды', value: stats.newLeads, icon: Sparkles, tone: 'blue' },
-    { label: 'Без первого контакта', value: stats.noContact, icon: PhoneOff, tone: 'amber' },
-    { label: 'Ждут перевода в заявку', value: stats.awaitingApplication, icon: FileCheck, tone: 'violet' },
-    { label: 'Требуют брони', value: stats.needsReservation, icon: Calendar, tone: 'orange' },
-    { label: 'Выезды сегодня', value: stats.departuresToday, icon: Truck, tone: 'emerald' },
-    { label: 'Зависшие', value: stats.stale, icon: Clock, tone: 'red' },
-    { label: 'Дубли', value: stats.duplicates, icon: Copy, tone: 'slate' },
-    { label: 'Конфликт брони', value: stats.conflicts, icon: AlertTriangle, tone: 'rose' },
+    { id: 'new_leads' as const, label: 'Новые лиды', value: stats.newLeads, icon: Sparkles, tone: 'blue' },
+    { id: 'no_contact' as const, label: 'Без первого контакта', value: stats.noContact, icon: PhoneOff, tone: 'amber' },
+    { id: 'awaiting_application' as const, label: 'Ждут перевода в заявку', value: stats.awaitingApplication, icon: FileCheck, tone: 'violet' },
+    { id: 'needs_reservation' as const, label: 'Требуют брони', value: stats.needsReservation, icon: Calendar, tone: 'orange' },
+    { id: 'departures_today' as const, label: 'Выезды сегодня', value: stats.departuresToday, icon: Truck, tone: 'emerald' },
+    { id: 'stale' as const, label: 'Зависшие', value: stats.stale, icon: Clock, tone: 'red' },
+    { id: 'duplicates' as const, label: 'Дубли', value: stats.duplicates, icon: Copy, tone: 'slate' },
+    { id: 'conflicts' as const, label: 'Конфликт брони', value: stats.conflicts, icon: AlertTriangle, tone: 'rose' },
   ] as const;
 
   return (
@@ -37,8 +48,9 @@ export function KpiRow({ leads }: KpiRowProps) {
         const Icon = s.icon;
         return (
           <button
-            key={s.label}
+            key={s.id}
             type="button"
+            onClick={() => onSelect?.(s.id)}
             className="flex items-center gap-2 rounded-md border border-transparent bg-[#f7f8fa] px-2 py-1.5 text-left transition-colors hover:border-border/60 hover:bg-white"
           >
             <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded', toneBg(s.tone))}>

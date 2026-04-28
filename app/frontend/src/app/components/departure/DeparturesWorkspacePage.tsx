@@ -10,6 +10,10 @@ import { DepartureWorkspace } from './DepartureWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { mockLeads } from '../../data/mockLeads';
 import type { Lead } from '../../types/kanban';
+import { saveViewSnapshot } from '../../lib/viewSnapshots';
+import { USE_API } from '../../lib/featureFlags';
+import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
+import { toDepartureLead } from '../../lib/departureAdapter';
 
 interface Filters {
   manager: string;
@@ -34,6 +38,7 @@ const STATUS_TONE: Record<NonNullable<Lead['departureStatus']>, string> = {
 export function DeparturesWorkspacePage() {
   const { activeSecondaryNav, currentView } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
+  const departuresQuery = useDeparturesQuery({}, USE_API);
   const [filters, setFilters] = useState<Filters>(DEFAULT);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Lead | null>(null);
@@ -41,18 +46,26 @@ export function DeparturesWorkspacePage() {
 
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
 
-  const baseRows = useMemo(() => mockLeads.filter((l) => l.stage === 'departure'), []);
+  const apiRows = useMemo<Lead[]>(
+    () => (departuresQuery.data?.items ?? []).map(toDepartureLead),
+    [departuresQuery.data],
+  );
+
+  const sourceRows = useMemo(
+    () => (USE_API ? apiRows : mockLeads.filter((l) => l.stage === 'departure')),
+    [apiRows],
+  );
 
   const aliasFiltered = useMemo(() => {
     switch (activeSecondaryNav) {
       case 'view-departures-today':
-        return baseRows.filter((l) => l.departureStatus === 'today');
+        return sourceRows.filter((l) => l.departureStatus === 'today');
       case 'view-overdue-departures':
-        return baseRows.filter((l) => l.departureStatus === 'overdue');
+        return sourceRows.filter((l) => l.departureStatus === 'overdue');
       default:
-        return baseRows;
+        return sourceRows;
     }
-  }, [activeSecondaryNav, baseRows]);
+  }, [activeSecondaryNav, sourceRows]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -81,7 +94,16 @@ export function DeparturesWorkspacePage() {
     filters.equipment !== 'all' ||
     query.length > 0;
 
-  const managers = Array.from(new Set(baseRows.map((l) => l.manager))).sort();
+  const managers = Array.from(new Set(sourceRows.map((l) => l.manager))).sort();
+
+  const handleSaveView = () => {
+    void saveViewSnapshot({
+      moduleId: activeSecondaryNav,
+      view: effectiveView,
+      query,
+      filters,
+    });
+  };
 
   const toolbar = (
     <SimpleToolbar
@@ -134,13 +156,25 @@ export function DeparturesWorkspacePage() {
         setFilters(DEFAULT);
         setQuery('');
       }}
-      onSaveView={() => {}}
+      onSaveView={handleSaveView}
     />
   );
 
   return (
     <ListScaffold toolbar={toolbar}>
-      {filtered.length === 0 ? (
+      {USE_API && departuresQuery.isPending && !departuresQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загрузка выездов...
+        </div>
+      ) : null}
+
+      {USE_API && departuresQuery.isError && !departuresQuery.data ? (
+        <div className="flex flex-1 flex-col items-center justify-center gap-2 p-10 text-[13px] text-muted-foreground">
+          <span>{departuresQuery.error instanceof Error ? departuresQuery.error.message : 'Не удалось загрузить выезды'}</span>
+        </div>
+      ) : null}
+
+      {(USE_API && (departuresQuery.isPending || departuresQuery.isError) && !departuresQuery.data) ? null : filtered.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
           Выезды не найдены
         </div>
@@ -155,6 +189,7 @@ export function DeparturesWorkspacePage() {
           {selected ? (
             <DepartureWorkspace
               lead={selected}
+              apiDepartureId={USE_API ? selected.id : undefined}
               onClose={() => setSelected(null)}
               onOpenClient={setClientLead}
             />

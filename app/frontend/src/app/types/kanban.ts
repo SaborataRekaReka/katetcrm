@@ -98,6 +98,7 @@ export type LeadReadiness = 'ready' | 'missing';
 
 export interface Lead {
   id: string;
+  apiClientId?: string;
   stage: StageType;
   client: string;
   company?: string;

@@ -109,8 +109,19 @@ export function IconBtn({
   onClick?: () => void;
   className?: string;
 }) {
+  if (!onClick) {
+    return (
+      <span
+        className={`h-6 w-6 inline-flex items-center justify-center rounded text-gray-400 ${className}`}
+        aria-hidden="true"
+      >
+        {children}
+      </span>
+    );
+  }
   return (
     <button
+      type="button"
       onClick={onClick}
       className={`h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors ${className}`}
     >
@@ -132,12 +143,22 @@ export function ToolbarPill({
   className?: string;
   onClick?: () => void;
 }) {
+  const classes = `inline-flex items-center gap-1 h-6 px-1.5 rounded border border-gray-200 text-[11px] ${
+    muted ? 'text-gray-500' : 'text-gray-800'
+  } ${className}`;
+  if (!onClick) {
+    return (
+      <span className={classes}>
+        {icon}
+        <span>{label}</span>
+      </span>
+    );
+  }
   return (
     <button
+      type="button"
       onClick={onClick}
-      className={`inline-flex items-center gap-1 h-6 px-1.5 rounded border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-[11px] ${
-        muted ? 'text-gray-500' : 'text-gray-800'
-      } ${className}`}
+      className={`${classes} hover:bg-gray-50 hover:border-gray-300 transition-colors`}
     >
       {icon}
       <span>{label}</span>
@@ -169,9 +190,22 @@ export function EmptyValue({ text = 'Empty' }: { text?: string }) {
   return <span className="text-gray-400 text-[11px]">{text}</span>;
 }
 
-export function InlineValue({ children }: { children: ReactNode }) {
+export function InlineValue({
+  children,
+  onClick,
+}: {
+  children: ReactNode;
+  onClick?: () => void;
+}) {
+  if (!onClick) {
+    return <span className="inline-flex items-center gap-1 max-w-full px-1 h-5 text-gray-800 truncate">{children}</span>;
+  }
   return (
-    <button className="inline-flex items-center gap-1 max-w-full px-1 h-5 rounded hover:bg-gray-100 transition-colors text-gray-800 truncate">
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-1 max-w-full px-1 h-5 rounded hover:bg-gray-100 transition-colors text-gray-800 truncate"
+    >
       {children}
     </button>
   );
@@ -240,20 +274,20 @@ export function SidebarField({ label, value }: { label: string; value: ReactNode
 export function Breadcrumb({ items }: { items: string[] }) {
   return (
     <div className="flex items-center gap-0.5 text-[11px] text-gray-500 min-w-0">
-      <button className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded hover:bg-gray-100 transition-colors">
+      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-gray-500">
         <List className="w-3 h-3" />
         <span>{items[0]}</span>
-      </button>
+      </span>
       {items.slice(1).map((item, i) => (
         <span key={i} className="inline-flex items-center gap-0.5">
           <ChevronRight className="w-3 h-3 text-gray-300" />
-          <button
-            className={`px-1.5 py-0.5 rounded hover:bg-gray-100 transition-colors ${
+          <span
+            className={`px-1.5 py-0.5 rounded ${
               i === items.length - 2 ? 'text-gray-700' : ''
             }`}
           >
             {item}
-          </button>
+          </span>
         </span>
       ))}
     </div>
@@ -317,8 +351,17 @@ export function DetailShell({
 }
 
 export function ActionButton({ icon, label, onClick }: { icon: ReactNode; label: string; onClick?: () => void }) {
+  if (!onClick) {
+    return (
+      <div className="flex items-center gap-2 text-[11px] text-gray-500 px-1.5 py-1 -ml-1.5 w-full">
+        <span className="text-gray-400">{icon}</span>
+        {label}
+      </div>
+    );
+  }
   return (
     <button
+      type="button"
       onClick={onClick}
       className="flex items-center gap-2 text-[11px] text-gray-500 hover:text-gray-800 hover:bg-gray-50 px-1.5 py-1 -ml-1.5 rounded transition-colors w-full"
     >

@@ -10,6 +10,7 @@ export interface ActivityFeedRowProps {
   actor: string;
   text: ReactNode;
   entity?: ReactNode;
+  onEntityClick?: () => void;
   time: string;
   className?: string;
 }
@@ -19,6 +20,7 @@ export function ActivityFeedRow({
   actor,
   text,
   entity,
+  onEntityClick,
   time,
   className,
 }: ActivityFeedRowProps) {
@@ -34,7 +36,13 @@ export function ActivityFeedRow({
         <span className="text-gray-900">{actor}</span>
         <span className="mx-1 text-gray-600">{text}</span>
         {entity ? (
-          <button className="text-blue-600 hover:underline">{entity}</button>
+          onEntityClick ? (
+            <button type="button" className="text-blue-600 hover:underline" onClick={onEntityClick}>
+              {entity}
+            </button>
+          ) : (
+            <span className="text-gray-700">{entity}</span>
+          )
         ) : null}
       </div>
       <span className="shrink-0 text-[11px] text-gray-400 tabular-nums">{time}</span>

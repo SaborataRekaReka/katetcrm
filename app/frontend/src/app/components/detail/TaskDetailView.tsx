@@ -54,16 +54,39 @@ export interface TaskDetailViewProps {
   open: boolean;
   onClose: () => void;
   onOpenLinkedEntity?: (domain: TaskDomain, id: string) => void;
+  onSetStatus?: (taskId: string, status: TaskStatus) => void;
+  onDuplicateTask?: (taskId: string) => void;
+  onArchiveTask?: (taskId: string) => void;
+  onAddSubtask?: (taskId: string) => void;
 }
 
-export function TaskDetailView({ task, open, onClose, onOpenLinkedEntity }: TaskDetailViewProps) {
+export function TaskDetailView({
+  task,
+  open,
+  onClose,
+  onOpenLinkedEntity,
+  onSetStatus,
+  onDuplicateTask,
+  onArchiveTask,
+  onAddSubtask,
+}: TaskDetailViewProps) {
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
       <DialogContent
         className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden"
         aria-describedby={undefined}
       >
-        {task ? <TaskDetailBody task={task} onClose={onClose} onOpenLinkedEntity={onOpenLinkedEntity} /> : null}
+        {task ? (
+          <TaskDetailBody
+            task={task}
+            onClose={onClose}
+            onOpenLinkedEntity={onOpenLinkedEntity}
+            onSetStatus={onSetStatus}
+            onDuplicateTask={onDuplicateTask}
+            onArchiveTask={onArchiveTask}
+            onAddSubtask={onAddSubtask}
+          />
+        ) : null}
       </DialogContent>
     </Dialog>
   );
@@ -73,10 +96,18 @@ function TaskDetailBody({
   task,
   onClose,
   onOpenLinkedEntity,
+  onSetStatus,
+  onDuplicateTask,
+  onArchiveTask,
+  onAddSubtask,
 }: {
   task: Task;
   onClose: () => void;
   onOpenLinkedEntity?: (domain: TaskDomain, id: string) => void;
+  onSetStatus?: (taskId: string, status: TaskStatus) => void;
+  onDuplicateTask?: (taskId: string) => void;
+  onArchiveTask?: (taskId: string) => void;
+  onAddSubtask?: (taskId: string) => void;
 }) {
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
 
@@ -104,6 +135,26 @@ function TaskDetailBody({
     headerChips.push(<LinkedEntityChip key="linked" entity={task.linkedEntity} />);
   }
 
+  const handlePrimaryAction = () => {
+    if (task.status === 'done') {
+      onDuplicateTask?.(task.id);
+      return;
+    }
+    if (task.status === 'blocked') {
+      onSetStatus?.(task.id, 'in_progress');
+      return;
+    }
+    onSetStatus?.(task.id, 'done');
+  };
+
+  const headerSecondaryAction =
+    task.status === 'done' && cta.secondary
+      ? {
+          label: cta.secondary,
+          onClick: () => onArchiveTask?.(task.id),
+        }
+      : undefined;
+
   const comments = task.comments;
   const activityEntries = useMemo(
     () =>
@@ -126,8 +177,9 @@ function TaskDetailBody({
         primaryAction={{
           label: cta.primary,
           icon: <ArrowRight className="w-3 h-3" />,
+          onClick: handlePrimaryAction,
         }}
-        secondaryAction={cta.secondary ? { label: cta.secondary } : undefined}
+        secondaryAction={headerSecondaryAction}
       />
 
       <EntitySection title="Реквизиты задачи">
@@ -203,7 +255,11 @@ function TaskDetailBody({
       <EntitySection
         title={`Подзадачи · ${task.subtasks.length}`}
         action={
-          <button className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700">
+          <button
+            type="button"
+            onClick={() => onAddSubtask?.(task.id)}
+            className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
+          >
             <Plus className="w-3 h-3" />
             <span>Добавить</span>
           </button>
@@ -308,13 +364,31 @@ function TaskDetailBody({
           quickActionsTitle="Быстрые действия"
           quickActions={
             <div className="space-y-1">
-              <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 w-full justify-start text-[11px]"
+                onClick={() => onSetStatus?.(task.id, 'done')}
+                disabled={!onSetStatus}
+              >
                 Отметить выполненной
               </Button>
-              <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 w-full justify-start text-[11px]"
+                onClick={() => onDuplicateTask?.(task.id)}
+                disabled={!onDuplicateTask}
+              >
                 Дублировать задачу
               </Button>
-              <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 w-full justify-start text-[11px]"
+                onClick={() => onArchiveTask?.(task.id)}
+                disabled={!onArchiveTask}
+              >
                 Архивировать
               </Button>
             </div>
@@ -391,3 +465,4 @@ function dueToneClass(kind: Task['dueKind']) {
       return 'text-gray-500';
   }
 }
+
