@@ -8,7 +8,8 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { SourcingType, DeliveryMode } from '@prisma/client';
+import { Transform } from 'class-transformer';
+import { SourcingType, DeliveryMode, PipelineStage } from '@prisma/client';
 
 export class UpdateApplicationDto {
   @IsOptional()
@@ -141,12 +142,48 @@ export class ApplicationListQueryDto {
   managerId?: string;
 
   @IsOptional()
+  @IsEnum(PipelineStage)
+  stage?: PipelineStage;
+
+  @IsOptional()
   @IsString()
   scope?: 'all' | 'mine';
 
   @IsOptional()
   @IsString()
   query?: string;
+
+  @IsOptional()
+  @IsString()
+  sourcing?: 'own' | 'subcontractor' | 'mixed' | 'undecided';
+
+  @IsOptional()
+  @IsString()
+  equipment?: string;
+
+  @IsOptional()
+  @IsString()
+  readinessReservation?: 'ready' | 'waiting' | 'no_data';
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  readyForDeparture?: boolean;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
+  @IsBoolean()
+  conflict?: boolean;
 
   @IsOptional()
   isActive?: string;

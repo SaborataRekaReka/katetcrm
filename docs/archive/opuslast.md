@@ -1,3 +1,12 @@
+## Важно
+
+Этот файл — исторический лог сессий. Внутри есть устаревшие статусы
+("backend отсутствует" и т.п.), которые уже не соответствуют текущему состоянию.
+Для актуальной картины используйте: `IMPLEMENTATION_ROADMAP.md`,
+`FRONTEND_API_WIRING.md`, `app/backend/README.md`, `app/frontend/README.md`.
+
+---
+
 User: Проверь мое техническое задание и сверься с состоянием проекта, если что актуализируй это. Затем придумай план на следующие 2-3 сессии с тобой и начни выполнение по 1 стадии кнупной стадии за раз.
 
 GitHub Copilot: Read memory [](file:///c%3A/Users/brene/AppData/Roaming/Code/User/workspaceStorage/27b28c391b7f3323fa6ef56c617703d5/GitHub.copilot-chat/memory-tool/memories/repo/katet-crm-2-architecture-deep.md)
@@ -66,7 +75,7 @@ Read [](file:///c%3A/projects/dev/katet-crm-2/ARCHITECTURE.md#1-1), lines 1 to 1
 - Backend + БД + миграции + server-side RBAC.
 - API `/api/v1/...`, webhooks для site/Mango/Telegram/MAX, integration log.
 - Реальный поиск дубликатов, реальный conflict-check, реальный activity log.
-- Import pipeline (CSV/XLSX + preview + mapping + dedup + log).
+- Import pipeline (CSV + preview + mapping + dedup + log).
 - Auth / сессии.
 
 Сейчас актуализирую ТЗ: добавлю секцию про текущее состояние и честно разведу «рекомендации стека» и «фактически выбранный frontend». 

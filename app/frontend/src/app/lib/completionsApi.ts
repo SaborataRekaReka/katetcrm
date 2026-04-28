@@ -1,4 +1,5 @@
 import { apiRequest } from './apiClient';
+import type { DepartureApi } from './departuresApi';
 
 export type CompletionOutcome = 'completed' | 'unqualified';
 
@@ -70,6 +71,12 @@ export interface CompletionListParams {
   query?: string;
 }
 
+export interface PendingCompletionListParams {
+  departureId?: string;
+  applicationId?: string;
+  query?: string;
+}
+
 export interface UpdateCompletionPatch {
   completionNote?: string | null;
   unqualifiedReason?: string | null;
@@ -77,6 +84,12 @@ export interface UpdateCompletionPatch {
 
 export function listCompletions(params: CompletionListParams = {}) {
   return apiRequest<{ items: CompletionApi[]; total: number }>('completions', {
+    query: params as Record<string, string | undefined>,
+  });
+}
+
+export function listPendingCompletions(params: PendingCompletionListParams = {}) {
+  return apiRequest<{ items: DepartureApi[]; total: number }>('completions/pending', {
     query: params as Record<string, string | undefined>,
   });
 }

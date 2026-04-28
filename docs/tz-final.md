@@ -325,7 +325,7 @@ API обязательно в первой версии:
 
 Импорт в MVP:
 
-- CSV/XLSX;
+- CSV;
 - сопоставление колонок;
 - предпросмотр перед импортом;
 - базовая проверка дублей;
@@ -441,53 +441,41 @@ MVP считается принятым, если:
 
 ---
 
-## 12. Состояние реализации (актуализация 2026-04)
+## 12. Состояние реализации (актуализация 2026-04-28)
 
 ### 12.1 Сделано
 
-- Frontend shell: primary rail + secondary sidebar + workspace header + toolbar, role toggle admin/manager.
-- State-driven роутинг с частичным URL sync (pathname + `?view`).
-- UX-реализация всех ключевых доменов MVP на моках:
-  - Лиды (Kanban 6 стадий, список).
-  - Заявки (workspace + detail view, multi-item UI).
-  - Бронирования (workspace list/table, два сценария — своя/подрядчик, статусы подтверждения подрядчика).
-  - Клиенты (список + карточки + повторный заказ диалог).
-  - Выезды и завершение.
-  - Каталоги: типы техники, единицы, подрядчики, категории.
-  - Контроль/аналитика: dashboard, reports, audit (витрина на моках).
-  - Администрирование: imports, settings, users, permissions (UI).
-  - Home (overview, мои задачи, срочные, активность).
-- Типы доменных сущностей оформлены в `src/app/types/`.
-- Mock-данные покрывают все стадии воронки.
-
-### 12.2 Не сделано / критичные разрывы vs MVP
-
-- Backend полностью отсутствует (нет `app/backend`).
-- Нет БД, миграций, Prisma-схемы.
-- Нет API `/api/v1/...`, нет webhook-эндпоинтов для site/Mango/Telegram/MAX.
-- Нет server-side auth/RBAC (роль на фронте — это переключатель для моков).
-- Реальные бизнес-инварианты не enforced на сервере:
+- Backend реализован в `app/backend` (NestJS + Prisma + PostgreSQL + миграции + seed).
+- Работает auth/RBAC контур: `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`, guards и роли `admin/manager`.
+- Реализованы API-модули MVP: `leads`, `clients`, `applications`, `application-items`, `reservations`, `departures`, `completions`, `tasks`, `directories`, `integrations`, `imports`, `activity`, `stats`, `users`.
+- Ключевые бизнес-инварианты enforced на уровне БД/сервисов:
   - одна активная заявка на лид;
   - одна активная бронь на позицию;
-  - conflict-warning по бронированиям;
-  - поиск дублей по телефону/компании;
-  - автоснятие брони при `completed/unqualified`.
-- Нет реального журнала действий (`ActivityLog` — только мок).
-- Нет import pipeline (CSV/XLSX + mapping + preview + dedup + log).
-- Нет IntegrationEvent-контура.
-- PWA (service worker, manifest) не подключён.
+  - conflict-warning по бронированиям (soft warning);
+  - дедуп (телефон/компания) в create/import сценариях.
+- Frontend API wiring покрывает основные домены: Leads, Applications, Reservations, Clients, Departures, Completion.
+- Home/Control подключены к `/stats` и `/activity/search`; My Tasks работает API-first и поддерживает write-сценарии (`create/update/status/duplicate/archive/subtasks`).
+- Для Home/My Tasks поддержана очистка дедлайна end-to-end (`dueDate: null`, включая совместимость с пустой строкой на входе).
+- Admin: Imports (`preview/run/report`) и Integrations (`list/detail/retry/replay`) подключены в API-режиме.
+- Control analytics переведён на server-side контракт `GET /stats/analytics?viewId=...&sampleTake=...`.
+- Закрыт cross-module dead-control аудит для клиентских CTA/link точек в Reservation/Departure/Completion (включая API workspace-варианты) и shared affordance (`DenseDataTable`, `KpiRow`).
+- Release gate работает: `smoke:base`, `smoke:stage3`, `smoke:stage5`, `smoke:stage6`, `smoke:stage7`, `smoke:tasks`, `smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`, `smoke:admin:control`, `smoke:release`.
+
+### 12.2 Не сделано / оставшиеся разрывы до полного MVP
+
+- Расширение форматов импорта не в приоритете (фокус на hardening текущего CSV-flow).
+- Часть экранов Control/Admin/Directories всё ещё имеет локальные fallback-ветки и неполный runtime/e2e coverage.
+- Users/Permissions/Settings в Admin подключены к backend, но требуется операционная стабилизация и регрессионное покрытие write-сценариев.
+- Нужны дополнительные аналитические срезы и browser runtime-pass для отчётных сценариев.
+- Нет полноценного e2e/contract набора тестов для всех критичных интеграционных сценариев.
+- PWA (service worker/manifest) не является реализованной целью текущего среза.
 
 ### 12.3 Краткий план доведения до MVP (по шагам)
 
-Порядок обусловлен инвариантами: сначала платформа и ядро, затем бизнес-логика, затем интеграции и импорт.
-
-1. **Backend foundation.** Скелет `app/backend` (NestJS + Prisma + Postgres + Docker Compose), healthcheck, конфигурация, базовый auth (JWT), seed.
-2. **Core CRM API.** Модули `leads`, `clients`, `activity-log`. Эндпоинты `/api/v1/leads`, `/api/v1/clients`. Проверка дублей по телефону/компании. Перевод в frontend с моков на реальные данные (`@tanstack/react-query`).
-3. **Applications + Reservations API.** Модули `applications`, `application-items`, `reservations` с инвариантами (одна активная заявка на лид, одна активная бронь на позицию, soft conflict warning, статусы подтверждения подрядчика). Wire во frontend.
-4. **Directories API.** `equipment-types`, `equipment-units`, `subcontractors`, `equipment-categories`. Wire в каталоги.
-5. **Departures / Completion API.** Стадия выезд + ручное завершение + автоснятие брони.
-6. **Integrations MVP.** Webhook-эндпоинты для site/Mango/Telegram/MAX, `IntegrationEvent` с идемпотентностью и логом.
-7. **Analytics + Import.** Базовые отчёты (скорость, конверсия, потерянные, зависшие), CSV/XLSX import с preview/mapping/dedup/log.
+1. **Усилить import/integration hardening.** Добить backend CSV safety limits/error taxonomy и CI-проверку signed webhook fixtures с production-like secret profiles.
+2. **Покрыть admin/control browser runtime-e2e.** Добавить browser/e2e проверки write-сценариев Users/Permissions/Settings и Control dashboard/reports/audit/analytics.
+3. **Усилить quality gate.** Расширить contract/regression smoke для remaining write-paths и интеграционных кейсов.
+4. **Закрыть runtime-pass по primary CTA.** Пройти browser-проверку editability/CTA-семантики во всех затронутых доменах.
 
 ---
 

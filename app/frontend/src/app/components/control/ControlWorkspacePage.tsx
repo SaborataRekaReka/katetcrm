@@ -42,9 +42,13 @@ import {
   type PipelineStage,
 } from '../../lib/stageTokens';
 import { USE_API } from '../../lib/featureFlags';
-import { useStatsQuery } from '../../hooks/useStatsQuery';
+import {
+  useStatsAnalyticsViewQuery,
+  useStatsQuery,
+  useStatsReportsQuery,
+} from '../../hooks/useStatsQuery';
 import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
-import { type ActivityLogEntryApi, type ActivityModule } from '../../lib/activityApi';
+import { type ActivityAction, type ActivityLogEntryApi, type ActivityModule } from '../../lib/activityApi';
 
 export function ControlWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -58,9 +62,12 @@ export function ControlWorkspacePage() {
 
 function ControlDashboardPage() {
   const statsQuery = useStatsQuery(USE_API);
+  const isPending = USE_API && statsQuery.isPending && !statsQuery.data;
+  const isError = USE_API && statsQuery.isError && !statsQuery.data;
 
   const counts = useMemo(() => {
-    if (USE_API && statsQuery.data) {
+    if (USE_API) {
+      if (!statsQuery.data) return [];
       const p = statsQuery.data.pipeline;
       const map: Record<PipelineStage, number> = {
         lead: p.lead,
@@ -81,19 +88,20 @@ function ControlDashboardPage() {
 
   const max = Math.max(...counts.map((c) => c.count), 1);
 
-  const total = USE_API && statsQuery.data ? statsQuery.data.pipeline.total : mockLeads.length;
-  const active = USE_API && statsQuery.data
-    ? statsQuery.data.pipeline.active
+  const total = USE_API ? statsQuery.data?.pipeline.total : mockLeads.length;
+  const active = USE_API
+    ? statsQuery.data?.pipeline.active
     : mockLeads.filter((l) => !['completed', 'unqualified'].includes(l.stage)).length;
-  const closed = USE_API && statsQuery.data
-    ? statsQuery.data.pipeline.completed
+  const closed = USE_API
+    ? statsQuery.data?.pipeline.completed
     : mockLeads.filter((l) => l.stage === 'completed').length;
-  const lost = USE_API && statsQuery.data
-    ? statsQuery.data.pipeline.unqualified
+  const lost = USE_API
+    ? statsQuery.data?.pipeline.unqualified
     : mockLeads.filter((l) => l.stage === 'unqualified').length;
 
   const byManager = useMemo(() => {
-    if (USE_API && statsQuery.data?.managers?.length) {
+    if (USE_API) {
+      if (!statsQuery.data?.managers?.length) return [];
       return statsQuery.data.managers
         .map((m) => [
           m.name,
@@ -113,42 +121,62 @@ function ControlDashboardPage() {
       <DashboardPage>
         <CompactPageHeader title="Дашборд" subtitle="Сводная аналитика модуля «Контроль» · Апрель 2026" />
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Всего в воронке" value={total} icon={<TrendingUp className="h-3.5 w-3.5" />} />
-          <StatCard label="Активные" value={active} tone="progress" icon={<Sparkles className="h-3.5 w-3.5" />} />
-          <StatCard label="Завершено" value={closed} tone="success" icon={<CalendarCheck className="h-3.5 w-3.5" />} />
-          <StatCard label="Потеряно" value={lost} tone="danger" icon={<AlertTriangle className="h-3.5 w-3.5" />} />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-          <WidgetCard title="Распределение по этапам" description="Количество записей на каждой стадии">
-            <div className="flex flex-col gap-2">
-              {counts.map((c) => (
-                <div key={c.stage} className="flex items-center gap-3 text-[12px]">
-                  <div className="w-24 shrink-0 text-foreground/80">{STAGE_LABEL_SHORT[c.stage]}</div>
-                  <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
-                    <div className={cn('h-4 rounded', STAGE_BAR[c.stage])} style={{ width: `${(c.count / max) * 100}%` }} />
-                  </div>
-                  <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{c.count}</div>
-                </div>
-              ))}
+        {isPending ? (
+          <div className="rounded border border-dashed border-border/70 px-3 py-2 text-[12px] text-muted-foreground">
+            Загружаем dashboard-аналитику...
+          </div>
+        ) : isError ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {statsQuery.error instanceof Error ? statsQuery.error.message : 'Не удалось загрузить dashboard-аналитику.'}
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard label="Всего в воронке" value={total ?? '—'} icon={<TrendingUp className="h-3.5 w-3.5" />} />
+              <StatCard label="Активные" value={active ?? '—'} tone="progress" icon={<Sparkles className="h-3.5 w-3.5" />} />
+              <StatCard label="Завершено" value={closed ?? '—'} tone="success" icon={<CalendarCheck className="h-3.5 w-3.5" />} />
+              <StatCard label="Потеряно" value={lost ?? '—'} tone="danger" icon={<AlertTriangle className="h-3.5 w-3.5" />} />
             </div>
-          </WidgetCard>
 
-          <WidgetCard title="Нагрузка менеджеров" description="Открытых записей на менеджера">
-            <div className="flex flex-col gap-2">
-              {byManager.map(([m, v]) => (
-                <div key={m} className="flex items-center gap-3 text-[12px]">
-                  <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
-                  <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
-                    <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / managerMax) * 100}%` }} />
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+              <WidgetCard title="Распределение по этапам" description="Количество записей на каждой стадии">
+                {counts.length === 0 ? (
+                  <EmptyPanelState title="Нет данных" description="Пайплайн пока пуст" />
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {counts.map((c) => (
+                      <div key={c.stage} className="flex items-center gap-3 text-[12px]">
+                        <div className="w-24 shrink-0 text-foreground/80">{STAGE_LABEL_SHORT[c.stage]}</div>
+                        <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
+                          <div className={cn('h-4 rounded', STAGE_BAR[c.stage])} style={{ width: `${(c.count / max) * 100}%` }} />
+                        </div>
+                        <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{c.count}</div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{v}</div>
-                </div>
-              ))}
+                )}
+              </WidgetCard>
+
+              <WidgetCard title="Нагрузка менеджеров" description="Открытых записей на менеджера">
+                {byManager.length === 0 ? (
+                  <EmptyPanelState title="Нет данных" description="Менеджерские агрегаты пока не доступны" />
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {byManager.map(([m, v]) => (
+                      <div key={m} className="flex items-center gap-3 text-[12px]">
+                        <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
+                        <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
+                          <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / managerMax) * 100}%` }} />
+                        </div>
+                        <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{v}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </WidgetCard>
             </div>
-          </WidgetCard>
-        </div>
+          </>
+        )}
       </DashboardPage>
     </ListScaffold>
   );
@@ -216,13 +244,6 @@ const REPORTS_FALLBACK: ReportRow[] = [
 
 type ReportsPeriod = '7d' | '30d';
 
-function reportsPeriodToFromIso(period: ReportsPeriod): string {
-  const now = Date.now();
-  const dayMs = 24 * 60 * 60 * 1000;
-  const days = period === '7d' ? 7 : 30;
-  return new Date(now - days * dayMs).toISOString();
-}
-
 function ReportsCatalogPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const meta = getModuleMeta('reports');
@@ -230,92 +251,16 @@ function ReportsCatalogPage() {
   const [category, setCategory] = useState('all');
   const [period, setPeriod] = useState<ReportsPeriod>('30d');
 
-  const statsQuery = useStatsQuery(USE_API);
-  const fromIso = useMemo(() => reportsPeriodToFromIso(period), [period]);
-  const importLogQuery = useActivitySearchQuery(
-    {
-      action: 'imported',
-      from: USE_API ? fromIso : undefined,
-      take: 1,
-    },
-    USE_API,
-  );
-  const auditCoverageQuery = useActivitySearchQuery(
-    {
-      from: USE_API ? fromIso : undefined,
-      take: 1,
-    },
-    USE_API,
-  );
+  const periodDays: 7 | 30 = period === '7d' ? 7 : 30;
+  const reportsQuery = useStatsReportsQuery(periodDays, USE_API);
 
-  const periodLabel = period === '7d' ? '7 дней' : '30 дней';
   const reports = useMemo<ReportRow[]>(() => {
     if (!USE_API) return REPORTS_FALLBACK;
-    if (!statsQuery.data) return [];
+    return reportsQuery.data?.items ?? [];
+  }, [reportsQuery.data]);
 
-    const conversion =
-      statsQuery.data.pipeline.lead > 0
-        ? ((statsQuery.data.pipeline.application / statsQuery.data.pipeline.lead) * 100).toFixed(1)
-        : '0.0';
-
-    return [
-      {
-        id: 'KPI-PIPE-ACTIVE',
-        name: 'Активные записи в воронке',
-        category: 'Продажи',
-        period: 'Сейчас',
-        owner: 'Система',
-        value: String(statsQuery.data.pipeline.active),
-        targetModule: 'dashboard',
-      },
-      {
-        id: 'KPI-CONV-LEAD-APP',
-        name: 'Конверсия lead → application',
-        category: 'Продажи',
-        period: periodLabel,
-        owner: 'Система',
-        value: `${conversion}%`,
-        targetModule: 'dashboard',
-      },
-      {
-        id: 'KPI-OPS-CONFLICTS',
-        name: 'Конфликты бронирований',
-        category: 'Операции',
-        period: periodLabel,
-        owner: 'Система',
-        value: String(statsQuery.data.operations.conflicts),
-        targetModule: 'dashboard',
-      },
-      {
-        id: 'KPI-AUDIT-COVERAGE',
-        name: 'События аудита',
-        category: 'Контроль',
-        period: periodLabel,
-        owner: 'Система',
-        value: auditCoverageQuery.isPending ? '...' : String(auditCoverageQuery.data?.total ?? 0),
-        targetModule: 'audit',
-      },
-      {
-        id: 'KPI-IMPORT-TOTAL',
-        name: 'Импортированные записи',
-        category: 'Импорт',
-        period: periodLabel,
-        owner: 'Система',
-        value: importLogQuery.isPending ? '...' : String(importLogQuery.data?.total ?? 0),
-        targetModule: 'imports',
-      },
-    ];
-  }, [
-    auditCoverageQuery.data?.total,
-    auditCoverageQuery.isPending,
-    importLogQuery.data?.total,
-    importLogQuery.isPending,
-    periodLabel,
-    statsQuery.data,
-  ]);
-
-  const categories = Array.from(new Set((reports.length > 0 ? reports : REPORTS_FALLBACK).map((r) => r.category)));
-  const filtered = (reports.length > 0 ? reports : REPORTS_FALLBACK).filter((r) => {
+  const categories = Array.from(new Set(reports.map((r) => r.category)));
+  const filtered = reports.filter((r) => {
     if (category !== 'all' && r.category !== category) return false;
     const q = query.trim().toLowerCase();
     if (!q) return true;
@@ -395,19 +340,19 @@ function ReportsCatalogPage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
-      {USE_API && statsQuery.isPending && !statsQuery.data ? (
+      {USE_API && reportsQuery.isPending && !reportsQuery.data ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
           Загружаем KPI отчёты...
         </div>
       ) : null}
 
-      {USE_API && statsQuery.isError && !statsQuery.data ? (
+      {USE_API && reportsQuery.isError && !reportsQuery.data ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
-          {statsQuery.error instanceof Error ? statsQuery.error.message : 'Не удалось загрузить отчёты.'}
+          {reportsQuery.error instanceof Error ? reportsQuery.error.message : 'Не удалось загрузить отчёты.'}
         </div>
       ) : null}
 
-      {USE_API && (statsQuery.isPending || statsQuery.isError) && !statsQuery.data
+      {USE_API && (reportsQuery.isPending || reportsQuery.isError) && !reportsQuery.data
         ? null
         : <EntityListTable rows={filtered} columns={columns} minWidth={860} onRowClick={openReport} />}
     </ListScaffold>
@@ -436,6 +381,25 @@ function periodToFromIso(period: AuditPeriod): string | undefined {
   if (period === 'today') return new Date(now - day).toISOString();
   if (period === '7d') return new Date(now - 7 * day).toISOString();
   if (period === '30d') return new Date(now - 30 * day).toISOString();
+  return undefined;
+}
+
+function kindToActivityAction(kind: 'all' | AuditEventKind): ActivityAction | undefined {
+  if (kind === 'all') return undefined;
+  if (kind.endsWith('_created')) return 'created';
+  if (kind === 'lead_converted') return 'stage_changed';
+  if (kind === 'departure_completed') return 'completed';
+  return undefined;
+}
+
+function kindToEntityType(kind: 'all' | AuditEventKind): string | undefined {
+  if (kind === 'all') return undefined;
+  if (kind.startsWith('lead_')) return 'lead';
+  if (kind.startsWith('reservation_')) return 'reservation';
+  if (kind.startsWith('departure_')) return 'departure';
+  if (kind.startsWith('completion_')) return 'completion';
+  if (kind.startsWith('user_')) return 'user';
+  if (kind === 'permissions_changed') return 'permissions';
   return undefined;
 }
 
@@ -506,12 +470,21 @@ function AuditPage() {
   const [period, setPeriod] = useState<AuditPeriod>('all');
 
   const fromIso = useMemo(() => periodToFromIso(period), [period]);
+  const moduleFilter: ActivityModule | undefined =
+    mod !== 'all'
+      ? (mod as ActivityModule)
+      : kind !== 'all'
+        ? (AUDIT_EVENTS[kind].module as ActivityModule)
+        : undefined;
+
   const auditQuery = useActivitySearchQuery(
     {
       take: 300,
       query: query.trim() || undefined,
       actorId: actor !== 'all' && USE_API ? actor : undefined,
-      module: mod !== 'all' && USE_API ? (mod as ActivityModule) : undefined,
+      module: USE_API ? moduleFilter : undefined,
+      action: USE_API ? kindToActivityAction(kind) : undefined,
+      entityType: USE_API ? kindToEntityType(kind) : undefined,
       from: USE_API ? fromIso : undefined,
     },
     USE_API,
@@ -795,84 +768,181 @@ function AnalyticsViewPage({ viewId }: { viewId: string }) {
     tone: 'default' as const,
   };
 
+  const safeViewId = (
+    viewId === 'view-stale-leads'
+    || viewId === 'view-lost-leads'
+    || viewId === 'view-active-reservations'
+    || viewId === 'view-manager-load'
+      ? viewId
+      : 'view-stale-leads'
+  );
+
+  const analyticsQuery = useStatsAnalyticsViewQuery(safeViewId, 6, USE_API);
+  const isPending = USE_API && analyticsQuery.isPending && !analyticsQuery.data;
+  const isError = USE_API && analyticsQuery.isError && !analyticsQuery.data;
+
+  const errorMessage = analyticsQuery.error instanceof Error
+    ? analyticsQuery.error.message
+    : 'Не удалось загрузить аналитику.';
+
+  const apiRows = useMemo(() => {
+    if (!USE_API) return [] as Array<{
+      id: string;
+      stage: string;
+      manager: string;
+      company: string | null;
+      client: string;
+      equipmentType: string;
+      isUrgent: boolean;
+      isStale: boolean;
+      hasConflict: boolean;
+      lastActivity: string;
+    }>;
+
+    return (analyticsQuery.data?.samples ?? []).map((l) => {
+      const at = new Date(l.lastActivityAt);
+      const lastActivity = Number.isFinite(at.getTime())
+        ? at.toLocaleString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        : l.lastActivityAt;
+
+      return {
+        id: l.id,
+        stage: l.stage,
+        manager: l.manager,
+        company: l.company,
+        client: l.client,
+        equipmentType: l.equipmentType,
+        isUrgent: l.isUrgent,
+        isStale: l.isStale,
+        hasConflict: l.hasConflict,
+        lastActivity,
+      };
+    });
+  }, [analyticsQuery.data]);
+
   const subset = useMemo(() => {
+    if (USE_API) {
+      return apiRows;
+    }
+
     if (viewId === 'view-stale-leads') return mockLeads.filter((l) => l.isStale);
     if (viewId === 'view-lost-leads') return mockLeads.filter((l) => l.stage === 'unqualified');
     if (viewId === 'view-active-reservations') return mockLeads.filter((l) => l.stage === 'reservation');
     return mockLeads;
-  }, [viewId]);
+  }, [apiRows, viewId]);
 
   const byManager = useMemo(() => {
     const map = new Map<string, number>();
     for (const l of subset) map.set(l.manager, (map.get(l.manager) ?? 0) + 1);
     return Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
   }, [subset]);
-  const max = Math.max(...byManager.map(([, v]) => v), 1);
+
+  const managerRows = useMemo(() => {
+    if (USE_API) {
+      return (analyticsQuery.data?.managers ?? []).map((m) => [m.name, m.count] as const);
+    }
+    return byManager;
+  }, [analyticsQuery.data, byManager]);
+
+  const max = Math.max(...managerRows.map(([, v]) => v), 1);
+
+  const total = USE_API
+    ? (analyticsQuery.data?.summary.total ?? subset.length)
+    : subset.length;
+
+  const managersTotal = USE_API
+    ? (analyticsQuery.data?.summary.managers ?? managerRows.length)
+    : managerRows.length;
+
+  const urgent = USE_API
+    ? (analyticsQuery.data?.summary.urgent ?? subset.filter((l) => l.isUrgent).length)
+    : subset.filter((l) => l.isUrgent).length;
+
+  const conflicts = USE_API
+    ? (analyticsQuery.data?.summary.conflicts ?? 0)
+    : subset.filter((l) => l.hasConflict).length;
 
   return (
     <ListScaffold>
       <DashboardPage>
         <CompactPageHeader title={cfg.title} subtitle={cfg.subtitle} icon={cfg.icon} />
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatCard label="Всего" value={subset.length} tone={cfg.tone} icon={cfg.icon} />
-          <StatCard label="Менеджеров" value={byManager.length} tone="default" icon={<User className="h-3.5 w-3.5" />} />
-          <StatCard
-            label="Срочные"
-            value={subset.filter((l) => l.isUrgent).length}
-            tone="danger"
-            icon={<AlertTriangle className="h-3.5 w-3.5" />}
-          />
-          <StatCard
-            label="С конфликтом"
-            value={subset.filter((l) => l.hasConflict).length}
-            tone="warning"
-            icon={<AlertTriangle className="h-3.5 w-3.5" />}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
-          <WidgetCard className="lg:col-span-3" title="По менеджерам" description="Количество записей у каждого ответственного">
-            {byManager.length === 0 ? (
-              <EmptyPanelState
-                icon={<Sparkles className="h-6 w-6" />}
-                title="Нет данных"
-                description="В этом представлении нет записей"
+        {isPending ? (
+          <div className="rounded border border-dashed border-border/70 px-3 py-2 text-[12px] text-muted-foreground">
+            Загружаем аналитику...
+          </div>
+        ) : isError ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {errorMessage}
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatCard label="Всего" value={total} tone={cfg.tone} icon={cfg.icon} />
+              <StatCard label="Менеджеров" value={managersTotal} tone="default" icon={<User className="h-3.5 w-3.5" />} />
+              <StatCard
+                label="Срочные"
+                value={urgent}
+                tone="danger"
+                icon={<AlertTriangle className="h-3.5 w-3.5" />}
               />
-            ) : (
-              <div className="flex flex-col gap-2">
-                {byManager.map(([m, v]) => (
-                  <div key={m} className="flex items-center gap-3 text-[12px]">
-                    <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
-                    <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
-                      <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / max) * 100}%` }} />
-                    </div>
-                    <div className="w-8 shrink-0 text-right tabular-nums text-foreground">{v}</div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </WidgetCard>
+              <StatCard
+                label="С конфликтом"
+                value={conflicts}
+                tone="warning"
+                icon={<AlertTriangle className="h-3.5 w-3.5" />}
+              />
+            </div>
 
-          <WidgetCard className="lg:col-span-2" title="Примеры записей" description="Первые 6 из представления" bodyPadded={false}>
-            {subset.length === 0 ? (
-              <EmptyPanelState title="Нет записей" />
-            ) : (
-              <InsightList>
-                {subset.slice(0, 6).map((l) => (
-                  <InsightRow
-                    key={l.id}
-                    leading={<ArrowRight className="h-3.5 w-3.5" />}
-                    primary={l.company ?? l.client}
-                    secondary={`${l.equipmentType} · ${l.manager}`}
-                    trailing={l.lastActivity}
-                    interactive
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
+              <WidgetCard className="lg:col-span-3" title="По менеджерам" description="Количество записей у каждого ответственного">
+                {managerRows.length === 0 ? (
+                  <EmptyPanelState
+                    icon={<Sparkles className="h-6 w-6" />}
+                    title="Нет данных"
+                    description="В этом представлении нет записей"
                   />
-                ))}
-              </InsightList>
-            )}
-          </WidgetCard>
-        </div>
+                ) : (
+                  <div className="flex flex-col gap-2">
+                    {managerRows.map(([m, v]) => (
+                      <div key={m} className="flex items-center gap-3 text-[12px]">
+                        <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
+                        <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
+                          <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / max) * 100}%` }} />
+                        </div>
+                        <div className="w-8 shrink-0 text-right tabular-nums text-foreground">{v}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </WidgetCard>
+
+              <WidgetCard className="lg:col-span-2" title="Примеры записей" description="Первые 6 из представления" bodyPadded={false}>
+                {subset.length === 0 ? (
+                  <EmptyPanelState title="Нет записей" />
+                ) : (
+                  <InsightList>
+                    {subset.slice(0, 6).map((l) => (
+                      <InsightRow
+                        key={l.id}
+                        leading={<ArrowRight className="h-3.5 w-3.5" />}
+                        primary={l.company ?? l.client}
+                        secondary={`${l.equipmentType} · ${l.manager}`}
+                        trailing={l.lastActivity}
+                        interactive
+                      />
+                    ))}
+                  </InsightList>
+                )}
+              </WidgetCard>
+            </div>
+          </>
+        )}
       </DashboardPage>
     </ListScaffold>
   );

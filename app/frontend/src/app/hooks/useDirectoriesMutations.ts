@@ -4,6 +4,10 @@ import {
   createEquipmentType,
   createEquipmentUnit,
   createSubcontractor,
+  deleteEquipmentCategory,
+  deleteEquipmentType,
+  deleteEquipmentUnit,
+  deleteSubcontractor,
   updateEquipmentCategory,
   updateEquipmentType,
   updateEquipmentUnit,
@@ -38,6 +42,14 @@ export function useUpdateEquipmentCategory() {
   });
 }
 
+export function useDeleteEquipmentCategory() {
+  const qc = useQueryClient();
+  return useMutation<{ ok: true }, Error, { id: string }>({
+    mutationFn: ({ id }) => deleteEquipmentCategory(id),
+    onSuccess: () => invalidateAll(qc),
+  });
+}
+
 type EquipmentTypeInput = Parameters<typeof createEquipmentType>[0];
 
 export function useCreateEquipmentType() {
@@ -52,6 +64,14 @@ export function useUpdateEquipmentType() {
   const qc = useQueryClient();
   return useMutation<EquipmentTypeApi, Error, { id: string; body: EquipmentTypeInput }>({
     mutationFn: ({ id, body }) => updateEquipmentType(id, body),
+    onSuccess: () => invalidateAll(qc),
+  });
+}
+
+export function useDeleteEquipmentType() {
+  const qc = useQueryClient();
+  return useMutation<{ ok: true }, Error, { id: string }>({
+    mutationFn: ({ id }) => deleteEquipmentType(id),
     onSuccess: () => invalidateAll(qc),
   });
 }
@@ -74,6 +94,14 @@ export function useUpdateEquipmentUnit() {
   });
 }
 
+export function useDeleteEquipmentUnit() {
+  const qc = useQueryClient();
+  return useMutation<{ ok: true }, Error, { id: string }>({
+    mutationFn: ({ id }) => deleteEquipmentUnit(id),
+    onSuccess: () => invalidateAll(qc),
+  });
+}
+
 type SubcontractorInput = Parameters<typeof createSubcontractor>[0];
 
 export function useCreateSubcontractor() {
@@ -88,6 +116,14 @@ export function useUpdateSubcontractor() {
   const qc = useQueryClient();
   return useMutation<SubcontractorApi, Error, { id: string; body: SubcontractorInput }>({
     mutationFn: ({ id, body }) => updateSubcontractor(id, body),
+    onSuccess: () => invalidateAll(qc),
+  });
+}
+
+export function useDeleteSubcontractor() {
+  const qc = useQueryClient();
+  return useMutation<{ ok: true }, Error, { id: string }>({
+    mutationFn: ({ id }) => deleteSubcontractor(id),
     onSuccess: () => invalidateAll(qc),
   });
 }

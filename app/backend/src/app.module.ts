@@ -15,6 +15,8 @@ import { CompletionsModule } from './modules/completions/completions.module';
 import { StatsModule } from './modules/stats/stats.module';
 import { IntegrationsModule } from './modules/integrations/integrations.module';
 import { ImportsModule } from './modules/imports/imports.module';
+import { SettingsModule } from './modules/settings/settings.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -37,6 +39,8 @@ import { validateEnv } from './config/env.validation';
     CompletionsModule,
     IntegrationsModule,
     ImportsModule,
+    SettingsModule,
+    TasksModule,
     StatsModule,
     HealthModule,
   ],

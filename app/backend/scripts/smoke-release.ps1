@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$steps = @('smoke:base', 'smoke:stage3', 'smoke:stage5', 'smoke:stage6', 'smoke:stage7', 'smoke:rbac')
+$steps = @('smoke:base', 'smoke:stage3', 'smoke:stage5', 'smoke:stage6', 'smoke:stage7', 'smoke:tasks', 'smoke:rbac', 'smoke:rbac:scope', 'smoke:admin', 'smoke:admin:control')
 
 foreach ($step in $steps) {
   Write-Host "=== RUN $step ==="

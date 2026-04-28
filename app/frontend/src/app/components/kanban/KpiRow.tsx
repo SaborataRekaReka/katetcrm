@@ -50,8 +50,9 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
           <button
             key={s.id}
             type="button"
-            onClick={() => onSelect?.(s.id)}
-            className="flex items-center gap-2 rounded-md border border-transparent bg-[#f7f8fa] px-2 py-1.5 text-left transition-colors hover:border-border/60 hover:bg-white"
+            onClick={onSelect ? () => onSelect(s.id) : undefined}
+            disabled={!onSelect}
+            className="flex items-center gap-2 rounded-md border border-transparent bg-[#f7f8fa] px-2 py-1.5 text-left transition-colors hover:border-border/60 hover:bg-white disabled:cursor-default disabled:hover:border-transparent disabled:hover:bg-[#f7f8fa]"
           >
             <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded', toneBg(s.tone))}>
               <Icon className={cn('h-3.5 w-3.5', toneText(s.tone))} />

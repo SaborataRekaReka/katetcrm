@@ -10,9 +10,21 @@ export const directoriesQueryKeys = {
   categories: ['directories', 'equipment-categories'] as const,
   types: (categoryId?: string) =>
     ['directories', 'equipment-types', { categoryId: categoryId ?? null }] as const,
-  units: (params: { equipmentTypeId?: string; status?: string }) =>
+  units: (params: {
+    equipmentTypeId?: string;
+    status?: string;
+    plannedStart?: string;
+    plannedEnd?: string;
+    excludeReservationId?: string;
+  }) =>
     ['directories', 'equipment-units', params] as const,
-  subcontractors: (params: { query?: string; status?: string }) =>
+  subcontractors: (params: {
+    query?: string;
+    status?: string;
+    plannedStart?: string;
+    plannedEnd?: string;
+    excludeReservationId?: string;
+  }) =>
     ['directories', 'subcontractors', params] as const,
 };
 
@@ -33,7 +45,13 @@ export function useEquipmentTypesQuery(categoryId?: string, enabled = true) {
 }
 
 export function useEquipmentUnitsQuery(
-  params: { equipmentTypeId?: string; status?: string } = {},
+  params: {
+    equipmentTypeId?: string;
+    status?: string;
+    plannedStart?: string;
+    plannedEnd?: string;
+    excludeReservationId?: string;
+  } = {},
   enabled = true,
 ) {
   return useQuery({
@@ -44,7 +62,13 @@ export function useEquipmentUnitsQuery(
 }
 
 export function useSubcontractorsQuery(
-  params: { query?: string; status?: string } = {},
+  params: {
+    query?: string;
+    status?: string;
+    plannedStart?: string;
+    plannedEnd?: string;
+    excludeReservationId?: string;
+  } = {},
   enabled = true,
 ) {
   return useQuery({

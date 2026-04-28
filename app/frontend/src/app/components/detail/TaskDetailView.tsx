@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ArrowRight,
   Ban,
@@ -54,10 +54,19 @@ export interface TaskDetailViewProps {
   open: boolean;
   onClose: () => void;
   onOpenLinkedEntity?: (domain: TaskDomain, id: string) => void;
+  onUpdateTask?: (taskId: string, patch: TaskUpdatePatch) => Promise<void> | void;
   onSetStatus?: (taskId: string, status: TaskStatus) => void;
   onDuplicateTask?: (taskId: string) => void;
   onArchiveTask?: (taskId: string) => void;
   onAddSubtask?: (taskId: string) => void;
+}
+
+export interface TaskUpdatePatch {
+  title?: string;
+  description?: string;
+  priority?: TaskPriority;
+  dueDate?: string;
+  tags?: string[];
 }
 
 export function TaskDetailView({
@@ -65,6 +74,7 @@ export function TaskDetailView({
   open,
   onClose,
   onOpenLinkedEntity,
+  onUpdateTask,
   onSetStatus,
   onDuplicateTask,
   onArchiveTask,
@@ -81,6 +91,7 @@ export function TaskDetailView({
             task={task}
             onClose={onClose}
             onOpenLinkedEntity={onOpenLinkedEntity}
+            onUpdateTask={onUpdateTask}
             onSetStatus={onSetStatus}
             onDuplicateTask={onDuplicateTask}
             onArchiveTask={onArchiveTask}
@@ -96,6 +107,7 @@ function TaskDetailBody({
   task,
   onClose,
   onOpenLinkedEntity,
+  onUpdateTask,
   onSetStatus,
   onDuplicateTask,
   onArchiveTask,
@@ -104,12 +116,30 @@ function TaskDetailBody({
   task: Task;
   onClose: () => void;
   onOpenLinkedEntity?: (domain: TaskDomain, id: string) => void;
+  onUpdateTask?: (taskId: string, patch: TaskUpdatePatch) => Promise<void> | void;
   onSetStatus?: (taskId: string, status: TaskStatus) => void;
   onDuplicateTask?: (taskId: string) => void;
   onArchiveTask?: (taskId: string) => void;
   onAddSubtask?: (taskId: string) => void;
 }) {
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
+  const [editTitle, setEditTitle] = useState(task.title);
+  const [editDescription, setEditDescription] = useState(task.description ?? '');
+  const [editPriority, setEditPriority] = useState<TaskPriority>(task.priority);
+  const [editDueDate, setEditDueDate] = useState(task.dueDate ?? '');
+  const [editTags, setEditTags] = useState(task.tags.join(', '));
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setEditTitle(task.title);
+    setEditDescription(task.description ?? '');
+    setEditPriority(task.priority);
+    setEditDueDate(task.dueDate ?? '');
+    setEditTags(task.tags.join(', '));
+    setIsSaving(false);
+    setSaveError(null);
+  }, [task.id, task.title, task.description, task.priority, task.dueDate, task.tags]);
 
   const breadcrumbItems = ['CRM', 'Задачи'];
   if (task.linkedEntity) {
@@ -118,6 +148,24 @@ function TaskDetailBody({
   breadcrumbItems.push(task.id);
 
   const cta = getTaskCta(task);
+  const titleTrim = editTitle.trim();
+  const descriptionTrim = editDescription.trim();
+  const dueDateTrim = editDueDate.trim();
+  const originalDescription = task.description ?? '';
+  const nextTags = useMemo(() => normalizeTags(editTags), [editTags]);
+  const originalTags = task.tags.join('|');
+  const nextTagsKey = nextTags.join('|');
+  const hasUnsavedChanges =
+    titleTrim !== task.title
+    || descriptionTrim !== originalDescription
+    || editPriority !== task.priority
+    || dueDateTrim !== (task.dueDate ?? '')
+    || nextTagsKey !== originalTags;
+  const canSaveChanges =
+    !!onUpdateTask
+    && titleTrim.length >= 2
+    && hasUnsavedChanges
+    && !isSaving;
 
   const headerChips = [
     <StatusChip key="status" status={task.status} />,
@@ -147,13 +195,50 @@ function TaskDetailBody({
     onSetStatus?.(task.id, 'done');
   };
 
+  const canRunPrimaryAction =
+    task.status === 'done'
+      ? !!onDuplicateTask
+      : !!onSetStatus;
+
   const headerSecondaryAction =
-    task.status === 'done' && cta.secondary
+    task.status === 'done' && cta.secondary && onArchiveTask
       ? {
           label: cta.secondary,
-          onClick: () => onArchiveTask?.(task.id),
+          onClick: () => onArchiveTask(task.id),
         }
       : undefined;
+
+  const handleSave = async () => {
+    if (!onUpdateTask || !canSaveChanges) return;
+
+    const patch: TaskUpdatePatch = {};
+    if (titleTrim !== task.title) patch.title = titleTrim;
+    if (descriptionTrim !== originalDescription) patch.description = descriptionTrim;
+    if (editPriority !== task.priority) patch.priority = editPriority;
+    if (dueDateTrim !== (task.dueDate ?? '')) patch.dueDate = dueDateTrim;
+    if (nextTagsKey !== originalTags) patch.tags = nextTags;
+
+    if (Object.keys(patch).length === 0) return;
+
+    setSaveError(null);
+    setIsSaving(true);
+    try {
+      await onUpdateTask(task.id, patch);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : 'Не удалось сохранить изменения задачи.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleReset = () => {
+    setEditTitle(task.title);
+    setEditDescription(task.description ?? '');
+    setEditPriority(task.priority);
+    setEditDueDate(task.dueDate ?? '');
+    setEditTags(task.tags.join(', '));
+    setSaveError(null);
+  };
 
   const comments = task.comments;
   const activityEntries = useMemo(
@@ -174,13 +259,111 @@ function TaskDetailBody({
         entityLabel="Задача"
         title={task.title}
         chips={headerChips}
-        primaryAction={{
-          label: cta.primary,
-          icon: <ArrowRight className="w-3 h-3" />,
-          onClick: handlePrimaryAction,
-        }}
+        primaryAction={
+          canRunPrimaryAction
+            ? {
+                label: cta.primary,
+                icon: <ArrowRight className="w-3 h-3" />,
+                onClick: handlePrimaryAction,
+              }
+            : undefined
+        }
         secondaryAction={headerSecondaryAction}
       />
+
+      <EntitySection title="Редактирование">
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <label className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wide text-gray-500">Заголовок</span>
+              <input
+                type="text"
+                value={editTitle}
+                onChange={(event) => setEditTitle(event.target.value)}
+                disabled={!onUpdateTask || isSaving}
+                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                placeholder="Название задачи"
+              />
+            </label>
+
+            <label className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wide text-gray-500">Приоритет</span>
+              <select
+                value={editPriority}
+                onChange={(event) => setEditPriority(event.target.value as TaskPriority)}
+                disabled={!onUpdateTask || isSaving}
+                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+              >
+                <option value="urgent">{TASK_PRIORITY_LABEL.urgent}</option>
+                <option value="high">{TASK_PRIORITY_LABEL.high}</option>
+                <option value="normal">{TASK_PRIORITY_LABEL.normal}</option>
+                <option value="low">{TASK_PRIORITY_LABEL.low}</option>
+              </select>
+            </label>
+
+            <label className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wide text-gray-500">Дедлайн (дата)</span>
+              <input
+                type="date"
+                value={editDueDate}
+                onChange={(event) => setEditDueDate(event.target.value)}
+                disabled={!onUpdateTask || isSaving}
+                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+              />
+            </label>
+
+            <label className="space-y-1">
+              <span className="text-[10px] uppercase tracking-wide text-gray-500">Теги</span>
+              <input
+                type="text"
+                value={editTags}
+                onChange={(event) => setEditTags(event.target.value)}
+                disabled={!onUpdateTask || isSaving}
+                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                placeholder="например: звонок, клиент"
+              />
+            </label>
+          </div>
+
+          <label className="space-y-1 block">
+            <span className="text-[10px] uppercase tracking-wide text-gray-500">Описание</span>
+            <textarea
+              value={editDescription}
+              onChange={(event) => setEditDescription(event.target.value)}
+              disabled={!onUpdateTask || isSaving}
+              rows={4}
+              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+              placeholder="Описание задачи"
+            />
+          </label>
+
+          {saveError ? (
+            <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">{saveError}</div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-1.5">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-[11px]"
+              onClick={handleReset}
+              disabled={!onUpdateTask || isSaving || !hasUnsavedChanges}
+            >
+              Сбросить
+            </Button>
+            <Button
+              size="sm"
+              className="h-7 text-[11px]"
+              onClick={() => {
+                void handleSave();
+              }}
+              disabled={!canSaveChanges}
+            >
+              {isSaving ? 'Сохраняем...' : 'Сохранить'}
+            </Button>
+          </div>
+        </div>
+      </EntitySection>
 
       <EntitySection title="Реквизиты задачи">
         <EntityMetaGrid>
@@ -225,14 +408,22 @@ function TaskDetailBody({
             label="Связана с"
             value={
               task.linkedEntity ? (
-                <button
-                  className="inline-flex items-center gap-1.5 max-w-full truncate text-blue-600 hover:underline"
-                  onClick={() => onOpenLinkedEntity?.(task.linkedEntity!.domain, task.linkedEntity!.id)}
-                >
-                  <span className="text-gray-500">{TASK_DOMAIN_LABEL[task.linkedEntity.domain]}:</span>
-                  <span>{task.linkedEntity.label}</span>
-                  <span className="font-mono text-[10px] text-gray-400">{task.linkedEntity.id}</span>
-                </button>
+                onOpenLinkedEntity ? (
+                  <button
+                    className="inline-flex items-center gap-1.5 max-w-full truncate text-blue-600 hover:underline"
+                    onClick={() => onOpenLinkedEntity(task.linkedEntity!.domain, task.linkedEntity!.id)}
+                  >
+                    <span className="text-gray-500">{TASK_DOMAIN_LABEL[task.linkedEntity.domain]}:</span>
+                    <span>{task.linkedEntity.label}</span>
+                    <span className="font-mono text-[10px] text-gray-400">{task.linkedEntity.id}</span>
+                  </button>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 max-w-full truncate text-gray-700">
+                    <span className="text-gray-500">{TASK_DOMAIN_LABEL[task.linkedEntity.domain]}:</span>
+                    <span>{task.linkedEntity.label}</span>
+                    <span className="font-mono text-[10px] text-gray-400">{task.linkedEntity.id}</span>
+                  </span>
+                )
               ) : (
                 <EmptyValue text="Не связана" />
               )
@@ -255,14 +446,16 @@ function TaskDetailBody({
       <EntitySection
         title={`Подзадачи · ${task.subtasks.length}`}
         action={
-          <button
-            type="button"
-            onClick={() => onAddSubtask?.(task.id)}
-            className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
-          >
-            <Plus className="w-3 h-3" />
-            <span>Добавить</span>
-          </button>
+          onAddSubtask ? (
+            <button
+              type="button"
+              onClick={() => onAddSubtask(task.id)}
+              className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Добавить</span>
+            </button>
+          ) : null
         }
       >
         {task.subtasks.length === 0 ? (
@@ -314,12 +507,16 @@ function TaskDetailBody({
           <SidebarField
             label="Запись"
             value={
-              <button
-                className={sidebarTokens.link}
-                onClick={() => onOpenLinkedEntity?.(task.linkedEntity!.domain, task.linkedEntity!.id)}
-              >
-                {task.linkedEntity.label}
-              </button>
+              onOpenLinkedEntity ? (
+                <button
+                  className={sidebarTokens.link}
+                  onClick={() => onOpenLinkedEntity(task.linkedEntity!.domain, task.linkedEntity!.id)}
+                >
+                  {task.linkedEntity.label}
+                </button>
+              ) : (
+                <span>{task.linkedEntity.label}</span>
+              )
             }
           />
           <SidebarField label="ID" value={task.linkedEntity.id} />
@@ -464,5 +661,14 @@ function dueToneClass(kind: Task['dueKind']) {
     default:
       return 'text-gray-500';
   }
+}
+
+function normalizeTags(raw: string): string[] {
+  const tags = raw
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter((tag) => tag.length > 0);
+
+  return Array.from(new Set(tags)).slice(0, 30);
 }
 

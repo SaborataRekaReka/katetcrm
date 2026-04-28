@@ -88,12 +88,43 @@ export function LeadsKanbanPage() {
       params.source = filters.source as SourceChannel;
     }
 
+    if (filters.equipment !== 'all') {
+      params.equipmentTypeHint = filters.equipment;
+    }
+
+    if (filters.urgent || activeSecondaryNav === 'view-urgent') {
+      params.isUrgent = true;
+    }
+
+    if (filters.stale || activeSecondaryNav === 'view-stale') {
+      params.isStale = true;
+    }
+
+    if (filters.duplicates || activeSecondaryNav === 'view-duplicates') {
+      params.isDuplicate = true;
+    }
+
+    if (activeSecondaryNav === 'view-no-contact') {
+      params.hasNoContact = true;
+    }
+
     if (filters.manager !== 'all') {
       params.managerId = filters.manager;
     }
 
     return params;
-  }, [activeSecondaryNav, filters.manager, filters.scope, filters.source, filters.stage, query]);
+  }, [
+    activeSecondaryNav,
+    filters.duplicates,
+    filters.equipment,
+    filters.manager,
+    filters.scope,
+    filters.source,
+    filters.stage,
+    filters.stale,
+    filters.urgent,
+    query,
+  ]);
 
   const leadsQuery = useLeadsQuery(serverQueryParams, USE_API);
   const apiLeads = useMemo<Lead[]>(
@@ -121,6 +152,10 @@ export function LeadsKanbanPage() {
     currentView === 'list' || currentView === 'table' ? currentView : 'board';
 
   const aliasFiltered = useMemo(() => {
+    if (USE_API) {
+      return activeLeads;
+    }
+
     switch (activeSecondaryNav) {
       case 'view-urgent':
         return activeLeads.filter((l) => !!l.isUrgent);

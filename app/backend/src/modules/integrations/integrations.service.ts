@@ -487,10 +487,12 @@ export class IntegrationsService {
   }
 
   private assertIngestAuth(dto: ReceiveIntegrationEventDto, auth: IngestAuthHeaders) {
+    const requireSignatures =
+      this.config.get<boolean>('INTEGRATION_REQUIRE_SIGNATURES') ?? false;
     const secret = this.readChannelSecret(dto.channel);
     if (!secret) {
       const nodeEnv = (this.config.get<string>('NODE_ENV') ?? 'development').toLowerCase();
-      if (nodeEnv !== 'production') {
+      if (!requireSignatures && nodeEnv !== 'production') {
         // Local/dev environments may run without shared webhook secrets.
         return;
       }

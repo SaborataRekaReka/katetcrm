@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -53,6 +54,13 @@ export class DirectoriesController {
     return this.svc.updateCategory(id, dto, user.sub);
   }
 
+  @Delete('equipment-categories/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  deleteCategory(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.svc.deleteCategory(id, user.sub);
+  }
+
   // ---------- Equipment types ----------
   @Get('equipment-types')
   listTypes(@Query('categoryId') categoryId?: string) {
@@ -82,13 +90,29 @@ export class DirectoriesController {
     return this.svc.updateType(id, dto, user.sub);
   }
 
+  @Delete('equipment-types/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  deleteType(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.svc.deleteType(id, user.sub);
+  }
+
   // ---------- Equipment units ----------
   @Get('equipment-units')
   listUnits(
     @Query('equipmentTypeId') equipmentTypeId?: string,
     @Query('status') status?: string,
+    @Query('plannedStart') plannedStart?: string,
+    @Query('plannedEnd') plannedEnd?: string,
+    @Query('excludeReservationId') excludeReservationId?: string,
   ) {
-    return this.svc.listUnits({ equipmentTypeId, status });
+    return this.svc.listUnits({
+      equipmentTypeId,
+      status,
+      plannedStart,
+      plannedEnd,
+      excludeReservationId,
+    });
   }
 
   @Get('equipment-units/:id')
@@ -114,10 +138,29 @@ export class DirectoriesController {
     return this.svc.updateUnit(id, dto, user.sub);
   }
 
+  @Delete('equipment-units/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  deleteUnit(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.svc.deleteUnit(id, user.sub);
+  }
+
   // ---------- Subcontractors ----------
   @Get('subcontractors')
-  listSubcontractors(@Query('status') status?: string, @Query('query') query?: string) {
-    return this.svc.listSubcontractors({ status, query });
+  listSubcontractors(
+    @Query('status') status?: string,
+    @Query('query') query?: string,
+    @Query('plannedStart') plannedStart?: string,
+    @Query('plannedEnd') plannedEnd?: string,
+    @Query('excludeReservationId') excludeReservationId?: string,
+  ) {
+    return this.svc.listSubcontractors({
+      status,
+      query,
+      plannedStart,
+      plannedEnd,
+      excludeReservationId,
+    });
   }
 
   @Get('subcontractors/:id')
@@ -141,5 +184,12 @@ export class DirectoriesController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.svc.updateSubcontractor(id, dto, user.sub);
+  }
+
+  @Delete('subcontractors/:id')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  deleteSubcontractor(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.svc.deleteSubcontractor(id, user.sub);
   }
 }

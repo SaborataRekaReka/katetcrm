@@ -134,6 +134,20 @@ enum ActivityAction {
   note_added
 }
 
+enum TaskStatus {
+  open
+  in_progress
+  blocked
+  done
+}
+
+enum TaskPriority {
+  urgent
+  high
+  normal
+  low
+}
+
 // ---------------------------------------------------------------------------
 // Auth / Users
 // ---------------------------------------------------------------------------
@@ -154,6 +168,9 @@ model User {
   completedCompletions Completion[]       @relation("CompletionCompletedBy")
   assignedClientTags   ClientTag[]        @relation("ClientTagAssignedBy")
   activityEntries      ActivityLogEntry[]
+  assignedTasks        Task[]             @relation("TaskAssignee")
+  reportedTasks        Task[]             @relation("TaskReporter")
+  createdTasks         Task[]             @relation("TaskCreatedBy")
 
   @@map("users")
 }
@@ -558,6 +575,46 @@ model Completion {
   @@map("completions")
 }
 
+model Task {
+  id                String       @id @default(cuid())
+  title             String
+  description       String?
+  status            TaskStatus   @default(open)
+  priority          TaskPriority @default(normal)
+
+  assigneeId        String       @map("assignee_id")
+  assignee          User         @relation("TaskAssignee", fields: [assigneeId], references: [id])
+
+  reporterId        String       @map("reporter_id")
+  reporter          User         @relation("TaskReporter", fields: [reporterId], references: [id])
+
+  startDate         DateTime?    @map("start_date")
+  dueDate           DateTime?    @map("due_date")
+  estimateMinutes   Int?         @map("estimate_minutes")
+  trackedMinutes    Int          @default(0) @map("tracked_minutes")
+  tags              String[]     @default([])
+
+  linkedEntityDomain String?     @map("linked_entity_domain")
+  linkedEntityId     String?     @map("linked_entity_id")
+  linkedEntityLabel  String?     @map("linked_entity_label")
+
+  subtasks          Json?
+  comments          Json?
+  isArchived        Boolean      @default(false) @map("is_archived")
+
+  createdById       String?      @map("created_by_id")
+  createdBy         User?        @relation("TaskCreatedBy", fields: [createdById], references: [id])
+
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+
+  @@index([assigneeId, isArchived])
+  @@index([reporterId])
+  @@index([dueDate])
+  @@index([status])
+  @@map("tasks")
+}
+
 // ---------------------------------------------------------------------------
 // Activity Log
 // ---------------------------------------------------------------------------
@@ -609,5 +666,15 @@ model IntegrationEvent {
   @@index([channel, receivedAt])
   @@index([retryCount])
   @@map("integration_events")
+}
+
+model SystemConfig {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  payload   Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("system_configs")
 }
 

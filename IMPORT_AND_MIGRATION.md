@@ -4,6 +4,12 @@
 
 This file defines migration and import rules for MVP.
 
+Current implementation status (28.04.2026):
+
+1. Implemented API flow: `POST /api/v1/imports/preview`, `POST /api/v1/imports/run`, `GET /api/v1/imports/:importId/report`.
+2. Import pipeline is role-gated (`admin`) and writes activity records.
+3. Release smoke includes stage7 import verification with idempotent dataset generation.
+
 ## 2. What we migrate
 
 Migration baseline:
@@ -28,17 +34,19 @@ Relevant lead criteria (minimum):
 Supported:
 
 1. CSV
-2. XLSX
+
+Planned (not implemented yet):
+
+1. CSV hardening: deterministic validation profiles and operational runbook
 
 ## 5. Import workflow
 
-1. Upload file.
-2. Detect schema and suggest mapping.
-3. Manual mapping adjustment.
-4. Preview rows and validation issues.
-5. Run duplicate checks.
-6. Execute import.
-7. Persist import log and summary.
+1. Send file payload + mapping to preview endpoint.
+2. Validate rows and detect duplicates.
+3. Review preview summary and issues.
+4. Run import with selected duplicate policy.
+5. Persist import run with counters and errors.
+6. Read report by `importId`.
 
 ## 6. Mapping rules
 

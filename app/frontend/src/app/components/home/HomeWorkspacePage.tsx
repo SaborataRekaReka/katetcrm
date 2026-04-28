@@ -38,12 +38,30 @@ import {
   ActivityFeedRow,
 } from '../shell/list';
 import { mockLeads } from '../../data/mockLeads';
-import { mockTasks, groupTasksByDue, Task, TaskDomain } from '../../data/mockTasks';
-import { TaskDetailView } from '../detail/TaskDetailView';
+import {
+  mockTasks,
+  groupTasksByDue,
+  Task,
+  TaskDomain,
+  TaskDueKind,
+  TaskPriority,
+  TaskStatus,
+} from '../../data/mockTasks';
+import { TaskDetailView, type TaskUpdatePatch } from '../detail/TaskDetailView';
 import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
 import { useStatsQuery } from '../../hooks/useStatsQuery';
 import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
+import { useLeadsQuery } from '../../hooks/useLeadsQuery';
+import { useTasksQuery } from '../../hooks/useTasksQuery';
+import {
+  useAddTaskSubtaskMutation,
+  useArchiveTaskMutation,
+  useCreateTaskMutation,
+  useDuplicateTaskMutation,
+  useUpdateTaskMutation,
+  useUpdateTaskStatusMutation,
+} from '../../hooks/useTaskMutations';
 
 export function HomeWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -72,8 +90,14 @@ function OverviewPage() {
   const statsQuery = useStatsQuery(USE_API);
   const recentActivityQuery = useActivitySearchQuery({ take: 6 }, USE_API);
 
+  const isStatsPending = USE_API && statsQuery.isPending && !statsQuery.data;
+  const isStatsError = USE_API && statsQuery.isError && !statsQuery.data;
+  const isRecentPending = USE_API && recentActivityQuery.isPending && !recentActivityQuery.data;
+  const isRecentError = USE_API && recentActivityQuery.isError && !recentActivityQuery.data;
+
   const stats = useMemo(() => {
-    if (USE_API && statsQuery.data) {
+    if (USE_API) {
+      if (!statsQuery.data) return null;
       return {
         leads: statsQuery.data.pipeline.lead,
         applications: statsQuery.data.pipeline.application,
@@ -102,7 +126,8 @@ function OverviewPage() {
   }, [statsQuery.data]);
 
   const recentRows = useMemo(() => {
-    if (USE_API && recentActivityQuery.data?.items?.length) {
+    if (USE_API) {
+      if (!recentActivityQuery.data?.items?.length) return [];
       return recentActivityQuery.data.items.slice(0, 6).map((e) => ({
         id: e.id,
         leading: <Activity className="h-3.5 w-3.5 text-violet-500" />,
@@ -136,13 +161,23 @@ function OverviewPage() {
         subtitle="Ключевые цифры по воронке и сегодняшние приоритеты"
       />
 
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-        <StatCard icon={<TrendingUp className="h-3.5 w-3.5" />} label="Лиды" value={stats.leads} tone="progress" onClick={() => go('sales', 'leads')} />
-        <StatCard icon={<FileText className="h-3.5 w-3.5" />} label="Заявки" value={stats.applications} tone="progress" onClick={() => go('sales', 'applications')} />
-        <StatCard icon={<CalendarClock className="h-3.5 w-3.5" />} label="Брони" value={stats.reservations} tone="progress" onClick={() => go('ops', 'reservations')} />
-        <StatCard icon={<Truck className="h-3.5 w-3.5" />} label="Выезды" value={stats.departures} tone="progress" onClick={() => go('ops', 'departures')} />
-        <StatCard icon={<CheckSquare className="h-3.5 w-3.5" />} label="Завершено" value={stats.completed} tone="success" onClick={() => go('ops', 'completion')} />
-      </div>
+      {isStatsPending ? (
+        <div className="rounded border border-dashed border-border/70 px-3 py-2 text-[12px] text-muted-foreground">
+          Загружаем данные dashboard...
+        </div>
+      ) : isStatsError ? (
+        <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+          Не удалось загрузить агрегаты. Проверьте API и авторизацию.
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <StatCard icon={<TrendingUp className="h-3.5 w-3.5" />} label="Лиды" value={stats?.leads ?? '—'} tone="progress" onClick={() => go('sales', 'leads')} />
+          <StatCard icon={<FileText className="h-3.5 w-3.5" />} label="Заявки" value={stats?.applications ?? '—'} tone="progress" onClick={() => go('sales', 'applications')} />
+          <StatCard icon={<CalendarClock className="h-3.5 w-3.5" />} label="Брони" value={stats?.reservations ?? '—'} tone="progress" onClick={() => go('ops', 'reservations')} />
+          <StatCard icon={<Truck className="h-3.5 w-3.5" />} label="Выезды" value={stats?.departures ?? '—'} tone="progress" onClick={() => go('ops', 'departures')} />
+          <StatCard icon={<CheckSquare className="h-3.5 w-3.5" />} label="Завершено" value={stats?.completed ?? '—'} tone="success" onClick={() => go('ops', 'completion')} />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <WidgetCard
@@ -156,28 +191,28 @@ function OverviewPage() {
               leading={<AlertTriangle className="h-3.5 w-3.5 text-rose-500" />}
               primary="Срочные лиды"
               secondary="Требуют контакта сегодня"
-              trailing={<span className="tabular-nums text-rose-600">{stats.urgent}</span>}
+              trailing={<span className="tabular-nums text-rose-600">{stats?.urgent ?? '—'}</span>}
               onClick={() => go('sales', 'view-urgent')}
             />
             <InsightRow
               leading={<AlertTriangle className="h-3.5 w-3.5 text-amber-500" />}
               primary="Конфликты броней"
               secondary="Пересечения по датам"
-              trailing={<span className="tabular-nums text-amber-600">{stats.conflicts}</span>}
+              trailing={<span className="tabular-nums text-amber-600">{stats?.conflicts ?? '—'}</span>}
               onClick={() => go('ops', 'view-conflict')}
             />
             <InsightRow
               leading={<Truck className="h-3.5 w-3.5 text-sky-500" />}
               primary="Выезды сегодня"
               secondary="Должны стартовать"
-              trailing={<span className="tabular-nums text-[#2a6af0]">{stats.today}</span>}
+              trailing={<span className="tabular-nums text-[#2a6af0]">{stats?.today ?? '—'}</span>}
               onClick={() => go('ops', 'view-departures-today')}
             />
             <InsightRow
               leading={<Activity className="h-3.5 w-3.5 text-slate-500" />}
               primary="Зависшие лиды"
               secondary="Без активности > 3 дней"
-              trailing={<span className="tabular-nums text-muted-foreground">{stats.stale}</span>}
+              trailing={<span className="tabular-nums text-muted-foreground">{stats?.stale ?? '—'}</span>}
               onClick={() => go('control', 'view-stale-leads')}
             />
           </InsightList>
@@ -190,15 +225,23 @@ function OverviewPage() {
           className="lg:col-span-2"
         >
           <InsightList>
-            {recentRows.map((row) => (
-              <InsightRow
-                key={row.id}
-                leading={row.leading}
-                primary={row.primary}
-                secondary={row.secondary}
-                trailing={row.trailing}
-              />
-            ))}
+            {isRecentPending ? (
+              <div className="px-3 py-4 text-[12px] text-muted-foreground">Загружаем ленту...</div>
+            ) : isRecentError ? (
+              <div className="px-3 py-4 text-[12px] text-rose-700">Не удалось загрузить ленту активности.</div>
+            ) : recentRows.length === 0 ? (
+              <div className="px-3 py-4 text-[12px] text-muted-foreground">Пока нет событий.</div>
+            ) : (
+              recentRows.map((row) => (
+                <InsightRow
+                  key={row.id}
+                  leading={row.leading}
+                  primary={row.primary}
+                  secondary={row.secondary}
+                  trailing={row.trailing}
+                />
+              ))
+            )}
           </InsightList>
         </WidgetCard>
       </div>
@@ -234,7 +277,69 @@ const DUE_GROUPS: Array<{
   { key: 'none', label: 'Без срока' },
 ];
 
+function computeDuePresentation(dueDate?: string): Pick<Task, 'dueDate' | 'dueKind' | 'dueLabel'> {
+  if (!dueDate) {
+    return {
+      dueDate: undefined,
+      dueKind: 'none',
+      dueLabel: 'Без срока',
+    };
+  }
+
+  const target = new Date(`${dueDate}T00:00:00`);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (!Number.isFinite(target.getTime())) {
+    return {
+      dueDate: undefined,
+      dueKind: 'none',
+      dueLabel: 'Без срока',
+    };
+  }
+
+  const diffDays = Math.floor((target.getTime() - today.getTime()) / (24 * 60 * 60 * 1000));
+  const dateLabel = target.toLocaleDateString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+  });
+
+  if (diffDays < 0) {
+    return {
+      dueDate,
+      dueKind: 'overdue',
+      dueLabel: `Просрочено · ${dateLabel}`,
+    };
+  }
+
+  if (diffDays === 0) {
+    return {
+      dueDate,
+      dueKind: 'today',
+      dueLabel: 'Сегодня',
+    };
+  }
+
+  if (diffDays === 1) {
+    return {
+      dueDate,
+      dueKind: 'tomorrow',
+      dueLabel: 'Завтра',
+    };
+  }
+
+  return {
+    dueDate,
+    dueKind: 'later',
+    dueLabel: `До ${dateLabel}`,
+  };
+}
+
 function MyTasksPage() {
+  if (USE_API) {
+    return <ApiMyTasksPage />;
+  }
+
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
@@ -337,6 +442,46 @@ function MyTasksPage() {
               time: 'только что',
             },
             ...t.activity,
+          ],
+        };
+      }),
+    );
+  };
+
+  const handleUpdateTask = (taskId: string, patch: TaskUpdatePatch) => {
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== taskId) return task;
+
+        const nextTitle = patch.title?.trim() ?? task.title;
+        const nextDescription = patch.description !== undefined ? patch.description.trim() || undefined : task.description;
+        const nextPriority = patch.priority ?? task.priority;
+        const nextTags = patch.tags ?? task.tags;
+        const duePresentation = patch.dueDate !== undefined
+          ? computeDuePresentation(patch.dueDate)
+          : {
+              dueDate: task.dueDate,
+              dueKind: task.dueKind,
+              dueLabel: task.dueLabel,
+            };
+
+        return {
+          ...task,
+          title: nextTitle,
+          description: nextDescription,
+          priority: nextPriority,
+          tags: nextTags,
+          dueDate: duePresentation.dueDate,
+          dueKind: duePresentation.dueKind,
+          dueLabel: duePresentation.dueLabel,
+          activity: [
+            {
+              id: `a-edit-${Date.now()}`,
+              actor: 'Петров А.',
+              text: 'обновил реквизиты задачи',
+              time: 'только что',
+            },
+            ...task.activity,
           ],
         };
       }),
@@ -458,10 +603,244 @@ function MyTasksPage() {
         open={selectedTaskId != null}
         onClose={() => setSelectedTaskId(null)}
         onOpenLinkedEntity={openLinked}
+        onUpdateTask={handleUpdateTask}
         onSetStatus={handleSetStatus}
         onDuplicateTask={handleDuplicateTask}
         onArchiveTask={handleArchiveTask}
         onAddSubtask={handleAddSubtask}
+      />
+    </div>
+  );
+}
+
+function ApiMyTasksPage() {
+  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [mutationError, setMutationError] = useState<string | null>(null);
+
+  const tasksQuery = useTasksQuery({ scope: 'mine', includeArchived: false, take: 500 }, USE_API);
+  const createTaskMutation = useCreateTaskMutation();
+  const updateTaskMutation = useUpdateTaskMutation();
+  const statusMutation = useUpdateTaskStatusMutation();
+  const duplicateMutation = useDuplicateTaskMutation();
+  const archiveMutation = useArchiveTaskMutation();
+  const addSubtaskMutation = useAddTaskSubtaskMutation();
+
+  const isPending = USE_API && tasksQuery.isPending && !tasksQuery.data;
+  const isError = USE_API && tasksQuery.isError && !tasksQuery.data;
+  const tasks = tasksQuery.data?.items ?? [];
+  const selectedTask = useMemo(
+    () => tasks.find((t) => t.id === selectedTaskId) ?? null,
+    [tasks, selectedTaskId],
+  );
+
+  const grouped = useMemo(() => groupTasksByDue(tasks), [tasks]);
+
+  const openLinked = (domain: TaskDomain, _id: string) => {
+    switch (domain) {
+      case 'lead':
+        setActivePrimaryNav('sales');
+        setActiveSecondaryNav('leads');
+        break;
+      case 'application':
+        setActivePrimaryNav('sales');
+        setActiveSecondaryNav('applications');
+        break;
+      case 'client':
+        setActivePrimaryNav('clients');
+        setActiveSecondaryNav('clients');
+        break;
+      case 'reservation':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('reservations');
+        break;
+      case 'departure':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('departures');
+        break;
+      case 'completion':
+        setActivePrimaryNav('ops');
+        setActiveSecondaryNav('completion');
+        break;
+    }
+    setSelectedTaskId(null);
+  };
+
+  const handleCreateTask = async () => {
+    setMutationError(null);
+    try {
+      const created = await createTaskMutation.mutateAsync({
+        title: 'Новая задача',
+        status: 'open',
+        priority: 'normal',
+        tags: ['черновик'],
+      });
+      setSelectedTaskId(created.id);
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось создать задачу.');
+    }
+  };
+
+  const handleSetStatus = async (taskId: string, status: TaskStatus) => {
+    setMutationError(null);
+    try {
+      await statusMutation.mutateAsync({ id: taskId, status });
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось изменить статус задачи.');
+    }
+  };
+
+  const handleUpdateTask = async (taskId: string, patch: TaskUpdatePatch) => {
+    setMutationError(null);
+    try {
+      const normalizedPatch = patch.dueDate === ''
+        ? { ...patch, dueDate: null }
+        : patch;
+      await updateTaskMutation.mutateAsync({ id: taskId, patch: normalizedPatch });
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось сохранить изменения задачи.');
+      throw error;
+    }
+  };
+
+  const handleDuplicateTask = async (taskId: string) => {
+    setMutationError(null);
+    try {
+      const duplicated = await duplicateMutation.mutateAsync({ id: taskId });
+      setSelectedTaskId(duplicated.id);
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось дублировать задачу.');
+    }
+  };
+
+  const handleArchiveTask = async (taskId: string) => {
+    setMutationError(null);
+    try {
+      await archiveMutation.mutateAsync({ id: taskId });
+      setSelectedTaskId((prev) => (prev === taskId ? null : prev));
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось архивировать задачу.');
+    }
+  };
+
+  const handleAddSubtask = async (taskId: string) => {
+    setMutationError(null);
+    const source = tasks.find((task) => task.id === taskId);
+    const nextIndex = (source?.subtasks.length ?? 0) + 1;
+    try {
+      await addSubtaskMutation.mutateAsync({
+        id: taskId,
+        payload: {
+          title: `Новая подзадача ${nextIndex}`,
+          assignee: source?.assignee,
+          priority: 'normal',
+        },
+      });
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось добавить подзадачу.');
+    }
+  };
+
+  const createBusy = createTaskMutation.isPending;
+
+  return (
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
+        <div className="flex flex-1 items-center gap-4 text-[12px] text-muted-foreground">
+          <SummaryChip tone="danger" label="Просрочено" value={grouped.overdue.length} />
+          <SummaryChip tone="progress" label="Сегодня" value={grouped.today.length} />
+          <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
+          <SummaryChip label="Позже" value={grouped.later.length} />
+          <SummaryChip label="Без срока" value={grouped.none.length} />
+          <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {tasks.length}</span>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          className="h-7 gap-1 text-[12px]"
+          onClick={() => {
+            void handleCreateTask();
+          }}
+          disabled={createBusy}
+        >
+          <PlusCircle className="h-3.5 w-3.5" />
+          {createBusy ? 'Создаём...' : 'Новая задача'}
+        </Button>
+      </div>
+
+      {mutationError ? (
+        <div className="mx-4 mt-3 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+          {mutationError}
+        </div>
+      ) : null}
+
+      <GroupedListPage>
+        {isPending ? (
+          <div className="px-4 py-6 text-[12px] text-muted-foreground">Загружаем задачи...</div>
+        ) : null}
+
+        {isError ? (
+          <div className="px-4 py-6 text-[12px] text-rose-700">
+            {tasksQuery.error instanceof Error ? tasksQuery.error.message : 'Не удалось загрузить задачи.'}
+          </div>
+        ) : null}
+
+        {isPending || isError ? null : tasks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 px-6 py-20 text-center">
+            <Sparkles className="h-8 w-8 text-muted-foreground/50" />
+            <h3 className="text-[13px] font-medium text-foreground">Задач нет</h3>
+            <p className="max-w-sm text-[12px] text-muted-foreground">
+              По текущим лидам нет записей, требующих действия.
+            </p>
+          </div>
+        ) : (
+          DUE_GROUPS.map((g) => {
+            const dueRows = grouped[g.key];
+            if (dueRows.length === 0) return null;
+            return (
+              <div key={g.key}>
+                <ListGroupHeader title={g.label} count={dueRows.length} tone={g.tone} />
+                <ListGroup>
+                  {dueRows.map((task) => (
+                    <TaskListRow
+                      key={task.id}
+                      id={task.id}
+                      title={task.title}
+                      status={task.status}
+                      priority={task.priority}
+                      assignee={task.assignee}
+                      dueLabel={task.dueLabel}
+                      dueKind={task.dueKind}
+                      linkedDomain={task.linkedEntity?.domain}
+                      linkedId={task.linkedEntity?.id}
+                      onClick={() => setSelectedTaskId(task.id)}
+                    />
+                  ))}
+                </ListGroup>
+              </div>
+            );
+          })
+        )}
+      </GroupedListPage>
+
+      <TaskDetailView
+        task={selectedTask}
+        open={selectedTaskId != null}
+        onClose={() => setSelectedTaskId(null)}
+        onOpenLinkedEntity={openLinked}
+        onUpdateTask={(taskId, patch) => handleUpdateTask(taskId, patch)}
+        onSetStatus={(taskId, status) => {
+          void handleSetStatus(taskId, status);
+        }}
+        onDuplicateTask={(taskId) => {
+          void handleDuplicateTask(taskId);
+        }}
+        onArchiveTask={(taskId) => {
+          void handleArchiveTask(taskId);
+        }}
+        onAddSubtask={(taskId) => {
+          void handleAddSubtask(taskId);
+        }}
       />
     </div>
   );
@@ -494,16 +873,73 @@ function SummaryChip({
 
 function UrgentTodayPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const leadsQuery = useLeadsQuery({ scope: 'all' }, USE_API);
+
+  const isPending = USE_API && leadsQuery.isPending && !leadsQuery.data;
+  const isError = USE_API && leadsQuery.isError && !leadsQuery.data;
+
+  const apiRows = useMemo(() => {
+    if (!USE_API) {
+      return [] as Array<{
+        id: string;
+        stage: string;
+        company: string | null;
+        client: string;
+        equipmentType: string;
+        manager: string;
+        lastActivity: string;
+        isUrgent: boolean;
+        hasConflict: boolean;
+        departureToday: boolean;
+      }>;
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    return (leadsQuery.data?.items ?? []).map((l) => {
+      const dt = new Date(l.lastActivityAt);
+      const lastActivity = Number.isFinite(dt.getTime())
+        ? dt.toLocaleString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        : l.lastActivityAt;
+
+      const departureToday = l.stage === 'departure'
+        && !!l.requestedDate
+        && l.requestedDate.slice(0, 10) === today;
+
+      return {
+        id: l.id,
+        stage: l.stage,
+        company: l.contactCompany,
+        client: l.contactName,
+        equipmentType: l.equipmentTypeHint ?? '—',
+        manager: l.managerName ?? l.manager?.fullName ?? '—',
+        lastActivity,
+        isUrgent: l.isUrgent,
+        hasConflict: false,
+        departureToday,
+      };
+    });
+  }, [leadsQuery.data]);
+
   const urgent = useMemo(
-    () => mockLeads.filter((l) => l.isUrgent || l.departureStatus === 'today' || l.hasConflict),
-    [],
+    () => {
+      if (USE_API) {
+        return apiRows.filter((l) => l.isUrgent || l.departureToday || l.hasConflict);
+      }
+      return mockLeads.filter((l) => l.isUrgent || l.departureStatus === 'today' || l.hasConflict);
+    },
+    [apiRows],
   );
 
   const groups = useMemo(() => {
     return {
-      urgent: urgent.filter((l) => l.isUrgent && !l.hasConflict && l.departureStatus !== 'today'),
+      urgent: urgent.filter((l) => l.isUrgent && !l.hasConflict && !(USE_API ? l.departureToday : l.departureStatus === 'today')),
       conflicts: urgent.filter((l) => l.hasConflict),
-      today: urgent.filter((l) => l.departureStatus === 'today'),
+      today: urgent.filter((l) => (USE_API ? l.departureToday : l.departureStatus === 'today')),
     };
   }, [urgent]);
 
@@ -550,6 +986,18 @@ function UrgentTodayPage() {
       </div>
 
       <GroupedListPage>
+        {isPending ? (
+          <div className="px-4 py-6 text-[12px] text-muted-foreground">Загружаем приоритетные записи...</div>
+        ) : null}
+
+        {isError ? (
+          <div className="px-4 py-6 text-[12px] text-rose-700">
+            {leadsQuery.error instanceof Error ? leadsQuery.error.message : 'Не удалось загрузить приоритетные записи.'}
+          </div>
+        ) : null}
+
+        {isPending || isError ? null : (
+          <>
         {groups.urgent.length > 0 ? (
           <div>
             <ListGroupHeader
@@ -673,6 +1121,8 @@ function UrgentTodayPage() {
             </p>
           </div>
         ) : null}
+          </>
+        )}
       </GroupedListPage>
     </div>
   );
@@ -682,20 +1132,90 @@ function UrgentTodayPage() {
 
 function RecentActivityPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const activityQuery = useActivitySearchQuery({ take: 40 }, USE_API);
+
+  const formatRelative = (iso: string) => {
+    const ts = Date.parse(iso);
+    if (!Number.isFinite(ts)) return iso;
+    const diff = Date.now() - ts;
+    const min = Math.floor(diff / 60_000);
+    if (min < 1) return 'только что';
+    if (min < 60) return `${min} мин назад`;
+    const hours = Math.floor(min / 60);
+    if (hours < 24) return `${hours} ч назад`;
+    return new Date(ts).toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const mapEntityKind = (
+    entityType: string,
+  ): 'lead' | 'application' | 'reservation' | 'departure' | 'completed' => {
+    if (entityType === 'lead') return 'lead';
+    if (entityType === 'application' || entityType === 'application_item') return 'application';
+    if (entityType === 'reservation') return 'reservation';
+    if (entityType === 'departure') return 'departure';
+    return 'completed';
+  };
+
+  const iconForKind = (kind: 'lead' | 'application' | 'reservation' | 'departure' | 'completed') => {
+    if (kind === 'lead') return <PlusCircle className="h-3.5 w-3.5" />;
+    if (kind === 'application') return <Activity className="h-3.5 w-3.5" />;
+    if (kind === 'reservation') return <Settings className="h-3.5 w-3.5" />;
+    if (kind === 'departure') return <Truck className="h-3.5 w-3.5" />;
+    return <CheckSquare className="h-3.5 w-3.5" />;
+  };
+
   const items = useMemo(
-    () => [
-      { id: 'a1', at: '10 мин назад', actor: 'Сидоров Б.', text: 'создал лид', entity: 'ИП Морозов', kind: 'lead' as const, icon: <PlusCircle className="h-3.5 w-3.5" /> },
-      { id: 'a2', at: '30 мин назад', actor: 'Петров А.', text: 'перевёл в работу', entity: 'APP-2024-002', kind: 'application' as const, icon: <Activity className="h-3.5 w-3.5" /> },
-      { id: 'a3', at: '45 мин назад', actor: 'Иванова С.', text: 'назначила unit EXC-001 на', entity: 'RSV-00012', kind: 'reservation' as const, icon: <Settings className="h-3.5 w-3.5" /> },
-      { id: 'a4', at: '1 ч назад', actor: 'Водитель Кузнецов', text: 'прибыл на объект', entity: 'DEP-00009', kind: 'departure' as const, icon: <Truck className="h-3.5 w-3.5" /> },
-      { id: 'a5', at: '2 ч назад', actor: 'Сидоров Б.', text: 'подписал акт', entity: 'CMP-00011', kind: 'completed' as const, icon: <CheckSquare className="h-3.5 w-3.5" /> },
-      { id: 'a6', at: '3 ч назад', actor: 'Петров А.', text: 'перевёл лид в заявку', entity: 'LEAD-00014', kind: 'application' as const, icon: <ArrowRight className="h-3.5 w-3.5" /> },
-      { id: 'a7', at: 'Вчера, 18:20', actor: 'Admin', text: 'оставил комментарий', entity: 'TASK-00021', kind: 'lead' as const, icon: <MessageSquare className="h-3.5 w-3.5" /> },
-      { id: 'a8', at: 'Вчера, 17:05', actor: 'Сидоров Б.', text: 'загрузил вложение в', entity: 'APP-2024-001', kind: 'application' as const, icon: <Paperclip className="h-3.5 w-3.5" /> },
-      { id: 'a9', at: 'Вчера, 14:45', actor: 'Иванова С.', text: 'подтвердила бронь', entity: 'RSV-00011', kind: 'reservation' as const, icon: <History className="h-3.5 w-3.5" /> },
-    ],
-    [],
+    () => {
+      if (USE_API) {
+        return (activityQuery.data?.items ?? []).map((e) => {
+          const kind = mapEntityKind(e.entityType);
+          return {
+            id: e.id,
+            at: formatRelative(e.createdAt),
+            actor: e.actor?.fullName ?? 'Система',
+            text: e.summary,
+            entity: `${e.entityType} · ${e.entityId.slice(0, 8)}`,
+            kind,
+            icon: iconForKind(kind),
+          };
+        });
+      }
+
+      return [
+        { id: 'a1', at: '10 мин назад', actor: 'Сидоров Б.', text: 'создал лид', entity: 'ИП Морозов', kind: 'lead' as const, icon: <PlusCircle className="h-3.5 w-3.5" /> },
+        { id: 'a2', at: '30 мин назад', actor: 'Петров А.', text: 'перевёл в работу', entity: 'APP-2024-002', kind: 'application' as const, icon: <Activity className="h-3.5 w-3.5" /> },
+        { id: 'a3', at: '45 мин назад', actor: 'Иванова С.', text: 'назначила unit EXC-001 на', entity: 'RSV-00012', kind: 'reservation' as const, icon: <Settings className="h-3.5 w-3.5" /> },
+        { id: 'a4', at: '1 ч назад', actor: 'Водитель Кузнецов', text: 'прибыл на объект', entity: 'DEP-00009', kind: 'departure' as const, icon: <Truck className="h-3.5 w-3.5" /> },
+        { id: 'a5', at: '2 ч назад', actor: 'Сидоров Б.', text: 'подписал акт', entity: 'CMP-00011', kind: 'completed' as const, icon: <CheckSquare className="h-3.5 w-3.5" /> },
+        { id: 'a6', at: '3 ч назад', actor: 'Петров А.', text: 'перевёл лид в заявку', entity: 'LEAD-00014', kind: 'application' as const, icon: <ArrowRight className="h-3.5 w-3.5" /> },
+        { id: 'a7', at: 'Вчера, 18:20', actor: 'Admin', text: 'оставил комментарий', entity: 'TASK-00021', kind: 'lead' as const, icon: <MessageSquare className="h-3.5 w-3.5" /> },
+        { id: 'a8', at: 'Вчера, 17:05', actor: 'Сидоров Б.', text: 'загрузил вложение в', entity: 'APP-2024-001', kind: 'application' as const, icon: <Paperclip className="h-3.5 w-3.5" /> },
+        { id: 'a9', at: 'Вчера, 14:45', actor: 'Иванова С.', text: 'подтвердила бронь', entity: 'RSV-00011', kind: 'reservation' as const, icon: <History className="h-3.5 w-3.5" /> },
+      ];
+    },
+    [activityQuery.data],
   );
+
+  const isPending = USE_API && activityQuery.isPending && !activityQuery.data;
+  const isError = USE_API && activityQuery.isError && !activityQuery.data;
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayItems = items.filter((it) => {
+    if (!USE_API) return items.indexOf(it) < 6;
+    const raw = activityQuery.data?.items.find((e) => e.id === it.id);
+    if (!raw) return false;
+    const ts = Date.parse(raw.createdAt);
+    return Number.isFinite(ts) && ts >= todayStart.getTime();
+  });
+
+  const yesterdayItems = items.filter((it) => !todayItems.some((x) => x.id === it.id));
 
   const openEntity = (kind: 'lead' | 'application' | 'reservation' | 'departure' | 'completed') => {
     switch (kind) {
@@ -731,34 +1251,44 @@ function RecentActivityPage() {
         <span className="ml-auto tabular-nums">{items.length} записей</span>
       </div>
       <GroupedListPage>
-        <ListGroupHeader title="Сегодня" count={6} />
-        <ListGroup>
-          {items.slice(0, 6).map((it) => (
-            <ActivityFeedRow
-              key={it.id}
-              icon={it.icon}
-              actor={it.actor}
-              text={it.text}
-              entity={it.entity}
-              onEntityClick={() => openEntity(it.kind)}
-              time={it.at}
-            />
-          ))}
-        </ListGroup>
-        <ListGroupHeader title="Вчера" count={items.length - 6} />
-        <ListGroup>
-          {items.slice(6).map((it) => (
-            <ActivityFeedRow
-              key={it.id}
-              icon={it.icon}
-              actor={it.actor}
-              text={it.text}
-              entity={it.entity}
-              onEntityClick={() => openEntity(it.kind)}
-              time={it.at}
-            />
-          ))}
-        </ListGroup>
+        {isPending ? (
+          <div className="px-4 py-6 text-[12px] text-muted-foreground">Загружаем события...</div>
+        ) : isError ? (
+          <div className="px-4 py-6 text-[12px] text-rose-700">Не удалось загрузить события.</div>
+        ) : items.length === 0 ? (
+          <div className="px-4 py-6 text-[12px] text-muted-foreground">Событий пока нет.</div>
+        ) : (
+          <>
+            <ListGroupHeader title="Сегодня" count={todayItems.length} />
+            <ListGroup>
+              {todayItems.map((it) => (
+                <ActivityFeedRow
+                  key={it.id}
+                  icon={it.icon}
+                  actor={it.actor}
+                  text={it.text}
+                  entity={it.entity}
+                  onEntityClick={() => openEntity(it.kind)}
+                  time={it.at}
+                />
+              ))}
+            </ListGroup>
+            <ListGroupHeader title="Ранее" count={yesterdayItems.length} />
+            <ListGroup>
+              {yesterdayItems.map((it) => (
+                <ActivityFeedRow
+                  key={it.id}
+                  icon={it.icon}
+                  actor={it.actor}
+                  text={it.text}
+                  entity={it.entity}
+                  onEntityClick={() => openEntity(it.kind)}
+                  time={it.at}
+                />
+              ))}
+            </ListGroup>
+          </>
+        )}
       </GroupedListPage>
     </div>
   );

@@ -119,15 +119,28 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
   const mockReservation: Reservation = useMemo(() => buildMockReservation(lead), [lead]);
 
   // Живые справочники (unit'ы и подрядчики) из API. Фильтруем активные и
-  // сужаем по equipmentTypeId брони (если известен) — тогда список сразу
-  // релевантен. Если API недоступен — остаются mock-значения.
+  // сужаем по equipmentTypeId + окну plannedStart/plannedEnd текущей брони.
+  // API исключает занятые ресурсы в пересекающемся интервале.
   const resEquipmentTypeId = reservationQuery.data?.equipmentTypeId ?? undefined;
+  const availabilityStart = reservationQuery.data?.plannedStart;
+  const availabilityEnd = reservationQuery.data?.plannedEnd;
   const unitsQuery = useEquipmentUnitsQuery(
-    { equipmentTypeId: resEquipmentTypeId, status: 'active' },
+    {
+      equipmentTypeId: resEquipmentTypeId,
+      status: 'active',
+      plannedStart: availabilityStart,
+      plannedEnd: availabilityEnd,
+      excludeReservationId: apiReservationId,
+    },
     USE_API && !!apiReservationId,
   );
   const subsQuery = useSubcontractorsQuery(
-    { status: 'active' },
+    {
+      status: 'active',
+      plannedStart: availabilityStart,
+      plannedEnd: availabilityEnd,
+      excludeReservationId: apiReservationId,
+    },
     USE_API && !!apiReservationId && reservationQuery.data?.source === 'subcontractor',
   );
 
@@ -142,13 +155,12 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
             id: u.id,
             name: u.name,
             plate: u.plateNumber ?? undefined,
-            // Бэк-статус — active/maintenance/retired. Availability по датам бронирования
-            // пока не считается, поэтому active→available, иначе→maintenance.
+            // API уже отфильтровал unit'ы по пересечению окна брони.
             status: (u.status === 'active' ? 'available' : 'maintenance') as
               | 'available'
               | 'busy'
               | 'maintenance',
-            note: undefined,
+            note: u.activeBookingsCount ? `Активных броней: ${u.activeBookingsCount}` : undefined,
           }))
         : [];
       const subcontractorOptions = subsQuery.data
@@ -157,7 +169,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
             name: s.name,
             category: s.specialization ?? undefined,
             priceNote: undefined,
-            usage: undefined,
+            usage: s.activeBookingsCount ? `Активных броней: ${s.activeBookingsCount}` : undefined,
           }))
         : [];
       return {
@@ -427,8 +439,9 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
             {reservation.linked.applicationTitle} ·{' '}
             <button
               type="button"
-              onClick={() => onOpenClient?.(lead)}
-              className="text-blue-600 hover:underline"
+              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!onOpenClient}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {reservation.linked.clientName}
             </button>{' '}
@@ -586,7 +599,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           <PropertyRow
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
-            value={<button type="button" onClick={() => onOpenClient?.(lead)} className="text-[11px] text-blue-600 hover:underline text-left truncate">{reservation.linked.clientName}</button>}
+            value={<button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>}
           />
           <PropertyRow icon={<Truck className="w-3 h-3" />} label="Тип техники" value={<InlineValue>{reservation.equipmentType}</InlineValue>} />
           {(source === 'own' || unitSelected) && (
@@ -1134,7 +1147,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           label="Открыть заявку"
           onClick={handleOpenApplication}
         />
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(clientLeadContext)} />
+        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient ? () => onOpenClient(clientLeadContext) : undefined} />
         {reservation.linked.leadTitle && (
           <ActionButton
             icon={<UserPlus className="w-3.5 h-3.5" />}
@@ -1246,7 +1259,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           }
         />
         <SidebarField label="Позиция" value={reservation.linked.positionTitle} />
-        <SidebarField label="Клиент" value={<button type="button" onClick={() => onOpenClient?.(clientLeadContext)} className="text-blue-600 hover:underline cursor-pointer text-left">{reservation.linked.clientName}</button>} />
+        <SidebarField label="Клиент" value={<button type="button" onClick={onOpenClient ? () => onOpenClient(clientLeadContext) : undefined} disabled={!onOpenClient} className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>} />
         {reservation.linked.leadTitle && (
           <SidebarField
             label="Лид"

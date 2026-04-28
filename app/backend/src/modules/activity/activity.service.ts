@@ -26,9 +26,17 @@ export interface ActivitySearchParams {
 }
 
 const MODULE_ENTITY_TYPES: Record<ActivityModuleFilter, string[]> = {
-  sales: ['lead', 'application', 'application_item', 'client'],
+  sales: ['lead', 'application', 'application_item', 'client', 'task'],
   ops: ['reservation', 'departure', 'completion'],
-  admin: ['equipment_category', 'equipment_type', 'equipment_unit', 'subcontractor', 'user'],
+  admin: [
+    'equipment_category',
+    'equipment_type',
+    'equipment_unit',
+    'subcontractor',
+    'user',
+    'settings',
+    'permissions',
+  ],
 };
 
 @Injectable()

@@ -14,6 +14,7 @@ MVP focus:
 - Sales-to-operations handoff without losing context.
 - Reservation management with conflict warning (not hard block).
 - Departure and completion tracking.
+- Personal task queue for managers/admins linked to CRM entities.
 - Core directories (equipment types, equipment units, subcontractors).
 - Audit log and baseline analytics.
 - Import pipeline for initial migration and ongoing uploads.
@@ -37,26 +38,31 @@ Future-ready target (production backend integration):
 
 ### 2.2 Backend
 
-Текущая реализация (Stage 1 скелет, см. `app/backend/`):
+Текущая реализация (28.04.2026, см. `app/backend/`):
 
 - NestJS 10 + TypeScript, модульный монолит.
 - Prisma 5 + PostgreSQL 16 (Docker Compose для локальной БД).
-- Passport + JWT-стратегия (login/refresh endpoints будут в Stage 2).
 - ConfigModule с валидацией env через `class-validator`.
-- Healthcheck `/api/v1/health` (проверяет БД).
+- Полный auth-контур: `/auth/login`, `/auth/refresh`, `/auth/me` + JWT guards.
+- Реализованные доменные модули: `leads`, `clients`, `applications`, `reservations`,
+  `departures`, `completions`, `tasks`, `directories`, `imports`, `integrations`, `activity`, `stats`,
+  `users`, `settings`.
 - Prisma schema покрывает все ключевые сущности MVP: `User`, `Client`, `Lead`,
-  `Application`, `ApplicationItem`, `Reservation`, `EquipmentCategory`,
+  `Application`, `ApplicationItem`, `Reservation`, `Task`, `EquipmentCategory`,
   `EquipmentType`, `EquipmentUnit`, `Subcontractor`, `Departure`, `Completion`,
-  `ActivityLogEntry`, `IntegrationEvent`.
+  `ActivityLogEntry`, `IntegrationEvent`, `SystemConfig`.
 - Инварианты уровня БД: partial unique index на одну активную `Application` на
   `Lead` и одну активную `Reservation` на `ApplicationItem`; уникальность
   `IntegrationEvent` по `(channel, externalId)` для идемпотентности.
+- Release-check контур: `smoke:base`, `smoke:stage3`, `smoke:stage5`,
+  `smoke:stage6`, `smoke:stage7`, `smoke:tasks`, `smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`,
+  `smoke:release`.
 
-Целевые свойства (Stage 2+):
+Текущие обязательные свойства:
 
 - Versioned API `/api/v1/...`.
 - Server-side RBAC (admin/manager) через RolesGuard.
-- Integration ingestion endpoints и replay-safe handlers.
+- Integration ingestion endpoints и retry/replay-safe handlers.
 - Audit logging как first-class concern.
 
 ### 2.3 Database
@@ -96,6 +102,7 @@ Core bounded contexts:
 6. `directories`
 7. `analytics`
 8. `imports`
+9. `tasks`
 
 Cross-cutting contexts:
 
@@ -113,6 +120,7 @@ Boundary principles:
 - `directories` owns controlled vocabularies and selectable resources.
 - `analytics` reads from operational data but does not own operational mutations.
 - `imports` writes through domain use-cases, not direct table bypass.
+- `tasks` owns personal work queue records and links to CRM entities without replacing CRM stage semantics.
 
 ## 5. Key data flows
 
@@ -145,7 +153,7 @@ Boundary principles:
 
 ### 5.5 Import and replay
 
-1. CSV/XLSX preview + mapping.
+1. CSV preview + mapping.
 2. Duplicate check and import log.
 3. Failed integration events can be replayed idempotently.
 
@@ -185,7 +193,7 @@ Not in MVP (future-ready):
 4. Reservation conflict is warning, not hard block.
 5. No out-of-scope modules in MVP branch.
 6. Route/title/search/CTA/data must always stay aligned.
-7. Domain semantics over UI imitation: no task-manager abstractions for CRM entities.
+7. Domain semantics over UI imitation: task queue supports CRM execution, but must not replace core CRM entity lifecycle.
 
 ## 9. Implementation constraints for contributors
 

@@ -12,8 +12,10 @@ import { mockLeads } from '../../data/mockLeads';
 import type { Lead } from '../../types/kanban';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import { USE_API } from '../../lib/featureFlags';
-import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
-import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
+import {
+  useCompletionsQuery,
+  usePendingCompletionsQuery,
+} from '../../hooks/useCompletionsQuery';
 import {
   toCompletionLeadFromCompletion,
   toCompletionLeadFromDeparture,
@@ -30,7 +32,7 @@ export function CompletionWorkspacePage() {
   const { activeSecondaryNav, currentView } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
   const completionsQuery = useCompletionsQuery({}, USE_API);
-  const noCompletionDeparturesQuery = useDeparturesQuery(
+  const pendingCompletionsQuery = usePendingCompletionsQuery(
     {},
     USE_API && activeSecondaryNav === 'view-no-completion',
   );
@@ -42,9 +44,7 @@ export function CompletionWorkspacePage() {
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
 
   const apiCompletions = completionsQuery.data?.items ?? [];
-  const departuresWithoutCompletion = (noCompletionDeparturesQuery.data?.items ?? []).filter(
-    (d) => !d.completion,
-  );
+  const departuresWithoutCompletion = pendingCompletionsQuery.data?.items ?? [];
 
   const completionByDepartureId = useMemo(
     () => new Map(apiCompletions.map((c) => [c.departureId, c.id])),
@@ -181,7 +181,7 @@ export function CompletionWorkspacePage() {
         </div>
       ) : null}
 
-      {USE_API && activeSecondaryNav === 'view-no-completion' && noCompletionDeparturesQuery.isPending && !noCompletionDeparturesQuery.data ? (
+      {USE_API && activeSecondaryNav === 'view-no-completion' && pendingCompletionsQuery.isPending && !pendingCompletionsQuery.data ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
           Загрузка выездов без завершения...
         </div>
@@ -193,15 +193,15 @@ export function CompletionWorkspacePage() {
         </div>
       ) : null}
 
-      {USE_API && activeSecondaryNav === 'view-no-completion' && noCompletionDeparturesQuery.isError && !noCompletionDeparturesQuery.data ? (
+      {USE_API && activeSecondaryNav === 'view-no-completion' && pendingCompletionsQuery.isError && !pendingCompletionsQuery.data ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-2 p-10 text-[13px] text-muted-foreground">
-          <span>{noCompletionDeparturesQuery.error instanceof Error ? noCompletionDeparturesQuery.error.message : 'Не удалось загрузить выезды'}</span>
+          <span>{pendingCompletionsQuery.error instanceof Error ? pendingCompletionsQuery.error.message : 'Не удалось загрузить выезды'}</span>
         </div>
       ) : null}
 
       {(USE_API
         && ((activeSecondaryNav !== 'view-no-completion' && (completionsQuery.isPending || completionsQuery.isError) && !completionsQuery.data)
-        || (activeSecondaryNav === 'view-no-completion' && (noCompletionDeparturesQuery.isPending || noCompletionDeparturesQuery.isError) && !noCompletionDeparturesQuery.data))) ? null : filtered.length === 0 ? (
+        || (activeSecondaryNav === 'view-no-completion' && (pendingCompletionsQuery.isPending || pendingCompletionsQuery.isError) && !pendingCompletionsQuery.data))) ? null : filtered.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
           Записей не найдено
         </div>

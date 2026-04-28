@@ -23,6 +23,8 @@ import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
+import { ApplicationListParams } from '../../lib/applicationsApi';
+import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 
 /**
@@ -77,6 +79,22 @@ export function ApplicationsWorkspacePage() {
   const [isClientOpen, setIsClientOpen] = useState(false);
   const [leadOverlayId, setLeadOverlayId] = useState<string | null>(null);
   const [isLeadOverlayOpen, setIsLeadOverlayOpen] = useState(false);
+  const managersQuery = useManagersQuery(USE_API);
+
+  const managerOptions = useMemo(() => {
+    if (!USE_API) {
+      return [
+        { value: 'Петров А.', label: 'Петров А.' },
+        { value: 'Сидоров Б.', label: 'Сидоров Б.' },
+        { value: 'Иванова С.', label: 'Иванова С.' },
+      ];
+    }
+
+    return (managersQuery.data ?? []).map((manager) => ({
+      value: manager.id,
+      label: manager.fullName,
+    }));
+  }, [managersQuery.data]);
 
   const effectiveView: 'list' | 'table' =
     currentView === 'table' ? 'table' : 'list';
@@ -84,7 +102,56 @@ export function ApplicationsWorkspacePage() {
   // Источник данных: API (если USE_API) либо mock. API-ответ уже спроецирован
   // бэкендом (applicationGroup / positionsReady / status per position), FE
   // adapter только презентационно маппит в UI-тип.
-  const applicationsQuery = useApplicationsQuery({ scope: 'all' }, USE_API);
+  const serverQueryParams = useMemo<ApplicationListParams>(() => {
+    const params: ApplicationListParams = {
+      scope: filters.scope === 'my' ? 'mine' : 'all',
+      query: query.trim() || undefined,
+    };
+
+    if (activeSecondaryNav === 'my-applications') {
+      params.scope = 'mine';
+    }
+
+    if (activeSecondaryNav === 'apps-no-reservation') {
+      params.readinessReservation = 'no_data';
+    }
+
+    if (activeSecondaryNav === 'apps-ready') {
+      params.readinessReservation = 'ready';
+    }
+
+    if (filters.manager !== 'all') {
+      params.managerId = filters.manager;
+    }
+
+    if (filters.status !== 'all') {
+      params.stage = filters.status as ApplicationListParams['stage'];
+    }
+
+    if (filters.sourcing !== 'all') {
+      params.sourcing = filters.sourcing;
+    }
+
+    if (filters.equipment !== 'all') {
+      params.equipment = filters.equipment;
+    }
+
+    if (filters.readinessReservation !== 'all') {
+      params.readinessReservation = filters.readinessReservation;
+    }
+
+    if (filters.readyForDeparture) {
+      params.readyForDeparture = true;
+    }
+
+    if (filters.conflict) {
+      params.conflict = true;
+    }
+
+    return params;
+  }, [activeSecondaryNav, filters, query]);
+
+  const applicationsQuery = useApplicationsQuery(serverQueryParams, USE_API);
   const sourceApplications: Application[] = useMemo(() => {
     if (USE_API && applicationsQuery.data) {
       return applicationsQuery.data.items.map(toUiApplication);
@@ -94,6 +161,10 @@ export function ApplicationsWorkspacePage() {
 
   // Saved-view aliases pre-apply a filter so the page content matches nav context.
   const aliasFiltered = useMemo(() => {
+    if (USE_API) {
+      return sourceApplications;
+    }
+
     if (activeSecondaryNav === 'apps-no-reservation') {
       return sourceApplications.filter((a) => computeGroup(a) === 'no_reservation');
     }
@@ -107,10 +178,10 @@ export function ApplicationsWorkspacePage() {
     return sourceApplications;
   }, [activeSecondaryNav, sourceApplications]);
 
-  const filtered = useMemo(
-    () => applyApplicationsFilters(aliasFiltered, filters, query),
-    [aliasFiltered, filters, query],
-  );
+  const filtered = useMemo(() => {
+    if (USE_API) return aliasFiltered;
+    return applyApplicationsFilters(aliasFiltered, filters, query);
+  }, [aliasFiltered, filters, query]);
 
   const hasActiveFilter =
     filters.scope !== 'all' ||
@@ -175,6 +246,7 @@ export function ApplicationsWorkspacePage() {
         query={query}
         onQueryChange={setQuery}
         onSaveView={handleSaveView}
+        managerOptions={managerOptions}
       />
 
       {effectiveView === 'list' ? (

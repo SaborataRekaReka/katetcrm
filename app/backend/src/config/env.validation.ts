@@ -1,5 +1,13 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsString, validateSync, Min } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  validateSync,
+} from 'class-validator';
 
 enum NodeEnv {
   development = 'development',
@@ -56,6 +64,10 @@ class EnvVars {
   @Min(1)
   @IsOptional()
   INTEGRATION_HMAC_TOLERANCE_SEC = 300;
+
+  @IsBoolean()
+  @IsOptional()
+  INTEGRATION_REQUIRE_SIGNATURES = false;
 }
 
 export function validateEnv(config: Record<string, unknown>) {
@@ -66,6 +78,14 @@ export function validateEnv(config: Record<string, unknown>) {
       coerced.INTEGRATION_HMAC_TOLERANCE_SEC,
       10,
     );
+  }
+  if (typeof coerced.INTEGRATION_REQUIRE_SIGNATURES === 'string') {
+    const normalized = coerced.INTEGRATION_REQUIRE_SIGNATURES.trim().toLowerCase();
+    if (['1', 'true', 'yes', 'on'].includes(normalized)) {
+      coerced.INTEGRATION_REQUIRE_SIGNATURES = true;
+    } else if (['0', 'false', 'no', 'off', ''].includes(normalized)) {
+      coerced.INTEGRATION_REQUIRE_SIGNATURES = false;
+    }
   }
 
   const validated = plainToInstance(EnvVars, coerced, { enableImplicitConversion: true });

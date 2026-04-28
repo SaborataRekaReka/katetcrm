@@ -29,7 +29,14 @@ interface ApplicationsToolbarProps {
   query?: string;
   onQueryChange?: (q: string) => void;
   onSaveView?: () => void;
+  managerOptions?: { value: string; label: string }[];
 }
+
+const DEFAULT_MANAGER_OPTIONS: { value: string; label: string }[] = [
+  { value: 'Петров А.', label: 'Петров А.' },
+  { value: 'Сидоров Б.', label: 'Сидоров Б.' },
+  { value: 'Иванова С.', label: 'Иванова С.' },
+];
 
 export function ApplicationsToolbar({
   filters: filtersProp,
@@ -37,6 +44,7 @@ export function ApplicationsToolbar({
   query: queryProp,
   onQueryChange,
   onSaveView,
+  managerOptions,
 }: ApplicationsToolbarProps) {
   const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
@@ -48,6 +56,7 @@ export function ApplicationsToolbar({
 
   const filters = filtersProp ?? localFilters;
   const query = queryProp ?? localQuery;
+  const effectiveManagerOptions = managerOptions ?? DEFAULT_MANAGER_OPTIONS;
 
   const updateFilters = (next: ApplicationsFiltersState) => {
     if (onFiltersChange) onFiltersChange(next);
@@ -107,9 +116,11 @@ export function ApplicationsToolbar({
         </SelectTrigger>
         <SelectContent>
           <SelectItem value="all">Все менеджеры</SelectItem>
-          <SelectItem value="Петров А.">Петров А.</SelectItem>
-          <SelectItem value="Сидоров Б.">Сидоров Б.</SelectItem>
-          <SelectItem value="Иванова С.">Иванова С.</SelectItem>
+          {effectiveManagerOptions.map((manager) => (
+            <SelectItem key={manager.value} value={manager.value}>
+              {manager.label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
 

@@ -97,8 +97,14 @@ export interface ApplicationListParams {
   clientId?: string;
   leadId?: string;
   managerId?: string;
+  stage?: PipelineStage;
   scope?: 'all' | 'mine';
   query?: string;
+  sourcing?: DominantSourcing;
+  equipment?: string;
+  readinessReservation?: 'ready' | 'waiting' | 'no_data';
+  readyForDeparture?: boolean;
+  conflict?: boolean;
   isActive?: string;
 }
 

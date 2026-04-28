@@ -7,6 +7,7 @@ import {
 import type { Prisma, UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ActivityService } from '../activity/activity.service';
+import { projectApplication } from '../../common/projections/application.projection';
 import {
   ApplicationListQueryDto,
   CreateApplicationItemDto,
@@ -30,6 +31,7 @@ export class ApplicationsService {
     const where: Prisma.ApplicationWhereInput = {};
     if (params.clientId) where.clientId = params.clientId;
     if (params.leadId) where.leadId = params.leadId;
+    if (params.stage) where.stage = params.stage;
     if (params.isActive !== undefined) {
       where.isActive = params.isActive === 'true' || params.isActive === '1';
     }
@@ -44,6 +46,17 @@ export class ApplicationsService {
         { number: { contains: q, mode: 'insensitive' } },
         { address: { contains: q, mode: 'insensitive' } },
         { comment: { contains: q, mode: 'insensitive' } },
+        { client: { name: { contains: q, mode: 'insensitive' } } },
+        { client: { company: { contains: q, mode: 'insensitive' } } },
+        { client: { phone: { contains: q, mode: 'insensitive' } } },
+        { responsibleManager: { fullName: { contains: q, mode: 'insensitive' } } },
+        {
+          items: {
+            some: {
+              equipmentTypeLabel: { contains: q, mode: 'insensitive' },
+            },
+          },
+        },
       ];
     }
     const items = await this.prisma.application.findMany({
@@ -70,7 +83,72 @@ export class ApplicationsService {
         _count: { select: { items: true } },
       },
     });
-    return { items, total: items.length };
+
+    const hasDerivedFilters =
+      Boolean(params.sourcing) ||
+      Boolean(params.equipment?.trim()) ||
+      Boolean(params.readinessReservation) ||
+      typeof params.readyForDeparture === 'boolean' ||
+      typeof params.conflict === 'boolean';
+
+    const filteredItems = hasDerivedFilters
+      ? items.filter((item) => this.matchesListDerivedFilters(projectApplication(item as any), params))
+      : items;
+
+    return { items: filteredItems, total: filteredItems.length };
+  }
+
+  private matchesListDerivedFilters(
+    projected: ReturnType<typeof projectApplication>,
+    params: ApplicationListQueryDto,
+  ): boolean {
+    if (params.sourcing && projected.dominantSourcing !== params.sourcing) {
+      return false;
+    }
+
+    if (params.equipment?.trim()) {
+      const needle = params.equipment.trim().toLowerCase();
+      const hasEquipment = projected.positions.some((position) =>
+        position.equipmentTypeLabel.toLowerCase().includes(needle),
+      );
+      if (!hasEquipment) return false;
+    }
+
+    if (params.readinessReservation) {
+      if (
+        params.readinessReservation === 'ready'
+        && projected.applicationGroup !== 'ready_for_departure'
+      ) {
+        return false;
+      }
+
+      if (
+        params.readinessReservation === 'waiting'
+        && projected.applicationGroup !== 'in_reservation_work'
+      ) {
+        return false;
+      }
+
+      if (
+        params.readinessReservation === 'no_data'
+        && projected.applicationGroup !== 'no_reservation'
+      ) {
+        return false;
+      }
+    }
+
+    if (
+      typeof params.readyForDeparture === 'boolean'
+      && projected.readyForDeparture !== params.readyForDeparture
+    ) {
+      return false;
+    }
+
+    if (typeof params.conflict === 'boolean' && projected.hasAnyConflict !== params.conflict) {
+      return false;
+    }
+
+    return true;
   }
 
   async get(id: string, actor: ActorContext) {

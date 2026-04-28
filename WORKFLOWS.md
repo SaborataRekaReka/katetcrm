@@ -164,7 +164,7 @@ Steps:
 
 Trigger:
 
-- CSV/XLSX import requested.
+- CSV import requested.
 
 Steps:
 

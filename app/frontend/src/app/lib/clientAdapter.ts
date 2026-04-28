@@ -8,7 +8,7 @@
  *   - lastOrderDate: форматирование YYYY-MM-DD (или undefined)
  *   - manager: '—' (пока Client не привязан к менеджеру в schema; будет в later session)
  *   - sourceLead: синтетический Lead для открытия ClientWorkspace модалки
- *     (пока ClientWorkspace читает из mock — real client detail в следующей сессии).
+ *     (ClientWorkspace в API-режиме догружает real detail по id).
  */
 import type { Lead } from '../types/kanban';
 import type { ClientsListItem } from '../data/mockClientsList';

@@ -218,10 +218,11 @@ export function DenseDataTable<T>({
               <div
                 key={getRowId(row)}
                 className={cn(
-                  'group grid h-8 cursor-pointer items-center border-b border-border/40 bg-white text-[12px] transition-colors hover:bg-accent/40',
+                  'group grid h-8 items-center border-b border-border/40 bg-white text-[12px] transition-colors',
+                  onRowClick ? 'cursor-pointer hover:bg-accent/40' : 'cursor-default',
                 )}
                 style={{ gridTemplateColumns: gridTemplate }}
-                onClick={() => onRowClick?.(row)}
+                onClick={onRowClick ? () => onRowClick(row) : undefined}
               >
                 {visibleColumns.map((c) => {
                   const align =

@@ -404,7 +404,7 @@ export function CompletionWorkspaceApi({
         <ActionButton
           icon={<Building2 className="w-3.5 h-3.5" />}
           label="Открыть клиента"
-          onClick={() => onOpenClient?.(lead)}
+          onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
         />
       </div>
     </div>
@@ -466,8 +466,9 @@ export function CompletionWorkspaceApi({
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => onOpenClient?.(lead)}
+              className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!onOpenClient}
             >
               {linkedClient}
             </button>

@@ -55,6 +55,11 @@ export interface LeadListParams {
   managerId?: string;
   clientId?: string;
   query?: string;
+  equipmentTypeHint?: string;
+  isUrgent?: boolean;
+  isStale?: boolean;
+  isDuplicate?: boolean;
+  hasNoContact?: boolean;
   scope?: 'all' | 'mine';
 }
 
@@ -72,10 +77,13 @@ export function createLead(body: {
   contactPhone: string;
   clientId?: string;
   source?: SourceChannel;
+  sourceLabel?: string;
   equipmentTypeHint?: string;
   requestedDate?: string;
+  timeWindow?: string;
   address?: string;
   comment?: string;
+  isUrgent?: boolean;
 }) {
   return apiRequest<{ lead: LeadApi; duplicates: LeadApi[] }>('leads', {
     method: 'POST',

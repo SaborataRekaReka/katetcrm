@@ -96,46 +96,123 @@ const leadStatusMeta: Record<ClientLeadStatus, { label: string; tone: string }> 
 export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const mockBase: Client = useMemo(() => buildMockClient(lead), [lead]);
   const resolvedApiClientId = apiClientId ?? lead?.apiClientId;
+  const isApiDetailMode = USE_API && !!resolvedApiClientId;
 
-  const clientQuery = useClientQuery(resolvedApiClientId, USE_API && !!resolvedApiClientId);
+  const clientQuery = useClientQuery(resolvedApiClientId, isApiDetailMode);
   const applicationsQuery = useApplicationsQuery(
     { clientId: resolvedApiClientId, scope: 'all' },
-    USE_API && !!resolvedApiClientId,
+    isApiDetailMode,
   );
   const leadsQuery = useLeadsQuery(
     { clientId: resolvedApiClientId, scope: 'all' },
-    USE_API && !!resolvedApiClientId,
+    isApiDetailMode,
   );
   const activityQuery = useEntityActivity(
     'client',
     resolvedApiClientId,
-    USE_API && !!resolvedApiClientId,
+    isApiDetailMode,
   );
+
+  const isPrimaryPending = isApiDetailMode && clientQuery.isPending && !clientQuery.data;
+  const isPrimaryError = isApiDetailMode && clientQuery.isError && !clientQuery.data;
+
+  const isContextPending =
+    isApiDetailMode
+    && !isPrimaryPending
+    && (applicationsQuery.isPending || leadsQuery.isPending || activityQuery.isPending);
+
+  const contextErrors = useMemo(() => {
+    if (!isApiDetailMode) return [] as string[];
+    const out: string[] = [];
+    if (applicationsQuery.isError) {
+      out.push(
+        applicationsQuery.error instanceof Error
+          ? `Заявки: ${applicationsQuery.error.message}`
+          : 'Заявки: ошибка загрузки',
+      );
+    }
+    if (leadsQuery.isError) {
+      out.push(
+        leadsQuery.error instanceof Error
+          ? `Лиды: ${leadsQuery.error.message}`
+          : 'Лиды: ошибка загрузки',
+      );
+    }
+    if (activityQuery.isError) {
+      out.push(
+        activityQuery.error instanceof Error
+          ? `Активность: ${activityQuery.error.message}`
+          : 'Активность: ошибка загрузки',
+      );
+    }
+    return out;
+  }, [
+    isApiDetailMode,
+    applicationsQuery.isError,
+    applicationsQuery.error,
+    leadsQuery.isError,
+    leadsQuery.error,
+    activityQuery.isError,
+    activityQuery.error,
+  ]);
 
   const updateClientMutation = useUpdateClient();
   const createLeadMutation = useCreateLead();
 
   const base: Client = useMemo(() => {
-    if (clientQuery.data && resolvedApiClientId) {
+    if (isApiDetailMode && clientQuery.data) {
+      const detail = clientQuery.data;
+      const apiFallback: Client = {
+        id: detail.id,
+        type: detail.company ? 'company' : 'person',
+        displayName: detail.company ?? detail.name,
+        shortName: detail.company ? detail.name : undefined,
+        primaryPhone: detail.phone,
+        primaryEmail: detail.email ?? undefined,
+        manager: undefined,
+        createdAt: detail.createdAt.slice(0, 10),
+        updatedAt: detail.updatedAt.slice(0, 10),
+        lastActivity: detail.lastActivity,
+        totalOrders: 0,
+        totalRevenue: undefined,
+        daysSinceLastOrder: undefined,
+        tags: [],
+        contacts: [],
+        requisites: {},
+        favoriteCategories: [],
+        workingNotes: detail.workingNotes ?? undefined,
+        comment: detail.notes ?? undefined,
+        leadsHistory: [],
+        ordersHistory: [],
+        activeRecords: {
+          leadsCount: 0,
+          applicationsCount: 0,
+          reservationsCount: 0,
+          departuresCount: 0,
+        },
+        possibleDuplicates: [],
+        activity: [],
+      };
+
       return toClientWorkspaceModel({
-        detail: clientQuery.data,
+        detail,
         applications: applicationsQuery.data?.items ?? [],
         leads: leadsQuery.data?.items ?? [],
         activity: activityQuery.data ?? [],
-        fallback: mockBase,
+        fallback: apiFallback,
       });
     }
     return mockBase;
   }, [
+    isApiDetailMode,
     clientQuery.data,
     applicationsQuery.data,
     leadsQuery.data,
     activityQuery.data,
     mockBase,
-    resolvedApiClientId,
   ]);
 
-  const canInlineEditClient = USE_API && !!resolvedApiClientId;
+  const canInlineEditClient = isApiDetailMode;
 
   /** Фабрика save-обработчиков для инлайн-полей клиента. */
   const makeClientFieldSaver = (
@@ -160,9 +237,42 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const [repeatOpen, setRepeatOpen] = useState(false);
   const [repeatSource, setRepeatSource] = useState<ClientOrderHistoryItem | null>(null);
   const [createdLeadId, setCreatedLeadId] = useState<string | null>(null);
+  const [repeatError, setRepeatError] = useState<string | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  if (isPrimaryPending) {
+    return (
+      <DetailShell
+        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Clients']} />}
+        onClose={onClose}
+        main={(
+          <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-muted-foreground">
+            Загружаем карточку клиента...
+          </div>
+        )}
+        sidebar={null}
+      />
+    );
+  }
+
+  if (isPrimaryError) {
+    return (
+      <DetailShell
+        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Clients']} />}
+        onClose={onClose}
+        main={(
+          <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-rose-700">
+            {clientQuery.error instanceof Error
+              ? clientQuery.error.message
+              : 'Не удалось загрузить карточку клиента.'}
+          </div>
+        )}
+        sidebar={null}
+      />
+    );
+  }
 
   const toggleCommentEditing = async () => {
     if (
@@ -213,6 +323,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     ? {
         label: 'Повторить заказ',
         onClick: () => {
+          setRepeatError(null);
           setRepeatSource(lastCompleted);
           setRepeatOpen(true);
         },
@@ -223,6 +334,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       };
 
   const handleRepeatFromOrder = (order: ClientOrderHistoryItem) => {
+    setRepeatError(null);
     setRepeatSource(order);
     setRepeatOpen(true);
   };
@@ -230,8 +342,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const handleConfirmRepeat = async (payload: RepeatOrderPayload) => {
     if (!repeatSource) return;
 
+    setRepeatError(null);
     try {
-      if (canInlineEditClient && resolvedApiClientId) {
+      if (USE_API) {
+        if (!resolvedApiClientId) {
+          throw new Error('Повтор недоступен: у клиента нет связанной API-записи.');
+        }
+
         const equipmentHint =
           repeatSource.positions[0]?.equipmentType ?? repeatSource.equipmentSummary ?? undefined;
         const commentParts = [
@@ -246,8 +363,10 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           contactPhone: base.primaryPhone,
           clientId: resolvedApiClientId,
           source: 'manual',
+          sourceLabel: 'repeat_order',
           equipmentTypeHint: equipmentHint,
           requestedDate: payload.date || undefined,
+          timeWindow: payload.time || undefined,
           address: payload.address.trim() || repeatSource.address || undefined,
           comment: commentParts.join(' · ') || undefined,
         });
@@ -258,13 +377,34 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       }
 
       setRepeatOpen(false);
-    } catch {
+    } catch (err) {
       setCreatedLeadId(null);
+      setRepeatError(err instanceof Error ? err.message : 'Не удалось создать повторный заказ.');
     }
   };
 
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
+      {isContextPending && (
+        <Alert className="mb-3 py-1.5 px-2.5">
+          <Activity className="h-4 w-4" />
+          <AlertTitle className="text-[12px]">Догружаем историю клиента</AlertTitle>
+          <AlertDescription className="text-[10px] mt-0.5 leading-snug">
+            История заявок, лидов и активностей обновится автоматически.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {contextErrors.length > 0 && (
+        <Alert className="mb-3 py-1.5 px-2.5 border-rose-200 bg-rose-50/60">
+          <AlertCircle className="h-4 w-4 text-rose-600" />
+          <AlertTitle className="text-[12px] text-rose-900">Часть контекста не загрузилась</AlertTitle>
+          <AlertDescription className="text-[10px] text-rose-800/90 mt-0.5 leading-snug">
+            {contextErrors.join(' | ')}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <EntityModalHeader
         entityIcon={
           base.type === 'company'
@@ -390,6 +530,16 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           </AlertTitle>
           <AlertDescription className="text-[10px] text-emerald-800/85 mt-0.5 leading-snug">
             Лид создан на основе предыдущего заказа с клиентским контекстом и примечанием.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {repeatError && (
+        <Alert className="mb-4 py-1.5 px-2.5 border-rose-200 bg-rose-50/60">
+          <AlertCircle className="h-4 w-4 text-rose-600" />
+          <AlertTitle className="text-[12px] text-rose-900">Повтор заказа не создан</AlertTitle>
+          <AlertDescription className="text-[10px] text-rose-800/85 mt-0.5 leading-snug">
+            {repeatError}
           </AlertDescription>
         </Alert>
       )}

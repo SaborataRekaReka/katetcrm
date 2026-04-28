@@ -21,6 +21,7 @@ import {
   projectCompletion,
   projectCompletions,
 } from '../../common/projections/completion.projection';
+import { projectDepartures } from '../../common/projections/departure.projection';
 
 @Controller('completions')
 @UseGuards(JwtAuthGuard)
@@ -34,6 +35,15 @@ export class CompletionsController {
   ) {
     const result = await this.svc.list(query, { id: user.sub, role: user.role });
     return { items: projectCompletions(result.items as any), total: result.total };
+  }
+
+  @Get('pending')
+  async listPending(
+    @Query() query: CompletionListQueryDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const result = await this.svc.listPending(query, { id: user.sub, role: user.role });
+    return { items: projectDepartures(result.items as any), total: result.total };
   }
 
   @Get(':id')

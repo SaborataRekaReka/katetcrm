@@ -3,6 +3,7 @@ import { apiRequest } from './apiClient';
 export interface EquipmentCategoryApi {
   id: string;
   name: string;
+  _count?: { types: number };
   createdAt: string;
   updatedAt: string;
 }
@@ -13,7 +14,12 @@ export interface EquipmentTypeApi {
   description: string | null;
   categoryId: string | null;
   category?: EquipmentCategoryApi | null;
-  _count?: { units: number };
+  _count?: {
+    units: number;
+    applicationItems?: number;
+    reservations?: number;
+  };
+  activeApplicationsCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -31,6 +37,7 @@ export interface EquipmentUnitApi {
   plateNumber: string | null;
   notes: string | null;
   status: 'active' | 'inactive' | 'archived';
+  activeBookingsCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,6 +52,7 @@ export interface SubcontractorApi {
   contactEmail: string | null;
   notes: string | null;
   status: 'active' | 'inactive' | 'archived';
+  activeBookingsCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -55,10 +63,22 @@ export const listEquipmentCategories = () =>
 export const listEquipmentTypes = (categoryId?: string) =>
   apiRequest<EquipmentTypeApi[]>('equipment-types', { query: { categoryId } });
 
-export const listEquipmentUnits = (params: { equipmentTypeId?: string; status?: string } = {}) =>
+export const listEquipmentUnits = (params: {
+  equipmentTypeId?: string;
+  status?: string;
+  plannedStart?: string;
+  plannedEnd?: string;
+  excludeReservationId?: string;
+} = {}) =>
   apiRequest<EquipmentUnitApi[]>('equipment-units', { query: params as Record<string, string | undefined> });
 
-export const listSubcontractors = (params: { query?: string; status?: string } = {}) =>
+export const listSubcontractors = (params: {
+  query?: string;
+  status?: string;
+  plannedStart?: string;
+  plannedEnd?: string;
+  excludeReservationId?: string;
+} = {}) =>
   apiRequest<SubcontractorApi[]>('subcontractors', { query: params as Record<string, string | undefined> });
 
 /* ---------- Mutations (admin only) ---------- */
@@ -69,11 +89,17 @@ export const createEquipmentCategory = (body: { name: string }) =>
 export const updateEquipmentCategory = (id: string, body: { name: string }) =>
   apiRequest<EquipmentCategoryApi>(`equipment-categories/${id}`, { method: 'PATCH', body });
 
+export const deleteEquipmentCategory = (id: string) =>
+  apiRequest<{ ok: true }>(`equipment-categories/${id}`, { method: 'DELETE' });
+
 export const createEquipmentType = (body: Partial<Pick<EquipmentTypeApi, 'name' | 'description' | 'categoryId'>>) =>
   apiRequest<EquipmentTypeApi>('equipment-types', { method: 'POST', body });
 
 export const updateEquipmentType = (id: string, body: Partial<Pick<EquipmentTypeApi, 'name' | 'description' | 'categoryId'>>) =>
   apiRequest<EquipmentTypeApi>(`equipment-types/${id}`, { method: 'PATCH', body });
+
+export const deleteEquipmentType = (id: string) =>
+  apiRequest<{ ok: true }>(`equipment-types/${id}`, { method: 'DELETE' });
 
 export const createEquipmentUnit = (body: Partial<Omit<EquipmentUnitApi, 'id' | 'createdAt' | 'updatedAt' | 'equipmentType'>>) =>
   apiRequest<EquipmentUnitApi>('equipment-units', { method: 'POST', body });
@@ -81,8 +107,14 @@ export const createEquipmentUnit = (body: Partial<Omit<EquipmentUnitApi, 'id' | 
 export const updateEquipmentUnit = (id: string, body: Partial<Omit<EquipmentUnitApi, 'id' | 'createdAt' | 'updatedAt' | 'equipmentType'>>) =>
   apiRequest<EquipmentUnitApi>(`equipment-units/${id}`, { method: 'PATCH', body });
 
+export const deleteEquipmentUnit = (id: string) =>
+  apiRequest<{ ok: true }>(`equipment-units/${id}`, { method: 'DELETE' });
+
 export const createSubcontractor = (body: Partial<Omit<SubcontractorApi, 'id' | 'createdAt' | 'updatedAt'>>) =>
   apiRequest<SubcontractorApi>('subcontractors', { method: 'POST', body });
 
 export const updateSubcontractor = (id: string, body: Partial<Omit<SubcontractorApi, 'id' | 'createdAt' | 'updatedAt'>>) =>
   apiRequest<SubcontractorApi>(`subcontractors/${id}`, { method: 'PATCH', body });
+
+export const deleteSubcontractor = (id: string) =>
+  apiRequest<{ ok: true }>(`subcontractors/${id}`, { method: 'DELETE' });

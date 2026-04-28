@@ -16,11 +16,26 @@ This file defines practical test strategy for MVP reliability.
 
 Minimum smoke coverage:
 
-1. App shell renders with primary/secondary navigation.
-2. Leads workspace opens and switches board/list/table.
-3. Applications and reservations workspaces open from secondary nav.
-4. Detail modal/workspace opens from row/card click.
-5. Build command succeeds.
+1. `smoke:base` validates auth + lead intake + stage transition + duplicates + activity baseline.
+2. `smoke:stage3` validates applications/items/reservations policies and terminal invariants.
+3. `smoke:stage5` validates reservation -> departure -> completion flow and release cascades.
+4. `smoke:stage6` validates integrations ingest idempotency + retry/replay guards (+ signed fixtures when secrets configured).
+5. `smoke:stage6:strict` validates signed webhook fixtures in enforced-auth mode with production-like secret profile.
+6. `smoke:stage7` validates stats/import/audit contracts including `stats/analytics` views and mixed valid/invalid import run/report behavior (`issues`, `errorReportCsv`, accounting).
+7. `smoke:tasks` validates tasks write contour (`create/status/subtask/duplicate/archive/scope`) including `dueDate` clear path.
+8. `smoke:rbac` validates manager denial for admin-only directories and foreign-ownership operations.
+9. `smoke:rbac:scope` validates manager scope on `stats/reports/analytics` and analytics query validation (`400`).
+10. `smoke:admin` validates admin write scenarios (`users/settings/permissions`) and manager-deny checks.
+11. `smoke:admin:control` validates admin/control runtime read endpoints + manager deny (`stats/reports/analytics/activity/users/settings/integrations`).
+12. Aggregate `smoke:release` runs all checks above + frontend `check:ui-consistency`.
+
+Repeat-flow stability runbook: `docs/repeat-flow-runbook.md` (`smoke:flow:repeat`).
+
+Validation snapshot (28.04.2026):
+
+1. `smoke:stage6:strict` passed in enforced-signature profile.
+2. `smoke:flow:repeat` passed (3 iterations).
+3. Browser baseline `npm --prefix app/frontend run e2e` passed (admin/control, 2/2).
 
 ## 4. Critical E2E flows
 
@@ -32,6 +47,7 @@ Required E2E scenarios:
 4. Reservation ready -> departure -> completed.
 5. Completed/unqualified releases active reservation.
 6. Repeat order from client context.
+7. Browser runtime checks for admin/control: `npm --prefix app/frontend run e2e`.
 
 ## 5. RBAC checks
 
@@ -39,7 +55,9 @@ Mandatory checks:
 
 1. Manager cannot access admin-only sections/routes/apis.
 2. Admin can access admin modules.
-3. Forbidden operations return proper permission states.
+3. Manager cannot mutate or read foreign entities outside visibility scope.
+4. Manager analytics scope does not leak foreign manager rows.
+5. Forbidden operations and invalid protected inputs return proper permission/validation states (`403`/`400`).
 
 ## 6. Route/content consistency checks
 
@@ -81,7 +99,7 @@ Golden path to verify end-to-end:
 
 Release gate passes only if:
 
-1. Smoke suite green.
-2. Critical E2E green.
-3. RBAC negative checks green.
+1. `smoke:release` is fully green.
+2. Critical E2E/runtime scenarios for touched domains are green.
+3. RBAC negative and scope checks (`smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`, `smoke:admin:control`) are green.
 4. No route/title/CTA/data mismatch regressions in touched modules.

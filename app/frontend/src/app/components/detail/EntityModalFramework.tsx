@@ -15,6 +15,7 @@ import { IconBtn, SidebarSection } from './DetailShell';
 export interface EntityModalAction {
   label: ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
   icon?: ReactNode;
   /** Иконка слева от label — удобно для `<Phone/>Позвонить` и т.п. */
   iconBefore?: ReactNode;
@@ -56,6 +57,7 @@ export function EntityModalShell({
 
 function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary') {
   if (action.render) return action.render;
+  const disabled = action.disabled ?? !action.onClick;
   const base =
     variant === 'primary'
       ? 'h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]'
@@ -66,6 +68,7 @@ function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary
       variant={variant === 'primary' ? 'default' : 'outline'}
       className={base}
       onClick={action.onClick}
+      disabled={disabled}
     >
       {action.iconBefore}
       {action.label}

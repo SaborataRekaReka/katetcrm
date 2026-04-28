@@ -78,14 +78,16 @@ export function ClientsWorkspacePage() {
   );
 
   const preset = presetFromSecondary(activeSecondaryNav);
+  const clientsQuery = useClientsQuery({ take: 200 }, USE_API);
+  const isPending = USE_API && clientsQuery.isPending && !clientsQuery.data;
+  const isError = USE_API && clientsQuery.isError && !clientsQuery.data;
 
   const effectiveView: 'list' | 'cards' = currentView === 'cards' ? 'cards' : 'list';
 
   // Источник: projected API (агрегаты+tags считаются бэком) либо mock.
-  const clientsQuery = useClientsQuery({ take: 200 }, USE_API);
   const sourceRows: ClientsListItem[] = useMemo(() => {
-    if (USE_API && clientsQuery.data) {
-      return toClientsListItems(clientsQuery.data.items);
+    if (USE_API) {
+      return clientsQuery.data ? toClientsListItems(clientsQuery.data.items) : [];
     }
     return mockClientsList;
   }, [clientsQuery.data]);
@@ -165,7 +167,13 @@ export function ClientsWorkspacePage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
-      {effectiveView === 'list' ? (
+      {isPending ? (
+        <div className="px-4 py-6 text-[12px] text-muted-foreground">Загружаем клиентов...</div>
+      ) : isError ? (
+        <div className="px-4 py-6 text-[12px] text-rose-700">
+          {clientsQuery.error instanceof Error ? clientsQuery.error.message : 'Не удалось загрузить клиентов.'}
+        </div>
+      ) : effectiveView === 'list' ? (
         <ClientsListView rows={filtered} onRowClick={(c) => setSelectedLead(c.sourceLead)} />
       ) : (
         <ClientsCardsView rows={filtered} onCardClick={(c) => setSelectedLead(c.sourceLead)} />

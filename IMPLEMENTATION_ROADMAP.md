@@ -1,6 +1,6 @@
 # IMPLEMENTATION_ROADMAP
 
-Updated: 2026-04-28 (stage6+stage7 automation, import reporting, release gate expansion)
+Updated: 2026-04-28 (runtime validation pass: strict ingest + repeat-flow + browser e2e; tasks write contour, smoke:tasks gate, task detail editability, stage6+stage7 automation, analytics server contract, RBAC scope smoke, import reporting, release gate expansion)
 
 ## 1. Stage order (fixed)
 
@@ -56,6 +56,7 @@ Done:
 - Auth/session hardening: startup fallback `refresh -> me` and transparent single-flight refresh retry on 401 in API client.
 - Leads manager filter parity is now server-aware: dedicated managers endpoint + toolbar mapping to backend `managerId`.
 - Release negative RBAC checks were expanded (directories admin-only matrix + ownership checks across leads/applications/reservations/departures) and included in aggregate release gate (`smoke:release`).
+- RBAC scope automation extended with dedicated `smoke:rbac:scope`: manager-only visibility checks for `GET /stats`, `GET /stats/reports`, `GET /stats/analytics` and analytics input validation checks (`400` for invalid `viewId` / out-of-range `sampleTake`).
 - Browser-level auth behavior in API mode is validated manually: invalid access token recovers through refresh, invalid refresh token leads to login screen.
 
 Pending:
@@ -142,10 +143,15 @@ Done:
 - Retry/replay guards for non-failed events are enforced and validated in smoke checks.
 - Stage-level smoke automation added (`smoke:stage6`) and included into release gate.
 - Non-production ingest fallback for missing channel secrets allows stable local verification without weakening production checks.
+- Signed-webhook fixtures with explicit HMAC headers are added to `smoke:stage6` for `site/mango/telegram/max`, including invalid-signature guard checks in enforced-auth mode.
+- Added strict ingest profile toggle `INTEGRATION_REQUIRE_SIGNATURES` and dedicated `smoke:stage6:strict` command for production-like HMAC secret checks.
+- Added repeat flow stability script `smoke:flow:repeat` to rerun happy-path runtime flow in a deterministic loop.
+- Runtime validation confirmed green for strict ingest profile (`smoke:stage6:strict`) with enforced signatures and channel secrets.
+- Runtime validation confirmed green for repeat flow profile (`smoke:flow:repeat`, 3 iterations).
 
 Pending:
 
-- Add signed-webhook fixture tests with explicit HMAC headers for each channel profile.
+- None.
 
 Focus:
 
@@ -159,27 +165,53 @@ Status: `done`
 Done:
 
 - Reports slice is wired to live `/stats` + `/activity/search(action=imported)` data.
+- Control analytics views moved to dedicated server-side contract `GET /stats/analytics?viewId=...&sampleTake=...` with backend-computed summary, manager distribution and sample rows.
 - Import wizard supports CSV upload, mapping, preview, run, and downloadable per-run error CSV.
 - Import run metadata persistence is expanded (headers, required fields, mapping, summary, full issues, rows fingerprint).
 - `GET /imports/:importId/report` endpoint added for auditable replay/report retrieval by import id.
 - Stage-level smoke automation added (`smoke:stage7`) and included into release gate.
+- `smoke:stage7` additionally validates `stats/analytics` contract for all Control analytics views.
+- `smoke:stage7` additionally validates mixed valid/invalid import batches (failed row accounting, issues presence, `errorReportCsv`, imported-audit event by `importId`).
 
 Pending:
 
-- Add optional `.xlsx` parser and multi-sheet mapping rules.
+- Enforce and verify backend CSV size limits for import flow.
+- Finalize deterministic validation/error taxonomy and operational runbook for import failures.
 
 Focus:
 
 - MVP reports and audit coverage guarantees.
 - Import preview/mapping/dedup/import-log completion.
 
+### 2.8 Cross-stage: Tasks/Home write contour
+
+Status: `done`
+
+Done:
+
+- Dedicated tasks backend module is implemented and wired (`/tasks` list/get/create/update/status/duplicate/archive/subtasks).
+- Prisma schema/migration/client are aligned for tasks domain (`Task`, `TaskStatus`, `TaskPriority`).
+- Home `My Tasks` in API mode is switched from read-only derived behavior to real write flow.
+- Task detail now supports editable fields (title/description/priority/due date/tags) with save/reset behavior and API mutation path.
+- dueDate clear behavior is implemented end-to-end (`'' -> null` normalization on frontend + DTO transform + service patch mapping).
+- Cross-module dead-control sweep is applied for client-open CTA points in reservation/departure/completion workspaces (including API variants) and shared click affordance components (`DenseDataTable`, `KpiRow`).
+- Added dedicated `smoke:tasks` scenario and included it in aggregate `smoke:release` gate.
+- Added dedicated `smoke:admin:control` runtime scenario and included it in aggregate `smoke:release` gate.
+- Added browser E2E contour (Playwright) for admin/control runtime navigation and admin users write flow.
+- Verified green: `prisma:generate`, `prisma:deploy`, backend `typecheck`, backend `build`, frontend `build`, `smoke:tasks`, `smoke:release`.
+- Verified runtime green: `smoke:stage6:strict`, `smoke:flow:repeat`, frontend `npm run e2e` (admin/control baseline, 2/2).
+
+Pending:
+
+- None.
+
 ## 3. Next priority (short horizon)
 
 Current highest priority:
 
-1. Harden signed webhook compatibility tests for production-like HMAC flows.
-2. Expand import workflow with `.xlsx` support and large-file safety limits.
-3. Add browser E2E for admin import wizard + report retrieval path.
+1. Expand import workflow hardening with backend CSV size-limit enforcement and deterministic validation profiles.
+2. Add deeper contract/e2e checks for import/integration negative scenarios beyond smoke scripts.
+3. Expand browser E2E coverage to manager RBAC-deny and additional CRUD negative paths.
 
 ## 4. Definition of done per stage
 

@@ -1,63 +1,169 @@
 # API_CONTRACTS_OVERVIEW
 
-## 1. Purpose
+## 1. Purpose and scope
 
 This file is an API contract overlay above OpenAPI/Swagger.
-It explains what frontend and agents should expect by domain.
+It explains what frontend and agents should expect by domain in current MVP.
 
 ## 2. API groups
 
-Primary groups:
+Primary groups (current):
 
 1. `/auth`
 2. `/leads`
-3. `/applications`
-4. `/reservations`
-5. `/departures`
-6. `/clients`
-7. `/equipment-types`
-8. `/equipment-units`
-9. `/subcontractors`
-10. `/analytics`
-11. `/audit-log`
-12. `/imports`
+3. `/clients`
+4. `/applications`
+5. `/reservations`
+6. `/departures`
+7. `/completions`
+8. `/equipment-categories`
+9. `/equipment-types`
+10. `/equipment-units`
+11. `/subcontractors`
+12. `/imports/*`
+13. `/integrations/events/*`
+14. `/activity/*`
+15. `/stats`
+16. `/tasks/*`
+17. `/users/*`
+18. `/settings/*`
 
-Versioning:
+## 3. Domain contract notes
 
-- Use `/api/v1/...` paths.
+### 3.1 Auth
 
-## 3. Frontend contract expectations
+- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/refresh`
+- `GET /api/v1/auth/me`
 
-### 3.1 Common
+Contract expectations:
 
-1. Stable IDs and timestamps.
-2. Predictable validation error shape for forms.
-3. Explicit permission error responses.
-4. Pagination/sorting/filter metadata for list endpoints.
+1. JWT access token + refresh token flow is server-side enforced.
+2. `me` returns role fields used by frontend RBAC visibility.
 
 ### 3.2 Leads
 
-- Duplicate hint fields should be returned explicitly.
-- Source channel metadata must be preserved.
+- `GET /api/v1/leads`
+- `GET /api/v1/leads/:id`
+- `PATCH /api/v1/leads/:id`
+- `POST /api/v1/leads`
+
+Contract expectations:
+
+1. Stage values and source channels match domain enums.
+2. Dedupe-related flags are returned for UI signaling.
+3. Repeat-order flow is canonical via `POST /api/v1/leads` with `source=manual`, `sourceLabel=repeat_order`, and `clientId` from client workspace context.
+4. `GET /api/v1/leads` supports list filters used by analytics views (`stage`, `managerId`, `query`, `isUrgent`, `isStale`).
 
 ### 3.3 Applications
 
-- Item-level readiness fields available in response.
-- Stage and item status values must match domain enums.
+- `GET /api/v1/applications`
+- `GET /api/v1/applications/:id`
+- `POST /api/v1/applications`
+- `PATCH /api/v1/applications/:id`
+- `POST /api/v1/applications/:id/items`
+- `PATCH /api/v1/applications/:id/items/:itemId`
+
+Contract expectations:
+
+1. One active application per lead is guarded by DB/business rules.
+2. Item-level statuses remain consistent with reservation lifecycle.
 
 ### 3.4 Reservations
 
-- Conflict signal and conflict context included in response.
-- Internal stage transitions validated server-side.
+- `GET /api/v1/reservations`
+- `GET /api/v1/reservations/:id`
+- `POST /api/v1/reservations`
+- `PATCH /api/v1/reservations/:id`
+- `POST /api/v1/reservations/:id/release`
 
-### 3.5 Clients
+Contract expectations:
 
-- Linked history summaries available without expensive multi-call choreography.
+1. Conflict signal remains warning-level (not hard block) for MVP.
+2. Internal stage transitions are validated server-side.
 
-### 3.6 Analytics/Audit
+### 3.5 Clients / Departures / Completions
 
-- Reporting endpoints return normalized KPI payloads.
-- Audit endpoints return actor/action/entity/timestamp and before/after where required.
+- `GET /api/v1/clients`, `GET /api/v1/clients/:id`, `PATCH /api/v1/clients/:id`
+- `GET /api/v1/departures`, `POST /api/v1/departures`, `PATCH /api/v1/departures/:id`
+- `GET /api/v1/completions`, `POST /api/v1/completions`, `PATCH /api/v1/completions/:id`
+
+Contract expectations:
+
+1. Linked-record history is returned in normalized form for detail workspace.
+2. Completion/unqualified outcomes stay explicit in API payload.
+
+### 3.6 Stats / Activity
+
+- `GET /api/v1/stats`
+- `GET /api/v1/stats/reports?periodDays=7|30`
+- `GET /api/v1/stats/analytics?viewId=view-stale-leads|view-lost-leads|view-active-reservations|view-manager-load&sampleTake=1..20`
+- `GET /api/v1/activity/search?entityType=&entityId=&scope=&actorId=&from=&to=&q=&limit=`
+
+Contract expectations:
+
+1. Stats payload is stable for Home dashboard cards.
+2. `stats/reports` provides canonical report slices for Control reports catalog.
+3. `stats/analytics` provides canonical aggregates and sample rows for Control analytics views.
+4. Activity search is usable for audit timeline and recent feed blocks.
+5. Manager scope is applied server-side for stats/report/analytics slices (no foreign manager leakage in manager context).
+6. `stats/analytics` rejects invalid query params with explicit `400` (`viewId`, `sampleTake`).
+
+### 3.7 Tasks
+
+- `GET /api/v1/tasks`
+- `GET /api/v1/tasks/:id`
+- `POST /api/v1/tasks`
+- `PATCH /api/v1/tasks/:id`
+- `POST /api/v1/tasks/:id/status`
+- `POST /api/v1/tasks/:id/duplicate`
+- `POST /api/v1/tasks/:id/archive`
+- `POST /api/v1/tasks/:id/subtasks`
+
+Contract expectations:
+
+1. `scope=mine|all` is enforced server-side with RBAC/ownership semantics.
+2. `includeArchived` controls visibility of archived tasks without hard-delete behavior.
+3. Task write endpoints preserve audit trail through activity log entries (`created`, `updated`).
+4. Manager assignment boundaries are enforced server-side (no foreign assignee hijack in manager context).
+5. `dueDate` supports explicit clear semantics (`null`, and empty-string normalization path for compatibility) without deleting task history.
+
+### 3.8 Integrations / Imports
+
+- `GET /api/v1/integrations/events`
+- `GET /api/v1/integrations/events/:id`
+- `POST /api/v1/integrations/events/:id/retry`
+- `POST /api/v1/integrations/events/:id/replay`
+- `POST /api/v1/imports/preview`
+- `POST /api/v1/imports/run`
+- `GET /api/v1/imports/:id/report`
+
+Contract expectations:
+
+1. Integration events are replay-safe and auditable.
+2. Import run/report preserves accounting fields (`imported`, `skipped`, `failed`).
+3. Mixed valid/invalid import batches keep deterministic accounting and persist validation issues for report replay.
+4. `GET /imports/:id/report` provides error artifacts (`issues`, `errorReportCsv`) for failed-row diagnostics.
+
+### 3.9 Users / Settings
+
+- `GET /api/v1/users`
+- `POST /api/v1/users`
+- `PATCH /api/v1/users/:id`
+- `GET /api/v1/users/managers`
+- `GET /api/v1/users/permissions-matrix`
+- `PATCH /api/v1/users/permissions-matrix/:capabilityId`
+- `GET /api/v1/settings/workspace`
+- `PATCH /api/v1/settings/workspace/sections/:sectionId`
+
+Contract expectations:
+
+1. `users` CRUD endpoints are admin-only.
+2. `users/managers` stays available for manager assignment selectors in domain forms.
+3. `users/permissions-matrix` provides canonical read model for Admin permissions UI.
+4. `users/permissions-matrix/:capabilityId` updates role toggles in Admin permissions workspace.
+5. `settings/workspace` provides canonical read model for Admin settings dashboard.
+6. `settings/workspace/sections/:sectionId` updates section rows in Admin settings workspace.
 
 ## 4. Error handling policy
 
@@ -82,21 +188,18 @@ Not allowed for optimistic updates (must await server confirmation):
 3. Source/unit/subcontractor assignment affecting availability.
 4. Completion/unqualified outcomes.
 
-## 6. Webhook endpoints and integration logs
+## 6. Webhook endpoint and integration log
 
-Webhook scope:
+Example inbound endpoint:
 
-- Site
-- Mango
-- Telegram
-- MAX
+- `POST /api/v1/integrations/events/ingest`
 
 Expectations:
 
-1. Idempotency key or equivalent dedup strategy per event.
-2. Raw payload and processed status logged in IntegrationEvent.
-3. Replay endpoint/process for failed events.
-4. Clear event lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
+1. Equivalent dedup strategy per event (`channel + externalId`).
+2. Raw payload and processed status logged in `IntegrationEvent`.
+3. Retry/replay endpoints for failed events.
+4. Clear lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
 
 ## 7. Contract stability rules
 

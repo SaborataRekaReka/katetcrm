@@ -9,7 +9,6 @@ import {
   FolderTree,
   Star,
   Phone,
-  AlertTriangle,
   Plus,
 } from 'lucide-react';
 import { useLayout } from '../shell/layoutStore';
@@ -63,7 +62,6 @@ interface EquipmentTypeRow {
   subcategories: string;
   unitsCount: number;
   activeApplications: number;
-  status: Status;
 }
 
 interface EquipmentUnitRow {
@@ -72,7 +70,6 @@ interface EquipmentUnitRow {
   name: string;
   type: string;
   categoryName: string;
-  ownership: 'own' | string; // 'own' | subcontractor name
   year: number;
   activeBookings: number;
   status: Status;
@@ -84,9 +81,8 @@ interface SubcontractorRow {
   name: string;
   specialization: string;
   region: string;
-  contactPerson: string;
   phone: string;
-  contractValidUntil?: string;
+  email: string;
   activeBookings: number;
   rating: number; // 0–5
   status: Status;
@@ -97,26 +93,25 @@ interface CategoryRow {
   apiId?: string;
   name: string;
   typesCount: number;
-  composition: string;
 }
 
 const EQUIPMENT_TYPES: EquipmentTypeRow[] = [
-  { id: 'T-001', name: 'Экскаватор', categoryName: 'Землеройная', subcategories: 'гусеничный, колёсный', unitsCount: 12, activeApplications: 8, status: 'active' },
-  { id: 'T-002', name: 'Бульдозер', categoryName: 'Землеройная', subcategories: '70–400 л.с.', unitsCount: 6, activeApplications: 3, status: 'active' },
-  { id: 'T-003', name: 'Кран', categoryName: 'Подъёмная', subcategories: 'автокран, башенный', unitsCount: 4, activeApplications: 2, status: 'active' },
-  { id: 'T-004', name: 'Погрузчик', categoryName: 'Землеройная', subcategories: 'фронтальный, вилочный', unitsCount: 8, activeApplications: 4, status: 'active' },
-  { id: 'T-005', name: 'Самосвал', categoryName: 'Транспортная', subcategories: '10–40 т', unitsCount: 15, activeApplications: 11, status: 'active' },
-  { id: 'T-006', name: 'Каток', categoryName: 'Вспомогательная', subcategories: 'вибрационный', unitsCount: 3, activeApplications: 0, status: 'active' },
+  { id: 'T-001', name: 'Экскаватор', categoryName: 'Землеройная', subcategories: 'гусеничный, колёсный', unitsCount: 12, activeApplications: 8 },
+  { id: 'T-002', name: 'Бульдозер', categoryName: 'Землеройная', subcategories: '70–400 л.с.', unitsCount: 6, activeApplications: 3 },
+  { id: 'T-003', name: 'Кран', categoryName: 'Подъёмная', subcategories: 'автокран, башенный', unitsCount: 4, activeApplications: 2 },
+  { id: 'T-004', name: 'Погрузчик', categoryName: 'Землеройная', subcategories: 'фронтальный, вилочный', unitsCount: 8, activeApplications: 4 },
+  { id: 'T-005', name: 'Самосвал', categoryName: 'Транспортная', subcategories: '10–40 т', unitsCount: 15, activeApplications: 11 },
+  { id: 'T-006', name: 'Каток', categoryName: 'Вспомогательная', subcategories: 'вибрационный', unitsCount: 3, activeApplications: 0 },
 ];
 
 const EQUIPMENT_UNITS: EquipmentUnitRow[] = [
-  { id: 'EXC-001', name: 'CAT 320D', type: 'Экскаватор', categoryName: 'Землеройная', ownership: 'own', year: 2019, activeBookings: 2, status: 'active' },
-  { id: 'EXC-002', name: 'Hitachi ZX200', type: 'Экскаватор', categoryName: 'Землеройная', ownership: 'own', year: 2021, activeBookings: 1, status: 'active' },
-  { id: 'BLD-001', name: 'Komatsu D65', type: 'Бульдозер', categoryName: 'Землеройная', ownership: 'own', year: 2018, activeBookings: 0, status: 'active' },
-  { id: 'CRN-001', name: 'XCMG QY25K', type: 'Автокран', categoryName: 'Подъёмная', ownership: 'СпецТехПартнёр', year: 2020, activeBookings: 1, status: 'active' },
-  { id: 'LDR-001', name: 'JCB 3CX', type: 'Погрузчик', categoryName: 'Землеройная', ownership: 'own', year: 2022, activeBookings: 3, status: 'active' },
-  { id: 'LDR-002', name: 'Volvo L60H', type: 'Погрузчик', categoryName: 'Землеройная', ownership: 'own', year: 2017, activeBookings: 0, status: 'inactive' },
-  { id: 'TRK-001', name: 'KAMAZ 6520', type: 'Самосвал', categoryName: 'Транспортная', ownership: 'own', year: 2019, activeBookings: 2, status: 'active' },
+  { id: 'EXC-001', name: 'CAT 320D', type: 'Экскаватор', categoryName: 'Землеройная', year: 2019, activeBookings: 2, status: 'active' },
+  { id: 'EXC-002', name: 'Hitachi ZX200', type: 'Экскаватор', categoryName: 'Землеройная', year: 2021, activeBookings: 1, status: 'active' },
+  { id: 'BLD-001', name: 'Komatsu D65', type: 'Бульдозер', categoryName: 'Землеройная', year: 2018, activeBookings: 0, status: 'active' },
+  { id: 'CRN-001', name: 'XCMG QY25K', type: 'Автокран', categoryName: 'Подъёмная', year: 2020, activeBookings: 1, status: 'active' },
+  { id: 'LDR-001', name: 'JCB 3CX', type: 'Погрузчик', categoryName: 'Землеройная', year: 2022, activeBookings: 3, status: 'active' },
+  { id: 'LDR-002', name: 'Volvo L60H', type: 'Погрузчик', categoryName: 'Землеройная', year: 2017, activeBookings: 0, status: 'inactive' },
+  { id: 'TRK-001', name: 'KAMAZ 6520', type: 'Самосвал', categoryName: 'Транспортная', year: 2019, activeBookings: 2, status: 'active' },
 ];
 
 const SUBCONTRACTORS: SubcontractorRow[] = [
@@ -125,9 +120,8 @@ const SUBCONTRACTORS: SubcontractorRow[] = [
     name: 'СпецТехПартнёр',
     specialization: 'Экскаваторы, краны',
     region: 'Москва',
-    contactPerson: 'Волков И.',
     phone: '+7 (495) 120-45-67',
-    contractValidUntil: '31.12.2026',
+    email: 'partner1@katet.local',
     activeBookings: 4,
     rating: 4.8,
     status: 'active',
@@ -137,9 +131,8 @@ const SUBCONTRACTORS: SubcontractorRow[] = [
     name: 'СтройТехЛизинг',
     specialization: 'Бульдозеры, катки',
     region: 'Московская обл.',
-    contactPerson: 'Мельникова О.',
     phone: '+7 (495) 800-11-22',
-    contractValidUntil: '31.03.2027',
+    email: 'partner2@katet.local',
     activeBookings: 2,
     rating: 4.5,
     status: 'active',
@@ -149,9 +142,8 @@ const SUBCONTRACTORS: SubcontractorRow[] = [
     name: 'МегаТехника',
     specialization: 'Погрузчики, самосвалы',
     region: 'Санкт-Петербург',
-    contactPerson: 'Белов А.',
     phone: '+7 (812) 444-12-34',
-    contractValidUntil: '30.06.2026',
+    email: 'partner3@katet.local',
     activeBookings: 1,
     rating: 4.2,
     status: 'active',
@@ -161,9 +153,8 @@ const SUBCONTRACTORS: SubcontractorRow[] = [
     name: 'АвтоСпец',
     specialization: 'Самосвалы',
     region: 'Москва',
-    contactPerson: 'Гусев С.',
     phone: '+7 (495) 700-00-00',
-    contractValidUntil: '31.01.2024',
+    email: 'partner4@katet.local',
     activeBookings: 0,
     rating: 3.5,
     status: 'archived',
@@ -171,10 +162,10 @@ const SUBCONTRACTORS: SubcontractorRow[] = [
 ];
 
 const CATEGORIES: CategoryRow[] = [
-  { id: 'C-001', name: 'Землеройная', typesCount: 18, composition: 'Экскаваторы, бульдозеры' },
-  { id: 'C-002', name: 'Подъёмная', typesCount: 7, composition: 'Краны, автоподъёмники' },
-  { id: 'C-003', name: 'Транспортная', typesCount: 12, composition: 'Самосвалы, тралы' },
-  { id: 'C-004', name: 'Вспомогательная', typesCount: 9, composition: 'Катки, генераторы' },
+  { id: 'C-001', name: 'Землеройная', typesCount: 18 },
+  { id: 'C-002', name: 'Подъёмная', typesCount: 7 },
+  { id: 'C-003', name: 'Транспортная', typesCount: 12 },
+  { id: 'C-004', name: 'Вспомогательная', typesCount: 9 },
 ];
 
 type PresetId = 'all' | 'active' | 'inactive' | 'archived';
@@ -282,26 +273,6 @@ function RatingCell({ value }: { value: number }) {
   );
 }
 
-function ContractCell({ until }: { until?: string }) {
-  if (!until) return <span className="text-muted-foreground">—</span>;
-  const [dd, mm, yyyy] = until.split('.');
-  const asDate = new Date(Number(yyyy), Number(mm) - 1, Number(dd));
-  const today = new Date();
-  const expired = asDate.getTime() < today.getTime();
-  return (
-    <span className={cn('tabular-nums', expired ? 'text-rose-600' : 'text-foreground/80')}>
-      {expired ? (
-        <span className="inline-flex items-center gap-1">
-          <AlertTriangle className="h-3 w-3" />
-          {until}
-        </span>
-      ) : (
-        until
-      )}
-    </span>
-  );
-}
-
 /* ---- column sets --------------------------------------------------------- */
 
 const typesColumns: EntityColumn<EquipmentTypeRow>[] = [
@@ -337,7 +308,6 @@ const typesColumns: EntityColumn<EquipmentTypeRow>[] = [
     align: 'right',
     render: (r) => <CountCell value={r.activeApplications} />,
   },
-  { id: 'status', header: 'Статус', width: '110px', render: (r) => <StatusPill status={r.status} /> },
 ];
 
 const unitsColumns: EntityColumn<EquipmentUnitRow>[] = [
@@ -358,23 +328,6 @@ const unitsColumns: EntityColumn<EquipmentUnitRow>[] = [
         {r.categoryName}
       </span>
     ),
-  },
-  {
-    id: 'own',
-    header: 'Принадлежность',
-    width: '170px',
-    render: (r) =>
-      r.ownership === 'own' ? (
-        <span className="inline-flex items-center gap-1 text-foreground/80">
-          <Building2 className="h-3 w-3 text-muted-foreground" />
-          Своя техника
-        </span>
-      ) : (
-        <span className="inline-flex items-center gap-1 text-foreground/80">
-          <Building2 className="h-3 w-3 text-muted-foreground" />
-          {r.ownership}
-        </span>
-      ),
   },
   {
     id: 'year',
@@ -412,15 +365,14 @@ const subcontractorsColumns: EntityColumn<SubcontractorRow>[] = [
     width: '180px',
     render: (r) => (
       <div className="flex flex-col leading-tight">
-        <span className="text-foreground/90">{r.contactPerson}</span>
         <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
           <Phone className="h-2.5 w-2.5" />
           {r.phone}
         </span>
+        <span className="text-[11px] text-muted-foreground">{r.email}</span>
       </div>
     ),
   },
-  { id: 'contract', header: 'Договор до', width: '120px', render: (r) => <ContractCell until={r.contractValidUntil} /> },
   {
     id: 'active',
     header: 'Активных броней',
@@ -447,7 +399,6 @@ const categoriesColumns: EntityColumn<CategoryRow>[] = [
     align: 'right',
     render: (r) => <CountCell value={r.typesCount} tone="brand" />,
   },
-  { id: 'composition', header: 'Состав', render: (r) => <span className="text-muted-foreground">{r.composition}</span> },
 ];
 
 /* ---- List & Cards views --------------------------------------------------
@@ -565,12 +516,7 @@ function EmptyView({ label }: { label: string }) {
 }
 
 
-/* ---- API mappers ---------------------------------------------------------
- * Мэппинг API-типов → строк таблицы. Поля, которых нет в текущей Prisma-схеме
- * (subcategories, activeApplications, activeBookings, ownership, contactPerson,
- *  contractValidUntil, rating, typesCount, composition), показываем как «—» /
- * плейсхолдеры. Закрывается вместе со schema-gap решениями из CONTRACT_DIFF.md.
- */
+/* ---- API mappers --------------------------------------------------------- */
 function mapTypeApi(api: EquipmentTypeApi): EquipmentTypeRow {
   return {
     id: api.id.slice(0, 8),
@@ -579,8 +525,7 @@ function mapTypeApi(api: EquipmentTypeApi): EquipmentTypeRow {
     categoryName: api.category?.name ?? '—',
     subcategories: api.description ?? '—',
     unitsCount: api._count?.units ?? 0,
-    activeApplications: 0,
-    status: 'active',
+    activeApplications: api.activeApplicationsCount ?? 0,
   };
 }
 
@@ -591,9 +536,8 @@ function mapUnitApi(api: EquipmentUnitApi): EquipmentUnitRow {
     name: api.name,
     type: api.equipmentType?.name ?? '—',
     categoryName: api.equipmentType?.category?.name ?? '—',
-    ownership: 'own',
     year: api.year ?? 0,
-    activeBookings: 0,
+    activeBookings: api.activeBookingsCount ?? 0,
     status: api.status,
   };
 }
@@ -605,10 +549,9 @@ function mapSubcontractorApi(api: SubcontractorApi): SubcontractorRow {
     name: api.name,
     specialization: api.specialization ?? '—',
     region: api.region ?? '—',
-    contactPerson: '—',
     phone: api.contactPhone ?? '—',
-    contractValidUntil: undefined,
-    activeBookings: 0,
+    email: api.contactEmail ?? '—',
+    activeBookings: api.activeBookingsCount ?? 0,
     rating: api.rating ?? 0,
     status: api.status,
   };
@@ -619,8 +562,7 @@ function mapCategoryApi(api: EquipmentCategoryApi): CategoryRow {
     id: api.id.slice(0, 8),
     apiId: api.id,
     name: api.name,
-    typesCount: 0,
-    composition: '—',
+    typesCount: api._count?.types ?? 0,
   };
 }
 
@@ -764,7 +706,6 @@ export function CatalogsWorkspacePage() {
                   }
                   secondary={`${r.categoryName} · ${r.subcategories}`}
                   meta={`Единиц: ${r.unitsCount} · Заявок: ${r.activeApplications}`}
-                  badges={<StatusPill status={r.status} />}
                   onClick={() => handleRowClick(r.apiId)}
                 />
               ))}
@@ -783,7 +724,6 @@ export function CatalogsWorkspacePage() {
                   { label: 'Единиц', value: <CountCell value={r.unitsCount} tone="brand" /> },
                   { label: 'Активных заявок', value: <CountCell value={r.activeApplications} /> },
                 ]}
-                footer={<StatusPill status={r.status} />}
                 onClick={() => handleRowClick(r.apiId)}
               />
             ))}
@@ -819,11 +759,6 @@ export function CatalogsWorkspacePage() {
                     </span>
                   }
                   secondary={`${r.type} · ${r.categoryName}${r.year ? ' · ' + r.year : ''}`}
-                  meta={
-                    r.ownership === 'own'
-                      ? 'Своя техника'
-                      : `Подрядчик: ${r.ownership}`
-                  }
                   badges={
                     <>
                       <CountCell value={r.activeBookings} tone="brand" />
@@ -849,10 +784,6 @@ export function CatalogsWorkspacePage() {
                     value: <span className="font-mono text-[10px]">{r.id}</span>,
                   },
                   { label: 'Год', value: r.year || '—' },
-                  {
-                    label: 'Принадлежность',
-                    value: r.ownership === 'own' ? 'Своя техника' : r.ownership,
-                  },
                   {
                     label: 'Активных броней',
                     value: <CountCell value={r.activeBookings} tone="brand" />,
@@ -921,7 +852,7 @@ export function CatalogsWorkspacePage() {
                 subtitle={`${r.specialization} · ${r.region}`}
                 rows={[
                   { label: 'Телефон', value: r.phone },
-                  { label: 'Договор до', value: <ContractCell until={r.contractValidUntil} /> },
+                  { label: 'Email', value: r.email },
                   {
                     label: 'Активных броней',
                     value: <CountCell value={r.activeBookings} tone="brand" />,
@@ -961,7 +892,6 @@ export function CatalogsWorkspacePage() {
                       {r.name}
                     </span>
                   }
-                  secondary={r.composition}
                   meta={`Типов: ${r.typesCount}`}
                   onClick={() => handleRowClick(r.apiId)}
                 />
@@ -975,7 +905,6 @@ export function CatalogsWorkspacePage() {
                 key={r.apiId ?? r.id}
                 icon={<FolderTree className="h-3.5 w-3.5" />}
                 title={r.name}
-                subtitle={r.composition}
                 rows={[
                   { label: 'Типов', value: <CountCell value={r.typesCount} tone="brand" /> },
                 ]}

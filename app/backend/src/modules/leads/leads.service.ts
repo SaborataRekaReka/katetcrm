@@ -46,6 +46,13 @@ export class LeadsService {
     if (params.stage) where.stage = params.stage;
     if (params.source) where.source = params.source;
     if (params.clientId) where.clientId = params.clientId;
+    if (params.equipmentTypeHint) {
+      where.equipmentTypeHint = { contains: params.equipmentTypeHint.trim(), mode: 'insensitive' };
+    }
+    if (typeof params.isUrgent === 'boolean') where.isUrgent = params.isUrgent;
+    if (typeof params.isStale === 'boolean') where.isStale = params.isStale;
+    if (typeof params.isDuplicate === 'boolean') where.isDuplicate = params.isDuplicate;
+    if (typeof params.hasNoContact === 'boolean') where.hasNoContact = params.hasNoContact;
     // manager сам фильтрует "мои" через scope; admin видит всё.
     if (actor.role === 'manager' && params.scope !== 'all') {
       where.managerId = actor.id;

@@ -213,8 +213,9 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
             {linked.applicationTitle} ·{' '}
             <button
               type="button"
-              onClick={() => onOpenClient?.(lead)}
-              className="text-blue-600 hover:underline"
+              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!onOpenClient}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {linked.clientName}
             </button>{' '}
@@ -393,7 +394,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
             value={
-              <button type="button" onClick={() => onOpenClient?.(lead)} className="text-[11px] text-blue-600 hover:underline text-left truncate">
+              <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
                 {linked.clientName}
               </button>
             }
@@ -603,7 +604,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
           label="Открыть заявку"
           onClick={() => openSecondary('applications')}
         />
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={() => onOpenClient?.(lead)} />
+        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} />
         {linked.leadTitle && (
           <ActionButton
             icon={<UserPlus className="w-3.5 h-3.5" />}
@@ -800,7 +801,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
         <SidebarField
           label="Клиент"
           value={
-            <button type="button" onClick={() => onOpenClient?.(lead)} className="text-blue-600 hover:underline cursor-pointer text-left">
+            <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
               {linked.clientName}
             </button>
           }

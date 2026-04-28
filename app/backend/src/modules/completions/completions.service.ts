@@ -82,6 +82,65 @@ const COMPLETION_INCLUDE = {
   },
 } as const;
 
+const PENDING_DEPARTURE_INCLUDE = {
+  completion: {
+    select: {
+      id: true,
+      outcome: true,
+      completedAt: true,
+    },
+  },
+  reservation: {
+    select: {
+      id: true,
+      plannedStart: true,
+      plannedEnd: true,
+      comment: true,
+      equipmentTypeId: true,
+      equipmentType: { select: { id: true, name: true } },
+      equipmentUnitId: true,
+      equipmentUnit: { select: { id: true, name: true, plateNumber: true } },
+      subcontractorId: true,
+      subcontractor: { select: { id: true, name: true } },
+      applicationItem: {
+        select: {
+          id: true,
+          applicationId: true,
+          equipmentTypeLabel: true,
+          quantity: true,
+          address: true,
+          plannedDate: true,
+          plannedTimeFrom: true,
+          plannedTimeTo: true,
+          application: {
+            select: {
+              id: true,
+              number: true,
+              leadId: true,
+              clientId: true,
+              client: {
+                select: {
+                  id: true,
+                  name: true,
+                  company: true,
+                  phone: true,
+                },
+              },
+              responsibleManagerId: true,
+              responsibleManager: {
+                select: {
+                  id: true,
+                  fullName: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
 @Injectable()
 export class CompletionsService {
   constructor(
@@ -170,6 +229,82 @@ export class CompletionsService {
       orderBy: [{ completedAt: 'desc' }],
       take: 500,
       include: COMPLETION_INCLUDE,
+    });
+
+    return { items, total: items.length };
+  }
+
+  async listPending(params: CompletionListQueryDto, actor: ActorContext) {
+    const filters: Prisma.DepartureWhereInput[] = [
+      { completion: null },
+      { status: { in: ['scheduled', 'in_transit', 'arrived'] } },
+    ];
+
+    if (params.departureId) {
+      filters.push({ id: params.departureId });
+    }
+    if (params.applicationId) {
+      filters.push({
+        reservation: {
+          applicationItem: {
+            applicationId: params.applicationId,
+          },
+        },
+      });
+    }
+    if (actor.role === 'manager') {
+      filters.push({
+        reservation: {
+          applicationItem: {
+            application: { responsibleManagerId: actor.id },
+          },
+        },
+      });
+    }
+
+    const q = params.query?.trim();
+    if (q) {
+      filters.push({
+        OR: [
+          {
+            reservation: {
+              applicationItem: {
+                application: {
+                  number: { contains: q, mode: 'insensitive' },
+                },
+              },
+            },
+          },
+          {
+            reservation: {
+              applicationItem: {
+                application: {
+                  client: {
+                    name: { contains: q, mode: 'insensitive' },
+                  },
+                },
+              },
+            },
+          },
+          {
+            reservation: {
+              applicationItem: {
+                equipmentTypeLabel: { contains: q, mode: 'insensitive' },
+              },
+            },
+          },
+        ],
+      });
+    }
+
+    const where: Prisma.DepartureWhereInput =
+      filters.length > 0 ? { AND: filters } : {};
+
+    const items = await this.prisma.departure.findMany({
+      where,
+      orderBy: [{ scheduledAt: 'asc' }],
+      take: 500,
+      include: PENDING_DEPARTURE_INCLUDE,
     });
 
     return { items, total: items.length };

@@ -1,5 +1,13 @@
 # Мёртвые кнопки и ссылки — бэклог на следующие сессии
 
+> Архивный файл: перемещён из `docs/` в `docs/archive/` для исторического хранения.
+> Внутренние относительные ссылки сохранены как в оригинальном снимке и могут быть невалидны в новом пути.
+
+> Важно (актуализация 28.04.2026): это **исторический снимок Session 10**.
+> Часть пунктов уже закрыта в последующих сессиях (Applications/Reservations,
+> Departures/Completion, Clients API wiring, Admin imports/integrations).
+> Актуальный статус смотрите в `FRONTEND_API_WIRING.md` и `IMPLEMENTATION_ROADMAP.md`.
+
 Снапшот аудита на конец Session 10. Все перечисленные элементы **сейчас
 рендерятся без обработчика** (либо `onClick` отсутствует, либо `() => {}` /
 `// noop`). Пользователь видит их, кликает — ничего не происходит. Цель этого
@@ -66,23 +74,18 @@
 | [CompletionWorkspace.tsx#L175](../app/frontend/src/app/components/completion/CompletionWorkspace.tsx#L175) | Breadcrumb стадии | декоративный | **delete** |
 | [CompletionWorkspace.tsx#L202](../app/frontend/src/app/components/completion/CompletionWorkspace.tsx#L202) | «Открыть выезд» | нет handler; нет связки completion→departure в UI | **wire** — Session 12, при наличии `onOpenDeparture` prop |
 
-Dep/Completion целиком mock — backend-модуля нет. Полное подключение
-откладывается до соответствующей сессии (см. session-9-log.md backlog).
+Историческая ремарка Session 10: тогда Dep/Completion были mock.
+На текущем срезе backend+frontend wiring для этих доменов подключён,
+но часть UI-кнопок всё ещё может требовать локальной доработки.
 
 ## 5. Clients — ClientWorkspace
 
 Файл: [ClientWorkspace.tsx](../app/frontend/src/app/components/client/ClientWorkspace.tsx)
 
-> **Блок:** сам `ClientWorkspace` — mock-driven (`buildMockClient(lead)`),
-> backend не отдаёт client detail projection, а `PATCH /clients/:id` возвращает
-> только `{id}`. Прежде чем подключать inline-редактирование полей клиента
-> (`displayName`, `primaryPhone`, `primaryEmail`, `workingNotes`, `comment`,
-> `manager`), нужно в отдельной сессии:
-> 1. Добавить `GET /clients/:id` endpoint с полной проекцией.
-> 2. Создать adapter `ClientDetailApi → Client` и `useClientQuery(id)`.
-> 3. Заменить `buildMockClient(lead)` в `ClientWorkspace` на реальные данные.
-> 4. Расширить `useUpdateClient` `onSuccess` на `setQueryData(detail, fresh)` —
->    тогда сработает тот же pattern, что у лида/заявки в Session 11.
+> Историческая ремарка Session 10: на тот момент `ClientWorkspace` был в основном mock-driven.
+> На текущем срезе подключены `GET /clients/:id` и `PATCH /clients/:id`, есть
+> `useClientQuery`/`useUpdateClient`; часть UX-задач из списка ниже остаётся актуальной
+> как UI-polish/backlog, но не как «backend отсутствует».
 
 | Строка | Кнопка | Причина | Действие |
 |---|---|---|---|

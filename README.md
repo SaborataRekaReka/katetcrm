@@ -5,6 +5,12 @@ Monorepo с двумя приложениями:
 - `app/backend` — NestJS + Prisma API
 - `app/frontend` — Vite + React UI
 
+## Документация
+
+- Точка входа по документации: `docs/README.md`.
+- Канонические продуктовые и архитектурные документы лежат в корне репозитория.
+- Исторические материалы и черновые исследования вынесены в `docs/archive/` и не используются как активный источник требований.
+
 ## Быстрый старт
 
 1. Установить зависимости:
@@ -68,3 +74,11 @@ npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
 ```
+
+## Минимальная проверка релизной готовности
+
+```bash
+npm --prefix app/backend run smoke:release
+```
+
+Команда запускает агрегированный backend gate: stage smoke-потоки, tasks smoke (`smoke:tasks`), RBAC (`smoke:rbac` + `smoke:rbac:scope`), admin smoke и фронтовую проверку UI-консистентности.

@@ -33,6 +33,14 @@ import { DashboardPage, CompactPageHeader, WidgetCard } from '../shell/dashboard
 import { IntegrationsWorkspacePage } from '../integrations/IntegrationsWorkspacePage';
 import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
 import { useImportPreviewMutation, useRunImportMutation } from '../../hooks/useImportMutations';
+import { useUpdateWorkspaceSection } from '../../hooks/useSettingsMutations';
+import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
+import { usePermissionsMatrixQuery, useUsersQuery } from '../../hooks/useUsersQuery';
+import {
+  useCreateUser,
+  useUpdatePermissionCapability,
+  useUpdateUser,
+} from '../../hooks/useUserMutations';
 import { USE_API } from '../../lib/featureFlags';
 import type { ActivityLogEntryApi } from '../../lib/activityApi';
 import type {
@@ -41,6 +49,7 @@ import type {
   ImportPreviewResponseApi,
   ImportRunResponseApi,
 } from '../../lib/importsApi';
+import type { UserRole } from '../../lib/usersApi';
 
 export function AdminWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -1022,7 +1031,7 @@ function ImportStatusPill({ status }: { status: ImportLogStatus }) {
 }
 
 function SettingsPage() {
-  const SECTIONS = [
+  const FALLBACK_SECTIONS = [
     {
       id: 'company',
       title: 'Организация',
@@ -1060,6 +1069,76 @@ function SettingsPage() {
     },
   ];
 
+  const settingsQuery = useWorkspaceSettingsQuery(USE_API);
+  const updateSectionMutation = useUpdateWorkspaceSection();
+  const [settingsMutationError, setSettingsMutationError] = useState<string | null>(null);
+  const [settingsMutationSuccess, setSettingsMutationSuccess] = useState<string | null>(null);
+  const [draftValuesBySection, setDraftValuesBySection] = useState<Record<string, Record<number, string>>>({});
+
+  const sections = useMemo(() => {
+    if (!USE_API) return FALLBACK_SECTIONS;
+
+    const iconById: Record<string, React.ReactNode> = {
+      company: <Building2 className="h-3.5 w-3.5" />,
+      general: <Building2 className="h-3.5 w-3.5" />,
+      stages: <Workflow className="h-3.5 w-3.5" />,
+      notifications: <Bell className="h-3.5 w-3.5" />,
+    };
+
+    return (settingsQuery.data?.sections ?? []).map((s) => ({
+      ...s,
+      icon: iconById[s.id] ?? <SettingsIcon className="h-3.5 w-3.5" />,
+    }));
+  }, [settingsQuery.data]);
+
+  const handleSettingValueSave = async (
+    sectionId: string,
+    rowIndex: number,
+    nextValueRaw: string,
+    rows: Array<{ label: string; value: string }>,
+  ) => {
+    setSettingsMutationError(null);
+    setSettingsMutationSuccess(null);
+
+    const current = rows[rowIndex];
+    if (!current) return;
+
+    const nextValue = nextValueRaw.trim();
+    if (nextValue.length === 0) {
+      setSettingsMutationError('Значение настройки не может быть пустым.');
+      setDraftValuesBySection((prev) => ({
+        ...prev,
+        [sectionId]: { ...(prev[sectionId] ?? {}), [rowIndex]: current.value },
+      }));
+      return;
+    }
+
+    if (nextValue === current.value) return;
+
+    if (!USE_API) return;
+
+    try {
+      const nextRows = rows.map((row, index) => (
+        index === rowIndex
+          ? { ...row, value: nextValue }
+          : row
+      ));
+
+      const updated = await updateSectionMutation.mutateAsync({
+        sectionId,
+        patch: { rows: nextRows },
+      });
+
+      setSettingsMutationSuccess(`Секция «${updated.title}» обновлена.`);
+      setDraftValuesBySection((prev) => ({
+        ...prev,
+        [sectionId]: {},
+      }));
+    } catch (error) {
+      setSettingsMutationError(error instanceof Error ? error.message : 'Не удалось обновить настройки.');
+    }
+  };
+
   return (
     <ListScaffold>
       <DashboardPage>
@@ -1068,18 +1147,76 @@ function SettingsPage() {
           subtitle="Базовые параметры рабочего пространства"
           icon={<SettingsIcon className="h-3.5 w-3.5" />}
         />
-        {SECTIONS.map((s) => (
-          <WidgetCard key={s.id} title={s.title} description={s.description} icon={s.icon} bodyPadded={false}>
-            <dl className="divide-y divide-border/40">
-              {s.rows.map((r, i) => (
-                <div key={i} className="grid grid-cols-[220px_1fr] gap-4 px-4 py-2.5 text-[12px]">
-                  <dt className="text-muted-foreground">{r.label}</dt>
-                  <dd className="text-foreground">{r.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </WidgetCard>
-        ))}
+
+        {settingsMutationError ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {settingsMutationError}
+          </div>
+        ) : null}
+
+        {settingsMutationSuccess ? (
+          <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+            {settingsMutationSuccess}
+          </div>
+        ) : null}
+
+        {USE_API && settingsQuery.isPending && !settingsQuery.data ? (
+          <div className="rounded border border-dashed border-border/70 px-3 py-2 text-[12px] text-muted-foreground">
+            Загружаем настройки...
+          </div>
+        ) : null}
+
+        {USE_API && settingsQuery.isError && !settingsQuery.data ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {settingsQuery.error instanceof Error
+              ? settingsQuery.error.message
+              : 'Не удалось загрузить настройки.'}
+          </div>
+        ) : null}
+
+        {USE_API && (settingsQuery.isPending || settingsQuery.isError) && !settingsQuery.data ? null : (
+          sections.length === 0 ? (
+            <WidgetCard>
+              <div className="px-3 py-2 text-[12px] text-muted-foreground">Настройки пока не заданы.</div>
+            </WidgetCard>
+          ) : (
+            sections.map((s) => (
+              <WidgetCard key={s.id} title={s.title} description={s.description} icon={s.icon} bodyPadded={false}>
+                <dl className="divide-y divide-border/40">
+                  {s.rows.map((r, i) => (
+                    <div key={i} className="grid grid-cols-[220px_1fr] gap-4 px-4 py-2.5 text-[12px]">
+                      <dt className="text-muted-foreground">{r.label}</dt>
+                      <dd className="text-foreground">
+                        {USE_API ? (
+                          <input
+                            value={draftValuesBySection[s.id]?.[i] ?? r.value}
+                            onChange={(event) => {
+                              const value = event.target.value;
+                              setDraftValuesBySection((prev) => ({
+                                ...prev,
+                                [s.id]: {
+                                  ...(prev[s.id] ?? {}),
+                                  [i]: value,
+                                },
+                              }));
+                            }}
+                            onBlur={(event) => {
+                              void handleSettingValueSave(s.id, i, event.target.value, s.rows);
+                            }}
+                            disabled={updateSectionMutation.isPending}
+                            className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                          />
+                        ) : (
+                          r.value
+                        )}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </WidgetCard>
+            ))
+          )
+        )}
       </DashboardPage>
     </ListScaffold>
   );
@@ -1088,24 +1225,87 @@ function SettingsPage() {
 function UsersPage() {
   const meta = getModuleMeta('users');
   const [query, setQuery] = useState('');
-  const [role, setRole] = useState('all');
+  const [role, setRole] = useState<'all' | UserRole>('all');
+  const [active, setActive] = useState<'all' | 'active' | 'inactive'>('all');
+  const [nameDraftById, setNameDraftById] = useState<Record<string, string>>({});
+  const [mutationError, setMutationError] = useState<string | null>(null);
+  const [mutationSuccess, setMutationSuccess] = useState<string | null>(null);
 
-  const [users, setUsers] = useState([
-      { id: 'U-001', name: 'Петров А.', email: 'petrov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 09:12' },
-      { id: 'U-002', name: 'Сидоров Б.', email: 'sidorov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 08:40' },
-      { id: 'U-003', name: 'Иванова С.', email: 'ivanova@katet.ru', role: 'operator', active: true, lastLogin: '2026-04-21 17:05' },
-      { id: 'U-004', name: 'Admin', email: 'admin@katet.ru', role: 'admin', active: true, lastLogin: '2026-04-22 10:00' },
-      { id: 'U-005', name: 'Кузнецов Д.', email: 'kuznetsov@katet.ru', role: 'manager', active: false, lastLogin: '2025-12-02 14:20' },
+  type UsersRow = {
+    id: string;
+    name: string;
+    email: string;
+    role: UserRole;
+    active: boolean;
+    lastLogin: string;
+  };
+
+  const [localUsers, setLocalUsers] = useState<UsersRow[]>([
+    { id: 'U-001', name: 'Петров А.', email: 'petrov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 09:12' },
+    { id: 'U-002', name: 'Сидоров Б.', email: 'sidorov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 08:40' },
+    { id: 'U-003', name: 'Иванова С.', email: 'ivanova@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-21 17:05' },
+    { id: 'U-004', name: 'Admin', email: 'admin@katet.ru', role: 'admin', active: true, lastLogin: '2026-04-22 10:00' },
+    { id: 'U-005', name: 'Кузнецов Д.', email: 'kuznetsov@katet.ru', role: 'manager', active: false, lastLogin: '2025-12-02 14:20' },
   ]);
 
-  const filtered = users.filter((u) => {
-    if (role !== 'all' && u.role !== role) return false;
-    const q = query.trim().toLowerCase();
-    return !q || `${u.name} ${u.email}`.toLowerCase().includes(q);
-  });
+  const usersQuery = useUsersQuery(
+    {
+      role: USE_API && role !== 'all' ? role : undefined,
+      query: USE_API ? query.trim() || undefined : undefined,
+      isActive: USE_API && active !== 'all' ? active === 'active' : undefined,
+    },
+    USE_API,
+  );
+  const createUserMutation = useCreateUser();
+  const updateUserMutation = useUpdateUser();
 
-  const handleCreateUser = () => {
-    setUsers((prev) => {
+  const sourceRows = useMemo(() => {
+    if (USE_API) {
+      return (usersQuery.data?.items ?? []).map((u) => ({
+        id: u.id,
+        name: u.fullName,
+        email: u.email,
+        role: u.role,
+        active: u.isActive,
+        lastLogin: formatDateTime(u.updatedAt),
+      }));
+    }
+    return localUsers;
+  }, [localUsers, usersQuery.data?.items]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return sourceRows.filter((u) => {
+      if (role !== 'all' && u.role !== role) return false;
+      if (active === 'active' && !u.active) return false;
+      if (active === 'inactive' && u.active) return false;
+      return !q || `${u.name} ${u.email}`.toLowerCase().includes(q);
+    });
+  }, [active, query, role, sourceRows]);
+
+  const handleCreateUser = async () => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    if (USE_API) {
+      try {
+        const seed = Date.now().toString().slice(-6);
+        const nextRole: UserRole = role === 'all' ? 'manager' : role;
+        const created = await createUserMutation.mutateAsync({
+          fullName: `Новый ${nextRole === 'admin' ? 'администратор' : 'менеджер'} ${seed}`,
+          email: `new.user.${seed}@katet.local`,
+          password: 'manager123',
+          role: nextRole,
+          isActive: true,
+        });
+        setMutationSuccess(`Пользователь ${created.fullName} создан (временный пароль: manager123).`);
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось создать пользователя.');
+      }
+      return;
+    }
+
+    setLocalUsers((prev) => {
       const max = prev.reduce((acc, user) => {
         const num = Number(user.id.replace(/[^0-9]/g, ''));
         return Number.isFinite(num) ? Math.max(acc, num) : acc;
@@ -1114,16 +1314,129 @@ function UsersPage() {
       const now = new Date();
       const pad = (n: number) => String(n).padStart(2, '0');
       const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-      const draft = {
+      const draft: UsersRow = {
         id: nextId,
         name: `Новый пользователь ${max + 1}`,
         email: `new.user.${max + 1}@katet.ru`,
-        role: 'manager',
+        role: role === 'all' ? 'manager' : role,
         active: true,
         lastLogin: stamp,
-      } as const;
+      };
       return [draft, ...prev];
     });
+  };
+
+  const handleToggleActive = async (userId: string, isActiveNow: boolean) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    if (USE_API) {
+      try {
+        const updated = await updateUserMutation.mutateAsync({
+          id: userId,
+          patch: { isActive: !isActiveNow },
+        });
+        setMutationSuccess(
+          `Пользователь ${updated.fullName} ${updated.isActive ? 'активирован' : 'деактивирован'}.`,
+        );
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить пользователя.');
+      }
+      return;
+    }
+
+    setLocalUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, active: !isActiveNow } : u)),
+    );
+  };
+
+  const handleRoleChange = async (userId: string, nextRole: UserRole) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    const current = sourceRows.find((u) => u.id === userId);
+    if (!current || current.role === nextRole) return;
+
+    if (USE_API) {
+      try {
+        const updated = await updateUserMutation.mutateAsync({
+          id: userId,
+          patch: { role: nextRole },
+        });
+        setMutationSuccess(`Роль пользователя ${updated.fullName} изменена на ${updated.role}.`);
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить роль пользователя.');
+      }
+      return;
+    }
+
+    setLocalUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, role: nextRole } : u)),
+    );
+  };
+
+  const handleNameChange = async (userId: string, nextNameRaw: string) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    const nextName = nextNameRaw.trim();
+    if (nextName.length < 2) {
+      setMutationError('Имя должно содержать минимум 2 символа.');
+      setNameDraftById((prev) => ({ ...prev, [userId]: sourceRows.find((u) => u.id === userId)?.name ?? '' }));
+      return;
+    }
+
+    const current = sourceRows.find((u) => u.id === userId);
+    if (!current || current.name === nextName) return;
+
+    if (USE_API) {
+      try {
+        const updated = await updateUserMutation.mutateAsync({
+          id: userId,
+          patch: { fullName: nextName },
+        });
+        setMutationSuccess(`Имя пользователя обновлено: ${updated.fullName}.`);
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить имя пользователя.');
+      }
+      return;
+    }
+
+    setLocalUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, name: nextName } : u)),
+    );
+  };
+
+  const handleResetPassword = async (userId: string) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    const nextPassword = globalThis.prompt('Введите новый пароль (минимум 6 символов):');
+    if (nextPassword === null) return;
+
+    const trimmed = nextPassword.trim();
+    if (trimmed.length < 6) {
+      setMutationError('Пароль должен содержать минимум 6 символов.');
+      return;
+    }
+
+    if (USE_API) {
+      try {
+        const updated = await updateUserMutation.mutateAsync({
+          id: userId,
+          patch: { password: trimmed },
+        });
+        setMutationSuccess(`Пароль пользователя ${updated.fullName} обновлён.`);
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить пароль.');
+      }
+      return;
+    }
+
+    const current = sourceRows.find((u) => u.id === userId);
+    if (current) {
+      setMutationSuccess(`Пароль пользователя ${current.name} обновлён.`);
+    }
   };
 
   const toolbar = (
@@ -1141,24 +1454,43 @@ function UsersPage() {
             { value: 'all', label: 'Все роли' },
             { value: 'admin', label: 'Админ' },
             { value: 'manager', label: 'Менеджер' },
-            { value: 'operator', label: 'Оператор' },
           ],
-          onChange: setRole,
+          onChange: (value) => setRole(value as 'all' | UserRole),
+        },
+        {
+          id: 'active',
+          value: active,
+          placeholder: 'Статус',
+          width: 120,
+          options: [
+            { value: 'all', label: 'Все' },
+            { value: 'active', label: 'Активные' },
+            { value: 'inactive', label: 'Неактивные' },
+          ],
+          onChange: (value) => setActive(value as 'all' | 'active' | 'inactive'),
         },
       ]}
-      hasActive={query.length > 0 || role !== 'all'}
+      hasActive={query.length > 0 || role !== 'all' || active !== 'all'}
       onReset={() => {
         setQuery('');
         setRole('all');
+        setActive('all');
       }}
       extraUtility={
         <Button
           size="sm"
           className="h-7 gap-1 bg-[#2a6af0] px-2.5 text-[12px] text-white hover:bg-[#2358d1]"
-          onClick={handleCreateUser}
+          onClick={() => {
+            void handleCreateUser();
+          }}
+          disabled={createUserMutation.isPending}
         >
-          <Plus className="h-3.5 w-3.5" />
-          Новый пользователь
+          {createUserMutation.isPending ? (
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+          ) : (
+            <Plus className="h-3.5 w-3.5" />
+          )}
+          {createUserMutation.isPending ? 'Создаём...' : 'Новый пользователь'}
         </Button>
       }
     />
@@ -1166,104 +1498,269 @@ function UsersPage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
+      {mutationError ? (
+        <div className="mx-4 mt-4 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+          {mutationError}
+        </div>
+      ) : null}
+
+      {mutationSuccess ? (
+        <div className="mx-4 mt-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+          {mutationSuccess}
+        </div>
+      ) : null}
+
       <div className="min-h-0 flex-1 overflow-auto">
-        <table className="w-full min-w-[800px] border-collapse text-[12px]">
-          <thead className="sticky top-0 z-10 bg-white">
-            <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
-              <th className="px-4 py-2 text-left font-medium">ID</th>
-              <th className="px-3 py-2 text-left font-medium">Имя</th>
-              <th className="px-3 py-2 text-left font-medium">Email</th>
-              <th className="px-3 py-2 text-left font-medium">Роль</th>
-              <th className="px-3 py-2 text-left font-medium">Активен</th>
-              <th className="px-3 py-2 text-left font-medium">Последний вход</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.map((u) => (
-              <tr key={u.id} className="border-b border-border/40 hover:bg-muted/30">
-                <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{u.id}</td>
-                <td className="px-3 py-2.5 text-foreground">
-                  <div className="flex items-center gap-2">
-                    <UsersIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                    {u.name}
-                  </div>
-                </td>
-                <td className="px-3 py-2.5 text-foreground/80">{u.email}</td>
-                <td className="px-3 py-2.5 text-foreground/80">{u.role}</td>
-                <td className="px-3 py-2.5">
-                  {u.active ? (
-                    <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">
-                      <Check className="h-3 w-3" /> Да
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
-                      <X className="h-3 w-3" /> Нет
-                    </span>
-                  )}
-                </td>
-                <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{u.lastLogin}</td>
+        {USE_API && usersQuery.isPending && !usersQuery.data ? (
+          <div className="flex h-full min-h-[220px] items-center justify-center gap-2 text-[13px] text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" /> Загружаем пользователей...
+          </div>
+        ) : null}
+
+        {USE_API && usersQuery.isError && !usersQuery.data ? (
+          <div className="flex h-full min-h-[220px] items-center justify-center px-4 text-center text-[13px] text-muted-foreground">
+            {usersQuery.error instanceof Error
+              ? usersQuery.error.message
+              : 'Не удалось загрузить пользователей.'}
+          </div>
+        ) : null}
+
+        {!USE_API || usersQuery.data || (!usersQuery.isPending && !usersQuery.isError) ? (
+          <table className="w-full min-w-[900px] border-collapse text-[12px]">
+            <thead className="sticky top-0 z-10 bg-white">
+              <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
+                <th className="px-4 py-2 text-left font-medium">ID</th>
+                <th className="px-3 py-2 text-left font-medium">Имя</th>
+                <th className="px-3 py-2 text-left font-medium">Email</th>
+                <th className="px-3 py-2 text-left font-medium">Роль</th>
+                <th className="px-3 py-2 text-left font-medium">Активен</th>
+                <th className="px-3 py-2 text-left font-medium">Последний апдейт</th>
+                <th className="px-3 py-2 text-left font-medium">Действия</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-muted-foreground">
+                    Пользователи не найдены.
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((u) => (
+                  <tr key={u.id} className="border-b border-border/40 hover:bg-muted/30">
+                    <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{u.id}</td>
+                    <td className="px-3 py-2.5 text-foreground">
+                      <div className="flex items-center gap-2">
+                        <UsersIcon className="h-3.5 w-3.5 text-muted-foreground" />
+                        <input
+                          value={nameDraftById[u.id] ?? u.name}
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            setNameDraftById((prev) => ({ ...prev, [u.id]: value }));
+                          }}
+                          onBlur={(event) => {
+                            void handleNameChange(u.id, event.target.value);
+                          }}
+                          disabled={updateUserMutation.isPending}
+                          className="h-7 min-w-[180px] rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-3 py-2.5 text-foreground/80">{u.email}</td>
+                    <td className="px-3 py-2.5 text-foreground/80">
+                      <select
+                        value={u.role}
+                        onChange={(event) => {
+                          void handleRoleChange(u.id, event.target.value as UserRole);
+                        }}
+                        disabled={updateUserMutation.isPending}
+                        className="h-7 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                      >
+                        <option value="admin">admin</option>
+                        <option value="manager">manager</option>
+                      </select>
+                    </td>
+                    <td className="px-3 py-2.5">
+                      {u.active ? (
+                        <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">
+                          <Check className="h-3 w-3" /> Да
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
+                          <X className="h-3 w-3" /> Нет
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{u.lastLogin}</td>
+                    <td className="px-3 py-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 text-[11px]"
+                          onClick={() => {
+                            void handleToggleActive(u.id, u.active);
+                          }}
+                          disabled={updateUserMutation.isPending}
+                        >
+                          {u.active ? 'Деактивировать' : 'Активировать'}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 px-2 text-[11px]"
+                          onClick={() => {
+                            void handleResetPassword(u.id);
+                          }}
+                          disabled={updateUserMutation.isPending}
+                        >
+                          Сброс пароля
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        ) : null}
       </div>
     </ListScaffold>
   );
 }
 
 function PermissionsPage() {
-  const ROLES = ['admin', 'manager', 'operator'] as const;
-  const CAPABILITIES: Array<{ id: string; label: string; matrix: Record<(typeof ROLES)[number], boolean> }> = [
-    { id: 'leads.read', label: 'Чтение лидов', matrix: { admin: true, manager: true, operator: true } },
-    { id: 'leads.write', label: 'Редактирование лидов', matrix: { admin: true, manager: true, operator: false } },
-    { id: 'applications.write', label: 'Редактирование заявок', matrix: { admin: true, manager: true, operator: false } },
-    { id: 'reservations.confirm', label: 'Подтверждение броней', matrix: { admin: true, manager: true, operator: false } },
-    { id: 'departures.start', label: 'Запуск выездов', matrix: { admin: true, manager: true, operator: true } },
-    { id: 'completion.sign', label: 'Подписание актов', matrix: { admin: true, manager: true, operator: false } },
-    { id: 'catalogs.write', label: 'Управление справочниками', matrix: { admin: true, manager: false, operator: false } },
-    { id: 'admin.users', label: 'Управление пользователями', matrix: { admin: true, manager: false, operator: false } },
-    { id: 'admin.permissions', label: 'Управление правами', matrix: { admin: true, manager: false, operator: false } },
-    { id: 'admin.imports', label: 'Импорты', matrix: { admin: true, manager: false, operator: false } },
+  const FALLBACK_ROLES: UserRole[] = ['admin', 'manager'];
+  const FALLBACK_CAPABILITIES: Array<{ id: string; label: string; matrix: Record<UserRole, boolean> }> = [
+    { id: 'leads.read', label: 'Чтение лидов', matrix: { admin: true, manager: true } },
+    { id: 'leads.write', label: 'Редактирование лидов', matrix: { admin: true, manager: true } },
+    { id: 'applications.write', label: 'Редактирование заявок', matrix: { admin: true, manager: true } },
+    { id: 'reservations.confirm', label: 'Подтверждение броней', matrix: { admin: true, manager: true } },
+    { id: 'departures.start', label: 'Запуск выездов', matrix: { admin: true, manager: true } },
+    { id: 'completion.sign', label: 'Подписание актов', matrix: { admin: true, manager: true } },
+    { id: 'catalogs.write', label: 'Управление справочниками', matrix: { admin: true, manager: false } },
+    { id: 'admin.users', label: 'Управление пользователями', matrix: { admin: true, manager: false } },
+    { id: 'admin.permissions', label: 'Управление правами', matrix: { admin: true, manager: false } },
+    { id: 'admin.imports', label: 'Импорты', matrix: { admin: true, manager: false } },
   ];
+
+  const permissionsQuery = usePermissionsMatrixQuery(USE_API);
+  const updateCapabilityMutation = useUpdatePermissionCapability();
+  const [mutationError, setMutationError] = useState<string | null>(null);
+  const [mutationSuccess, setMutationSuccess] = useState<string | null>(null);
+
+  const roles = USE_API
+    ? (permissionsQuery.data?.roles ?? FALLBACK_ROLES)
+    : FALLBACK_ROLES;
+  const capabilities = USE_API
+    ? (permissionsQuery.data?.capabilities ?? FALLBACK_CAPABILITIES)
+    : FALLBACK_CAPABILITIES;
+
+  const handleToggleCapability = async (
+    capabilityId: string,
+    role: UserRole,
+    enabledNow: boolean,
+  ) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    if (!USE_API) return;
+
+    try {
+      const updated = await updateCapabilityMutation.mutateAsync({
+        capabilityId,
+        patch: role === 'admin'
+          ? { admin: !enabledNow }
+          : { manager: !enabledNow },
+      });
+      setMutationSuccess(`Обновлено: ${updated.label} (${role}=${!enabledNow ? 'да' : 'нет'}).`);
+    } catch (error) {
+      setMutationError(error instanceof Error ? error.message : 'Не удалось обновить права.');
+    }
+  };
 
   return (
     <ListScaffold>
       <DashboardPage>
         <CompactPageHeader
           title="Роли и права"
-          subtitle="Матрица возможностей по ролям. Редактирование отключено в MVP-макете."
+          subtitle="Матрица возможностей по ролям. В API-режиме доступно редактирование значений."
           icon={<Shield className="h-3.5 w-3.5" />}
         />
-        <WidgetCard bodyPadded={false}>
-          <table className="w-full border-collapse text-[12px]">
-            <thead>
-              <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
-                <th className="px-4 py-2 text-left font-medium">Возможность</th>
-                {ROLES.map((r) => (
-                  <th key={r} className="px-3 py-2 text-center font-medium">
-                    {r}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {CAPABILITIES.map((c) => (
-                <tr key={c.id} className="border-b border-border/40 last:border-b-0 hover:bg-muted/30">
-                  <td className="px-4 py-2.5 text-foreground">{c.label}</td>
-                  {ROLES.map((r) => (
-                    <td key={r} className="px-3 py-2.5 text-center">
-                      {c.matrix[r] ? (
-                        <Check className="mx-auto h-3.5 w-3.5 text-emerald-600" />
-                      ) : (
-                        <span className="text-muted-foreground/50">—</span>
-                      )}
-                    </td>
+
+        {mutationError ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {mutationError}
+          </div>
+        ) : null}
+
+        {mutationSuccess ? (
+          <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+            {mutationSuccess}
+          </div>
+        ) : null}
+
+        {USE_API && permissionsQuery.isPending && !permissionsQuery.data ? (
+          <div className="rounded border border-dashed border-border/70 px-3 py-2 text-[12px] text-muted-foreground">
+            Загружаем матрицу прав...
+          </div>
+        ) : null}
+
+        {USE_API && permissionsQuery.isError && !permissionsQuery.data ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            {permissionsQuery.error instanceof Error
+              ? permissionsQuery.error.message
+              : 'Не удалось загрузить матрицу прав.'}
+          </div>
+        ) : null}
+
+        {USE_API && (permissionsQuery.isPending || permissionsQuery.isError) && !permissionsQuery.data ? null : (
+          <WidgetCard bodyPadded={false}>
+            <table className="w-full border-collapse text-[12px]">
+              <thead>
+                <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
+                  <th className="px-4 py-2 text-left font-medium">Возможность</th>
+                  {roles.map((r) => (
+                    <th key={r} className="px-3 py-2 text-center font-medium">
+                      {r}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </WidgetCard>
+              </thead>
+              <tbody>
+                {capabilities.map((c) => (
+                  <tr key={c.id} className="border-b border-border/40 last:border-b-0 hover:bg-muted/30">
+                    <td className="px-4 py-2.5 text-foreground">{c.label}</td>
+                    {roles.map((r) => (
+                      <td key={r} className="px-3 py-2.5 text-center">
+                        {USE_API ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void handleToggleCapability(c.id, r, c.matrix[r]);
+                            }}
+                            disabled={updateCapabilityMutation.isPending}
+                            className="mx-auto inline-flex h-6 w-8 items-center justify-center rounded border border-border/70 bg-background hover:bg-muted/50 disabled:opacity-60"
+                          >
+                            {c.matrix[r] ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-600" />
+                            ) : (
+                              <span className="text-muted-foreground/60">—</span>
+                            )}
+                          </button>
+                        ) : c.matrix[r] ? (
+                          <Check className="mx-auto h-3.5 w-3.5 text-emerald-600" />
+                        ) : (
+                          <span className="text-muted-foreground/50">—</span>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </WidgetCard>
+        )}
       </DashboardPage>
     </ListScaffold>
   );

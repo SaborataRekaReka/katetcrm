@@ -51,6 +51,10 @@ import {
   useCreateEquipmentType,
   useCreateEquipmentUnit,
   useCreateSubcontractor,
+  useDeleteEquipmentCategory,
+  useDeleteEquipmentType,
+  useDeleteEquipmentUnit,
+  useDeleteSubcontractor,
   useUpdateEquipmentCategory,
   useUpdateEquipmentType,
   useUpdateEquipmentUnit,
@@ -91,6 +95,7 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
   const [error, setError] = useState<string | null>(null);
   const createMut = useCreateEquipmentCategory();
   const updateMut = useUpdateEquipmentCategory();
+  const deleteMut = useDeleteEquipmentCategory();
   const isEdit = !!category;
   const mut = isEdit ? updateMut : createMut;
 
@@ -101,6 +106,7 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
     setError(null);
     createMut.reset();
     updateMut.reset();
+    deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, category?.id]);
 
@@ -122,6 +128,20 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+    }
+  };
+
+  const remove = async () => {
+    if (!isEdit || !category) return;
+    const confirmed = globalThis.confirm(`Удалить категорию «${category.name}»?`);
+    if (!confirmed) return;
+
+    setError(null);
+    try {
+      await deleteMut.mutateAsync({ id: category.id });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось удалить категорию');
     }
   };
 
@@ -180,6 +200,22 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
               {error}
             </div>
           )}
+
+          {isEdit ? (
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                onClick={() => {
+                  void remove();
+                }}
+                disabled={deleteMut.isPending || mut.isPending}
+              >
+                {deleteMut.isPending ? 'Удаляем…' : 'Удалить категорию'}
+              </Button>
+            </div>
+          ) : null}
         </div>
       </EntityModalShell>
     </ShellDialog>
@@ -204,6 +240,7 @@ export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
   const [error, setError] = useState<string | null>(null);
   const createMut = useCreateEquipmentType();
   const updateMut = useUpdateEquipmentType();
+  const deleteMut = useDeleteEquipmentType();
   const isEdit = !!type;
   const mut = isEdit ? updateMut : createMut;
   const categoriesQuery = useEquipmentCategoriesQuery(open);
@@ -217,6 +254,7 @@ export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
     setError(null);
     createMut.reset();
     updateMut.reset();
+    deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, type?.id]);
 
@@ -245,6 +283,20 @@ export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+    }
+  };
+
+  const remove = async () => {
+    if (!isEdit || !type) return;
+    const confirmed = globalThis.confirm(`Удалить тип техники «${type.name}»?`);
+    if (!confirmed) return;
+
+    setError(null);
+    try {
+      await deleteMut.mutateAsync({ id: type.id });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось удалить тип техники');
     }
   };
 
@@ -337,6 +389,22 @@ export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
               {error}
             </div>
           )}
+
+          {isEdit ? (
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                onClick={() => {
+                  void remove();
+                }}
+                disabled={deleteMut.isPending || mut.isPending}
+              >
+                {deleteMut.isPending ? 'Удаляем…' : 'Удалить тип'}
+              </Button>
+            </div>
+          ) : null}
         </div>
       </EntityModalShell>
     </ShellDialog>
@@ -377,6 +445,7 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
   const [error, setError] = useState<string | null>(null);
   const createMut = useCreateEquipmentUnit();
   const updateMut = useUpdateEquipmentUnit();
+  const deleteMut = useDeleteEquipmentUnit();
   const isEdit = !!unit;
   const mut = isEdit ? updateMut : createMut;
   const typesQuery = useEquipmentTypesQuery(undefined, open);
@@ -399,6 +468,7 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
     setError(null);
     createMut.reset();
     updateMut.reset();
+    deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, unit?.id]);
 
@@ -440,6 +510,33 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+    }
+  };
+
+  const toggleArchive = async () => {
+    if (!isEdit || !unit) return;
+
+    const nextStatus: DirectoryStatus = form.status === 'archived' ? 'active' : 'archived';
+    setError(null);
+    try {
+      await updateMut.mutateAsync({ id: unit.id, body: { status: nextStatus } });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось изменить статус единицы');
+    }
+  };
+
+  const remove = async () => {
+    if (!isEdit || !unit) return;
+    const confirmed = globalThis.confirm(`Удалить единицу техники «${unit.name}»?`);
+    if (!confirmed) return;
+
+    setError(null);
+    try {
+      await deleteMut.mutateAsync({ id: unit.id });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось удалить единицу техники');
     }
   };
 
@@ -592,6 +689,33 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
               {error}
             </div>
           )}
+
+          {isEdit ? (
+            <div className="flex items-center justify-between gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7"
+                onClick={() => {
+                  void toggleArchive();
+                }}
+                disabled={updateMut.isPending || deleteMut.isPending}
+              >
+                {form.status === 'archived' ? 'Активировать' : 'В архив'}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                onClick={() => {
+                  void remove();
+                }}
+                disabled={deleteMut.isPending || updateMut.isPending}
+              >
+                {deleteMut.isPending ? 'Удаляем…' : 'Удалить единицу'}
+              </Button>
+            </div>
+          ) : null}
         </div>
       </EntityModalShell>
     </ShellDialog>
@@ -640,6 +764,7 @@ export function SubcontractorDialog({
   const [error, setError] = useState<string | null>(null);
   const createMut = useCreateSubcontractor();
   const updateMut = useUpdateSubcontractor();
+  const deleteMut = useDeleteSubcontractor();
   const isEdit = !!subcontractor;
   const mut = isEdit ? updateMut : createMut;
 
@@ -663,6 +788,7 @@ export function SubcontractorDialog({
     setError(null);
     createMut.reset();
     updateMut.reset();
+    deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, subcontractor?.id]);
 
@@ -713,6 +839,33 @@ export function SubcontractorDialog({
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+    }
+  };
+
+  const toggleArchive = async () => {
+    if (!isEdit || !subcontractor) return;
+
+    const nextStatus: DirectoryStatus = form.status === 'archived' ? 'active' : 'archived';
+    setError(null);
+    try {
+      await updateMut.mutateAsync({ id: subcontractor.id, body: { status: nextStatus } });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось изменить статус подрядчика');
+    }
+  };
+
+  const remove = async () => {
+    if (!isEdit || !subcontractor) return;
+    const confirmed = globalThis.confirm(`Удалить подрядчика «${subcontractor.name}»?`);
+    if (!confirmed) return;
+
+    setError(null);
+    try {
+      await deleteMut.mutateAsync({ id: subcontractor.id });
+      onOpenChange(false);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось удалить подрядчика');
     }
   };
 
@@ -865,6 +1018,33 @@ export function SubcontractorDialog({
               {error}
             </div>
           )}
+
+          {isEdit ? (
+            <div className="flex items-center justify-between gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7"
+                onClick={() => {
+                  void toggleArchive();
+                }}
+                disabled={updateMut.isPending || deleteMut.isPending}
+              >
+                {form.status === 'archived' ? 'Активировать' : 'В архив'}
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                onClick={() => {
+                  void remove();
+                }}
+                disabled={deleteMut.isPending || updateMut.isPending}
+              >
+                {deleteMut.isPending ? 'Удаляем…' : 'Удалить подрядчика'}
+              </Button>
+            </div>
+          ) : null}
         </div>
       </EntityModalShell>
     </ShellDialog>
