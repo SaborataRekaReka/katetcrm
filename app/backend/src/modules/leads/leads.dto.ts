@@ -116,6 +116,10 @@ export class UpdateLeadDto {
   @IsOptional()
   @IsBoolean()
   isUrgent?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isDuplicate?: boolean;
 }
 
 export class ChangeStageDto {

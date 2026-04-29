@@ -79,7 +79,7 @@ export class TaskListQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(200)
+  @Max(500)
   take?: number;
 
   @IsOptional()
@@ -90,7 +90,12 @@ export class TaskListQueryDto {
   skip?: number;
 
   @IsOptional()
-  @Type(() => Boolean)
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (value === true || value === 'true') return true;
+    if (value === false || value === 'false') return false;
+    return value;
+  })
   @IsBoolean()
   includeArchived?: boolean;
 }

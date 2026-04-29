@@ -170,21 +170,55 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
   }
 
   const departure = query.data;
+  const hasLeadLink = !!departure.linked.leadId;
+  const hasApplicationLink = !!departure.linked.applicationId;
+  const hasReservationLink = !!departure.reservationId;
+  const canOpenClient = !!onOpenClient && !!departure.linked.clientId;
+  const entitySwitcherOptions = [
+    ...(hasLeadLink ? [{ id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') }] : []),
+    ...(hasApplicationLink
+      ? [{ id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') }]
+      : []),
+    ...(hasReservationLink
+      ? [{ id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') }]
+      : []),
+    {
+      id: 'departure',
+      label: 'Выезд',
+      active: true,
+      onSelect: () => openSecondary('departures'),
+    },
+    { id: 'completed', label: 'Завершение', onSelect: () => openSecondary('completion') },
+  ];
 
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
       <EntityModalHeader
         entityIcon={<Truck className="w-3 h-3" />}
         entityLabel="Выезд"
+        entitySwitcherOptions={entitySwitcherOptions}
         title={`DEP-${departure.id.slice(0, 8).toUpperCase()}`}
         subtitle={
-          [
-            departure.linked.clientCompany ?? departure.linked.clientName,
-            departure.linked.applicationNumber,
-            departure.linked.positionLabel,
-          ]
-            .filter(Boolean)
-            .join(' · ')
+          <>
+            <button
+              type="button"
+              onClick={() => openSecondary('applications')}
+              disabled={!hasApplicationLink}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+            >
+              {departure.linked.applicationNumber ?? `APP-${departure.linked.applicationId.slice(0, 8).toUpperCase()}`}
+            </button>{' '}
+            ·{' '}
+            <button
+              type="button"
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!canOpenClient}
+            >
+              {departure.linked.clientCompany ?? departure.linked.clientName ?? '—'}
+            </button>{' '}
+            · {departure.linked.positionLabel}
+          </>
         }
         chips={[
           <span
@@ -347,7 +381,16 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
           <PropertyRow
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
-            value={departure.linked.clientCompany ?? departure.linked.clientName ?? '—'}
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+                disabled={!canOpenClient}
+              >
+                {departure.linked.clientCompany ?? departure.linked.clientName ?? '—'}
+              </button>
+            }
           />
           <PropertyRow
             icon={<UserPlus className="w-3 h-3" />}
@@ -368,31 +411,39 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
       </EntitySection>
 
       <div className="space-y-0.5 mb-6">
-        <ActionButton
-          icon={<ExternalLink className="w-3.5 h-3.5" />}
-          label="Открыть бронь"
-          onClick={() => openSecondary('reservations')}
-        />
-        <ActionButton
-          icon={<FileText className="w-3.5 h-3.5" />}
-          label="Открыть заявку"
-          onClick={() => openSecondary('applications')}
-        />
+        {hasReservationLink && (
+          <ActionButton
+            icon={<ExternalLink className="w-3.5 h-3.5" />}
+            label="Открыть бронь"
+            onClick={() => openSecondary('reservations')}
+          />
+        )}
+        {hasApplicationLink && (
+          <ActionButton
+            icon={<FileText className="w-3.5 h-3.5" />}
+            label="Открыть заявку"
+            onClick={() => openSecondary('applications')}
+          />
+        )}
         <ActionButton
           icon={<CheckCircle2 className="w-3.5 h-3.5" />}
           label="Открыть завершения"
           onClick={() => openSecondary('completion')}
         />
-        <ActionButton
-          icon={<UserPlus className="w-3.5 h-3.5" />}
-          label="Открыть лид"
-          onClick={() => openSecondary('leads')}
-        />
-        <ActionButton
-          icon={<Building2 className="w-3.5 h-3.5" />}
-          label="Открыть клиента"
-          onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-        />
+        {hasLeadLink && (
+          <ActionButton
+            icon={<UserPlus className="w-3.5 h-3.5" />}
+            label="Открыть лид"
+            onClick={() => openSecondary('leads')}
+          />
+        )}
+        {canOpenClient && (
+          <ActionButton
+            icon={<Building2 className="w-3.5 h-3.5" />}
+            label="Открыть клиента"
+            onClick={() => onOpenClient(lead)}
+          />
+        )}
       </div>
     </div>
   );
@@ -412,43 +463,48 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        <SidebarField
-          label="Бронь"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('reservations')}
-            >
-              RSV-{departure.reservationId.slice(0, 8).toUpperCase()}
-            </button>
-          }
-        />
-        <SidebarField
-          label="Заявка"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('applications')}
-            >
-              {departure.linked.applicationNumber ?? `APP-${departure.linked.applicationId.slice(0, 8).toUpperCase()}`}
-            </button>
-          }
-        />
-        <SidebarField
-          label="Клиент"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
-              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-              disabled={!onOpenClient}
-            >
-              {departure.linked.clientCompany ?? departure.linked.clientName ?? '—'}
-            </button>
-          }
-        />
+        {hasReservationLink && (
+          <SidebarField
+            label="Бронь"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('reservations')}
+              >
+                RSV-{departure.reservationId.slice(0, 8).toUpperCase()}
+              </button>
+            }
+          />
+        )}
+        {hasApplicationLink && (
+          <SidebarField
+            label="Заявка"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('applications')}
+              >
+                {departure.linked.applicationNumber ?? `APP-${departure.linked.applicationId.slice(0, 8).toUpperCase()}`}
+              </button>
+            }
+          />
+        )}
+        {canOpenClient && (
+          <SidebarField
+            label="Клиент"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => onOpenClient(lead)}
+              >
+                {departure.linked.clientCompany ?? departure.linked.clientName ?? '—'}
+              </button>
+            }
+          />
+        )}
       </SidebarSection>
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>

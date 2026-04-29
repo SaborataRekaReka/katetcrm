@@ -208,19 +208,74 @@ export function CompletionWorkspaceApi({
   const linkedApplicationId = completion?.linked.applicationId ?? departure?.linked.applicationId;
   const linkedApplicationNumber = completion?.linked.applicationNumber ?? departure?.linked.applicationNumber;
   const linkedDepartureId = completion?.departureId ?? departure?.id;
+  const linkedLeadId = completion?.linked.leadId ?? departure?.linked.leadId;
+  const linkedClientId = completion?.linked.clientId ?? departure?.linked.clientId;
   const linkedAddress = completion?.context.address ?? departure?.linked.address;
   const linkedPlannedDate = completion?.context.plannedDate ?? departure?.linked.plannedDate;
   const linkedPlannedStart = completion?.context.plannedStart ?? departure?.linked.plannedStart;
   const linkedPlannedTimeFrom = completion?.context.plannedTimeFrom ?? departure?.linked.plannedTimeFrom;
   const linkedPlannedTimeTo = completion?.context.plannedTimeTo ?? departure?.linked.plannedTimeTo;
+  const hasLeadLink = !!linkedLeadId;
+  const hasApplicationLink = !!linkedApplicationId;
+  const hasReservationLink = !!linkedReservationId;
+  const hasDepartureLink = !!linkedDepartureId;
+  const canOpenClient = !!onOpenClient && !!linkedClientId;
+  const entitySwitcherOptions = [
+    ...(hasLeadLink ? [{ id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') }] : []),
+    ...(hasApplicationLink
+      ? [{ id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') }]
+      : []),
+    ...(hasReservationLink
+      ? [{ id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') }]
+      : []),
+    ...(hasDepartureLink
+      ? [{ id: 'departure', label: 'Выезд', onSelect: () => openSecondary('departures') }]
+      : []),
+    {
+      id: 'completed',
+      label: 'Завершение',
+      active: true,
+      onSelect: () => openSecondary('completion'),
+    },
+  ];
 
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
       <EntityModalHeader
         entityIcon={<CheckCircle2 className="w-3 h-3" />}
         entityLabel="Завершение"
+        entitySwitcherOptions={entitySwitcherOptions}
         title={completion ? `CMP-${completion.id.slice(0, 8).toUpperCase()}` : 'Ожидает завершения'}
-        subtitle={linkedClient}
+        subtitle={
+          <>
+            <button
+              type="button"
+              onClick={() => openSecondary('departures')}
+              disabled={!hasDepartureLink}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+            >
+              {linkedDepartureId ? `DEP-${linkedDepartureId.slice(0, 8).toUpperCase()}` : 'Выезд'}
+            </button>{' '}
+            ·{' '}
+            <button
+              type="button"
+              onClick={() => openSecondary('applications')}
+              disabled={!hasApplicationLink}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+            >
+              {linkedApplicationNumber ?? (linkedApplicationId ? `APP-${linkedApplicationId.slice(0, 8).toUpperCase()}` : 'Заявка')}
+            </button>{' '}
+            ·{' '}
+            <button
+              type="button"
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!canOpenClient}
+            >
+              {linkedClient}
+            </button>
+          </>
+        }
         chips={[
           <ToolbarPill
             key="manager"
@@ -370,7 +425,16 @@ export function CompletionWorkspaceApi({
           <PropertyRow
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
-            value={linkedClient}
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+                disabled={!canOpenClient}
+              >
+                {linkedClient}
+              </button>
+            }
           />
           <PropertyRow
             icon={<UserPlus className="w-3 h-3" />}
@@ -381,31 +445,41 @@ export function CompletionWorkspaceApi({
       </EntitySection>
 
       <div className="space-y-0.5 mb-6">
-        <ActionButton
-          icon={<ExternalLink className="w-3.5 h-3.5" />}
-          label="Открыть выезд"
-          onClick={() => openSecondary('departures')}
-        />
-        <ActionButton
-          icon={<FileText className="w-3.5 h-3.5" />}
-          label="Открыть бронь"
-          onClick={() => openSecondary('reservations')}
-        />
-        <ActionButton
-          icon={<FileText className="w-3.5 h-3.5" />}
-          label="Открыть заявку"
-          onClick={() => openSecondary('applications')}
-        />
-        <ActionButton
-          icon={<UserPlus className="w-3.5 h-3.5" />}
-          label="Открыть лид"
-          onClick={() => openSecondary('leads')}
-        />
-        <ActionButton
-          icon={<Building2 className="w-3.5 h-3.5" />}
-          label="Открыть клиента"
-          onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-        />
+        {hasDepartureLink && (
+          <ActionButton
+            icon={<ExternalLink className="w-3.5 h-3.5" />}
+            label="Открыть выезд"
+            onClick={() => openSecondary('departures')}
+          />
+        )}
+        {hasReservationLink && (
+          <ActionButton
+            icon={<FileText className="w-3.5 h-3.5" />}
+            label="Открыть бронь"
+            onClick={() => openSecondary('reservations')}
+          />
+        )}
+        {hasApplicationLink && (
+          <ActionButton
+            icon={<FileText className="w-3.5 h-3.5" />}
+            label="Открыть заявку"
+            onClick={() => openSecondary('applications')}
+          />
+        )}
+        {hasLeadLink && (
+          <ActionButton
+            icon={<UserPlus className="w-3.5 h-3.5" />}
+            label="Открыть лид"
+            onClick={() => openSecondary('leads')}
+          />
+        )}
+        {canOpenClient && (
+          <ActionButton
+            icon={<Building2 className="w-3.5 h-3.5" />}
+            label="Открыть клиента"
+            onClick={() => onOpenClient(lead)}
+          />
+        )}
       </div>
     </div>
   );
@@ -425,55 +499,62 @@ export function CompletionWorkspaceApi({
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        <SidebarField
-          label="Выезд"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('departures')}
-            >
-              {linkedDepartureId ? `DEP-${linkedDepartureId.slice(0, 8).toUpperCase()}` : '—'}
-            </button>
-          }
-        />
-        <SidebarField
-          label="Бронь"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('reservations')}
-            >
-              {linkedReservationId ? `RSV-${linkedReservationId.slice(0, 8).toUpperCase()}` : '—'}
-            </button>
-          }
-        />
-        <SidebarField
-          label="Заявка"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('applications')}
-            >
-              {linkedApplicationNumber ?? (linkedApplicationId ? `APP-${linkedApplicationId.slice(0, 8).toUpperCase()}` : '—')}
-            </button>
-          }
-        />
-        <SidebarField
-          label="Клиент"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
-              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-              disabled={!onOpenClient}
-            >
-              {linkedClient}
-            </button>
-          }
-        />
+        {hasDepartureLink && (
+          <SidebarField
+            label="Выезд"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('departures')}
+              >
+                {linkedDepartureId ? `DEP-${linkedDepartureId.slice(0, 8).toUpperCase()}` : '—'}
+              </button>
+            }
+          />
+        )}
+        {hasReservationLink && (
+          <SidebarField
+            label="Бронь"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('reservations')}
+              >
+                {linkedReservationId ? `RSV-${linkedReservationId.slice(0, 8).toUpperCase()}` : '—'}
+              </button>
+            }
+          />
+        )}
+        {hasApplicationLink && (
+          <SidebarField
+            label="Заявка"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('applications')}
+              >
+                {linkedApplicationNumber ?? (linkedApplicationId ? `APP-${linkedApplicationId.slice(0, 8).toUpperCase()}` : '—')}
+              </button>
+            }
+          />
+        )}
+        {canOpenClient && (
+          <SidebarField
+            label="Клиент"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => onOpenClient(lead)}
+              >
+                {linkedClient}
+              </button>
+            }
+          />
+        )}
       </SidebarSection>
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>

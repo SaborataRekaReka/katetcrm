@@ -76,6 +76,7 @@ interface StatsScopes {
 
 const TERMINAL_LEAD_STAGES = ['completed', 'unqualified', 'cancelled'] as const;
 const ACTIVE_DEPARTURE_STATUSES = ['scheduled', 'in_transit', 'arrived'] as const;
+const STALE_LEAD_DAYS = 3;
 
 @Injectable()
 export class StatsService {
@@ -90,6 +91,7 @@ export class StatsService {
     const dayMs = 24 * 60 * 60 * 1000;
     const sevenDaysAgo = new Date(now.getTime() - 7 * dayMs);
     const twentyFourHoursAgo = new Date(now.getTime() - dayMs);
+    const staleThreshold = this.getStaleThreshold(now);
 
     const {
       leadScope,
@@ -127,7 +129,7 @@ export class StatsService {
       this.prisma.lead.count({
         where: {
           ...leadScope,
-          isStale: true,
+          lastActivityAt: { lt: staleThreshold },
           stage: { notIn: [...TERMINAL_LEAD_STAGES] },
         },
       }),
@@ -141,6 +143,7 @@ export class StatsService {
       this.prisma.departure.count({
         where: {
           ...departureScope,
+          status: { in: [...ACTIVE_DEPARTURE_STATUSES] },
           scheduledAt: {
             gte: startToday,
             lte: endToday,
@@ -482,9 +485,10 @@ export class StatsService {
     viewId: StatsAnalyticsViewId,
   ): Prisma.LeadWhereInput {
     if (viewId === 'view-stale-leads') {
+      const staleThreshold = this.getStaleThreshold();
       return {
         ...baseLeadScope,
-        isStale: true,
+        lastActivityAt: { lt: staleThreshold },
         stage: { notIn: [...TERMINAL_LEAD_STAGES] },
       };
     }
@@ -507,6 +511,10 @@ export class StatsService {
       ...baseLeadScope,
       stage: { notIn: [...TERMINAL_LEAD_STAGES] },
     };
+  }
+
+  private getStaleThreshold(from: Date = new Date()) {
+    return new Date(from.getTime() - STALE_LEAD_DAYS * 24 * 60 * 60 * 1000);
   }
 
   private buildScopes(actor: StatsActorContext): StatsScopes {

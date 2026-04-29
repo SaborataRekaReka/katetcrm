@@ -25,6 +25,7 @@ import { deriveReservationState } from '../shell/reservationHelpers';
 import { useReleaseReservation, useUpdateReservation } from '../../hooks/useReservationMutations';
 import { useChangeLeadStage } from '../../hooks/useLeadMutations';
 import { useReservationQuery } from '../../hooks/useReservationsQuery';
+import { useApplicationQuery } from '../../hooks/useApplicationsQuery';
 import {
   useEquipmentUnitsQuery,
   useSubcontractorsQuery,
@@ -80,6 +81,7 @@ interface Props {
   lead: Lead;
   onClose: () => void;
   onOpenClient?: (lead: Lead) => void;
+  onOpenLead?: (leadId: string) => void;
   /** Реальный id брони на бэкенде. Если задан и USE_API — CTA «Снять» вызывает
    * POST /reservations/:id/release. Иначе остаётся no-op (fallback для mock). */
   apiReservationId?: string;
@@ -112,7 +114,7 @@ const sourceMeta = {
   undecided: { label: 'Не определено', Icon: HelpCircle, tone: badgeTones.caution },
 };
 
-export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservationId }: Props) {
+export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, apiReservationId }: Props) {
   const { setActiveSecondaryNav } = useLayout();
   const isApiDetail = USE_API && !!apiReservationId;
   const reservationQuery = useReservationQuery(apiReservationId, USE_API && !!apiReservationId);
@@ -274,11 +276,61 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
     onClose();
   };
 
+  const linkedApplicationQuery = useApplicationQuery(
+    reservation.linked.applicationId,
+    USE_API && isApiDetail && !!reservation.linked.applicationId,
+  );
+  const resolvedLeadId =
+    reservation.linked.leadId ??
+    linkedApplicationQuery.data?.leadId ??
+    (lead.stage === 'lead' ? lead.id : undefined);
+  const hasLinkedApplication = !!reservation.linked.applicationId;
+  const hasLinkedClient = !!reservation.linked.clientId;
+  const canOpenClient = !!onOpenClient && hasLinkedClient;
+  const hasLinkedLead = !!resolvedLeadId;
+
   const handleOpenApplication = () => openSecondary('applications');
-  const handleOpenLead = () => openSecondary('leads');
+  const handleOpenLead = async () => {
+    let targetLeadId = resolvedLeadId;
+
+    if (!targetLeadId && USE_API && isApiDetail && reservation.linked.applicationId) {
+      const nextApplication = await linkedApplicationQuery.refetch();
+      targetLeadId = nextApplication.data?.leadId;
+    }
+
+    if (onOpenLead && targetLeadId) {
+      onOpenLead(targetLeadId);
+      onClose();
+      return;
+    }
+
+    if (!USE_API && targetLeadId) {
+      openSecondary('leads');
+    }
+  };
   const handleOpenConflict = () => openSecondary('view-conflict');
   const handleOpenDeparture = () => openSecondary('departures');
   const handleDuplicateReservation = () => openSecondary('applications');
+  const entitySwitcherOptions = [
+    ...(hasLinkedLead
+      ? [{ id: 'lead', label: 'Лид', onSelect: () => void handleOpenLead() }]
+      : []),
+    ...(hasLinkedApplication
+      ? [{ id: 'application', label: 'Заявка', onSelect: handleOpenApplication }]
+      : []),
+    {
+      id: 'reservation',
+      label: 'Бронь',
+      active: true,
+      onSelect: () => openSecondary('reservations'),
+    },
+    { id: 'departure', label: 'Выезд', onSelect: handleOpenDeparture },
+    {
+      id: 'completed',
+      label: 'Завершение',
+      onSelect: () => openSecondary('completion'),
+    },
+  ];
 
   const selectFirstAvailableUnit = async () => {
     if (canInlineEditRes && apiReservationId) {
@@ -433,14 +485,23 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       <EntityModalHeader
         entityIcon={<FileText className="w-3 h-3" />}
         entityLabel="Бронь"
+        entitySwitcherOptions={entitySwitcherOptions}
         title={reservation.id}
         subtitle={
           <>
-            {reservation.linked.applicationTitle} ·{' '}
             <button
               type="button"
-              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-              disabled={!onOpenClient}
+              onClick={handleOpenApplication}
+              disabled={!hasLinkedApplication}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+            >
+              {reservation.linked.applicationTitle}
+            </button>{' '}
+            ·{' '}
+            <button
+              type="button"
+              onClick={onOpenClient ? () => onOpenClient(clientLeadContext) : undefined}
+              disabled={!canOpenClient}
               className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {reservation.linked.clientName}
@@ -599,7 +660,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
           <PropertyRow
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
-            value={<button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>}
+            value={<button type="button" onClick={canOpenClient ? () => onOpenClient(clientLeadContext) : undefined} disabled={!canOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>}
           />
           <PropertyRow icon={<Truck className="w-3 h-3" />} label="Тип техники" value={<InlineValue>{reservation.equipmentType}</InlineValue>} />
           {(source === 'own' || unitSelected) && (
@@ -1142,17 +1203,25 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       )}
 
       <div className="space-y-0.5 mb-6">
-        <ActionButton
-          icon={<ExternalLink className="w-3.5 h-3.5" />}
-          label="Открыть заявку"
-          onClick={handleOpenApplication}
-        />
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient ? () => onOpenClient(clientLeadContext) : undefined} />
-        {reservation.linked.leadTitle && (
+        {hasLinkedApplication && (
+          <ActionButton
+            icon={<ExternalLink className="w-3.5 h-3.5" />}
+            label="Открыть заявку"
+            onClick={handleOpenApplication}
+          />
+        )}
+        {canOpenClient && (
+          <ActionButton
+            icon={<Building2 className="w-3.5 h-3.5" />}
+            label="Открыть клиента"
+            onClick={() => onOpenClient(clientLeadContext)}
+          />
+        )}
+        {reservation.linked.leadTitle && hasLinkedLead && (
           <ActionButton
             icon={<UserPlus className="w-3.5 h-3.5" />}
             label="Открыть лид"
-            onClick={handleOpenLead}
+            onClick={() => void handleOpenLead()}
           />
         )}
       </div>
@@ -1246,28 +1315,43 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, apiReservati
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        <SidebarField
-          label="Заявка"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={handleOpenApplication}
-            >
-              {reservation.linked.applicationTitle}
-            </button>
-          }
-        />
+        {hasLinkedApplication && (
+          <SidebarField
+            label="Заявка"
+            value={
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={handleOpenApplication}
+              >
+                {reservation.linked.applicationTitle}
+              </button>
+            }
+          />
+        )}
         <SidebarField label="Позиция" value={reservation.linked.positionTitle} />
-        <SidebarField label="Клиент" value={<button type="button" onClick={onOpenClient ? () => onOpenClient(clientLeadContext) : undefined} disabled={!onOpenClient} className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>} />
-        {reservation.linked.leadTitle && (
+        {canOpenClient && (
+          <SidebarField
+            label="Клиент"
+            value={
+              <button
+                type="button"
+                onClick={() => onOpenClient(clientLeadContext)}
+                className="text-blue-600 hover:underline text-left"
+              >
+                {reservation.linked.clientName}
+              </button>
+            }
+          />
+        )}
+        {reservation.linked.leadTitle && hasLinkedLead && (
           <SidebarField
             label="Лид"
             value={
               <button
                 type="button"
                 className="text-blue-600 hover:underline text-left"
-                onClick={handleOpenLead}
+                onClick={() => void handleOpenLead()}
               >
                 {reservation.linked.leadTitle}
               </button>

@@ -1,5 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FileText } from 'lucide-react';
+import { toast } from 'sonner';
 import { Lead } from '../../types/kanban';
 import { mockReservations } from '../../data/mockReservations';
 import { WorkspaceHeader } from '../shell/WorkspaceHeader';
@@ -19,11 +20,15 @@ import { ReservationsTableView } from '../views/ReservationsTableView';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { ReservationWorkspace } from './ReservationWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
+import { LeadDetailModal } from '../detail/LeadDetailModal';
 import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
 import { useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
+import { useLeadQuery } from '../../hooks/useLeadsQuery';
+import { toKanbanLead } from '../../lib/leadAdapter';
 import { toReservationRows } from '../../lib/reservationAdapter';
+import { isApiErrorStatus } from '../../lib/apiErrors';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import {
   CreateReservationDialog,
@@ -50,6 +55,8 @@ export function ReservationsWorkspacePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [clientLead, setClientLead] = useState<Lead | null>(null);
   const [isClientOpen, setIsClientOpen] = useState(false);
+  const [leadOverlayId, setLeadOverlayId] = useState<string | null>(null);
+  const [isLeadOverlayOpen, setIsLeadOverlayOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
@@ -138,6 +145,18 @@ export function ReservationsWorkspacePage() {
     setSelectedReservationId(row.reservation.id);
     setIsOpen(true);
   };
+  const handleOpenApplicationFromRow = () => {
+    setActiveSecondaryNav('applications');
+  };
+  const handleOpenChangeUnitFromRow = (row: ReservationRow) => {
+    handleRowClick(row);
+  };
+  const handleOpenSelectSubcontractorFromRow = (row: ReservationRow) => {
+    handleRowClick(row);
+  };
+  const handleOpenMoveToDepartureFromRow = (row: ReservationRow) => {
+    handleRowClick(row);
+  };
   const handleClose = () => {
     setIsOpen(false);
     setSelected(null);
@@ -152,6 +171,21 @@ export function ReservationsWorkspacePage() {
     setClientLead(null);
   };
 
+  const handleOpenLead = (leadId: string) => {
+    setLeadOverlayId(leadId);
+    setIsLeadOverlayOpen(true);
+  };
+  const handleCloseLeadOverlay = () => {
+    setIsLeadOverlayOpen(false);
+    setLeadOverlayId(null);
+  };
+  const handleLeadOverlayOpenChange = (open: boolean) => {
+    setIsLeadOverlayOpen(open);
+    if (!open) {
+      setLeadOverlayId(null);
+    }
+  };
+
   const handleSaveView = () => {
     void saveViewSnapshot({
       moduleId: activeSecondaryNav,
@@ -160,6 +194,19 @@ export function ReservationsWorkspacePage() {
       filters,
     });
   };
+
+  const overlayLeadQuery = useLeadQuery(leadOverlayId, USE_API && isLeadOverlayOpen);
+  const overlayLead: Lead | null = overlayLeadQuery.data
+    ? toKanbanLead(overlayLeadQuery.data)
+    : null;
+
+  useEffect(() => {
+    if (!isLeadOverlayOpen || !overlayLeadQuery.isError) return;
+    if (isApiErrorStatus(overlayLeadQuery.error, 404)) {
+      toast.warning('Связанный лид не найден или уже удален');
+      handleCloseLeadOverlay();
+    }
+  }, [isLeadOverlayOpen, overlayLeadQuery.isError, overlayLeadQuery.error]);
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
@@ -203,6 +250,10 @@ export function ReservationsWorkspacePage() {
           rows={filtered}
           onRowClick={handleRowClick}
           isFiltered={hasActiveFilter || activeSecondaryNav.startsWith('view-')}
+          onOpenApplication={handleOpenApplicationFromRow}
+          onOpenChangeUnit={handleOpenChangeUnitFromRow}
+          onOpenSelectSubcontractor={handleOpenSelectSubcontractorFromRow}
+          onOpenMoveToDeparture={handleOpenMoveToDepartureFromRow}
         />
       ) : (
         <ReservationsTableView
@@ -219,6 +270,7 @@ export function ReservationsWorkspacePage() {
               lead={selected}
               onClose={handleClose}
               onOpenClient={handleOpenClient}
+              onOpenLead={USE_API ? handleOpenLead : undefined}
               apiReservationId={selectedReservationId ?? undefined}
             />
           ) : null}
@@ -234,6 +286,27 @@ export function ReservationsWorkspacePage() {
               apiClientId={USE_API ? clientLead.id : undefined}
             />
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isLeadOverlayOpen} onOpenChange={handleLeadOverlayOpenChange}>
+        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+          {overlayLead ? (
+            <LeadDetailModal
+              lead={overlayLead}
+              onClose={handleCloseLeadOverlay}
+              onOpenClient={() => handleOpenClient(overlayLead)}
+              onOpenLead={USE_API ? handleOpenLead : undefined}
+            />
+          ) : overlayLeadQuery.isLoading ? (
+            <div className="flex h-full items-center justify-center text-[12px] text-gray-500">
+              Загружаем лид…
+            </div>
+          ) : overlayLeadQuery.isError ? (
+            <div className="flex h-full items-center justify-center text-[12px] text-red-600">
+              Не удалось загрузить лид
+            </div>
+          ) : null}
         </DialogContent>
       </Dialog>
 

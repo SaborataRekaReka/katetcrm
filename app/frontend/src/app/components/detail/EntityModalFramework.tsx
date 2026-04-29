@@ -1,15 +1,24 @@
-import { ReactNode } from 'react';
+import { KeyboardEvent, ReactNode, useState } from 'react';
 import {
   Activity,
   AtSign,
+  Check,
+  CheckCircle2,
   ChevronDown,
   Circle,
+  Loader2,
   MessageSquare,
   Paperclip,
   Smile,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { IconBtn, SidebarSection } from './DetailShell';
 
 export interface EntityModalAction {
@@ -23,6 +32,14 @@ export interface EntityModalAction {
   render?: ReactNode;
 }
 
+export interface EntitySwitcherOption {
+  id: string;
+  label: string;
+  onSelect?: () => void;
+  disabled?: boolean;
+  active?: boolean;
+}
+
 export interface EntityModalHeaderProps {
   /**
    * Иконка слева от entityLabel в breadcrumb (FileText / Truck / Building2 ...).
@@ -30,6 +47,7 @@ export interface EntityModalHeaderProps {
    */
   entityIcon?: ReactNode;
   entityLabel: ReactNode;
+  entitySwitcherOptions?: EntitySwitcherOption[];
   title: ReactNode;
   /**
    * Строка метаданных под заголовком: клиент · заявка · тип техники и т.п.
@@ -80,6 +98,7 @@ function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary
 export function EntityModalHeader({
   entityIcon,
   entityLabel,
+  entitySwitcherOptions,
   title,
   subtitle,
   chips = [],
@@ -92,13 +111,42 @@ export function EntityModalHeader({
     ...(secondaryAction ? [secondaryAction] : []),
     ...(secondaryActions ?? []),
   ];
+  const hasEntitySwitcher = (entitySwitcherOptions?.length ?? 0) > 0;
+
   return (
     <header className={cn('space-y-3', className)}>
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 -ml-1.5 rounded text-[11px] text-gray-500">
-        {entityIcon}
-        <span>{entityLabel}</span>
-        <ChevronDown className="w-3 h-3" />
-      </span>
+      {hasEntitySwitcher ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1 px-1.5 py-0.5 -ml-1.5 rounded text-[11px] text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+            >
+              {entityIcon}
+              <span>{entityLabel}</span>
+              <ChevronDown className="w-3 h-3" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="min-w-[180px]">
+            {entitySwitcherOptions!.map((option) => (
+              <DropdownMenuItem
+                key={option.id}
+                className="text-[11px]"
+                onSelect={option.onSelect}
+                disabled={option.disabled || !option.onSelect}
+              >
+                <span className="flex-1">{option.label}</span>
+                {option.active ? <Check className="w-3.5 h-3.5 text-blue-600" /> : null}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 -ml-1.5 rounded text-[11px] text-gray-500">
+          {entityIcon}
+          <span>{entityLabel}</span>
+        </span>
+      )}
 
       <div className="flex items-start justify-between gap-4">
         <h1 className="text-[22px] leading-[1.25] text-gray-900">{title}</h1>
@@ -311,11 +359,46 @@ export function EntityCommentsComposer({
   placeholder,
   avatar = 'A',
   avatarGradient = 'from-indigo-400 to-purple-500',
+  onSubmit,
+  onMention,
+  onEmoji,
+  onAttach,
+  disabled = false,
 }: {
   placeholder: string;
   avatar?: string;
   avatarGradient?: string;
+  onSubmit?: (text: string) => void | Promise<void>;
+  onMention?: () => void;
+  onEmoji?: () => void;
+  onAttach?: () => void;
+  disabled?: boolean;
 }) {
+  const [value, setValue] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const canCompose = !!onSubmit && !disabled;
+  const canSubmit = canCompose && !isSubmitting && value.trim().length > 0;
+
+  const handleSubmit = async () => {
+    if (!canSubmit || !onSubmit) return;
+    setIsSubmitting(true);
+    try {
+      await onSubmit(value.trim());
+      setValue('');
+    } catch {
+      // Keep draft text so user can retry after transient errors.
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      void handleSubmit();
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 px-3 h-10">
       <div
@@ -324,18 +407,41 @@ export function EntityCommentsComposer({
         {avatar}
       </div>
       <input
+        value={value}
+        onChange={(event) => setValue(event.target.value)}
+        onKeyDown={canCompose ? handleKeyDown : undefined}
+        disabled={!canCompose}
         placeholder={placeholder}
-        className="flex-1 h-6 px-1.5 text-[11px] bg-transparent outline-none placeholder:text-gray-400 text-gray-800"
+        className={`flex-1 h-6 px-1.5 text-[11px] bg-transparent outline-none placeholder:text-gray-400 ${
+          canCompose ? 'text-gray-800' : 'text-gray-400 cursor-not-allowed'
+        }`}
       />
-      <IconBtn>
-        <AtSign className="w-3.5 h-3.5" />
-      </IconBtn>
-      <IconBtn>
-        <Smile className="w-3.5 h-3.5" />
-      </IconBtn>
-      <IconBtn>
-        <Paperclip className="w-3.5 h-3.5" />
-      </IconBtn>
+      {canCompose ? (
+        <>
+          {onMention ? (
+            <IconBtn onClick={onMention} title="Упомянуть">
+              <AtSign className="w-3.5 h-3.5" />
+            </IconBtn>
+          ) : null}
+          {onEmoji ? (
+            <IconBtn onClick={onEmoji} title="Эмодзи">
+              <Smile className="w-3.5 h-3.5" />
+            </IconBtn>
+          ) : null}
+          {onAttach ? (
+            <IconBtn onClick={onAttach} title="Прикрепить файл">
+              <Paperclip className="w-3.5 h-3.5" />
+            </IconBtn>
+          ) : null}
+          <IconBtn onClick={() => void handleSubmit()} title="Отправить" className="text-blue-600 hover:text-blue-700">
+            {isSubmitting ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <CheckCircle2 className="w-3.5 h-3.5" />
+            )}
+          </IconBtn>
+        </>
+      ) : null}
     </div>
   );
 }

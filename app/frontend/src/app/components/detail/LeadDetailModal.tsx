@@ -40,7 +40,6 @@ import {
 import {
   EntityActivityList,
   EntityCommentList,
-  EntityCommentsComposer,
   EntityCommentsPanel,
   EntityMetaGrid,
   EntityModalHeader,
@@ -53,7 +52,7 @@ import { useChangeLeadStage, useUpdateLead } from '../../hooks/useLeadMutations'
 import { useUpdateApplication, useDeleteApplicationItem } from '../../hooks/useApplicationMutations';
 import { useCreateReservation } from '../../hooks/useReservationMutations';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
-import { useApplicationQuery } from '../../hooks/useApplicationsQuery';
+import { useApplicationQuery, useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { mapActivityEntries } from '../../lib/activityMapper';
@@ -150,8 +149,17 @@ const MOCK_ACTIVITY = [
   { id: '3', text: 'добавил(а) менеджера', who: 'Олег Ким', time: 'вчера' },
 ];
 
-function getPrimaryCTA(stage: string | undefined, isLead: boolean): { label: string; secondary?: string } {
-  if (isLead) return { label: 'Перевести в заявку', secondary: 'Пометить некачественным' };
+function getPrimaryCTA(
+  stage: string | undefined,
+  isLead: boolean,
+  hasLinkedApplication = false,
+): { label: string; secondary?: string } {
+  if (isLead) {
+    return {
+      label: hasLinkedApplication ? 'Открыть заявку' : 'Перевести в заявку',
+      secondary: 'Пометить некачественным',
+    };
+  }
 
   switch (stage) {
     case 'application':
@@ -380,6 +388,13 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const application = applicationDetailQuery.data
     ? toUiApplication(applicationDetailQuery.data)
     : initialApplication;
+  const isLead = !!lead;
+  const leadApplicationsQuery = useApplicationsQuery(
+    { leadId: lead?.id, scope: 'mine' },
+    USE_API && isLead && !!lead?.id,
+  );
+  const hasLinkedApplication =
+    isLead && ((leadApplicationsQuery.data?.items.length ?? 0) > 0);
 
   const managerOptions = useMemo(() => {
     const options = (managersQuery.data ?? []).map((manager) => ({
@@ -407,7 +422,6 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
 
   if (!lead && !application) return null;
 
-  const isLead = !!lead;
   const canInlineEditLead = isLead && USE_API && !!lead?.id;
   const canInlineEditApp = !isLead && USE_API && !!application?.id;
 
@@ -437,8 +451,59 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const entityType = isLead ? 'Лид' : 'Заявка';
   const listName = isLead ? 'Leads' : 'Applications';
   const title = isLead ? lead.client : application!.number;
-  const cta = getPrimaryCTA(application?.stage || lead?.stage, isLead);
+  const cta = getPrimaryCTA(application?.stage || lead?.stage, isLead, hasLinkedApplication);
   const appReadiness = !isLead ? deriveAppReadiness(application!) : null;
+  const stageForSwitcher = isLead ? lead!.stage : application!.stage;
+
+  const breadcrumbItems = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    {
+      label: 'Sales',
+      onClick: () => openSecondary(isLead ? 'leads' : 'applications'),
+    },
+    { label: listName },
+  ];
+
+  const entitySwitcherOptions = [
+    {
+      id: 'lead',
+      label: 'Лид',
+      active:
+        stageForSwitcher === 'lead'
+        || stageForSwitcher === 'unqualified'
+        || stageForSwitcher === 'cancelled',
+      onSelect: () => {
+        if (!isLead && openLinkedLead(true)) {
+          return;
+        }
+        openSecondary('leads');
+      },
+    },
+    {
+      id: 'application',
+      label: 'Заявка',
+      active: stageForSwitcher === 'application',
+      onSelect: () => openSecondary('applications'),
+    },
+    {
+      id: 'reservation',
+      label: 'Бронь',
+      active: stageForSwitcher === 'reservation',
+      onSelect: () => openSecondary('reservations'),
+    },
+    {
+      id: 'departure',
+      label: 'Выезд',
+      active: stageForSwitcher === 'departure',
+      onSelect: () => openSecondary('departures'),
+    },
+    {
+      id: 'completed',
+      label: 'Завершение',
+      active: stageForSwitcher === 'completed',
+      onSelect: () => openSecondary('completion'),
+    },
+  ];
 
   // Готовность лида к переводу в заявку: адрес, дата, телефон.
   const leadMissingFields: string[] = [];
@@ -469,6 +534,15 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const openSecondary = (secondaryId: string) => {
     setActiveSecondaryNav(secondaryId);
     onClose();
+  };
+
+  const openLinkedLead = (closeCurrent = false): boolean => {
+    if (!application?.leadId || !onOpenLead) return false;
+    onOpenLead(application.leadId);
+    if (closeCurrent) {
+      onClose();
+    }
+    return true;
   };
 
   const handleMarkDuplicate = async () => {
@@ -608,7 +682,13 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
         <ActionButton
           icon={<UserIcon className="w-3.5 h-3.5" />}
           label="Открыть лид"
-          onClick={onOpenLead ? () => onOpenLead(application!.leadId!) : undefined}
+          onClick={
+            onOpenLead
+              ? () => {
+                  void openLinkedLead();
+                }
+              : undefined
+          }
         />
       ) : null}
       {USE_API ? (
@@ -643,6 +723,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     <EntityModalShell className="pb-10 space-y-6">
       <EntityModalHeader
         entityLabel={entityType}
+        entitySwitcherOptions={entitySwitcherOptions}
         title={title}
         chips={toolbarChips}
         primaryAction={
@@ -650,7 +731,11 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             ? {
                 label: cta.label,
                 icon: <ArrowRight className="w-3 h-3" />,
-                onClick: canPromoteToApplication ? handlePromoteToApplication : undefined,
+                onClick: hasLinkedApplication
+                  ? () => openSecondary('applications')
+                  : canPromoteToApplication
+                    ? handlePromoteToApplication
+                    : undefined,
               }
             : undefined
         }
@@ -680,7 +765,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
         </div>
       ) : null}
 
-      {isLead && !canPromoteToApplication && USE_API && leadMissingFields.length > 0 ? (
+      {isLead && !hasLinkedApplication && !canPromoteToApplication && USE_API && leadMissingFields.length > 0 ? (
         <div className="-mt-2 text-[11px] text-amber-600">
           Для перевода в заявку не хватает: {leadMissingFields.join(', ')}
         </div>
@@ -1086,14 +1171,6 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     </EntityModalShell>
   );
 
-  const footer = (
-    <EntityCommentsComposer
-      placeholder="Написать комментарий. @ - упомянуть, : - emoji."
-      avatar="A"
-      avatarGradient="from-indigo-400 to-purple-500"
-    />
-  );
-
   const leadSections: EntitySidebarSection[] = isLead ? [
     {
       title: 'Статус и мета',
@@ -1134,10 +1211,14 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             <Button
               size="sm"
               className="h-7 w-full text-[11px]"
-              onClick={canPromoteToApplication ? handlePromoteToApplication : undefined}
-              disabled={!canPromoteToApplication || changeStage.isPending}
+              onClick={hasLinkedApplication ? () => openSecondary('applications') : canPromoteToApplication ? handlePromoteToApplication : undefined}
+              disabled={hasLinkedApplication ? false : !canPromoteToApplication || changeStage.isPending}
             >
-              {changeStage.isPending ? 'Переводим…' : 'Перевести в заявку'}
+              {hasLinkedApplication
+                ? 'Открыть заявку'
+                : changeStage.isPending
+                  ? 'Переводим…'
+                  : 'Перевести в заявку'}
             </Button>
           </div>
         </>
@@ -1319,11 +1400,10 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   return (
     <>
       <DetailShell
-        breadcrumb={<Breadcrumb items={['CRM', 'Sales', listName]} />}
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
         main={main}
         sidebar={sidebar}
-        footer={footer}
       />
       {isLead ? (
         <>

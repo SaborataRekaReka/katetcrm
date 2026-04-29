@@ -201,16 +201,36 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
     setActiveSecondaryNav(secondaryId);
     onClose();
   };
+  const entitySwitcherOptions = [
+    { id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') },
+    { id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') },
+    { id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') },
+    {
+      id: 'departure',
+      label: 'Выезд',
+      active: true,
+      onSelect: () => openSecondary('departures'),
+    },
+    { id: 'completed', label: 'Завершение', onSelect: () => openSecondary('completion') },
+  ];
 
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
       <EntityModalHeader
         entityIcon={<Truck className="w-3 h-3" />}
         entityLabel="Выезд"
+        entitySwitcherOptions={entitySwitcherOptions}
         title={base.id}
         subtitle={
           <>
-            {linked.applicationTitle} ·{' '}
+            <button
+              type="button"
+              onClick={() => openSecondary('applications')}
+              className="text-blue-600 hover:underline"
+            >
+              {linked.applicationTitle}
+            </button>{' '}
+            ·{' '}
             <button
               type="button"
               onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
@@ -287,7 +307,12 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
             label={`${plan.plannedTimeFrom}${plan.plannedTimeTo ? '–' + plan.plannedTimeTo : ''}`}
           />,
           <ToolbarPill key="type" icon={<Truck className="w-3 h-3" />} label={linked.equipmentType} />,
-          <ToolbarPill key="rsv" icon={<FileText className="w-3 h-3" />} label={linked.reservationTitle} />,
+          <ToolbarPill
+            key="rsv"
+            icon={<FileText className="w-3 h-3" />}
+            label={linked.reservationTitle}
+            onClick={() => openSecondary('reservations')}
+          />,
           ...(alert !== 'none'
             ? [
                 <span key="alert" className={`${badgeBase} ${alertMeta[alert].tone}`}>

@@ -59,6 +59,7 @@ export interface TaskDetailViewProps {
   onDuplicateTask?: (taskId: string) => void;
   onArchiveTask?: (taskId: string) => void;
   onAddSubtask?: (taskId: string) => void;
+  onAddComment?: (taskId: string, text: string) => Promise<void> | void;
 }
 
 export interface TaskUpdatePatch {
@@ -79,6 +80,7 @@ export function TaskDetailView({
   onDuplicateTask,
   onArchiveTask,
   onAddSubtask,
+  onAddComment,
 }: TaskDetailViewProps) {
   return (
     <Dialog open={open} onOpenChange={(value) => !value && onClose()}>
@@ -96,6 +98,7 @@ export function TaskDetailView({
             onDuplicateTask={onDuplicateTask}
             onArchiveTask={onArchiveTask}
             onAddSubtask={onAddSubtask}
+            onAddComment={onAddComment}
           />
         ) : null}
       </DialogContent>
@@ -112,6 +115,7 @@ function TaskDetailBody({
   onDuplicateTask,
   onArchiveTask,
   onAddSubtask,
+  onAddComment,
 }: {
   task: Task;
   onClose: () => void;
@@ -121,6 +125,7 @@ function TaskDetailBody({
   onDuplicateTask?: (taskId: string) => void;
   onArchiveTask?: (taskId: string) => void;
   onAddSubtask?: (taskId: string) => void;
+  onAddComment?: (taskId: string, text: string) => Promise<void> | void;
 }) {
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
   const [editTitle, setEditTitle] = useState(task.title);
@@ -542,13 +547,14 @@ function TaskDetailBody({
     },
   ];
 
-  const footer = (
+  const footer = onAddComment ? (
     <EntityCommentsComposer
-      placeholder="Написать комментарий. @ - упомянуть, : - emoji."
+      placeholder="Написать комментарий и нажать Enter"
       avatar="A"
       avatarGradient="from-indigo-400 to-purple-500"
+      onSubmit={(text) => onAddComment(task.id, text)}
     />
-  );
+  ) : undefined;
 
   return (
     <DetailShell

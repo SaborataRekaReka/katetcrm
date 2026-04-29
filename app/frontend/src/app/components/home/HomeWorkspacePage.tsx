@@ -552,6 +552,45 @@ function MyTasksPage() {
     );
   };
 
+  const handleAddComment = (taskId: string, text: string) => {
+    const body = text.trim();
+    if (!body) return;
+
+    setTasks((prev) =>
+      prev.map((task) => {
+        if (task.id !== taskId) return task;
+
+        const author = task.assignee || 'Петров А.';
+        const avatar = author.trim().charAt(0).toUpperCase() || 'A';
+        const stamp = Date.now();
+
+        return {
+          ...task,
+          comments: [
+            {
+              id: `c-${stamp}`,
+              author,
+              avatar,
+              color: 'from-indigo-400 to-purple-500',
+              time: 'только что',
+              text: body,
+            },
+            ...task.comments,
+          ],
+          activity: [
+            {
+              id: `a-comment-${stamp}`,
+              actor: author,
+              text: 'добавил комментарий',
+              time: 'только что',
+            },
+            ...task.activity,
+          ],
+        };
+      }),
+    );
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
@@ -608,6 +647,7 @@ function MyTasksPage() {
         onDuplicateTask={handleDuplicateTask}
         onArchiveTask={handleArchiveTask}
         onAddSubtask={handleAddSubtask}
+        onAddComment={handleAddComment}
       />
     </div>
   );

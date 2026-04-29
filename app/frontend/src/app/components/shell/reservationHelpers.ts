@@ -6,6 +6,7 @@ export const RESERVATION_STAGE_ORDER: ReservationInternalStage[] = [
   'needs_source_selection',
   'searching_own_equipment',
   'searching_subcontractor',
+  'subcontractor_selected',
   'type_reserved',
   'unit_defined',
   'ready_for_departure',
@@ -141,6 +142,16 @@ export function deriveReservationState(input: ReservationStateInput): DerivedRes
   if (source === 'own' && unitSelected) {
     return {
       stage: 'unit_defined',
+      nextStep: 'Нужно подтвердить бронь',
+      ctaLabel: 'Подтвердить бронь',
+      ctaDisabled: false,
+      reason: null,
+    };
+  }
+
+  if (source === 'subcontractor' && subSelected) {
+    return {
+      stage: 'subcontractor_selected',
       nextStep: 'Нужно подтвердить бронь',
       ctaLabel: 'Подтвердить бронь',
       ctaDisabled: false,

@@ -6,10 +6,15 @@ import {
   Share2,
   Eye,
   MoreHorizontal,
-  Maximize2,
   List,
   ArrowRight,
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 
 /* ============ Screen family rules ============
  * Shared patterns for the detail screen family
@@ -51,6 +56,18 @@ export interface ClientDisplay {
   primaryText: string;
   /** Optional secondary plain text (contact person when company is primary). */
   secondaryText?: string;
+}
+
+export interface BreadcrumbItem {
+  label: string;
+  onClick?: () => void;
+}
+
+export interface DetailShellMenuAction {
+  label: string;
+  onSelect?: () => void;
+  disabled?: boolean;
+  destructive?: boolean;
 }
 
 /**
@@ -104,15 +121,21 @@ export function IconBtn({
   children,
   onClick,
   className = '',
+  title,
+  active = false,
 }: {
   children: ReactNode;
   onClick?: () => void;
   className?: string;
+  title?: string;
+  active?: boolean;
 }) {
   if (!onClick) {
     return (
       <span
-        className={`h-6 w-6 inline-flex items-center justify-center rounded text-gray-400 ${className}`}
+        className={`h-6 w-6 inline-flex items-center justify-center rounded ${
+          active ? 'text-blue-600' : 'text-gray-400'
+        } ${className}`}
         aria-hidden="true"
       >
         {children}
@@ -123,7 +146,11 @@ export function IconBtn({
     <button
       type="button"
       onClick={onClick}
-      className={`h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors ${className}`}
+      title={title}
+      aria-label={title}
+      className={`h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 transition-colors ${
+        active ? 'text-blue-600 hover:text-blue-700' : 'text-gray-500 hover:text-gray-700'
+      } ${className}`}
     >
       {children}
     </button>
@@ -271,27 +298,71 @@ export function SidebarField({ label, value }: { label: string; value: ReactNode
 
 /* ============ Breadcrumb ============ */
 
-export function Breadcrumb({ items }: { items: string[] }) {
+export function Breadcrumb({ items }: { items: Array<string | BreadcrumbItem> }) {
+  const normalized: BreadcrumbItem[] = items.map((item) =>
+    typeof item === 'string' ? { label: item } : item,
+  );
+  const renderPart = (
+    item: BreadcrumbItem,
+    isCurrent: boolean,
+    withListIcon = false,
+  ) => {
+    const className = `inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${
+      item.onClick
+        ? 'hover:bg-gray-100 hover:text-gray-800 transition-colors'
+        : ''
+    } ${isCurrent ? 'text-gray-700' : 'text-gray-500'}`;
+    if (!item.onClick) {
+      return (
+        <span className={className}>
+          {withListIcon ? <List className="w-3 h-3" /> : null}
+          <span>{item.label}</span>
+        </span>
+      );
+    }
+    return (
+      <button type="button" onClick={item.onClick} className={className}>
+        {withListIcon ? <List className="w-3 h-3" /> : null}
+        <span>{item.label}</span>
+      </button>
+    );
+  };
+
   return (
     <div className="flex items-center gap-0.5 text-[11px] text-gray-500 min-w-0">
-      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-gray-500">
-        <List className="w-3 h-3" />
-        <span>{items[0]}</span>
-      </span>
-      {items.slice(1).map((item, i) => (
+      {renderPart(normalized[0], normalized.length === 1, true)}
+      {normalized.slice(1).map((item, i) => (
         <span key={i} className="inline-flex items-center gap-0.5">
           <ChevronRight className="w-3 h-3 text-gray-300" />
-          <span
-            className={`px-1.5 py-0.5 rounded ${
-              i === items.length - 2 ? 'text-gray-700' : ''
-            }`}
-          >
-            {item}
-          </span>
+          {renderPart(item, i === normalized.length - 2)}
         </span>
       ))}
     </div>
   );
+}
+
+async function copyToClipboard(text: string): Promise<boolean> {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch {
+    // fallthrough
+  }
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return ok;
+  } catch {
+    return false;
+  }
 }
 
 /* ============ Shell ============ */
@@ -302,32 +373,109 @@ export function DetailShell({
   main,
   sidebar,
   footer,
+  onShare,
+  onToggleWatch,
+  isWatched,
+  moreActions,
 }: {
   breadcrumb: ReactNode;
   onClose: () => void;
   main: ReactNode;
   sidebar: ReactNode;
   footer?: ReactNode;
+  onShare?: () => void;
+  onToggleWatch?: () => void;
+  isWatched?: boolean;
+  moreActions?: DetailShellMenuAction[];
 }) {
+  const [copied, setCopied] = useState(false);
+  const [localWatched, setLocalWatched] = useState(false);
+  const watched = isWatched ?? localWatched;
+
+  const handleShare = async () => {
+    if (onShare) {
+      onShare();
+      return;
+    }
+    const href = typeof window !== 'undefined' ? window.location.href : '';
+    if (!href) return;
+    const ok = await copyToClipboard(href);
+    if (ok) {
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    }
+  };
+
+  const handleToggleWatch = () => {
+    if (onToggleWatch) {
+      onToggleWatch();
+      return;
+    }
+    setLocalWatched((v) => !v);
+  };
+
+  const defaultMenuActions: DetailShellMenuAction[] = [
+    {
+      label: copied ? 'Ссылка скопирована' : 'Скопировать ссылку',
+      onSelect: () => {
+        void handleShare();
+      },
+    },
+    {
+      label: 'Закрыть карточку',
+      onSelect: onClose,
+      destructive: true,
+    },
+  ];
+  const menuActions = moreActions ?? defaultMenuActions;
+
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white text-gray-800">
       {/* Top bar */}
       <div className="flex items-center justify-between h-10 px-3 border-b border-gray-200 flex-shrink-0">
         {breadcrumb}
         <div className="flex items-center gap-0.5">
-          <IconBtn>
+          <IconBtn
+            onClick={() => {
+              void handleShare();
+            }}
+            title={copied ? 'Ссылка скопирована' : 'Поделиться'}
+          >
             <Share2 className="w-3.5 h-3.5" />
           </IconBtn>
-          <IconBtn>
+          <IconBtn
+            onClick={handleToggleWatch}
+            active={watched}
+            title={watched ? 'Не следить за карточкой' : 'Следить за карточкой'}
+          >
             <Eye className="w-3.5 h-3.5" />
           </IconBtn>
-          <IconBtn>
-            <MoreHorizontal className="w-3.5 h-3.5" />
-          </IconBtn>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="h-6 w-6 inline-flex items-center justify-center rounded hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
+                title="Ещё действия"
+                aria-label="Ещё действия"
+              >
+                <MoreHorizontal className="w-3.5 h-3.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="min-w-[170px]">
+              {menuActions.map((action, index) => (
+                <DropdownMenuItem
+                  key={`${action.label}-${index}`}
+                  className="text-[11px]"
+                  disabled={action.disabled}
+                  variant={action.destructive ? 'destructive' : 'default'}
+                  onSelect={action.onSelect}
+                >
+                  {action.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="w-px h-4 bg-gray-200 mx-1" />
-          <IconBtn>
-            <Maximize2 className="w-3 h-3" />
-          </IconBtn>
           <IconBtn onClick={onClose}>
             <X className="w-3.5 h-3.5" />
           </IconBtn>

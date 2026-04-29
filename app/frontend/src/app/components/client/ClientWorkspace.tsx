@@ -62,6 +62,7 @@ import { PhoneLink, EmailLink } from '../detail/ContactAtoms';
 import { RepeatOrderDialog, type RepeatOrderPayload } from './RepeatOrderDialog';
 import { EditClientDialog } from './EditClientDialog';
 import { NewLeadDialog } from '../leads/NewLeadDialog';
+import { useLayout } from '../shell/layoutStore';
 
 interface Props {
   lead?: Lead;
@@ -94,6 +95,7 @@ const leadStatusMeta: Record<ClientLeadStatus, { label: string; tone: string }> 
 };
 
 export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
+  const { setActiveSecondaryNav } = useLayout();
   const mockBase: Client = useMemo(() => buildMockClient(lead), [lead]);
   const resolvedApiClientId = apiClientId ?? lead?.apiClientId;
   const isApiDetailMode = USE_API && !!resolvedApiClientId;
@@ -241,6 +243,11 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
 
   if (isPrimaryPending) {
     return (
@@ -472,6 +479,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="app"
                   icon={<FileText className="w-3 h-3 text-blue-500" />}
                   label={`Заявка ${base.activeRecords.topActiveApplication.id}`}
+                  onClick={() => openSecondary('applications')}
                 />,
               ]
             : []),
@@ -481,6 +489,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="rsv"
                   icon={<FileText className="w-3 h-3 text-blue-500" />}
                   label={`Бронь ${base.activeRecords.topActiveReservation.id}`}
+                  onClick={() => openSecondary('reservations')}
                 />,
               ]
             : []),
@@ -490,6 +499,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="dep"
                   icon={<Truck className="w-3 h-3 text-blue-500" />}
                   label={`Выезд ${base.activeRecords.topActiveDeparture.id}`}
+                  onClick={() => openSecondary('departures')}
                 />,
               ]
             : []),
@@ -820,21 +830,45 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
               <ActiveRow
                 icon={<FileText className="w-3.5 h-3.5 text-blue-500" />}
                 label="Активная заявка"
-                value={base.activeRecords.topActiveApplication.title}
+                value={
+                  <button
+                    type="button"
+                    className="text-blue-600 hover:underline"
+                    onClick={() => openSecondary('applications')}
+                  >
+                    {base.activeRecords.topActiveApplication.title}
+                  </button>
+                }
               />
             )}
             {base.activeRecords.topActiveReservation && (
               <ActiveRow
                 icon={<FileText className="w-3.5 h-3.5 text-blue-500" />}
                 label="Активная бронь"
-                value={base.activeRecords.topActiveReservation.title}
+                value={
+                  <button
+                    type="button"
+                    className="text-blue-600 hover:underline"
+                    onClick={() => openSecondary('reservations')}
+                  >
+                    {base.activeRecords.topActiveReservation.title}
+                  </button>
+                }
               />
             )}
             {base.activeRecords.topActiveDeparture && (
               <ActiveRow
                 icon={<Truck className="w-3.5 h-3.5 text-blue-500" />}
                 label="Активный выезд"
-                value={base.activeRecords.topActiveDeparture.title}
+                value={
+                  <button
+                    type="button"
+                    className="text-blue-600 hover:underline"
+                    onClick={() => openSecondary('departures')}
+                  >
+                    {base.activeRecords.topActiveDeparture.title}
+                  </button>
+                }
               />
             )}
           </div>
@@ -926,7 +960,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] text-gray-900">{o.number}</span>
+                  <button
+                    type="button"
+                    className="text-[11px] text-blue-600 hover:underline"
+                    onClick={() => openSecondary('applications')}
+                  >
+                    {o.number}
+                  </button>
                   <span className="text-[10px] text-gray-500">· {o.date}</span>
                   {o.amount && (
                     <span className="text-[10px] text-gray-500">· {o.amount}</span>
@@ -970,7 +1010,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
               </span>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[11px] text-gray-900">{l.id}</span>
+                  <button
+                    type="button"
+                    className="text-[11px] text-blue-600 hover:underline"
+                    onClick={() => openSecondary('leads')}
+                  >
+                    {l.id}
+                  </button>
                   <span className="text-[10px] text-gray-500">· {l.date}</span>
                   <span className="text-[10px] text-gray-500">· {l.source}</span>
                 </div>
@@ -1141,9 +1187,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <SidebarField
             label="Заявка"
             value={
-              <span className="text-gray-700">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('applications')}
+              >
                 {base.activeRecords.topActiveApplication.title}
-              </span>
+              </button>
             }
           />
         )}
@@ -1151,9 +1201,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <SidebarField
             label="Бронь"
             value={
-              <span className="text-gray-700">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('reservations')}
+              >
                 {base.activeRecords.topActiveReservation.title}
-              </span>
+              </button>
             }
           />
         )}
@@ -1161,9 +1215,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <SidebarField
             label="Выезд"
             value={
-              <span className="text-gray-700">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('departures')}
+              >
                 {base.activeRecords.topActiveDeparture.title}
-              </span>
+              </button>
             }
           />
         )}
@@ -1171,9 +1229,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           label="Последний завершён"
           value={
             lastCompleted ? (
-              <span className="text-gray-700">
+              <button
+                type="button"
+                className="text-blue-600 hover:underline text-left"
+                onClick={() => openSecondary('completion')}
+              >
                 {lastCompleted.number}
-              </span>
+              </button>
             ) : (
               <span className="text-gray-400">—</span>
             )
@@ -1181,7 +1243,15 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         />
         <SidebarField
           label="Лиды"
-          value={`${base.leadsHistory.length} в истории`}
+          value={
+            <button
+              type="button"
+              className="text-blue-600 hover:underline text-left"
+              onClick={() => openSecondary('leads')}
+            >
+              {`${base.leadsHistory.length} в истории`}
+            </button>
+          }
         />
       </SidebarSection>
 

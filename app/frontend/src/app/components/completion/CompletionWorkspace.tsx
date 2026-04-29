@@ -147,6 +147,18 @@ export function CompletionWorkspace({
     setActiveSecondaryNav(secondaryId);
     onClose();
   };
+  const entitySwitcherOptions = [
+    { id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') },
+    { id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') },
+    { id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') },
+    { id: 'departure', label: 'Выезд', onSelect: () => openSecondary('departures') },
+    {
+      id: 'completed',
+      label: 'Завершение',
+      active: true,
+      onSelect: () => openSecondary('completion'),
+    },
+  ];
 
   // Readiness checks
   const readinessChecks: { label: string; ok: boolean; hint?: string }[] = [
@@ -206,10 +218,26 @@ export function CompletionWorkspace({
       <EntityModalHeader
         entityIcon={<CheckCircle2 className="w-3 h-3" />}
         entityLabel="Завершение"
+        entitySwitcherOptions={entitySwitcherOptions}
         title={base.id}
         subtitle={
           <>
-            {linked.departureTitle} · {linked.applicationTitle} ·{' '}
+            <button
+              type="button"
+              onClick={() => openSecondary('departures')}
+              className="text-blue-600 hover:underline"
+            >
+              {linked.departureTitle}
+            </button>{' '}
+            ·{' '}
+            <button
+              type="button"
+              onClick={() => openSecondary('applications')}
+              className="text-blue-600 hover:underline"
+            >
+              {linked.applicationTitle}
+            </button>{' '}
+            ·{' '}
             <button
               type="button"
               onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
@@ -304,11 +332,13 @@ export function CompletionWorkspace({
             key="dep"
             icon={<Truck className="w-3 h-3" />}
             label={linked.departureTitle}
+            onClick={() => openSecondary('departures')}
           />,
           <ToolbarPill
             key="rsv"
             icon={<FileText className="w-3 h-3" />}
             label={linked.reservationTitle}
+            onClick={() => openSecondary('reservations')}
           />,
           ...(base.alert !== 'none' && !isFinal
             ? [

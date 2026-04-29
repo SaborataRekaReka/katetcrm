@@ -114,6 +114,7 @@ export function updateLead(
     managerId: string | null;
     clientId: string | null;
     isUrgent: boolean;
+    isDuplicate: boolean;
   }>,
 ) {
   return apiRequest<LeadApi>(`leads/${id}`, {

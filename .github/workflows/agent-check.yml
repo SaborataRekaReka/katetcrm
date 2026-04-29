@@ -1,0 +1,40 @@
+name: Agent Check
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  agent-check:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install backend
+        run: npm --prefix app/backend install
+
+      - name: Install frontend
+        run: npm --prefix app/frontend install
+
+      - name: Backend typecheck
+        run: npm --prefix app/backend run typecheck
+
+      - name: Backend build
+        run: npm --prefix app/backend run build
+
+      - name: Frontend build
+        run: npm --prefix app/frontend run build
+
+      - name: Frontend UI consistency
+        run: npm --prefix app/frontend run check:ui-consistency
+
+      # TODO: Add smoke:release as a separate full gate when CI has DB/runtime prerequisites.

@@ -1,6 +1,7 @@
 
   import { createRoot } from "react-dom/client";
   import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+  import { Toaster } from "sonner";
   import App from "./app/App.tsx";
   import { AuthProvider } from "./app/auth/AuthProvider";
   import { PrimaryCtaProvider } from "./app/components/shell/primaryCtaStore";
@@ -21,6 +22,7 @@
       <AuthProvider>
         <PrimaryCtaProvider>
           <App />
+          <Toaster richColors position="bottom-right" />
         </PrimaryCtaProvider>
       </AuthProvider>
     </QueryClientProvider>,

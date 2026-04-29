@@ -63,6 +63,10 @@ interface ReservationsListViewProps {
   onRowClick: (row: ReservationRow) => void;
   isFiltered?: boolean;
   onReleaseReservation?: (row: ReservationRow) => void;
+  onOpenApplication?: (row: ReservationRow) => void;
+  onOpenChangeUnit?: (row: ReservationRow) => void;
+  onOpenSelectSubcontractor?: (row: ReservationRow) => void;
+  onOpenMoveToDeparture?: (row: ReservationRow) => void;
 }
 
 export function ReservationsListView({
@@ -70,6 +74,10 @@ export function ReservationsListView({
   onRowClick,
   isFiltered,
   onReleaseReservation,
+  onOpenApplication,
+  onOpenChangeUnit,
+  onOpenSelectSubcontractor,
+  onOpenMoveToDeparture,
 }: ReservationsListViewProps) {
   const groups: GroupedListGroup<ReservationRow>[] = RESERVATION_STAGE_ORDER.map((stage) => ({
     id: stage,
@@ -117,6 +125,14 @@ export function ReservationsListView({
             row={row}
             onClick={() => onRowClick(row)}
             onRelease={onReleaseReservation ? () => onReleaseReservation(row) : undefined}
+            onOpenApplication={onOpenApplication ? () => onOpenApplication(row) : undefined}
+            onOpenChangeUnit={onOpenChangeUnit ? () => onOpenChangeUnit(row) : undefined}
+            onOpenSelectSubcontractor={
+              onOpenSelectSubcontractor ? () => onOpenSelectSubcontractor(row) : undefined
+            }
+            onOpenMoveToDeparture={
+              onOpenMoveToDeparture ? () => onOpenMoveToDeparture(row) : undefined
+            }
           />
         )}
       />
@@ -128,10 +144,18 @@ function ReservationListRow({
   row,
   onClick,
   onRelease,
+  onOpenApplication,
+  onOpenChangeUnit,
+  onOpenSelectSubcontractor,
+  onOpenMoveToDeparture,
 }: {
   row: ReservationRow;
   onClick: () => void;
   onRelease?: () => void;
+  onOpenApplication?: () => void;
+  onOpenChangeUnit?: () => void;
+  onOpenSelectSubcontractor?: () => void;
+  onOpenMoveToDeparture?: () => void;
 }) {
   const { reservation } = row;
   const derived = deriveReservationState(reservation);
@@ -249,17 +273,26 @@ function ReservationListRow({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="text-[12px]">
             <DropdownMenuItem onSelect={onClick}>Открыть бронь</DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem disabled={!onOpenApplication} onSelect={onOpenApplication}>
               <ExternalLink className="mr-1 h-3.5 w-3.5" /> Открыть заявку
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled={reservation.source !== 'own'}>
+            <DropdownMenuItem
+              disabled={reservation.source !== 'own' || !onOpenChangeUnit}
+              onSelect={onOpenChangeUnit}
+            >
               <Wrench className="mr-1 h-3.5 w-3.5" /> Сменить unit
             </DropdownMenuItem>
-            <DropdownMenuItem disabled={reservation.source !== 'subcontractor'}>
+            <DropdownMenuItem
+              disabled={reservation.source !== 'subcontractor' || !onOpenSelectSubcontractor}
+              onSelect={onOpenSelectSubcontractor}
+            >
               <Building2 className="mr-1 h-3.5 w-3.5" /> Выбрать подрядчика
             </DropdownMenuItem>
-            <DropdownMenuItem disabled={!ready}>
+            <DropdownMenuItem
+              disabled={!ready || !onOpenMoveToDeparture}
+              onSelect={onOpenMoveToDeparture}
+            >
               <Truck className="mr-1 h-3.5 w-3.5" /> Перевести в выезд
             </DropdownMenuItem>
             <DropdownMenuSeparator />

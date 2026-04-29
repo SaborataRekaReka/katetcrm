@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import { Application } from '../../types/application';
 import { Lead, StageType } from '../../types/kanban';
 import { mockApplicationsList } from '../../data/mockApplicationsList';
@@ -23,6 +24,7 @@ import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
+import { isApiErrorStatus } from '../../lib/apiErrors';
 import { ApplicationListParams } from '../../lib/applicationsApi';
 import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
@@ -228,6 +230,12 @@ export function ApplicationsWorkspacePage() {
     setIsLeadOverlayOpen(false);
     setLeadOverlayId(null);
   };
+  const handleLeadOverlayOpenChange = (open: boolean) => {
+    setIsLeadOverlayOpen(open);
+    if (!open) {
+      setLeadOverlayId(null);
+    }
+  };
 
   // Lazy-load lead by id only when overlay is requested (cross-entity nav
   // from an application card's "Открыть лид" action). We reuse the same
@@ -236,6 +244,14 @@ export function ApplicationsWorkspacePage() {
   const overlayLead: Lead | null = overlayLeadQuery.data
     ? toKanbanLead(overlayLeadQuery.data)
     : null;
+
+  useEffect(() => {
+    if (!isLeadOverlayOpen || !overlayLeadQuery.isError) return;
+    if (isApiErrorStatus(overlayLeadQuery.error, 404)) {
+      toast.warning('Связанный лид не найден или уже удален');
+      handleCloseLeadOverlay();
+    }
+  }, [isLeadOverlayOpen, overlayLeadQuery.isError, overlayLeadQuery.error]);
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
@@ -271,6 +287,7 @@ export function ApplicationsWorkspacePage() {
                 lead={applicationToLead(selected)}
                 onClose={handleClose}
                 onOpenClient={handleOpenClient}
+                onOpenLead={USE_API ? handleOpenLead : undefined}
               />
             ) : selected.stage === 'departure' ? (
               <DepartureWorkspace
@@ -305,13 +322,14 @@ export function ApplicationsWorkspacePage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isLeadOverlayOpen} onOpenChange={setIsLeadOverlayOpen}>
+      <Dialog open={isLeadOverlayOpen} onOpenChange={handleLeadOverlayOpenChange}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {overlayLead ? (
             <LeadDetailModal
               lead={overlayLead}
               onClose={handleCloseLeadOverlay}
               onOpenClient={() => handleOpenClient(overlayLead)}
+              onOpenLead={USE_API ? handleOpenLead : undefined}
             />
           ) : overlayLeadQuery.isLoading ? (
             <div className="flex h-full items-center justify-center text-[12px] text-gray-500">

@@ -75,6 +75,26 @@ npm --prefix app/backend run build
 npm --prefix app/frontend run build
 ```
 
+## AI agent workspace
+
+Agent instructions:
+
+- `AGENTS.md`
+- `.github/copilot-instructions.md`
+- `.github/agents/`
+- `docs/AGENT_WORKFLOW.md`
+- `docs/AGENT_TASK_TEMPLATE.md`
+- `OWNERSHIP.md`
+
+Minimum agent validation:
+
+```bash
+npm --prefix app/backend run typecheck
+npm --prefix app/backend run build
+npm --prefix app/frontend run build
+npm --prefix app/frontend run check:ui-consistency
+```
+
 ## Минимальная проверка релизной готовности
 
 ```bash
