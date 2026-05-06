@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const localBaseUrl = 'http://127.0.0.1:5173';
+const localBaseUrl = 'http://localhost:5173';
 const baseURL = process.env.E2E_BASE_URL ?? localBaseUrl;
 const shouldStartLocalFrontend = !process.env.E2E_SKIP_WEB_SERVER && baseURL === localBaseUrl;
 

@@ -31,6 +31,17 @@ const STAGE_META: Record<StageType, { title: string; color: string }> = {
   unqualified: { title: 'Некачественный', color: 'bg-[#E74C3C]' },
 };
 
+const FALLBACK_STAGE_META = {
+  title: 'Неизвестно',
+  color: 'bg-muted-foreground/40',
+};
+
+function getStageMeta(stage: string | undefined) {
+  if (!stage) return FALLBACK_STAGE_META;
+  return (STAGE_META as Record<string, { title: string; color: string }>)[stage]
+    ?? { title: stage, color: FALLBACK_STAGE_META.color };
+}
+
 function fmtDate(d?: string) {
   if (!d) return '—';
   const date = new Date(d);
@@ -52,14 +63,15 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
       header: 'Имя',
       width: 220,
       sortValue: (l) => l.client.toLowerCase(),
-      cell: (l) => (
-        <div className="flex min-w-0 items-center gap-2">
-          <span
-            className={cn('inline-block h-2 w-2 shrink-0 rounded-full', STAGE_META[l.stage].color)}
-          />
-          <span className="truncate font-medium text-foreground">{l.client}</span>
-        </div>
-      ),
+      cell: (l) => {
+        const stageMeta = getStageMeta(l.stage);
+        return (
+          <div className="flex min-w-0 items-center gap-2">
+            <span className={cn('inline-block h-2 w-2 shrink-0 rounded-full', stageMeta.color)} />
+            <span className="truncate font-medium text-foreground">{l.client}</span>
+          </div>
+        );
+      },
     },
     {
       id: 'company',
@@ -74,12 +86,15 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
       header: 'Статус',
       width: 140,
       sortValue: (l) => l.stage,
-      cell: (l) => (
-        <span className={cn(badgeBase, badgeTones.muted)}>
-          <span className={cn('mr-1 inline-block h-1.5 w-1.5 rounded-full', STAGE_META[l.stage].color)} />
-          {STAGE_META[l.stage].title}
-        </span>
-      ),
+      cell: (l) => {
+        const stageMeta = getStageMeta(l.stage);
+        return (
+          <span className={cn(badgeBase, badgeTones.muted)}>
+            <span className={cn('mr-1 inline-block h-1.5 w-1.5 rounded-full', stageMeta.color)} />
+            {stageMeta.title}
+          </span>
+        );
+      },
     },
     {
       id: 'source',
