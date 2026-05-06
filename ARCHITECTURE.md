@@ -27,7 +27,8 @@ Current repository reality:
 
 - Vite + React + TypeScript.
 - State-driven shell via layout store (`layoutStore`) with partial URL sync (`routeSync`).
-- Tailwind + shadcn/ui as main UI layer.
+- Tailwind + shadcn/ui as the main shell/UI layer; MUI dependencies are installed and may be used where the current surface already uses them.
+- React Query is available and used for API-mode server state.
 - Detail views open via modal routing pattern (full-screen dialogs with stage-specific workspaces).
 
 Future-ready target (production backend integration):
@@ -38,7 +39,7 @@ Future-ready target (production backend integration):
 
 ### 2.2 Backend
 
-Текущая реализация (28.04.2026, см. `app/backend/`):
+Текущая реализация (06.05.2026, см. `app/backend/`):
 
 - NestJS 10 + TypeScript, модульный монолит.
 - Prisma 5 + PostgreSQL 16 (Docker Compose для локальной БД).
@@ -46,7 +47,7 @@ Future-ready target (production backend integration):
 - Полный auth-контур: `/auth/login`, `/auth/refresh`, `/auth/me` + JWT guards.
 - Реализованные доменные модули: `leads`, `clients`, `applications`, `reservations`,
   `departures`, `completions`, `tasks`, `directories`, `imports`, `integrations`, `activity`, `stats`,
-  `users`, `settings`.
+  `users`, `settings`, `navigation`, `health`.
 - Prisma schema покрывает все ключевые сущности MVP: `User`, `Client`, `Lead`,
   `Application`, `ApplicationItem`, `Reservation`, `Task`, `EquipmentCategory`,
   `EquipmentType`, `EquipmentUnit`, `Subcontractor`, `Departure`, `Completion`,
@@ -54,8 +55,9 @@ Future-ready target (production backend integration):
 - Инварианты уровня БД: partial unique index на одну активную `Application` на
   `Lead` и одну активную `Reservation` на `ApplicationItem`; уникальность
   `IntegrationEvent` по `(channel, externalId)` для идемпотентности.
-- Testing reset 05.05.2026: previous smoke/e2e commands and results were removed.
-  New test expectations must be rebuilt from `QA_REQUIREMENTS.md`.
+- Testing reset 05.05.2026: старые smoke/e2e результаты недействительны.
+  Текущая contract/integration/e2e/coverage модель заново собрана от `QA_REQUIREMENTS.md`;
+  актуальные команды и статус см. в `TESTING_STRATEGY.md` и `docs/TEST_EXECUTION_REPORT.md`.
 
 Текущие обязательные свойства:
 
@@ -102,6 +104,7 @@ Core bounded contexts:
 7. `analytics`
 8. `imports`
 9. `tasks`
+10. `navigation`
 
 Cross-cutting contexts:
 
@@ -120,6 +123,7 @@ Boundary principles:
 - `analytics` reads from operational data but does not own operational mutations.
 - `imports` writes through domain use-cases, not direct table bypass.
 - `tasks` owns personal work queue records and links to CRM entities without replacing CRM stage semantics.
+- `navigation` owns backend deep-link resolution and linked-id chains for shared entity open context.
 
 ## 5. Key data flows
 

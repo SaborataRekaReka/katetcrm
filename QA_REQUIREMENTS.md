@@ -10,7 +10,7 @@ The product owner is the only authority for expected behavior when docs, old tes
 
 QA-RESET-001: Previous tests, previous test commands, and previous test results must not be used for future quality decisions.
 
-QA-RESET-002: The old test files and old test result artifacts are removed from the repository.
+QA-RESET-002: The old pre-reset test files and old result artifacts were removed from the repository. Current rebuilt tests must be traceable to the QA-REQ entries below.
 
 QA-RESET-003: New tests must be written from product-owner-confirmed requirements in this document.
 

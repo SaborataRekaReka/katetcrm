@@ -113,6 +113,12 @@
   - комментарий/заметку по условиям;
   - возможность перевести бронь дальше **без заполненного unit подрядчика**.
 
+Текущий backend/QA срез:
+
+- Внутренняя готовность брони может учитывать подрядчика без собственной единицы техники.
+- Создание `Departure` через `POST /departures` сейчас требует выбранный `equipmentUnitId` для брони (`QA-REQ-014`).
+- Не менять это поведение без отдельного продуктового решения, потому что оно влияет на тестовый контракт.
+
 #### Минимальные статусы подтверждения подрядчика
 
 - `not_requested`
@@ -441,13 +447,13 @@ MVP считается принятым, если:
 
 ---
 
-## 12. Состояние реализации (актуализация 2026-04-28)
+## 12. Состояние реализации (актуализация 2026-05-06)
 
 ### 12.1 Сделано
 
 - Backend реализован в `app/backend` (NestJS + Prisma + PostgreSQL + миграции + seed).
 - Работает auth/RBAC контур: `POST /auth/login`, `POST /auth/refresh`, `GET /auth/me`, guards и роли `admin/manager`.
-- Реализованы API-модули MVP: `leads`, `clients`, `applications`, `application-items`, `reservations`, `departures`, `completions`, `tasks`, `directories`, `integrations`, `imports`, `activity`, `stats`, `users`.
+- Реализованы API-модули MVP: `leads`, `clients`, `applications`, `application-items`, `reservations`, `departures`, `completions`, `tasks`, `directories`, `integrations`, `imports`, `activity`, `stats`, `users`, `settings`, `navigation`, `health`.
 - Ключевые бизнес-инварианты enforced на уровне БД/сервисов:
   - одна активная заявка на лид;
   - одна активная бронь на позицию;
@@ -459,23 +465,22 @@ MVP считается принятым, если:
 - Admin: Imports (`preview/run/report`) и Integrations (`list/detail/retry/replay`) подключены в API-режиме.
 - Control analytics переведён на server-side контракт `GET /stats/analytics?viewId=...&sampleTake=...`.
 - Закрыт cross-module dead-control аудит для клиентских CTA/link точек в Reservation/Departure/Completion (включая API workspace-варианты) и shared affordance (`DenseDataTable`, `KpiRow`).
-- Testing reset 05.05.2026: прежние smoke/e2e команды и результаты удалены; новые тесты должны строиться от `QA_REQUIREMENTS.md`.
+- Testing reset 05.05.2026: прежние smoke/e2e команды и результаты удалены.
+- Текущая rebuilt validation модель строится от `QA_REQUIREMENTS.md`: backend API contract/integration/coverage, frontend adapter coverage, browser e2e smoke/full gate.
 
 ### 12.2 Не сделано / оставшиеся разрывы до полного MVP
 
 - Расширение форматов импорта не в приоритете (фокус на hardening текущего CSV-flow).
-- Часть экранов Control/Admin/Directories всё ещё имеет локальные fallback-ветки и неполный runtime/e2e coverage.
-- Users/Permissions/Settings в Admin подключены к backend, но требуется операционная стабилизация и регрессионное покрытие write-сценариев.
-- Нужны дополнительные аналитические срезы и browser runtime-pass для отчётных сценариев.
-- Нет полноценного e2e/contract набора тестов для всех критичных интеграционных сценариев.
+- Import/integration negative scenarios требуют дополнительного contract/browser покрытия после уточнения требований.
+- Production-like signed webhook fixtures и CSV size/error taxonomy требуют отдельного hardening.
+- `leads.service.ts` сохраняет legacy/compatibility auto-create Departure при переходе Lead `reservation -> departure`; текущий QA/API путь считает перевод в выезд ручным действием через `POST /departures`.
 - PWA (service worker/manifest) не является реализованной целью текущего среза.
 
 ### 12.3 Краткий план доведения до MVP (по шагам)
 
 1. **Усилить import/integration hardening.** Добить backend CSV safety limits/error taxonomy и CI-проверку signed webhook fixtures с production-like secret profiles.
-2. **Покрыть admin/control browser runtime.** Добавить новые browser checks только после фиксации требований в `QA_REQUIREMENTS.md`.
-3. **Собрать новый quality gate.** Начать с доменного happy path, затем расширять contract/regression coverage от подтверждённых требований.
-4. **Закрыть runtime-pass по primary CTA.** Пройти browser-проверку editability/CTA-семантики во всех затронутых доменах.
+2. **Расширять coverage только от подтверждённых требований.** Новые browser/API checks добавлять после фиксации ожиданий в `QA_REQUIREMENTS.md`.
+3. **Поддерживать rebuilt quality gates.** При изменениях запускать релевантные команды из `TESTING_STRATEGY.md` и обновлять `docs/TEST_EXECUTION_REPORT.md`.
 
 ---
 

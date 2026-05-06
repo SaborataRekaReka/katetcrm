@@ -46,6 +46,6 @@ Every task must include:
 
 1. Backend contract/schema changes
 2. Frontend wiring
-3. Tests/smoke/e2e
+3. Rebuilt tests and validation gates (`QA_REQUIREMENTS.md`-traceable)
 4. Docs
 5. QA review

@@ -2,17 +2,19 @@
 
 ## 1. Route model baseline
 
-This repository currently uses state-driven navigation with partial URL sync.
+This repository currently uses state-driven navigation with partial URL sync and no app-level `react-router`.
 
 Primary routing anchor:
 
 - `activeSecondaryNav` in layout store chooses workspace page.
 - `currentView` controls board/list/table (or module-specific tabs).
-- `routeSync` mirrors selected secondary ids into pathname + `?view=`.
+- `routeSync` mirrors routed secondary ids into pathname + `?view=`.
+- Entity open context is mirrored as `?entityType=<type>&entityId=<id>`.
 
 Rule:
 
 - Any new page must define both state id and route strategy.
+- Saved-view ids that do not have a pathname are filter aliases, not canonical shareable routes.
 
 ## 2. Route map (MVP)
 
@@ -24,7 +26,6 @@ Rule:
 - `/applications/my` -> `my-applications`
 - `/applications/no-reservation` -> `apps-no-reservation`
 - `/applications/ready` -> `apps-ready`
-- `/clients` -> `clients`
 
 Saved views (state aliases, route optional in current repo):
 
@@ -35,13 +36,19 @@ Saved views (state aliases, route optional in current repo):
 - `view-stale`
 - `view-duplicates`
 
-### 2.2 Operations domain
+### 2.2 Clients domain
 
-State ids:
+- `/clients` -> `clients`
+- `/clients/new` -> `clients-new`
+- `/clients/repeat` -> `clients-repeat`
+- `/clients/vip` -> `clients-vip`
+- `/clients/debt` -> `clients-debt`
 
-- `reservations`
-- `departures`
-- `completion`
+### 2.3 Operations domain
+
+- `/reservations` -> `reservations`
+- `/departures` -> `departures`
+- `/completion` -> `completion`
 
 Ops saved views:
 
@@ -55,20 +62,32 @@ Ops saved views:
 - `view-overdue-departures`
 - `view-no-completion`
 
-### 2.3 Catalogs / Control / Admin
+### 2.4 Catalogs / Control / Admin
 
-State ids are canonical module ids from nav config:
+Canonical pathnames:
 
-- Catalogs: `equipment-types`, `equipment-units`, `subcontractors`, plus archive/category helpers.
-- Control: `reports`, `audit`, and analytics saved views.
-- Admin: `imports`, `settings`, `users`, `permissions` (admin-only).
+- `/directory/equipment-types` -> `equipment-types`
+- `/directory/units` -> `equipment-units`
+- `/directory/contractors` -> `subcontractors`
+- `/directory/categories` -> `equipment-categories`
+- `/dashboard` -> `dashboard`
+- `/reports` -> `reports`
+- `/audit` -> `audit`
+- `/admin/imports` -> `imports` (admin-only)
+- `/admin/integrations` -> `integrations` (admin-only)
+- `/admin/settings` -> `settings` (admin-only)
+- `/admin/users` -> `users` (admin-only)
+- `/admin/permissions` -> `permissions` (admin-only)
+
+Control analytics saved-view ids are `view-stale-leads`, `view-lost-leads`, `view-active-reservations`, `view-manager-load`.
 
 ## 3. Which entities open from which route/view
 
 1. Leads board/list/table row/card click -> lead detail modal or stage-specific workspace.
 2. Applications list/table row click -> application detail modal (or reservation/departure/completion workspace by stage).
 3. Reservations list/table row click -> reservation workspace modal.
-4. Client open actions from details -> client workspace modal.
+4. Departures/completion row click -> stage-specific full-screen workspace.
+5. Client row/card/open actions -> client workspace modal.
 
 Open-behavior rule:
 
@@ -97,7 +116,13 @@ Open-behavior rule:
 - `list`
 - `cards`
 
-### 4.5 Control modules
+### 4.5 Catalogs
+
+- `table`
+- `list`
+- `cards`
+
+### 4.6 Control modules
 
 - Reports: `reports`, `dashboard`
 - Audit: `table`, `feed`
@@ -125,8 +150,12 @@ Mandatory current MVP pages:
 - Leads workspace.
 - Applications workspace.
 - Reservations workspace.
-- Module placeholders for not-yet-implemented domains.
-- Catalogs/control/admin entries with role-aware visibility.
+- Departures workspace.
+- Completion workspace.
+- Clients workspace.
+- Home workspace.
+- Catalogs, Control, and Admin workspaces with role-aware visibility.
+- Module placeholders only for explicitly unfinished secondary contexts, not as fake working features.
 
 ## 7. Tabs and toolbar rules by domain
 
@@ -140,7 +169,7 @@ Examples:
 
 - Leads: CTA "New lead" is valid.
 - Applications: no fake top-level create CTA if creation is lead-driven.
-- Reservations: no fake "New reservation" CTA; creation is item-context action from application.
+- Reservations: no top-level primary CTA in shell metadata. Current API-mode page has a contextual "New reservation" action that selects an `ApplicationItem` without active reservation; it must stay item-context-backed and must not become free-form reservation creation.
 
 ## 8. Consistency checklist for new views
 

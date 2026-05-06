@@ -134,7 +134,7 @@ Consistency rule:
 
 - Open behavior must be uniform across board/list/table for the same entity type.
 
-## 11. Interactivity patterns (implemented, 23.04.2026)
+## 11. Interactivity patterns (current baseline, updated 06.05.2026)
 
 All detail modals (`LeadDetailModal`, `ReservationWorkspace`, `ApplicationDetailView`) share:
 
@@ -150,4 +150,5 @@ All detail modals (`LeadDetailModal`, `ReservationWorkspace`, `ApplicationDetail
 - Frontend зеркалит backend `ALLOWED_TRANSITIONS` в `LeadsKanbanBoard.tsx`: не-валидные колонки получают `opacity-60`, валидные — `ring-emerald`.
 - Ошибки бэка (400 `Недопустимый переход`) отображаются inline-toast в верхней части доски, 4 сек.
 - lead→application транзакционно создаёт `Application` + `Client` на сервере (`leads.service.ts`). Это ожидаемое поведение, НЕ добавлять optimistic rollback в UI.
-- reservation/departure → completed/unqualified автоматически снимает активные брони на сервере. Не дублировать release в UI.
+- departure→completed/unqualified автоматически снимает активные брони на сервере. Не дублировать release в UI.
+- reservation→departure в текущем QA/API контракте является явным действием пользователя и требует выбранный unit перед созданием `Departure`.

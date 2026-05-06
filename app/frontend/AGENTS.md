@@ -47,4 +47,13 @@ Minimum frontend validation:
 npm --prefix app/frontend run build
 ```
 
+Current rebuilt frontend gates when the touched surface requires tests:
+
+```bash
+npm --prefix app/frontend run test:coverage
+npm --prefix app/frontend run e2e:gate
+npm --prefix app/frontend run e2e:gate:full
+```
+
 New frontend tests must reference requirement ids from [../../QA_REQUIREMENTS.md](../../QA_REQUIREMENTS.md).
+Latest run status is tracked in [../../docs/TEST_EXECUTION_REPORT.md](../../docs/TEST_EXECUTION_REPORT.md).

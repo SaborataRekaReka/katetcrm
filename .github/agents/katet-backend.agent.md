@@ -34,11 +34,19 @@ Root [AGENTS.md](../../AGENTS.md) is the primary source of rules. Local backend 
 
 ## Required Validation
 
-Previous smoke commands were removed in the 05.05.2026 testing reset. Do not cite old smoke results; create new tests only from `QA_REQUIREMENTS.md`.
+Previous smoke commands were removed in the 05.05.2026 testing reset. Do not cite old smoke results; create or update tests only from `QA_REQUIREMENTS.md`.
 
 ```bash
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
+```
+
+For backend behavior, API contracts, projections, RBAC, imports, integrations, or invariants, add the smallest relevant gate:
+
+```bash
+npm --prefix app/backend run test:api-contract
+npm --prefix app/backend run test:integration
+npm --prefix app/backend run test:coverage
 ```
 
 ## Final Report

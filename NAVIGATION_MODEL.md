@@ -22,10 +22,11 @@ Canonical primary domains:
 
 1. `home`
 2. `sales`
-3. `ops`
-4. `catalogs`
-5. `control`
-6. `admin` (admin-only)
+3. `clients`
+4. `ops`
+5. `catalogs`
+6. `control`
+7. `admin` (admin-only)
 
 Behavior:
 
@@ -48,7 +49,6 @@ Groups:
 
 - Leads: all, my
 - Applications: all, my, no reservation, ready
-- Clients: all, new, repeat
 
 Saved views (sales-local):
 
@@ -59,7 +59,21 @@ Saved views (sales-local):
 - stale
 - duplicates
 
-### 3.3 Ops
+### 3.3 Clients
+
+Pages:
+
+- All clients
+- New clients
+- Repeat clients
+- VIP
+- With debt
+
+Rule:
+
+- Clients are their own primary domain in the current frontend, not a secondary page under Sales.
+
+### 3.4 Ops
 
 Pages:
 
@@ -79,22 +93,31 @@ Saved views (ops-local):
 - overdue departures
 - no completion
 
-### 3.4 Catalogs
+### 3.5 Catalogs
 
 - Equipment types
 - Equipment units
 - Subcontractors
-- Additional archive/category pages
+- Equipment categories
 
-### 3.5 Control
+### 3.6 Control
 
+- Dashboard
 - Reports
 - Audit log
 - Analytics-focused saved views
 
-### 3.6 Admin
+Saved views (control-local):
+
+- stale leads
+- lost leads
+- active reservations
+- manager load
+
+### 3.7 Admin
 
 - Imports
+- Integrations journal
 - Settings
 - Users
 - Permissions
@@ -153,12 +176,13 @@ Examples:
 
 - Sees all primary domains, including `admin`.
 - Sees all secondary entries.
-- Can access import/settings/user/permission pages.
+- Can access import/integration/settings/user/permission pages.
 
 ### 8.2 Manager
 
 - Sees all non-admin domains.
 - Must not see admin-only sections in navigation UI.
+- Must not see Admin primary domain, Imports, Integrations journal, Settings, Users, or Permissions.
 - Works on own/all scopes according to module filters and backend policy.
 
 Security note:

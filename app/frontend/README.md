@@ -33,7 +33,7 @@ Backend должен быть запущен на `http://localhost:3001`.
 
 ## Текущий охват API-режима
 
-На 28.04.2026 в API-режиме подключены основные потоки:
+На 06.05.2026 в API-режиме подключены основные потоки:
 
 - Leads (list/detail/create/stage transitions)
 - Applications (list/detail/header + item mutations)
@@ -44,18 +44,28 @@ Backend должен быть запущен на `http://localhost:3001`.
 - Home dashboard (`/stats` + recent activity) и My Tasks (API write-flow: create/update/status/duplicate/archive/subtasks)
 - Admin: Imports (preview/run/report), Integrations (list/detail/retry/replay), Users (list/create/activate/role/name/password), Permissions+Settings (read/write)
 - Control: API-driven dashboard/reports/audit/analytics branches (`reports` через `GET /stats/reports`, audit filters server-side), manager-load без mock fallback
-- Browser tests удалены в рамках testing reset 05.05.2026; новые сценарии должны быть написаны от `../../QA_REQUIREMENTS.md`.
+- Browser tests пересобраны после testing reset от `../../QA_REQUIREMENTS.md`.
 
-Оставшиеся крупные зоны: production-hardening import/integration контуров и создание новой browser/runtime test suite после фиксации требований.
+Оставшиеся крупные зоны: production-hardening import/integration контуров и расширение browser/runtime coverage только после фиксации новых требований.
 
-## Testing reset
+## Testing
 
-Playwright specs, Playwright config, test-results и e2e-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
+Pre-reset Playwright specs/results и e2e-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
 
-Текущая не-тестовая проверка frontend:
+Текущая compile-проверка frontend:
 
 ```bash
 npm run build
 ```
 
+Текущие rebuilt frontend gates:
+
+```bash
+npm run test:coverage
+npm run e2e:smoke
+npm run e2e:gate
+npm run e2e:gate:full
+```
+
 Новые frontend/browser tests должны ссылаться на requirement ids из `../../QA_REQUIREMENTS.md`.
+Актуальный run log: `../../docs/TEST_EXECUTION_REPORT.md`.

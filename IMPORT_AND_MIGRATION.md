@@ -4,11 +4,12 @@
 
 This file defines migration and import rules for MVP.
 
-Current implementation status (28.04.2026):
+Current implementation status (06.05.2026):
 
 1. Implemented API flow: `POST /api/v1/imports/preview`, `POST /api/v1/imports/run`, `GET /api/v1/imports/:importId/report`.
 2. Import pipeline is role-gated (`admin`) and writes activity records.
-3. Previous release smoke verification was removed in the 05.05.2026 testing reset; new import tests require confirmed requirements in `QA_REQUIREMENTS.md`.
+3. Previous release smoke verification was removed in the 05.05.2026 testing reset.
+4. Current core test gates are rebuilt from `QA_REQUIREMENTS.md`, but import/integration hardening scenarios still require confirmed requirements before new tests are added.
 
 ## 2. What we migrate
 

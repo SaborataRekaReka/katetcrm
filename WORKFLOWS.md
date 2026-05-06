@@ -91,7 +91,7 @@ Trigger:
 Steps:
 
 1. Create reservation linked to ApplicationItem.
-2. Set internal stage (`needs_selection` -> ... -> `ready_for_departure`).
+2. Set internal stage (`needs_source_selection` -> ... -> `ready_for_departure`).
 3. Assign source and optional unit/subcontractor.
 4. Keep conflict as warning.
 
@@ -112,13 +112,18 @@ Rules:
 
 Trigger:
 
-- Reservation stage requires concrete equipment unit.
+- Reservation must be converted to Departure.
 
 Steps:
 
 1. Select candidate unit.
 2. Validate availability window.
 3. Mark unit assignment in reservation.
+
+Current rule:
+
+- `POST /departures` requires selected `equipmentUnitId` for the reservation (`QA-REQ-014`).
+- Subcontractor sourcing may carry subcontractor confirmation context, but Departure creation still requires a concrete unit in the current backend.
 
 Conflict behavior:
 
@@ -132,7 +137,7 @@ Trigger:
 
 Steps:
 
-1. Move workflow to departure context.
+1. User explicitly moves workflow to departure context.
 2. Keep links to lead/application/reservation/client.
 3. Track planned timing and operational status.
 

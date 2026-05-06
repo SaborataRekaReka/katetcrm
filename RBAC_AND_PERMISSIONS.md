@@ -30,7 +30,7 @@ Manager can:
 
 Manager cannot:
 
-1. Access admin-only modules (imports/settings/users/permissions) unless explicitly granted in future policy.
+1. Access admin-only modules (imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
 
 ## 3. UI visibility rules
 
@@ -61,9 +61,10 @@ At minimum require explicit confirmation for:
 Admin-only modules:
 
 1. Imports management.
-2. Global settings.
-3. User management.
-4. Permission management.
+2. Integrations journal and retry/replay operations.
+3. Global settings.
+4. User management.
+5. Permission management.
 
 ## 7. Permission consistency checklist
 
@@ -78,4 +79,8 @@ Before release:
 
 Testing reset 05.05.2026 removed previous automated RBAC smoke checks and their results.
 
-New RBAC tests must be created from confirmed requirements in `QA_REQUIREMENTS.md`. Until then, this document describes the intended permission model, not proven automated coverage.
+Current rebuilt RBAC coverage is based on `QA_REQUIREMENTS.md`:
+
+1. API contract tests cover admin-only deny behavior for manager (`403` policy).
+2. Browser E2E covers manager navigation visibility, direct admin route permission-denied UX, and happy-path manager actions.
+3. The current run status is tracked in `docs/TEST_EXECUTION_REPORT.md`.

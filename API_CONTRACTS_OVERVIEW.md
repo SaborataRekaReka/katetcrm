@@ -62,13 +62,17 @@ Contract expectations:
 - `GET /api/v1/applications/:id`
 - `POST /api/v1/applications`
 - `PATCH /api/v1/applications/:id`
+- `POST /api/v1/applications/:id/cancel`
 - `POST /api/v1/applications/:id/items`
-- `PATCH /api/v1/applications/:id/items/:itemId`
+- `GET /api/v1/application-items/:itemId`
+- `PATCH /api/v1/application-items/:itemId`
+- `DELETE /api/v1/application-items/:itemId`
 
 Contract expectations:
 
 1. One active application per lead is guarded by DB/business rules.
 2. Item-level statuses remain consistent with reservation lifecycle.
+3. Item readiness follows `QA-REQ-009`: equipment type, quantity, planned date/time, address, and non-undecided source.
 
 ### 3.4 Reservations
 
@@ -82,17 +86,22 @@ Contract expectations:
 
 1. Conflict signal remains warning-level (not hard block) for MVP.
 2. Internal stage transitions are validated server-side.
+3. Creating a reservation directly from `/reservations` is only valid when it is bound to an `ApplicationItem`.
+4. Current `ReservationInternalStage` values include `needs_source_selection` and `subcontractor_selected`.
 
 ### 3.5 Clients / Departures / Completions
 
 - `GET /api/v1/clients`, `GET /api/v1/clients/:id`, `PATCH /api/v1/clients/:id`
 - `GET /api/v1/departures`, `POST /api/v1/departures`, `PATCH /api/v1/departures/:id`
+- `POST /api/v1/departures/:id/start|arrive|cancel|complete`
 - `GET /api/v1/completions`, `POST /api/v1/completions`, `PATCH /api/v1/completions/:id`
 
 Contract expectations:
 
 1. Linked-record history is returned in normalized form for detail workspace.
 2. Completion/unqualified outcomes stay explicit in API payload.
+3. `POST /api/v1/departures` currently requires a selected reservation `equipmentUnitId` before departure creation.
+4. Completion/unqualified cascades must release active reservations and write activity entries.
 
 ### 3.6 Stats / Activity
 
@@ -176,6 +185,7 @@ Contract expectations:
 2. Returns deterministic `linkedIds` chain (`leadId`, `applicationId`, `reservationId`, `departureId`, `completionId`, `clientId`, `applicationItemId`) for stage switcher UX.
 3. Uses existing server-side visibility checks; foreign entity access returns role-appropriate deny (`403` or `404` depending on domain policy).
 4. Unknown entity ids return `404`; invalid `entityType` returns `400`.
+5. Backend deep-link resolver does not currently accept `client`; frontend route state can still open client workspace with `entityType=client`.
 
 ## 4. Error handling policy
 

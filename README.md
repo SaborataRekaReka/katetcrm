@@ -9,6 +9,7 @@ Monorepo с двумя приложениями:
 
 - Точка входа по документации: `docs/README.md`.
 - Канонические продуктовые и архитектурные документы лежат в корне репозитория.
+- Для AI-работы главный порядок чтения: `AGENTS.md` -> `docs/README.md` -> stable docs из карты документации.
 - Исторические материалы и черновые исследования вынесены в `docs/archive/` и не используются как активный источник требований.
 
 ## Быстрый старт
@@ -75,6 +76,24 @@ npm --prefix app/backend run build
 npm --prefix app/frontend run build
 ```
 
+## Текущие тестовые ворота
+
+Тестовая модель после reset от 05.05.2026 заново собрана от `QA_REQUIREMENTS.md`.
+Новые и изменяемые тесты должны ссылаться на `QA-REQ-*`.
+
+Основные команды:
+
+```bash
+npm --prefix app/backend run test:api-contract
+npm --prefix app/backend run test:integration
+npm --prefix app/backend run test:coverage
+npm --prefix app/frontend run test:coverage
+npm --prefix app/frontend run e2e:gate
+npm --prefix app/frontend run e2e:gate:full
+```
+
+Актуальный журнал прогонов: `docs/TEST_EXECUTION_REPORT.md`.
+
 ## AI agent workspace
 
 Agent instructions:
@@ -94,8 +113,6 @@ npm --prefix app/backend run build
 npm --prefix app/frontend run build
 ```
 
-## Testing reset
+Для изменений в API, доменной логике, маршрутах, RBAC, деталях или критичных кнопках добавляй соответствующие contract/integration/coverage/e2e команды из `TESTING_STRATEGY.md`.
 
-Текущие smoke/e2e/ui-consistency проверки и их результаты удалены 05.05.2026 и больше не являются источником истины.
-
-Новая тестовая модель должна строиться от [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md). Пока новая suite не создана, сборка и typecheck подтверждают только компилируемость, не бизнес-корректность.
+Build/typecheck подтверждают только компилируемость, не бизнес-корректность.

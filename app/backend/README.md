@@ -116,6 +116,7 @@ prisma/
 - `applications`, `reservations`, `directories`.
 - `departures`, `completions`.
 - `tasks`.
+- `navigation` — deep-link resolver for entity open context (`GET /navigation/deep-link`).
 - `imports` — preview/run/report (admin).
 - `stats` — агрегаты для Home dashboard + report slices (`GET /stats/reports?periodDays=7|30`) + analytics view slices (`GET /stats/analytics?viewId=...&sampleTake=...`).
 - `integrations` — ingest/retry/replay + idempotency event log.
@@ -125,18 +126,27 @@ prisma/
 - `imports`: production-hardening CSV-пайплайна (лимиты, профили ошибок, runbook retry/replay).
 - Новые tests для import/integration сценариев должны быть написаны только после фиксации требований в `../../QA_REQUIREMENTS.md`.
 
-## Testing reset
+## Testing
 
-Smoke-скрипты и smoke-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
+Pre-reset smoke-скрипты и smoke-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
 
-Текущая не-тестовая проверка backend:
+Текущая compile-проверка backend:
 
 ```bash
 npm run typecheck
 npm run build
 ```
 
+Текущие rebuilt backend test gates:
+
+```bash
+npm run test:api-contract
+npm run test:integration
+npm run test:coverage
+```
+
 Новые backend tests должны ссылаться на requirement ids из `../../QA_REQUIREMENTS.md`.
+Актуальный run log: `../../docs/TEST_EXECUTION_REPORT.md`.
 
 ## One-off backfill
 

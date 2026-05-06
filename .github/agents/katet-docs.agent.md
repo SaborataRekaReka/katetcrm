@@ -12,6 +12,7 @@ Root [AGENTS.md](../../AGENTS.md) is the primary source of agent rules.
 ## Scope
 
 - You may change `*.md` and `docs/**`.
+- You may update package-local `AGENTS.md`/`README.md` and `.github` agent markdown wrappers when AI workflow rules drift.
 - Do not use `docs/archive/**` as active requirements.
 - Maintain `docs/README.md` as the documentation map.
 - Update docs only when behavior, API contracts, workflow, RBAC, validation commands, or agent workflow changed.

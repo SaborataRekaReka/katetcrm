@@ -47,13 +47,26 @@ Planner / Backend Agent / Frontend Agent / QA Reviewer / Docs Agent.
 
 ## Validation commands
 
+Always include the minimum compile gate unless the task is explicitly docs-only and repository policy allows skipping it:
+
 ```bash
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
 ```
 
-Testing reset note: removed smoke/e2e/ui-consistency commands must not be used. New tests must reference requirement ids from `QA_REQUIREMENTS.md`.
+Add the smallest relevant rebuilt test gate for the touched surface:
+
+```bash
+npm --prefix app/backend run test:api-contract
+npm --prefix app/backend run test:integration
+npm --prefix app/backend run test:coverage
+npm --prefix app/frontend run test:coverage
+npm --prefix app/frontend run e2e:gate
+npm --prefix app/frontend run e2e:gate:full
+```
+
+Testing reset note: removed pre-reset smoke/e2e/ui-consistency commands must not be used. New tests must reference requirement ids from `QA_REQUIREMENTS.md`.
 
 ## Final report format
 

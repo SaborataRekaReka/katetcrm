@@ -62,14 +62,16 @@ Purpose:
 Key fields:
 
 - `id`
-- `status = active | released`
+- projected `status = active | released` from backend `isActive`
 - `internalStage`
-- `reservationType = equipment_type | specific_unit`
+- `sourcingType = own | subcontractor | undecided`
 - `equipmentType`, optional `equipmentUnit`
-- `source = own | subcontractor | undecided`
-- `subcontractor`
+- optional `subcontractor`
+- `subcontractorConfirmation = not_requested | requested | confirmed | declined | no_response`
+- `promisedModelOrUnit`, `subcontractorNote`
+- `plannedStart`, `plannedEnd`
 - `reservedBy`, `reservedAt`, `releasedAt`, `releaseReason`
-- `hasConflict`, `conflict`
+- `hasConflictWarning`, projected `hasConflict`, `conflict`
 - `readyForDeparture`
 - `linked` (application/client/lead/position references)
 - `candidateUnits[]`, `subcontractorOptions[]`, `activity[]`
@@ -112,8 +114,8 @@ Minimal fields:
 
 - `id`, `typeId`, `name`
 - optional identifiers (`plate`, serial)
-- availability status (`available | busy | maintenance`)
-- owner (`own` or subcontractor reference)
+- directory status (`active | inactive | archived`)
+- current backend units are own-fleet records; subcontractor sourcing is represented through `Reservation.subcontractor`
 
 ### 1.8 Subcontractor
 
@@ -138,7 +140,7 @@ Minimal fields:
 - `id`
 - link to reservation/application/client
 - plan/fact timestamps
-- execution status (`planned | on_the_way | arrived | completed | cancelled`)
+- execution status (`scheduled | in_transit | arrived | completed | cancelled`)
 
 ### 1.10 ActivityLog
 
@@ -171,7 +173,7 @@ Minimal fields:
 1. Lead 1 -> 0..1 active Application.
 2. Application 1 -> N ApplicationItems.
 3. ApplicationItem 1 -> 0..1 active Reservation.
-4. Reservation -> EquipmentType (required), EquipmentUnit (optional initially).
+4. Reservation -> EquipmentType (expected for planning; schema allows nullable during transitional/import states), EquipmentUnit (optional until departure creation).
 5. Client 1 -> N Leads and N Applications.
 6. Subcontractor 1 -> N EquipmentUnits.
 7. Any critical entity mutation -> ActivityLog entry.
@@ -198,6 +200,10 @@ Minimal fields:
 - `completed`
 - `unqualified`
 
+Implementation note:
+
+- The shared backend `PipelineStage` enum also contains `cancelled` for terminal application/cancel flows. Do not add a new kanban column for it unless product scope changes.
+
 ### 4.2 Application status
 
 - `application`
@@ -208,9 +214,10 @@ Minimal fields:
 
 ### 4.3 Reservation internal stages
 
-- `needs_selection`
+- `needs_source_selection`
 - `searching_own_equipment`
 - `searching_subcontractor`
+- `subcontractor_selected`
 - `type_reserved`
 - `unit_defined`
 - `ready_for_departure`
@@ -220,12 +227,13 @@ Minimal fields:
 
 Allowed transitions (MVP):
 
-1. `needs_selection` -> `searching_own_equipment` or `searching_subcontractor`
-2. `searching_own_equipment` -> `type_reserved` or back to `needs_selection`
-3. `searching_subcontractor` -> `type_reserved` or back to `needs_selection`
-4. `type_reserved` -> `unit_defined` or back to search stage
-5. `unit_defined` -> `ready_for_departure` or back to `type_reserved`
-6. `ready_for_departure` -> `released` (when completed/unqualified/cancel flow triggers release)
+1. `needs_source_selection` -> `searching_own_equipment` or `searching_subcontractor`
+2. `searching_own_equipment` -> `type_reserved` or back to `needs_source_selection`
+3. `searching_subcontractor` -> `subcontractor_selected` or back to `needs_source_selection`
+4. `subcontractor_selected` -> `ready_for_departure` or back to `searching_subcontractor`
+5. `type_reserved` -> `unit_defined` or back to `searching_own_equipment`
+6. `unit_defined` -> `ready_for_departure` or back to `type_reserved`
+7. `ready_for_departure` -> `released` (when completed/unqualified/cancel flow triggers release)
 
 Exception policy:
 
@@ -243,7 +251,10 @@ Exception policy:
 
 ### 6.2 Reservation readiness
 
-- `readyForDeparture = true` when source and unit assignment satisfy departure prerequisites.
+- Internal reservation readiness requires an explicit source path:
+  - `own`: selected equipment unit before departure.
+  - `subcontractor`: selected subcontractor and confirmation context.
+- Current backend departure creation (`POST /departures`) enforces selected `equipmentUnitId` before creating Departure, per `QA-REQ-014`. Do not weaken this without an explicit product decision.
 
 ### 6.3 Duplicate signal
 

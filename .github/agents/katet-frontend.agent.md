@@ -34,10 +34,18 @@ Root [AGENTS.md](../../AGENTS.md) is the primary source of rules. Local frontend
 
 ## Required Validation
 
-Previous browser e2e and UI-consistency commands were removed in the 05.05.2026 testing reset. Do not cite old e2e results; create new tests only from `QA_REQUIREMENTS.md`.
+Previous browser e2e and UI-consistency commands were removed in the 05.05.2026 testing reset. Do not cite old e2e results; create or update tests only from `QA_REQUIREMENTS.md`.
 
 ```bash
 npm --prefix app/frontend run build
+```
+
+For frontend adapters, routes, RBAC UX, high-risk buttons, or browser workflows, add the smallest relevant gate:
+
+```bash
+npm --prefix app/frontend run test:coverage
+npm --prefix app/frontend run e2e:gate
+npm --prefix app/frontend run e2e:gate:full
 ```
 
 ## Final Report

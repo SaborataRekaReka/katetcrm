@@ -36,16 +36,27 @@ State the intended file list before changing files. Confirm the affected route, 
 
 Testing reset note:
 
-- Previous smoke/e2e/ui-consistency commands were removed on 05.05.2026.
-- Do not use previous test results as evidence.
-- New test expectations must come from [QA_REQUIREMENTS.md](../QA_REQUIREMENTS.md).
+- Pre-reset smoke/e2e/ui-consistency commands and results were removed on 05.05.2026.
+- Do not use pre-reset test results as evidence.
+- Current rebuilt test expectations come from [QA_REQUIREMENTS.md](../QA_REQUIREMENTS.md).
 
-Minimum non-test validation for agent changes while the new suite is being rebuilt:
+Minimum compile validation for agent changes:
 
 ```bash
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
+```
+
+Run the relevant rebuilt gate when behavior, API contracts, routes, RBAC, details, adapters, or high-risk buttons change:
+
+```bash
+npm --prefix app/backend run test:api-contract
+npm --prefix app/backend run test:integration
+npm --prefix app/backend run test:coverage
+npm --prefix app/frontend run test:coverage
+npm --prefix app/frontend run e2e:gate
+npm --prefix app/frontend run e2e:gate:full
 ```
 
 ## Final Report

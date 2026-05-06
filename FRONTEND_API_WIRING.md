@@ -1,6 +1,6 @@
 # FRONTEND ↔ API WIRING (CURRENT)
 
-Актуальный срез на 28.04.2026.
+Актуальный срез на 06.05.2026.
 
 Документ фиксирует только текущее состояние wiring между frontend и backend.
 Исторические заметки прошлых сессий сюда не включаются.
@@ -32,7 +32,7 @@
 |---|---|---|
 | Leads | `done` | list/detail/create/stage transitions/activity работают через API hooks |
 | Applications | `partial` | list/detail/header + item add/edit/delete и create reservation wired; часть фильтрации/derived-полей остается adapter-driven |
-| Reservations | `partial` | detail/read/update/release wired; источники unit/subcontractor подтягиваются из directories, но сценарии availability/typeahead можно усилить |
+| Reservations | `partial` | detail/read/update/release wired; источники unit/subcontractor подтягиваются из directories; contextual create из позиций заявки без активной брони доступен в API-режиме, но не является free-form top-level бронью |
 | Clients | `partial` | list/detail/create/update wired; client detail контекст в API-режиме собран API-first с явными pending/error; repeat-order зафиксирован через canonical create lead flow (`source=manual`, `sourceLabel=repeat_order`) |
 | Departures | `done` | list/detail/update/start/arrive/cancel/complete wired |
 | Completion | `done` | detail/create/update wired; no-completion список выделен в отдельный backend контракт `GET /completions/pending` |
@@ -84,7 +84,8 @@
 1. `GET /reservations`, `GET /reservations/:id`.
 2. `PATCH /reservations/:id` для stage/source/comment/dates/confirm/unit/subcontractor.
 3. `POST /reservations/:id/release`.
-4. Client CTA/link точки в detail workspace переведены на явную clickable-semantics (без silent no-op при отсутствии handler).
+4. `POST /reservations` используется только с `applicationItemId`; Reservations page предлагает создать бронь из позиций заявки без активной брони.
+5. Client CTA/link точки в detail workspace переведены на явную clickable-semantics (без silent no-op при отсутствии handler).
 
 Остаточные задачи:
 
@@ -114,7 +115,7 @@
 
 Остаточные задачи:
 
-1. Добавить browser runtime/e2e покрытие для completion-специфичных негативных сценариев.
+1. Расширять browser runtime/e2e покрытие только при новых подтверждённых requirements; текущий no-completion/unqualified/repeat-order контур покрыт rebuilt E2E.
 
 ### 4.3 Clients
 
@@ -213,16 +214,22 @@
 
 1. Во многих доменах есть корректный feature-flag gate: API ветка при `VITE_USE_API=true`, fallback при выключенном API.
 2. React Query invalidation после мутаций реализована системно и в целом дает предсказуемую синхронизацию detail/list.
-3. Основной риск текущего состояния: недостаточное browser runtime/e2e покрытие для import UX-сценариев и расширенных негативных кейсов admin/control.
+3. Основной риск текущего состояния: недостаточное browser runtime/e2e покрытие для import/integration UX-сценариев и расширенных негативных кейсов admin/control.
 
 ## 6. Приоритет закрытия gaps
 
 1. Усилить production-hardening import/integration контуров (HMAC fixtures в CI, large CSV limits, runbook).
-2. Добавить browser e2e/runtime-покрытие admin write-сценариев.
-3. Добавить browser runtime-pass по primary CTA/editability в touched доменах.
+2. Добавить browser e2e/runtime-покрытие admin write-сценариев только после уточнения требований.
+3. Поддерживать primary CTA/editability coverage при изменениях touched доменов.
 
 ## 7. Validation note
 
 Testing reset 05.05.2026 removed previous smoke/e2e validation commands and their results.
 
-This document describes wiring status only. New validation must be rebuilt from `QA_REQUIREMENTS.md`, starting with the domain happy path and then extending into API/browser coverage.
+The current rebuilt validation model is based on `QA_REQUIREMENTS.md`:
+
+1. API contract and integration tests cover the core Lead -> Application -> Reservation -> Departure -> Completion path.
+2. Frontend adapter coverage and browser E2E gates cover the current primary workflow and high-risk buttons.
+3. Latest run status lives in `docs/TEST_EXECUTION_REPORT.md`.
+
+This document still describes wiring status, not a substitute for rerunning the relevant validation command after behavior changes.

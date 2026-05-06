@@ -12,9 +12,12 @@
 ### 1.2 Current repository baseline (must not be broken)
 
 - Vite + React + TypeScript
-- Tailwind + shadcn/ui components
+- Tailwind + shadcn/ui components as the current shell/UI baseline
+- MUI dependencies are installed and may be used where existing surfaces already use them
+- React Query is available and used for API-mode server state
 - Layout context store (`layoutStore`) + `routeSync`
 - Domain workspace pages under `app/frontend/src/app/components/**`
+- API feature flag: `VITE_USE_API=true` with `VITE_API_BASE_URL=http://localhost:3001/api/v1`
 
 Rule:
 
@@ -121,3 +124,11 @@ Before merge:
 3. Check role visibility.
 4. Check overflow/scroll behavior on desktop and narrow widths.
 5. Build and verify no regression in touched workspaces.
+6. For changed adapter/projection-sensitive frontend behavior, update or run `npm --prefix app/frontend run test:coverage`.
+7. For changed browser workflows, update or run `npm --prefix app/frontend run e2e:gate` or `npm --prefix app/frontend run e2e:gate:full`.
+
+Testing rule:
+
+- New frontend tests must reference confirmed `QA_REQUIREMENTS.md` ids.
+- Existing rebuilt browser specs live in `app/frontend/e2e`.
+- Existing adapter unit specs live in `app/frontend/src/app/lib/__tests__`.

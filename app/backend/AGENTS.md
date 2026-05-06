@@ -53,4 +53,13 @@ npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 ```
 
+Current rebuilt backend gates when the touched surface requires tests:
+
+```bash
+npm --prefix app/backend run test:api-contract
+npm --prefix app/backend run test:integration
+npm --prefix app/backend run test:coverage
+```
+
 New backend tests must reference requirement ids from [../../QA_REQUIREMENTS.md](../../QA_REQUIREMENTS.md).
+Latest run status is tracked in [../../docs/TEST_EXECUTION_REPORT.md](../../docs/TEST_EXECUTION_REPORT.md).
