@@ -16,7 +16,7 @@ const reservationStageLabels = {
   own_equipment: 'Подбор своей техники',
   subcontractor: 'Подбор подрядчика',
   type_reserved: 'Тип забронирован',
-  unit_confirmed: 'Unit уточнён',
+  unit_confirmed: 'Единица уточнена',
   ready: 'Готово к выезду',
 };
 
@@ -96,7 +96,7 @@ export function ReservationKanbanCard({ lead, onClick, draggable, onDragStart, o
           {lead.equipmentUnit && (
             <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-gray-50 border border-gray-100 text-[11px]">
               <Wrench className="w-3 h-3 text-gray-500 flex-shrink-0" />
-              <span className="text-gray-500">Unit:</span>
+              <span className="text-gray-500">Единица:</span>
               <span className="text-gray-900 truncate">{lead.equipmentUnit}</span>
             </div>
           )}

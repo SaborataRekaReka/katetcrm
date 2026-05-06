@@ -133,7 +133,7 @@ export function InlineText({
   if (!editing) {
     const hasValue = value && value.trim().length > 0;
     const classes = [
-      'inline-flex items-center gap-1 text-[11px] text-gray-700 rounded px-1 -mx-1 min-h-[20px] max-w-full',
+      'inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700',
       disabled
         ? 'cursor-default'
         : 'cursor-text hover:bg-gray-100 transition-colors',

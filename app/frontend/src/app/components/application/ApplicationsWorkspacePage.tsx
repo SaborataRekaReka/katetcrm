@@ -15,12 +15,9 @@ import { ApplicationsListView } from '../views/ApplicationsListView';
 import { ApplicationsTableView } from '../views/ApplicationsTableView';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
-import { ReservationWorkspace } from '../reservation/ReservationWorkspace';
-import { DepartureWorkspace } from '../departure/DepartureWorkspace';
-import { CompletionWorkspace } from '../completion/CompletionWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { USE_API } from '../../lib/featureFlags';
-import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
+import { useApplicationQuery, useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
@@ -30,11 +27,9 @@ import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 
 /**
- * Adapt an Application row into a Lead-shaped object so the stage-specific
- * detail workspaces (ReservationWorkspace / DepartureWorkspace /
- * CompletionWorkspace) — which were originally designed around Lead — can be
- * reused without duplicating their UI. We only map fields relevant for
- * detail modals; the detail shell derives everything else from mocks.
+ * Adapt an Application row into a Lead-shaped object for cross-entity helpers
+ * (например, открытие клиента из карточки заявки) without duplicating mapper
+ * logic in multiple UI handlers.
  */
 function applicationToLead(a: Application): Lead {
   const pos0 = a.positions[0];
@@ -72,7 +67,15 @@ function applicationToLead(a: Application): Lead {
  * воронки лидов, а отдельная доска не входит в MVP этой итерации.
  */
 export function ApplicationsWorkspacePage() {
-  const { currentView, activeSecondaryNav } = useLayout();
+  const {
+    currentView,
+    activeSecondaryNav,
+    activeEntityType,
+    activeEntityId,
+    setActiveSecondaryNav,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
+  } = useLayout();
   const [filters, setFilters] = useState<ApplicationsFiltersState>(DEFAULT_APPLICATIONS_FILTERS);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Application | null>(null);
@@ -108,26 +111,20 @@ export function ApplicationsWorkspacePage() {
     const params: ApplicationListParams = {
       scope: filters.scope === 'my' ? 'mine' : 'all',
       query: query.trim() || undefined,
+      // Sales surface: only application-stage records. Ops stages live in Reservations/Departures/Completion.
+      stage: 'application',
     };
 
     if (activeSecondaryNav === 'my-applications') {
       params.scope = 'mine';
     }
 
-    if (activeSecondaryNav === 'apps-no-reservation') {
+    if (activeSecondaryNav === 'apps-no-reservation' || activeSecondaryNav === 'apps-ready') {
       params.readinessReservation = 'no_data';
-    }
-
-    if (activeSecondaryNav === 'apps-ready') {
-      params.readinessReservation = 'ready';
     }
 
     if (filters.manager !== 'all') {
       params.managerId = filters.manager;
-    }
-
-    if (filters.status !== 'all') {
-      params.stage = filters.status as ApplicationListParams['stage'];
     }
 
     if (filters.sourcing !== 'all') {
@@ -142,10 +139,6 @@ export function ApplicationsWorkspacePage() {
       params.readinessReservation = filters.readinessReservation;
     }
 
-    if (filters.readyForDeparture) {
-      params.readyForDeparture = true;
-    }
-
     if (filters.conflict) {
       params.conflict = true;
     }
@@ -154,6 +147,10 @@ export function ApplicationsWorkspacePage() {
   }, [activeSecondaryNav, filters, query]);
 
   const applicationsQuery = useApplicationsQuery(serverQueryParams, USE_API);
+  const routedApplicationQuery = useApplicationQuery(
+    activeEntityType === 'application' ? activeEntityId : null,
+    USE_API && activeEntityType === 'application' && !!activeEntityId,
+  );
   const sourceApplications: Application[] = useMemo(() => {
     if (USE_API && applicationsQuery.data) {
       return applicationsQuery.data.items.map(toUiApplication);
@@ -161,24 +158,26 @@ export function ApplicationsWorkspacePage() {
     return mockApplicationsList;
   }, [applicationsQuery.data]);
 
+  const salesStageApplications = useMemo(
+    () => sourceApplications.filter((a) => a.stage === 'application'),
+    [sourceApplications],
+  );
+
   // Saved-view aliases pre-apply a filter so the page content matches nav context.
   const aliasFiltered = useMemo(() => {
     if (USE_API) {
-      return sourceApplications;
+      return salesStageApplications;
     }
 
-    if (activeSecondaryNav === 'apps-no-reservation') {
-      return sourceApplications.filter((a) => computeGroup(a) === 'no_reservation');
-    }
-    if (activeSecondaryNav === 'apps-ready') {
-      return sourceApplications.filter((a) => computeGroup(a) === 'ready_for_departure');
+    if (activeSecondaryNav === 'apps-no-reservation' || activeSecondaryNav === 'apps-ready') {
+      return salesStageApplications.filter((a) => computeGroup(a) === 'no_reservation');
     }
     if (activeSecondaryNav === 'my-applications') {
       // В отсутствии реального currentUser считаем "мои" = Иванова С. (demo).
-      return sourceApplications.filter((a) => a.responsibleManager === 'Иванова С.');
+      return salesStageApplications.filter((a) => a.responsibleManager === 'Иванова С.');
     }
-    return sourceApplications;
-  }, [activeSecondaryNav, sourceApplications]);
+    return salesStageApplications;
+  }, [activeSecondaryNav, salesStageApplications]);
 
   const filtered = useMemo(() => {
     if (USE_API) return aliasFiltered;
@@ -192,17 +191,25 @@ export function ApplicationsWorkspacePage() {
     filters.sourcing !== 'all' ||
     filters.equipment !== 'all' ||
     filters.readinessReservation !== 'all' ||
-    filters.readyForDeparture ||
     filters.conflict ||
     query.length > 0;
 
+  // Legacy route alias: /applications/ready is merged into Active Applications.
+  useEffect(() => {
+    if (activeSecondaryNav === 'apps-ready') {
+      setActiveSecondaryNav('apps-no-reservation');
+    }
+  }, [activeSecondaryNav, setActiveSecondaryNav]);
+
   const handleRowClick = (app: Application) => {
     setSelected(app);
+    setActiveEntityRoute('application', app.id);
     setIsOpen(true);
   };
   const handleClose = () => {
     setIsOpen(false);
     setSelected(null);
+    clearActiveEntityRoute();
   };
   const handleOpenClient = (lead: Lead) => {
     setClientLead(lead);
@@ -237,6 +244,17 @@ export function ApplicationsWorkspacePage() {
     }
   };
 
+  const handleWorkflowNavigate = (
+    target: 'application' | 'reservation',
+    payload?: { leadId?: string; reservationId?: string },
+  ) => {
+    if (target === 'reservation' && payload?.reservationId) {
+      setIsOpen(false);
+      setSelected(null);
+      setActiveEntityRoute('reservation', payload.reservationId);
+    }
+  };
+
   // Lazy-load lead by id only when overlay is requested (cross-entity nav
   // from an application card's "Открыть лид" action). We reuse the same
   // LeadDetailModal used by the leads page.
@@ -252,6 +270,27 @@ export function ApplicationsWorkspacePage() {
       handleCloseLeadOverlay();
     }
   }, [isLeadOverlayOpen, overlayLeadQuery.isError, overlayLeadQuery.error]);
+
+  useEffect(() => {
+    if (activeEntityType !== 'application' || !activeEntityId) return;
+
+    if (USE_API) {
+      if (!routedApplicationQuery.data) return;
+      setSelected(toUiApplication(routedApplicationQuery.data));
+      setIsOpen(true);
+      return;
+    }
+
+    const localApplication = sourceApplications.find((item) => item.id === activeEntityId);
+    if (!localApplication) return;
+    setSelected(localApplication);
+    setIsOpen(true);
+  }, [
+    activeEntityType,
+    activeEntityId,
+    sourceApplications,
+    routedApplicationQuery.data,
+  ]);
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
@@ -279,39 +318,25 @@ export function ApplicationsWorkspacePage() {
         />
       )}
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleClose();
+            return;
+          }
+          setIsOpen(true);
+        }}
+      >
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
-            selected.stage === 'reservation' ? (
-              <ReservationWorkspace
-                lead={applicationToLead(selected)}
-                onClose={handleClose}
-                onOpenClient={handleOpenClient}
-                onOpenLead={USE_API ? handleOpenLead : undefined}
-              />
-            ) : selected.stage === 'departure' ? (
-              <DepartureWorkspace
-                lead={applicationToLead(selected)}
-                onClose={handleClose}
-                onOpenClient={handleOpenClient}
-              />
-            ) : selected.stage === 'completed' ? (
-              <CompletionWorkspace
-                lead={applicationToLead(selected)}
-                onClose={handleClose}
-                onOpenClient={handleOpenClient}
-              />
-            ) : (
-              // Default entry for an application row — same card that opens
-              // from the kanban. Editing via dialog (see LeadDetailModal →
-              // EditApplicationDialog) is wired there.
-              <LeadDetailModal
-                application={selected}
-                onClose={handleClose}
-                onOpenClient={() => handleOpenClient(applicationToLead(selected))}
-                onOpenLead={USE_API ? handleOpenLead : undefined}
-              />
-            )
+            <LeadDetailModal
+              application={selected}
+              onClose={handleClose}
+              onOpenClient={() => handleOpenClient(applicationToLead(selected))}
+              onOpenLead={USE_API ? handleOpenLead : undefined}
+              onWorkflowNavigate={handleWorkflowNavigate}
+            />
           ) : null}
         </DialogContent>
       </Dialog>

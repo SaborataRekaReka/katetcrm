@@ -39,15 +39,12 @@ Before frontend edits, read:
 
 ## Validation
 
+Previous UI-consistency and browser e2e commands were removed in the 05.05.2026 testing reset. Do not use old e2e results as evidence.
+
 Minimum frontend validation:
 
 ```bash
 npm --prefix app/frontend run build
-npm --prefix app/frontend run check:ui-consistency
 ```
 
-Add browser checks when route/admin/control scenarios change:
-
-```bash
-npm --prefix app/frontend run e2e
-```
+New frontend tests must reference requirement ids from [../../QA_REQUIREMENTS.md](../../QA_REQUIREMENTS.md).

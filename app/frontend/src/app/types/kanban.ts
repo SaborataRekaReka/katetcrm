@@ -43,6 +43,7 @@ export interface ReservationLinkedItem {
   applicationTitle: string;
   clientId: string;
   clientName: string;
+  clientCompany?: string;
   leadId?: string;
   leadTitle?: string;
   positionTitle: string;

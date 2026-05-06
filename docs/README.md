@@ -18,11 +18,14 @@ Read in this order for planning and implementation decisions:
 - [IMPLEMENTATION_ROADMAP.md](../IMPLEMENTATION_ROADMAP.md): current delivery status and next priorities.
 - [FRONTEND_API_WIRING.md](../FRONTEND_API_WIRING.md): current frontend API wiring status.
 - [TESTING_STRATEGY.md](../TESTING_STRATEGY.md): release gate and test expectations.
+- [API_CONTRACT_TEST_PLAN.md](./API_CONTRACT_TEST_PLAN.md): API contract test matrix aligned to QA-REQ ids.
+- [INTEGRATION_INVARIANT_CHECKLIST.md](./INTEGRATION_INVARIANT_CHECKLIST.md): backend integration invariants and pass criteria.
+- [E2E_GWT_SCENARIOS.md](./E2E_GWT_SCENARIOS.md): browser Given-When-Then scenario set for rebuilt suite.
+- [TEST_EXECUTION_REPORT.md](./TEST_EXECUTION_REPORT.md): live run log with test outcomes, detected bugs, and fix status.
 - [RBAC_AND_PERMISSIONS.md](../RBAC_AND_PERMISSIONS.md): authorization rules and enforcement status.
 - [IMPORT_AND_MIGRATION.md](../IMPORT_AND_MIGRATION.md): current import scope and migration rules.
 - [AGENT_WORKFLOW.md](./AGENT_WORKFLOW.md): multi-agent development workflow.
 - [AGENT_TASK_TEMPLATE.md](./AGENT_TASK_TEMPLATE.md): standard task packet for agents.
-- [repeat-flow-runbook.md](./repeat-flow-runbook.md): runtime repeat-flow validation.
 - [tz-final.md](./tz-final.md): consolidated technical specification baseline.
 
 ## Supporting reference docs

@@ -35,6 +35,7 @@ const RESERVATION_PROJECTION_INCLUDE = {
         select: {
           id: true,
           number: true,
+          leadId: true,
           clientId: true,
           responsibleManagerId: true,
           client: {
@@ -53,6 +54,18 @@ const RESERVATION_PROJECTION_INCLUDE = {
   equipmentType: { select: { id: true, name: true } },
   equipmentUnit: { select: { id: true, name: true } },
   subcontractor: { select: { id: true, name: true } },
+  departures: {
+    orderBy: [{ scheduledAt: 'desc' }],
+    take: 3,
+    select: {
+      id: true,
+      status: true,
+      scheduledAt: true,
+      completion: {
+        select: { id: true },
+      },
+    },
+  },
 } satisfies Prisma.ReservationInclude;
 
 type ReservationProjectionRecord = Prisma.ReservationGetPayload<{
@@ -296,24 +309,87 @@ export class ReservationsService {
   }
 
   async list(params: ReservationListQueryDto, actor: ActorContext) {
-    const where: Prisma.ReservationWhereInput = {};
-    if (params.applicationItemId) where.applicationItemId = params.applicationItemId;
-    if (params.equipmentUnitId) where.equipmentUnitId = params.equipmentUnitId;
-    if (params.subcontractorId) where.subcontractorId = params.subcontractorId;
+    const filters: Prisma.ReservationWhereInput[] = [];
+
+    if (params.applicationItemId) {
+      filters.push({ applicationItemId: params.applicationItemId });
+    }
+    if (params.equipmentUnitId) {
+      filters.push({ equipmentUnitId: params.equipmentUnitId });
+    }
+    if (params.subcontractorId) {
+      filters.push({ subcontractorId: params.subcontractorId });
+    }
     if (params.applicationId) {
-      where.applicationItem = { applicationId: params.applicationId };
+      filters.push({ applicationItem: { applicationId: params.applicationId } });
     }
+
     if (params.isActive !== undefined) {
-      where.isActive = params.isActive === 'true' || params.isActive === '1';
+      filters.push({ isActive: params.isActive === 'true' || params.isActive === '1' });
     } else {
-      where.isActive = true;
+      filters.push({ isActive: true });
     }
+
     if (actor.role === 'manager') {
-      where.applicationItem = {
-        ...(where.applicationItem as any),
-        application: { responsibleManagerId: actor.id },
-      };
+      filters.push({
+        applicationItem: {
+          application: { responsibleManagerId: actor.id },
+        },
+      });
     }
+
+    const q = params.query?.trim();
+    if (q) {
+      filters.push({
+        OR: [
+          { id: { contains: q, mode: 'insensitive' } },
+          {
+            applicationItem: {
+              application: {
+                number: { contains: q, mode: 'insensitive' },
+              },
+            },
+          },
+          {
+            applicationItem: {
+              application: {
+                client: {
+                  name: { contains: q, mode: 'insensitive' },
+                },
+              },
+            },
+          },
+          {
+            applicationItem: {
+              application: {
+                client: {
+                  company: { contains: q, mode: 'insensitive' },
+                },
+              },
+            },
+          },
+          {
+            applicationItem: {
+              application: {
+                client: {
+                  phone: { contains: q, mode: 'insensitive' },
+                },
+              },
+            },
+          },
+          {
+            applicationItem: {
+              equipmentTypeLabel: { contains: q, mode: 'insensitive' },
+            },
+          },
+          { equipmentUnit: { name: { contains: q, mode: 'insensitive' } } },
+          { subcontractor: { name: { contains: q, mode: 'insensitive' } } },
+        ],
+      });
+    }
+
+    const where: Prisma.ReservationWhereInput = filters.length > 0 ? { AND: filters } : {};
+
     const items = await this.prisma.reservation.findMany({
       where,
       orderBy: [{ plannedStart: 'asc' }],
@@ -342,8 +418,8 @@ export class ReservationsService {
   }
 
   /**
-   * Soft-conflict: Ð¾Ñ‚Ð¼ÐµÑ‡Ð°ÐµÑ‚ Ð¿ÐµÑ€ÐµÑÐµÑ‡ÐµÐ½Ð¸Ðµ Ð¸Ð½Ñ‚ÐµÑ€Ð²Ð°Ð»Ð¾Ð² (Ð¿Ð¾ unit Ð¸Ð»Ð¸ Ð¿Ð¾ subcontractor).
-   * Ð’Ð¾Ð·Ð²Ñ€Ð°Ñ‰Ð°ÐµÑ‚ true, ÐµÑÐ»Ð¸ Ð½Ð°ÑˆÑ‘Ð»ÑÑ Ñ…Ð¾Ñ‚Ñ Ð±Ñ‹ Ð¾Ð´Ð¸Ð½ Ð°ÐºÑ‚Ð¸Ð²Ð½Ñ‹Ð¹ ÐºÐ¾Ð½Ñ„Ð»Ð¸ÐºÑ‚ â€” ÑÑ‚Ð¾ warning, Ð½Ðµ Ð±Ð»Ð¾Ðº.
+   * Soft-conflict: отмечает пересечение интервалов (по unit или по subcontractor).
+   * Возвращает true, если нашелся хотя бы один активный конфликт - это warning, не блок.
    */
   private async detectConflict(params: {
     excludeId?: string;
@@ -372,15 +448,15 @@ export class ReservationsService {
       where: { id: dto.applicationItemId },
       include: { application: true },
     });
-    if (!item) throw new NotFoundException('ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ Ð·Ð°ÑÐ²ÐºÐ¸ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°');
+    if (!item) throw new NotFoundException('Позиция заявки не найдена');
     if (!item.application.isActive) {
-      throw new BadRequestException('Ð—Ð°ÑÐ²ÐºÐ° Ð½ÐµÐ°ÐºÑ‚Ð¸Ð²Ð½Ð°');
+      throw new BadRequestException('Заявка неактивна');
     }
     if (
       actor.role === 'manager' &&
       item.application.responsibleManagerId !== actor.id
     ) {
-      throw new NotFoundException('ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ Ð·Ð°ÑÐ²ÐºÐ¸ Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½Ð°');
+      throw new NotFoundException('Позиция заявки не найдена');
     }
     const plannedStart = new Date(dto.plannedStart);
     const plannedEnd = new Date(dto.plannedEnd);
@@ -442,14 +518,14 @@ export class ReservationsService {
         action: 'reservation_set',
         entityType: 'application_item',
         entityId: item.id,
-        summary: `Ð¡Ð¾Ð·Ð´Ð°Ð½Ð° Ð±Ñ€Ð¾Ð½ÑŒ Ð´Ð»Ñ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ Â«${item.equipmentTypeLabel}»`,
+        summary: `Создана бронь для позиции «${item.equipmentTypeLabel}»`,
         actorId: actor.id,
         payload: { reservationId: created.id, hasConflictWarning: conflict },
       });
       return created;
     } catch (e: any) {
       if (e?.code === 'P2002') {
-        throw new BadRequestException('Ð£ Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¸ ÑƒÐ¶Ðµ ÐµÑÑ‚ÑŒ Ð°ÐºÑ‚Ð¸Ð²Ð½Ð°Ñ Ð±Ñ€Ð¾Ð½ÑŒ');
+        throw new BadRequestException('У позиции уже есть активная бронь');
       }
       throw e;
     }
@@ -458,7 +534,7 @@ export class ReservationsService {
   async update(id: string, dto: UpdateReservationDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
     if (!existing.isActive) {
-      throw new BadRequestException('ÐÐµÐ°ÐºÑ‚Ð¸Ð²Ð½Ð°Ñ Ð±Ñ€Ð¾Ð½ÑŒ Ð½Ðµ Ð¼Ð¾Ð¶ÐµÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¸Ð·Ð¼ÐµÐ½ÐµÐ½Ð°');
+      throw new BadRequestException('Неактивная бронь не может быть изменена');
     }
 
     const nextSourcingType = dto.sourcingType ?? existing.sourcingType;
@@ -560,7 +636,7 @@ export class ReservationsService {
   async release(id: string, dto: ReleaseReservationDto, actor: ActorContext): Promise<Reservation> {
     const existing = await this.get(id, actor);
     if (!existing.isActive) {
-      throw new BadRequestException('Ð‘Ñ€Ð¾Ð½ÑŒ ÑƒÐ¶Ðµ Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð°');
+      throw new BadRequestException('Бронь уже освобождена');
     }
     const released = await this.prisma.reservation.update({
       where: { id },
@@ -575,7 +651,7 @@ export class ReservationsService {
       action: 'reservation_released',
       entityType: 'reservation',
       entityId: id,
-      summary: `Ð‘Ñ€Ð¾Ð½ÑŒ Ð¾ÑÐ²Ð¾Ð±Ð¾Ð¶Ð´ÐµÐ½Ð° (${dto.reason ?? 'manual'})`,
+      summary: `Бронь освобождена (${dto.reason ?? 'manual'})`,
       actorId: actor.id,
     });
     return released;

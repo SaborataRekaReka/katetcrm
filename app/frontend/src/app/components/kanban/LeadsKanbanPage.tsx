@@ -1,4 +1,4 @@
-﻿import { useState, useMemo } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { Lead } from '../../types/kanban';
 import { mockLeads } from '../../data/mockLeads';
 import { mockApplication } from '../../data/mockApplications';
@@ -9,9 +9,6 @@ import { WorkspaceHeader } from '../shell/WorkspaceHeader';
 import { LeadsToolbar, applyLeadsFilters } from '../shell/LeadsToolbar';
 import { DEFAULT_LEADS_FILTERS, LeadsFiltersState } from '../shell/filterTypes';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
-import { ReservationWorkspace } from '../reservation/ReservationWorkspace';
-import { DepartureWorkspace } from '../departure/DepartureWorkspace';
-import { CompletionWorkspace } from '../completion/CompletionWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { useLayout } from '../shell/layoutStore';
@@ -19,6 +16,7 @@ import { LeadsListView } from '../views/LeadsListView';
 import { LeadsTableView } from '../views/LeadsTableView';
 import { USE_API } from '../../lib/featureFlags';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
+import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
 import { LeadListParams, PipelineStage, SourceChannel } from '../../lib/leadsApi';
 import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
@@ -37,8 +35,12 @@ export function LeadsKanbanPage() {
   const {
     currentView,
     activeSecondaryNav,
+    activeEntityType,
+    activeEntityId,
     setActivePrimaryNav,
     setActiveSecondaryNav,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
   } = useLayout();
   const [leads] = useState<Lead[]>(mockLeads);
   const [filters, setFilters] = useState<LeadsFiltersState>(DEFAULT_LEADS_FILTERS);
@@ -131,7 +133,19 @@ export function LeadsKanbanPage() {
     () => (leadsQuery.data?.items ?? []).map(toKanbanLead),
     [leadsQuery.data],
   );
+  const apiLinkedIdsByLeadId = useMemo(
+    () =>
+      new Map(
+        (leadsQuery.data?.items ?? []).map((item) => [item.id, item.linkedIds]),
+      ),
+    [leadsQuery.data],
+  );
   const activeLeads = USE_API ? apiLeads : leads;
+
+  const routedLeadQuery = useLeadQuery(
+    activeEntityType === 'lead' ? activeEntityId : null,
+    USE_API && activeEntityType === 'lead' && !!activeEntityId,
+  );
 
   const selectedApplicationQuery = useApplicationsQuery(
     selectedLead?.stage === 'application' ? { leadId: selectedLead.id, scope: 'all' } : {},
@@ -191,16 +205,84 @@ export function LeadsKanbanPage() {
     query.length > 0;
 
   const handleCardClick = (lead: Lead) => {
+    const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
+
+    const reservationId = lead.stage === 'reservation' ? linkedIds?.reservationId ?? null : null;
+    const departureId = lead.stage === 'departure' ? linkedIds?.departureId ?? null : null;
+    const completionId =
+      lead.stage === 'completed' || lead.stage === 'unqualified'
+        ? linkedIds?.completionId ?? null
+        : null;
+    const terminalFallbackDepartureId =
+      lead.stage === 'completed' || lead.stage === 'unqualified'
+        ? linkedIds?.departureId ?? null
+        : null;
+
+    if (reservationId) {
+      setSelectedLead(null);
+      setIsDetailOpen(false);
+      setActiveEntityRoute('reservation', reservationId);
+      return;
+    }
+
+    if (departureId) {
+      setSelectedLead(null);
+      setIsDetailOpen(false);
+      setActiveEntityRoute('departure', departureId);
+      return;
+    }
+
+    if (completionId) {
+      setSelectedLead(null);
+      setIsDetailOpen(false);
+      setActiveEntityRoute('completion', completionId);
+      return;
+    }
+
+    if (terminalFallbackDepartureId) {
+      setSelectedLead(null);
+      setIsDetailOpen(false);
+      setActiveEntityRoute('departure', terminalFallbackDepartureId);
+      return;
+    }
+
     setSelectedLead(lead);
+    setActiveEntityRoute('lead', lead.id);
     setIsDetailOpen(true);
   };
   const handleCloseDetail = () => {
     setIsDetailOpen(false);
     setSelectedLead(null);
+    clearActiveEntityRoute();
+  };
+  const handleWorkflowNavigate = (
+    target: 'application' | 'reservation',
+    payload?: { leadId?: string; reservationId?: string },
+  ) => {
+    if (target === 'reservation') {
+      if (payload?.reservationId) {
+        setSelectedLead(null);
+        setIsDetailOpen(false);
+        setActiveEntityRoute('reservation', payload.reservationId);
+      }
+      return;
+    }
+
+    if (target === 'application') {
+      setSelectedLead((prev) => {
+        if (!prev) return prev;
+        if (payload?.leadId && prev.id !== payload.leadId) return prev;
+        return { ...prev, stage: 'application' };
+      });
+      setIsDetailOpen(true);
+    }
   };
   const handleOpenClient = (lead: Lead) => {
     setClientLead(lead);
     setIsClientOpen(true);
+  };
+  const handleNewLeadCreated = (leadId: string) => {
+    setActiveEntityRoute('lead', leadId);
   };
   const handleCloseClient = () => {
     setIsClientOpen(false);
@@ -269,6 +351,22 @@ export function LeadsKanbanPage() {
     }
   };
 
+  useEffect(() => {
+    if (activeEntityType !== 'lead' || !activeEntityId) return;
+
+    if (USE_API) {
+      if (!routedLeadQuery.data) return;
+      setSelectedLead(toKanbanLead(routedLeadQuery.data));
+      setIsDetailOpen(true);
+      return;
+    }
+
+    const localLead = activeLeads.find((item) => item.id === activeEntityId);
+    if (!localLead) return;
+    setSelectedLead(localLead);
+    setIsDetailOpen(true);
+  }, [activeEntityType, activeEntityId, activeLeads, routedLeadQuery.data]);
+
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
       <WorkspaceHeader />
@@ -303,55 +401,40 @@ export function LeadsKanbanPage() {
         />
       )}
 
-      <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
+      <Dialog
+        open={isDetailOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleCloseDetail();
+            return;
+          }
+          setIsDetailOpen(true);
+        }}
+      >
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
-          {selectedLead && selectedLead.stage === 'reservation' ? (
-            <ReservationWorkspace lead={selectedLead} onClose={handleCloseDetail} onOpenClient={handleOpenClient} />
-          ) : selectedLead && selectedLead.stage === 'departure' ? (
-            <DepartureWorkspace lead={selectedLead} onClose={handleCloseDetail} onOpenClient={handleOpenClient} />
-          ) : selectedLead && (selectedLead.stage === 'completed' || selectedLead.stage === 'unqualified') ? (
-            <CompletionWorkspace lead={selectedLead} onClose={handleCloseDetail} onOpenClient={handleOpenClient} />
-          ) : selectedLead ? (
-            selectedLead.stage === 'application' && USE_API ? (
-              selectedApplication ? (
-                <LeadDetailModal
-                  application={selectedApplication}
-                  onClose={handleCloseDetail}
-                  onOpenClient={() => handleOpenClient(selectedLead)}
-                />
-              ) : selectedApplicationQuery.isPending ? (
-                <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
-                  Загрузка заявки...
-                </div>
-              ) : (
-                <div className="flex h-full flex-col items-center justify-center gap-3 text-sm text-muted-foreground">
-                  <span>Не удалось загрузить заявку по выбранному лиду.</span>
-                  <button
-                    type="button"
-                    onClick={handleCloseDetail}
-                    className="rounded border border-border px-3 py-1 text-xs text-foreground hover:bg-muted"
-                  >
-                    Закрыть
-                  </button>
-                </div>
-              )
-            ) : (
-              <LeadDetailModal
-                lead={selectedLead.stage !== 'application' ? selectedLead : undefined}
-                application={
-                  selectedLead.stage === 'application'
-                    ? mockApplicationsList.find((a) => a.leadId === selectedLead.id) ?? mockApplication
-                    : undefined
-                }
-                onClose={handleCloseDetail}
-                onOpenClient={() => handleOpenClient(selectedLead)}
-              />
-            )
+          {selectedLead ? (
+            <LeadDetailModal
+              lead={selectedLead}
+              application={
+                selectedLead.stage === 'application'
+                  ? (USE_API
+                    ? selectedApplication
+                    : mockApplicationsList.find((a) => a.leadId === selectedLead.id) ?? mockApplication)
+                  : undefined
+              }
+              onClose={handleCloseDetail}
+              onOpenClient={() => handleOpenClient(selectedLead)}
+              onWorkflowNavigate={handleWorkflowNavigate}
+            />
           ) : null}
         </DialogContent>
       </Dialog>
 
-      <NewLeadDialog open={isNewLeadOpen} onOpenChange={setIsNewLeadOpen} />
+      <NewLeadDialog
+        open={isNewLeadOpen}
+        onOpenChange={setIsNewLeadOpen}
+        onCreated={handleNewLeadCreated}
+      />
 
       <Dialog open={isClientOpen} onOpenChange={setIsClientOpen}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">

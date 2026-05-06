@@ -17,13 +17,21 @@
  * они не отражают persisted state.
  */
 import type {
+  DepartureStatus,
   Prisma,
   ReservationInternalStage,
   SourcingType,
 } from '@prisma/client';
+import { buildStageLinkedIds, type StageLinkedIds } from './linked-ids';
 
 export type ReservationUiStatus = 'active' | 'released';
 export type ReservationUiSource = 'own' | 'subcontractor' | 'undecided';
+
+const ACTIVE_DEPARTURE_STATUSES = new Set<DepartureStatus>([
+  'scheduled',
+  'in_transit',
+  'arrived',
+]);
 
 export interface ReservationDerivedState {
   /** internalStage уровня бизнес-логики (может отличаться от persisted при конфликте). */
@@ -45,6 +53,7 @@ export interface ReservationView {
   id: string;
   applicationItemId: string;
   applicationId: string;
+  leadId: string | null;
   applicationNumber: string | null;
   clientId: string | null;
   clientName: string | null;
@@ -70,6 +79,9 @@ export interface ReservationView {
   plannedEnd: string;
   hasConflict: boolean;
   conflict: ReservationConflictView | null;
+  departureId: string | null;
+  completionId: string | null;
+  linkedIds: StageLinkedIds;
   readyForDeparture: boolean;
   subcontractorConfirmation: string;
   promisedModelOrUnit: string | null;
@@ -93,6 +105,7 @@ type WithIncludes = Prisma.ReservationGetPayload<{
           select: {
             id: true;
             number: true;
+            leadId: true;
             clientId: true;
             client: {
               select: { id: true; name: true; company: true; phone: true };
@@ -108,6 +121,14 @@ type WithIncludes = Prisma.ReservationGetPayload<{
     equipmentType: { select: { id: true; name: true } };
     equipmentUnit: { select: { id: true; name: true } };
     subcontractor: { select: { id: true; name: true } };
+    departures: {
+      select: {
+        id: true;
+        status: true;
+        scheduledAt: true;
+        completion: { select: { id: true } };
+      };
+    };
   };
 }>;
 
@@ -210,6 +231,17 @@ export function deriveReservationState(input: {
   };
 }
 
+function pickLinkedDeparture(departures: WithIncludes['departures']) {
+  if (!departures || departures.length === 0) return null;
+  const sorted = [...departures].sort((a, b) => {
+    const aActive = ACTIVE_DEPARTURE_STATUSES.has(a.status) ? 1 : 0;
+    const bActive = ACTIVE_DEPARTURE_STATUSES.has(b.status) ? 1 : 0;
+    if (aActive !== bActive) return bActive - aActive;
+    return b.scheduledAt.getTime() - a.scheduledAt.getTime();
+  });
+  return sorted[0] ?? null;
+}
+
 export function projectReservation(r: ReservationProjectionInput): ReservationView {
   const status: ReservationUiStatus = r.isActive ? 'active' : 'released';
   const source = toSource(r.sourcingType, r.internalStage);
@@ -225,6 +257,9 @@ export function projectReservation(r: ReservationProjectionInput): ReservationVi
     r.createdBy?.fullName ??
     r.applicationItem?.application?.responsibleManager?.fullName ??
     null;
+  const linkedDeparture = pickLinkedDeparture(r.departures);
+  const departureId = linkedDeparture?.id ?? null;
+  const completionId = linkedDeparture?.completion?.id ?? null;
 
   const derived = deriveReservationState({
     status,
@@ -239,6 +274,7 @@ export function projectReservation(r: ReservationProjectionInput): ReservationVi
     id: r.id,
     applicationItemId: r.applicationItemId,
     applicationId: r.applicationItem?.applicationId ?? '',
+    leadId: r.applicationItem?.application?.leadId ?? null,
     applicationNumber: r.applicationItem?.application?.number ?? null,
     clientId: r.applicationItem?.application?.clientId ?? null,
     clientName: r.applicationItem?.application?.client?.name ?? null,
@@ -264,6 +300,17 @@ export function projectReservation(r: ReservationProjectionInput): ReservationVi
     plannedEnd: r.plannedEnd.toISOString(),
     hasConflict,
     conflict,
+    departureId,
+    completionId,
+    linkedIds: buildStageLinkedIds({
+      leadId: r.applicationItem?.application?.leadId ?? null,
+      applicationId: r.applicationItem?.applicationId ?? null,
+      reservationId: r.id,
+      departureId,
+      completionId,
+      clientId: r.applicationItem?.application?.clientId ?? null,
+      applicationItemId: r.applicationItemId,
+    }),
     readyForDeparture,
     subcontractorConfirmation: r.subcontractorConfirmation,
     promisedModelOrUnit: r.promisedModelOrUnit,

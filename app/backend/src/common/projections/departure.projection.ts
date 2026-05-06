@@ -1,4 +1,5 @@
 import type { DepartureStatus, Prisma } from '@prisma/client';
+import { buildStageLinkedIds, type StageLinkedIds } from './linked-ids';
 
 export type DepartureAlert = 'none' | 'overdue_start' | 'overdue_arrival' | 'stale';
 
@@ -49,6 +50,7 @@ export interface DepartureView {
     outcome: 'completed' | 'unqualified';
     completedAt: string;
   } | null;
+  linkedIds: StageLinkedIds;
   derived: {
     alert: DepartureAlert;
     canStart: boolean;
@@ -193,6 +195,15 @@ export function projectDeparture(d: WithIncludes): DepartureView {
           completedAt: d.completion.completedAt.toISOString(),
         }
       : null,
+    linkedIds: buildStageLinkedIds({
+      leadId: d.reservation.applicationItem.application.leadId,
+      applicationId: d.reservation.applicationItem.applicationId,
+      reservationId: d.reservationId,
+      departureId: d.id,
+      completionId: d.completion?.id ?? null,
+      clientId: d.reservation.applicationItem.application.clientId,
+      applicationItemId: d.reservation.applicationItem.id,
+    }),
     derived: {
       alert: deriveAlert(d),
       canStart: d.status === 'scheduled',

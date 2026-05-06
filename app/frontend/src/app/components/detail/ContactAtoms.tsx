@@ -123,7 +123,7 @@ export function EmailLink({ value, prefix, emptyDisplay, className }: EmailLinkP
       >
         {value}
       </a>
-      <CopyButton value={value} title="Скопировать email" />
+      <CopyButton value={value} title="Скопировать эл. почту" />
     </span>
   );
 }

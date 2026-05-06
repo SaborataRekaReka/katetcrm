@@ -852,7 +852,7 @@ export function CatalogsWorkspacePage() {
                 subtitle={`${r.specialization} · ${r.region}`}
                 rows={[
                   { label: 'Телефон', value: r.phone },
-                  { label: 'Email', value: r.email },
+                  { label: 'Эл. почта', value: r.email },
                   {
                     label: 'Активных броней',
                     value: <CountCell value={r.activeBookings} tone="brand" />,

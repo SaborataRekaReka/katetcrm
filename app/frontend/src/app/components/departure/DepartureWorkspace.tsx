@@ -1,34 +1,27 @@
 import { useMemo, useState } from 'react';
 import {
-  FileText,
-  ChevronDown,
-  Truck,
-  Building2,
-  Wrench,
-  UserPlus,
-  Calendar,
-  Clock,
-  MapPin,
-  AlertCircle,
   AlertTriangle,
+  ArrowRight,
+  Building2,
+  Calendar,
   CheckCircle2,
   Circle,
-  ArrowRight,
-  Copy,
-  Activity,
+  Clock,
   ExternalLink,
-  XCircle,
-  Phone,
-  User as UserIcon,
-  PlayCircle,
+  FileText,
   Flag,
-  Package,
+  MapPin,
+  PlayCircle,
+  Truck,
+  User as UserIcon,
+  UserPlus,
+  XCircle,
 } from 'lucide-react';
 import { Lead } from '../../types/kanban';
-import { Departure, DepartureStatus } from '../../types/departure';
+import { Departure, DepartureAlert, DepartureStatus } from '../../types/departure';
 import { buildMockDeparture } from '../../data/mockDeparture';
 import { USE_API } from '../../lib/featureFlags';
-import { badgeBase, badgeTones } from '../kanban/badgeTokens';
+import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import {
@@ -44,19 +37,26 @@ import {
 } from '../ui/alert-dialog';
 import { Textarea } from '../ui/textarea';
 import {
-  DetailShell,
-  Breadcrumb,
-  ToolbarPill,
-  PropertyRow,
-  InlineValue,
-  SidebarSection,
-  SidebarField,
   ActionButton,
+  Breadcrumb,
+  DetailShell,
+  InlineValue,
   NextStepLine,
+  PropertyRow,
+  SidebarField,
+  SidebarSection,
+  ToolbarPill,
+  sidebarTokens,
 } from '../detail/DetailShell';
-import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import {
+  EntityActivityList,
+  EntityMetaGrid,
+  EntityModalHeader,
+  EntitySection,
+} from '../detail/EntityModalFramework';
 import { PhoneLink } from '../detail/ContactAtoms';
 import { useLayout } from '../shell/layoutStore';
+import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 import { DepartureWorkspaceApi } from './DepartureWorkspaceApi';
 
 interface Props {
@@ -66,43 +66,57 @@ interface Props {
   apiDepartureId?: string;
 }
 
-const statusLabel: Record<DepartureStatus, string> = {
-  planned: 'Запланирован',
-  on_the_way: 'В пути',
+const STATUS_LABEL: Record<DepartureStatus, string> = {
+  scheduled: 'Запланирован',
+  in_transit: 'В пути',
   arrived: 'Прибыл на объект',
-  completed: 'Завершён',
-  cancelled: 'Отменён',
+  completed: 'Завершен',
+  cancelled: 'Отменен',
 };
 
-const statusOrder: DepartureStatus[] = ['scheduled', 'in_transit', 'arrived', 'completed'];
-
-const statusTone: Record<DepartureStatus, string> = {
-  planned: badgeTones.progress,
-  on_the_way: badgeTones.progress,
+const STATUS_TONE: Record<DepartureStatus, string> = {
+  scheduled: badgeTones.progress,
+  in_transit: badgeTones.progress,
   arrived: badgeTones.success,
   completed: badgeTones.muted,
   cancelled: badgeTones.warning,
 };
 
-const alertMeta = {
+const ALERT_META: Record<Exclude<DepartureAlert, 'none'>, { title: string; description: string }> = {
   overdue_start: {
-    title: 'Просрочено плановое время подачи',
-    tone: badgeTones.warning,
-    label: 'Просрочен',
+    title: 'Просрочен старт выезда',
+    description: 'Плановое время подачи прошло, но отправка еще не зафиксирована.',
   },
   overdue_arrival: {
-    title: 'Техника в пути слишком долго',
-    tone: badgeTones.warning,
-    label: 'Нет движения',
+    title: 'Просрочено прибытие',
+    description: 'Техника слишком долго в пути. Нужна оперативная проверка статуса.',
   },
   stale: {
-    title: 'Выезд без завершения слишком долго',
-    tone: badgeTones.caution,
-    label: 'Ждёт завершения',
+    title: 'Выезд долго без завершения',
+    description: 'После прибытия нет финального закрытия. Зафиксируйте итог работ.',
   },
 };
 
-function fmt(value?: string) {
+const STAGE_ORDER: DepartureStatus[] = [
+  'scheduled',
+  'in_transit',
+  'arrived',
+  'completed',
+];
+
+const sidebarStatusBadgeClass =
+  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+
+const headerStatusBadgeClass =
+  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
+
+function nowStamp() {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function formatFact(value?: string) {
   return value ?? '—';
 }
 
@@ -118,106 +132,280 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
     );
   }
 
-  const { setActiveSecondaryNav } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const base: Departure = useMemo(() => buildMockDeparture(lead), [lead]);
 
-  // Local operational state — single source of truth for manual fact tracking
   const [status, setStatus] = useState<DepartureStatus>(base.status);
-  const [departedAt, setDepartedAt] = useState<string | undefined>(base.fact.departedAt);
+  const [startedAt, setStartedAt] = useState<string | undefined>(base.fact.departedAt);
   const [arrivedAt, setArrivedAt] = useState<string | undefined>(base.fact.arrivedAt);
   const [completedAt, setCompletedAt] = useState<string | undefined>(base.fact.completedAt);
+  const [cancelledAt, setCancelledAt] = useState<string | undefined>(base.fact.cancelledAt);
+  const [cancelReason, setCancelReason] = useState(base.fact.cancellationReason ?? '');
   const [cancelOpen, setCancelOpen] = useState(false);
-  const [cancelReason, setCancelReason] = useState('');
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const nowStamp = () => {
-    const d = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  const leadEntityId = base.linked.leadId ?? null;
+  const applicationEntityId = base.linked.applicationId ?? null;
+  const reservationEntityId = base.linked.reservationId ?? null;
+  const departureEntityId = apiDepartureId ?? lead.id ?? null;
+  const completionEntityId = status === 'completed' ? (lead.id ?? null) : null;
+
+  const hasLead = !!leadEntityId;
+  const hasApplication = !!applicationEntityId;
+  const hasReservation = !!reservationEntityId;
+  const hasCompletion = !!completionEntityId;
+  const canOpenClient = !!onOpenClient;
+
+  const activeSwitcherEntityType = activeEntityType ?? 'departure';
+  const shareUrl = departureEntityId
+    ? buildAbsoluteEntityUrl('departure', departureEntityId)
+    : null;
+
+  const openEntitySecondary = (
+    secondaryId: string,
+    entityType: 'lead' | 'application' | 'reservation' | 'departure' | 'completion',
+    entityId?: string | null,
+  ) => {
+    if (!entityId) return false;
+    openSecondaryWithEntity(secondaryId, entityType, entityId);
+    return true;
   };
-
-  const handleDepart = () => {
-    setDepartedAt(nowStamp());
-    setStatus('in_transit');
-  };
-  const handleArrive = () => {
-    setArrivedAt(nowStamp());
-    setStatus('arrived');
-  };
-  const handleComplete = () => {
-    setCompletedAt(nowStamp());
-    setStatus('completed');
-  };
-
-  const alert = base.alert; // from mock, not recomputed locally in MVP
-  const reservationOk = !!base.linked.reservationId;
-  const hasUnitOrSub = !!base.linked.equipmentUnit || !!base.linked.subcontractor;
-
-  // Readiness for completion
-  const checks: { label: string; ok: boolean }[] = [
-    { label: 'Бронь связана', ok: reservationOk },
-    { label: 'Ресурс назначен', ok: hasUnitOrSub },
-    { label: 'Отправка зафиксирована', ok: !!departedAt },
-    { label: 'Прибытие зафиксировано', ok: !!arrivedAt },
-    { label: 'Нет критичных состояний', ok: alert !== 'overdue_arrival' },
-  ];
-  const ready = checks.every((c) => c.ok);
-
-  // Primary CTA — single next step
-  const primary = (() => {
-    if (status === 'completed') {
-      return { label: 'Заказ завершён', onClick: undefined, disabled: true, reason: null as string | null };
-    }
-    if (status === 'cancelled') {
-      return { label: 'Выезд отменён', onClick: undefined, disabled: true, reason: null };
-    }
-    if (!departedAt) {
-      return {
-        label: 'Зафиксировать отправку',
-        onClick: handleDepart,
-        disabled: false,
-        reason: 'Техника ещё не выехала',
-      };
-    }
-    if (!arrivedAt) {
-      return {
-        label: 'Зафиксировать прибытие',
-        onClick: handleArrive,
-        disabled: false,
-        reason: 'Прибытие не зафиксировано',
-      };
-    }
-    return {
-      label: 'Завершить заказ',
-      onClick: handleComplete,
-      disabled: !ready,
-      reason: ready ? null : 'Не все условия выполнены',
-    };
-  })();
-
-  const plan = base.plan;
-  const linked = base.linked;
 
   const openSecondary = (secondaryId: string) => {
     setActiveSecondaryNav(secondaryId);
     onClose();
   };
+
+  const breadcrumbItems = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    { label: 'Операции', onClick: () => openSecondary('departures') },
+    { label: 'Выезд' },
+  ];
+
+  const handleOpenLead = () => openEntitySecondary('leads', 'lead', leadEntityId);
+  const handleOpenApplication = () =>
+    openEntitySecondary('applications', 'application', applicationEntityId);
+  const handleOpenReservation = () =>
+    openEntitySecondary('reservations', 'reservation', reservationEntityId);
+  const handleOpenDeparture = () =>
+    openEntitySecondary('departures', 'departure', departureEntityId);
+  const handleOpenCompletion = () =>
+    openEntitySecondary('completion', 'completion', completionEntityId);
+
+  const canStart = status === 'scheduled';
+  const canArrive = status === 'in_transit';
+  const canComplete = status === 'arrived' && !!startedAt && !!arrivedAt;
+  const canCancel = status !== 'completed' && status !== 'cancelled';
+
+  const activeAlert: DepartureAlert =
+    status === 'completed' || status === 'cancelled'
+      ? 'none'
+      : base.alert;
+
+  const nextStep = (() => {
+    if (status === 'scheduled') {
+      return {
+        label: 'Зафиксировать выезд',
+        reason: 'Подача техники еще не начата',
+      };
+    }
+    if (status === 'in_transit') {
+      return {
+        label: 'Зафиксировать прибытие',
+        reason: 'Ожидается прибытие техники на объект',
+      };
+    }
+    if (status === 'arrived') {
+      return {
+        label: 'Завершить выезд',
+        reason: canComplete ? null : 'Перед завершением нужно зафиксировать старт и прибытие',
+      };
+    }
+    if (status === 'completed') {
+      return {
+        label: 'Открыть завершение',
+        reason: hasCompletion ? null : 'Связанное завершение для выезда не найдено',
+      };
+    }
+    return {
+      label: 'Выезд отменен',
+      reason: cancelReason || 'Переходы заблокированы для отмененного выезда',
+    };
+  })();
+
+  const runStart = () => {
+    if (!canStart) return;
+    setActionError(null);
+    setStartedAt((prev) => prev ?? nowStamp());
+    setStatus('in_transit');
+  };
+
+  const runArrive = () => {
+    if (!canArrive) return;
+    setActionError(null);
+    setArrivedAt((prev) => prev ?? nowStamp());
+    setStatus('arrived');
+  };
+
+  const runComplete = () => {
+    if (!canComplete) {
+      setActionError('Нельзя завершить выезд до фиксации старта и прибытия');
+      return;
+    }
+    setActionError(null);
+    setCompletedAt((prev) => prev ?? nowStamp());
+    setStatus('completed');
+  };
+
+  const runCancel = () => {
+    if (!canCancel) return;
+    setActionError(null);
+    setStatus('cancelled');
+    setCancelledAt((prev) => prev ?? nowStamp());
+    setCancelOpen(false);
+  };
+
+  const primaryAction = (() => {
+    if (status === 'scheduled') {
+      return {
+        label: 'Зафиксировать выезд',
+        disabled: false,
+        onClick: runStart,
+      };
+    }
+    if (status === 'in_transit') {
+      return {
+        label: 'Зафиксировать прибытие',
+        disabled: false,
+        onClick: runArrive,
+      };
+    }
+    if (status === 'arrived') {
+      return {
+        label: 'Завершить выезд',
+        disabled: !canComplete,
+        onClick: runComplete,
+      };
+    }
+    if (status === 'completed') {
+      return {
+        label: 'Открыть завершение',
+        disabled: !hasCompletion,
+        onClick: hasCompletion ? handleOpenCompletion : undefined,
+      };
+    }
+    return {
+      label: 'Выезд отменен',
+      disabled: true,
+      onClick: undefined,
+    };
+  })();
+
+  const checklist = [
+    {
+      label: 'Старт зафиксирован',
+      done: !!startedAt,
+    },
+    {
+      label: 'Прибытие зафиксировано',
+      done: !!arrivedAt,
+    },
+    {
+      label: 'Завершение зафиксировано',
+      done: !!completedAt,
+    },
+    {
+      label: 'Выезд не в отмене',
+      done: status !== 'cancelled',
+    },
+  ];
+
+  const timeline = [
+    ...base.activity,
+    ...(startedAt && !base.fact.departedAt
+      ? [
+          {
+            id: 'runtime-started',
+            actor: base.manager,
+            message: 'Зафиксирована отправка',
+            at: startedAt,
+          },
+        ]
+      : []),
+    ...(arrivedAt && !base.fact.arrivedAt
+      ? [
+          {
+            id: 'runtime-arrived',
+            actor: base.manager,
+            message: 'Зафиксировано прибытие на объект',
+            at: arrivedAt,
+          },
+        ]
+      : []),
+    ...(completedAt && !base.fact.completedAt
+      ? [
+          {
+            id: 'runtime-completed',
+            actor: base.manager,
+            message: 'Выезд завершен',
+            at: completedAt,
+          },
+        ]
+      : []),
+    ...(cancelledAt && status === 'cancelled'
+      ? [
+          {
+            id: 'runtime-cancelled',
+            actor: base.manager,
+            message: `Выезд отменен${cancelReason ? ` (${cancelReason})` : ''}`,
+            at: cancelledAt,
+          },
+        ]
+      : []),
+  ];
+
   const entitySwitcherOptions = [
-    { id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') },
-    { id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') },
-    { id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') },
+    {
+      id: 'lead',
+      label: 'Лид',
+      active: activeSwitcherEntityType === 'lead',
+      onSelect: hasLead ? handleOpenLead : undefined,
+      disabled: !hasLead,
+    },
+    {
+      id: 'application',
+      label: 'Заявка',
+      active: activeSwitcherEntityType === 'application',
+      onSelect: hasApplication ? handleOpenApplication : undefined,
+      disabled: !hasApplication,
+    },
+    {
+      id: 'reservation',
+      label: 'Бронь',
+      active: activeSwitcherEntityType === 'reservation',
+      onSelect: hasReservation ? handleOpenReservation : undefined,
+      disabled: !hasReservation,
+    },
     {
       id: 'departure',
       label: 'Выезд',
-      active: true,
-      onSelect: () => openSecondary('departures'),
+      active: activeSwitcherEntityType === 'departure',
+      onSelect: departureEntityId ? handleOpenDeparture : undefined,
+      disabled: !departureEntityId,
     },
-    { id: 'completed', label: 'Завершение', onSelect: () => openSecondary('completion') },
+    {
+      id: 'completed',
+      label: 'Завершение',
+      active: activeSwitcherEntityType === 'completion',
+      onSelect: hasCompletion ? handleOpenCompletion : undefined,
+      disabled: !hasCompletion,
+    },
   ];
 
   const main = (
-    <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
+    <div className="mx-auto max-w-[820px] px-8 pb-10 pt-6">
       <EntityModalHeader
-        entityIcon={<Truck className="w-3 h-3" />}
+        entityIcon={<Truck className="h-3 w-3" />}
         entityLabel="Выезд"
         entitySwitcherOptions={entitySwitcherOptions}
         title={base.id}
@@ -225,35 +413,56 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
           <>
             <button
               type="button"
-              onClick={() => openSecondary('applications')}
-              className="text-blue-600 hover:underline"
+              onClick={handleOpenApplication}
+              disabled={!hasApplication}
+              className="text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline"
             >
-              {linked.applicationTitle}
+              {base.linked.applicationTitle}
             </button>{' '}
             ·{' '}
             <button
               type="button"
-              onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-              disabled={!onOpenClient}
-              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+              onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+              disabled={!canOpenClient}
+              className="text-blue-600 hover:underline disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline"
             >
-              {linked.clientName}
+              {base.linked.clientName}
             </button>{' '}
-            · {linked.equipmentType}
-            {linked.equipmentUnit ? ` · ${linked.equipmentUnit}` : ''}
+            · {base.linked.equipmentType}
           </>
         }
+        chips={[
+          <span key="status" className={`${headerStatusBadgeClass} ${STATUS_TONE[status]}`}>
+            <Flag className="h-3 w-3" />
+            {STATUS_LABEL[status]}
+          </span>,
+          <ToolbarPill key="manager" icon={<UserPlus className="h-3 w-3" />} label={base.manager} />,
+          <ToolbarPill key="date" icon={<Calendar className="h-3 w-3" />} label={base.plan.plannedDate} />,
+          <ToolbarPill
+            key="window"
+            icon={<Clock className="h-3 w-3" />}
+            label={`${base.plan.plannedTimeFrom}${base.plan.plannedTimeTo ? `-${base.plan.plannedTimeTo}` : ''}`}
+          />,
+          ...(activeAlert !== 'none'
+            ? [
+                <span key="alert" className={`${headerStatusBadgeClass} ${badgeTones.warning}`}>
+                  <AlertTriangle className="h-3 w-3" />
+                  Внимание
+                </span>,
+              ]
+            : []),
+        ]}
         primaryAction={{
-          label: primary.label,
+          label: primaryAction.label,
           render: (
             <Button
               size="sm"
-              className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
-              disabled={primary.disabled}
-              onClick={primary.onClick}
+              className="h-7 gap-1 bg-blue-600 text-[11px] text-white hover:bg-blue-700"
+              disabled={primaryAction.disabled}
+              onClick={primaryAction.onClick}
             >
-              {primary.label}
-              <ArrowRight className="w-3 h-3" />
+              {primaryAction.label}
+              <ArrowRight className="h-3 w-3" />
             </Button>
           ),
         }}
@@ -266,7 +475,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
                   size="sm"
                   variant="outline"
                   className="h-7 text-[11px]"
-                  disabled={status === 'completed' || status === 'cancelled'}
+                  disabled={!canCancel}
                 >
                   Отменить выезд
                 </Button>
@@ -275,539 +484,277 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
                 <AlertDialogHeader>
                   <AlertDialogTitle>Отменить выезд {base.id}?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Действие будет зафиксировано в журнале. Укажите причину (необязательно).
+                    Действие зафиксируется в журнале. Причина нужна для прозрачности команды.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <Textarea
                   value={cancelReason}
-                  onChange={(e) => setCancelReason(e.target.value)}
-                  placeholder="Причина отмены…"
+                  onChange={(event) => setCancelReason(event.target.value)}
+                  placeholder="Причина отмены"
                   className="text-[12px]"
                 />
                 <AlertDialogFooter>
                   <AlertDialogCancel>Отмена</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => setStatus('cancelled')}>
-                    Отменить выезд
-                  </AlertDialogAction>
+                  <AlertDialogAction onClick={runCancel}>Отменить выезд</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
           ),
         }}
-        chips={[
-          <span key="status" className={`${badgeBase} ${statusTone[status]}`}>
-            <Flag className="w-3 h-3" />
-            {statusLabel[status]}
-          </span>,
-          <ToolbarPill key="mgr" icon={<UserPlus className="w-3 h-3" />} label={base.manager} />,
-          <ToolbarPill key="date" icon={<Calendar className="w-3 h-3" />} label={plan.plannedDate} />,
-          <ToolbarPill
-            key="time"
-            icon={<Clock className="w-3 h-3" />}
-            label={`${plan.plannedTimeFrom}${plan.plannedTimeTo ? '–' + plan.plannedTimeTo : ''}`}
-          />,
-          <ToolbarPill key="type" icon={<Truck className="w-3 h-3" />} label={linked.equipmentType} />,
-          <ToolbarPill
-            key="rsv"
-            icon={<FileText className="w-3 h-3" />}
-            label={linked.reservationTitle}
-            onClick={() => openSecondary('reservations')}
-          />,
-          ...(alert !== 'none'
-            ? [
-                <span key="alert" className={`${badgeBase} ${alertMeta[alert].tone}`}>
-                  <AlertTriangle className="w-3 h-3" />
-                  {alertMeta[alert].label}
-                </span>,
-              ]
-            : []),
-        ]}
         className="mb-5"
       />
 
-      {/* Stale / overdue banner */}
-      {alert !== 'none' && (
-        <Alert
-          variant={alert === 'stale' ? 'default' : 'destructive'}
-          className="mb-5 py-2 px-3"
-        >
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle className="text-[12px]">{alertMeta[alert].title}</AlertTitle>
-          <AlertDescription className="text-[11px] mt-0.5">
-            {alert === 'overdue_start' &&
-              'Плановое время подачи прошло, отправка не зафиксирована.'}
-            {alert === 'overdue_arrival' &&
-              'Техника в пути слишком долго — уточните статус у водителя.'}
-            {alert === 'stale' &&
-              'Прибытие зафиксировано, но заказ не завершён дольше обычного.'}
-            <div className="mt-1.5 flex gap-2">
-              {!departedAt && status !== 'cancelled' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 px-2 text-[11px]"
-                  onClick={handleDepart}
-                >
-                  Зафиксировать отправку
-                </Button>
-              )}
-              {departedAt && !arrivedAt && status !== 'cancelled' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 px-2 text-[11px]"
-                  onClick={handleArrive}
-                >
-                  Зафиксировать прибытие
-                </Button>
-              )}
-              {arrivedAt && status !== 'completed' && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-6 px-2 text-[11px]"
-                  onClick={handleComplete}
-                >
-                  Завершить заказ
-                </Button>
-              )}
-            </div>
+      <NextStepLine className="mb-4" label={nextStep.label} reason={nextStep.reason} />
+
+      {activeAlert !== 'none' ? (
+        <Alert className="mb-5 px-3 py-2" variant={activeAlert === 'stale' ? 'default' : 'destructive'}>
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle className="text-[12px]">{ALERT_META[activeAlert].title}</AlertTitle>
+          <AlertDescription className="mt-0.5 text-[11px]">
+            {ALERT_META[activeAlert].description}
           </AlertDescription>
         </Alert>
-      )}
+      ) : null}
 
-      {/* Overview */}
-      <EntitySection title="Основные данные" className="mb-5">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-0">
+      {actionError ? (
+        <Alert className="mb-5 px-3 py-2" variant="destructive">
+          <XCircle className="h-4 w-4" />
+          <AlertTitle className="text-[12px]">Операция недоступна</AlertTitle>
+          <AlertDescription className="mt-0.5 text-[11px]">{actionError}</AlertDescription>
+        </Alert>
+      ) : null}
+
+      <EntitySection title="План и контекст" className="mb-5">
+        <EntityMetaGrid>
           <PropertyRow
-            icon={<FileText className="w-3 h-3" />}
-            label="ID"
-            value={<InlineValue>{base.id}</InlineValue>}
-          />
-          <PropertyRow
-            icon={<Activity className="w-3 h-3" />}
-            label="Статус"
-            value={<span className={`${badgeBase} ${statusTone[status]}`}>{statusLabel[status]}</span>}
-          />
-          <PropertyRow
-            icon={<FileText className="w-3 h-3" />}
+            icon={<FileText className="h-3 w-3" />}
             label="Бронь"
             value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('reservations')}
-              >
-                {linked.reservationTitle}
+              <button type="button" className={sidebarTokens.link} onClick={handleOpenReservation}>
+                {base.linked.reservationTitle}
               </button>
             }
           />
           <PropertyRow
-            icon={<FileText className="w-3 h-3" />}
+            icon={<FileText className="h-3 w-3" />}
             label="Заявка"
             value={
               <button
                 type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('applications')}
+                className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+                onClick={handleOpenApplication}
+                disabled={!hasApplication}
               >
-                {linked.applicationTitle}
+                {base.linked.applicationTitle}
               </button>
             }
           />
           <PropertyRow
-            icon={<Building2 className="w-3 h-3" />}
+            icon={<Building2 className="h-3 w-3" />}
             label="Клиент"
             value={
-              <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
-                {linked.clientName}
+              <button
+                type="button"
+                className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+                onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+                disabled={!canOpenClient}
+              >
+                {base.linked.clientName}
               </button>
             }
           />
           <PropertyRow
-            icon={<Truck className="w-3 h-3" />}
-            label="Тип техники"
-            value={<InlineValue>{linked.equipmentType}</InlineValue>}
+            icon={<Truck className="h-3 w-3" />}
+            label="Техника"
+            value={<InlineValue>{base.linked.equipmentType}</InlineValue>}
           />
-          {linked.equipmentUnit && (
+          {base.linked.equipmentUnit ? (
             <PropertyRow
-              icon={<Wrench className="w-3 h-3" />}
-              label="Unit"
-              value={<InlineValue>{linked.equipmentUnit}</InlineValue>}
+              icon={<Truck className="h-3 w-3" />}
+              label="Единица"
+              value={<InlineValue>{base.linked.equipmentUnit}</InlineValue>}
             />
-          )}
-          {linked.subcontractor && (
+          ) : null}
+          {base.linked.subcontractor ? (
             <PropertyRow
-              icon={<Building2 className="w-3 h-3" />}
+              icon={<Building2 className="h-3 w-3" />}
               label="Подрядчик"
-              value={<InlineValue>{linked.subcontractor}</InlineValue>}
+              value={<InlineValue>{base.linked.subcontractor}</InlineValue>}
             />
-          )}
+          ) : null}
           <PropertyRow
-            icon={<UserPlus className="w-3 h-3" />}
-            label="Ответственный"
-            value={<InlineValue>{base.manager}</InlineValue>}
-          />
-          <PropertyRow
-            icon={<Calendar className="w-3 h-3" />}
-            label="Создан"
-            value={<InlineValue>{base.createdAt}</InlineValue>}
-          />
-          <PropertyRow
-            icon={<Activity className="w-3 h-3" />}
-            label="Последняя активность"
-            value={<InlineValue>{base.lastActivity}</InlineValue>}
-          />
-        </div>
-      </EntitySection>
-
-      {/* Planned trip */}
-      <div className="mb-5">
-        <div className="flex items-center justify-between mb-1.5">
-          <div className="text-[11px] text-gray-500 uppercase tracking-wide">План выезда</div>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline"
-            onClick={() => openSecondary('reservations')}
-          >
-            <ExternalLink className="w-3 h-3" /> Открыть бронь
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-0">
-          <PropertyRow
-            icon={<Calendar className="w-3 h-3" />}
-            label="Дата подачи"
-            value={<InlineValue>{plan.plannedDate}</InlineValue>}
-          />
-          <PropertyRow
-            icon={<Clock className="w-3 h-3" />}
-            label="Время подачи"
+            icon={<Calendar className="h-3 w-3" />}
+            label="Дата и окно"
             value={
               <InlineValue>
-                {plan.plannedTimeFrom}
-                {plan.plannedTimeTo ? `–${plan.plannedTimeTo}` : ''}
+                {base.plan.plannedDate} · {base.plan.plannedTimeFrom}
+                {base.plan.plannedTimeTo ? `-${base.plan.plannedTimeTo}` : ''}
               </InlineValue>
             }
           />
           <PropertyRow
-            icon={<MapPin className="w-3 h-3" />}
+            icon={<MapPin className="h-3 w-3" />}
             label="Адрес"
-            value={<InlineValue>{plan.address}</InlineValue>}
+            value={<InlineValue>{base.plan.address}</InlineValue>}
           />
-          <PropertyRow
-            icon={<Package className="w-3 h-3" />}
-            label="Количество"
-            value={<InlineValue>{linked.quantity} шт</InlineValue>}
-          />
-          {plan.contactName && (
+          {base.plan.contactName ? (
             <PropertyRow
-              icon={<UserIcon className="w-3 h-3" />}
+              icon={<UserIcon className="h-3 w-3" />}
               label="Контакт"
-              value={<InlineValue>{plan.contactName}</InlineValue>}
+              value={<InlineValue>{base.plan.contactName}</InlineValue>}
             />
-          )}
-          {plan.contactPhone && (
+          ) : null}
+          {base.plan.contactPhone ? (
             <PropertyRow
-              icon={<Phone className="w-3 h-3" />}
+              icon={<UserPlus className="h-3 w-3" />}
               label="Телефон"
-              value={<PhoneLink value={plan.contactPhone} />}
+              value={<PhoneLink value={base.plan.contactPhone} />}
             />
-          )}
-        </div>
-        {plan.deliveryNotes && (
-          <div className="mt-1.5 text-[10px] text-gray-500 italic">{plan.deliveryNotes}</div>
-        )}
-      </div>
+          ) : null}
+        </EntityMetaGrid>
+      </EntitySection>
 
-      {/* Fact tracking */}
-      <div className="mb-5">
-        <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-2">
-          Факт отправки и прибытия
-        </div>
-        <div className="divide-y divide-gray-200 border border-gray-200 rounded-md bg-white overflow-hidden">
-          {/* Departure row */}
-          <div className="flex items-center gap-3 px-3 py-2">
-            <PlayCircle
-              className={`w-4 h-4 flex-shrink-0 ${departedAt ? 'text-emerald-500' : 'text-gray-400'}`}
-            />
-            <div className="flex-1 min-w-0">
-              <div className="text-[12px] text-gray-800">Отправление</div>
-              {departedAt ? (
-                <div className="text-[11px]"><span className="text-emerald-700">Зафиксировано</span> <span className="text-gray-500">· {departedAt}</span></div>
-              ) : (
-                <div className="text-[11px] text-gray-600">Не зафиксировано</div>
-              )}
-            </div>
-            {!departedAt && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-6 px-2 text-[11px]"
-                onClick={handleDepart}
-                disabled={status === 'cancelled'}
-              >
-                Зафиксировать
-              </Button>
-            )}
-          </div>
-
-          {/* Arrival row */}
-          <div className={`flex items-center gap-3 px-3 py-2 ${!departedAt ? 'bg-gray-50/60' : ''}`}>
-            <Flag
-              className={`w-4 h-4 flex-shrink-0 ${arrivedAt ? 'text-emerald-500' : departedAt ? 'text-gray-400' : 'text-gray-300'}`}
-            />
-            <div className="flex-1 min-w-0">
-              <div className={`text-[12px] ${departedAt ? 'text-gray-800' : 'text-gray-500'}`}>Прибытие на объект</div>
-              {arrivedAt ? (
-                <div className="text-[11px]"><span className="text-emerald-700">Зафиксировано</span> <span className="text-gray-500">· {arrivedAt}</span></div>
-              ) : (
-                <div className={`text-[11px] ${departedAt ? 'text-gray-600' : 'text-gray-400 italic'}`}>
-                  {departedAt ? 'Не зафиксировано' : 'Доступно после отправки'}
-                </div>
-              )}
-            </div>
-            {departedAt && !arrivedAt && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-6 px-2 text-[11px]"
-                onClick={handleArrive}
-                disabled={status === 'cancelled'}
-              >
-                Зафиксировать
-              </Button>
-            )}
-          </div>
-
-          {/* Completion — tertiary row */}
-          <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50/60">
-            <CheckCircle2
-              className={`w-3.5 h-3.5 flex-shrink-0 ${completedAt ? 'text-gray-500' : 'text-gray-300'}`}
-            />
-            <div className="flex-1 min-w-0 text-[11px] text-gray-500">
-              Завершение
-              {completedAt && <span className="text-gray-700 ml-2">{completedAt}</span>}
-            </div>
-            {!completedAt && (
-              <span className="text-[10px] text-gray-400 italic">
-                {arrivedAt ? 'готово к завершению' : 'доступно после прибытия'}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="mt-1 text-[10px] text-gray-400">
-          Факт фиксируется вручную. Telematics в MVP не подключена.
-        </div>
-      </div>
-
-      {/* Next step hint — mirrors primary CTA verb */}
-      {primary.label && !primary.disabled && (
-        <div className="mb-5">
-          <NextStepLine label={primary.label} reason={primary.reason} />
-        </div>
-      )}
-
-      {/* Comment */}
-      {base.comment && (
-        <div className="mb-5">
-          <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1">
-            Комментарий менеджера
-          </div>
-          <div className="text-[11px] text-gray-700 leading-relaxed">{base.comment}</div>
-        </div>
-      )}
-
-      {/* Quick link actions — ordered by process hierarchy; "Дублировать выезд" moved to sidebar overflow */}
-      <div className="space-y-0.5 mb-6">
-        <ActionButton
-          icon={<ExternalLink className="w-3.5 h-3.5" />}
-          label="Открыть бронь"
-          onClick={() => openSecondary('reservations')}
-        />
-        <ActionButton
-          icon={<FileText className="w-3.5 h-3.5" />}
-          label="Открыть заявку"
-          onClick={() => openSecondary('applications')}
-        />
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} />
-        {linked.leadTitle && (
-          <ActionButton
-            icon={<UserPlus className="w-3.5 h-3.5" />}
-            label="Открыть лид"
-            onClick={() => openSecondary('leads')}
-          />
-        )}
-      </div>
-
-      {/* History */}
-      <div className="border-t border-gray-200 pt-4">
-        <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-2">
-          Журнал изменений
-        </div>
+      <EntitySection title="Управление этапом" className="mb-5">
         <div className="space-y-2">
-          {base.activity.map((a) => (
-            <div key={a.id} className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{a.actor}</span>
-              <span className="text-gray-500 truncate">{a.message}</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{a.at}</span>
-            </div>
-          ))}
-          {departedAt && !base.activity.some((a) => a.kind === 'departed') && (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{base.manager}</span>
-              <span className="text-gray-500 truncate">Зафиксирована отправка</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{departedAt}</span>
-            </div>
-          )}
-          {arrivedAt && !base.activity.some((a) => a.kind === 'arrived') && (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{base.manager}</span>
-              <span className="text-gray-500 truncate">Зафиксировано прибытие на объект</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{arrivedAt}</span>
-            </div>
-          )}
-          {completedAt && !base.activity.some((a) => a.kind === 'completed') && (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{base.manager}</span>
-              <span className="text-gray-500 truncate">Заказ завершён</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{completedAt}</span>
-            </div>
-          )}
+          <div className="flex flex-wrap gap-2">
+            <Button size="sm" onClick={runStart} disabled={!canStart}>
+              <PlayCircle className="mr-1 h-3.5 w-3.5" /> Зафиксировать выезд
+            </Button>
+            <Button size="sm" variant="outline" onClick={runArrive} disabled={!canArrive}>
+              <Flag className="mr-1 h-3.5 w-3.5" /> Зафиксировать прибытие
+            </Button>
+            <Button size="sm" variant="outline" onClick={runComplete} disabled={!canComplete}>
+              <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Завершить выезд
+            </Button>
+            <Button size="sm" variant="outline" onClick={handleOpenCompletion} disabled={!hasCompletion}>
+              <ExternalLink className="mr-1 h-3.5 w-3.5" /> Открыть завершение
+            </Button>
+          </div>
+
+          <div className="rounded-md border border-gray-200 bg-white px-3 py-2">
+            {checklist.map((item) => (
+              <div key={item.label} className="flex items-center gap-1.5 py-0.5 text-[11px]">
+                {item.done ? (
+                  <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
+                ) : (
+                  <Circle className="h-3.5 w-3.5 flex-shrink-0 text-gray-300" />
+                )}
+                <span className={item.done ? 'text-gray-700' : 'text-gray-500'}>{item.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
+      </EntitySection>
+
+      <EntitySection title="План / факт" className="mb-5">
+        <EntityMetaGrid>
+          <PropertyRow icon={<Clock className="h-3 w-3" />} label="Старт" value={formatFact(startedAt)} />
+          <PropertyRow icon={<Clock className="h-3 w-3" />} label="Прибытие" value={formatFact(arrivedAt)} />
+          <PropertyRow icon={<Clock className="h-3 w-3" />} label="Завершение" value={formatFact(completedAt)} />
+          <PropertyRow icon={<XCircle className="h-3 w-3" />} label="Отмена" value={formatFact(cancelledAt)} />
+        </EntityMetaGrid>
+      </EntitySection>
+
+      {base.comment ? (
+        <EntitySection title="Комментарий" className="mb-5">
+          <div className="text-[11px] leading-relaxed text-gray-700">{base.comment}</div>
+        </EntitySection>
+      ) : null}
+
+      <div className="mb-6 space-y-0.5">
+        <ActionButton icon={<FileText className="h-3.5 w-3.5" />} label="Открыть бронь" onClick={hasReservation ? handleOpenReservation : undefined} />
+        <ActionButton icon={<FileText className="h-3.5 w-3.5" />} label="Открыть заявку" onClick={hasApplication ? handleOpenApplication : undefined} />
+        <ActionButton icon={<Building2 className="h-3.5 w-3.5" />} label="Открыть клиента" onClick={canOpenClient ? () => onOpenClient(lead) : undefined} />
+        {hasLead ? (
+          <ActionButton icon={<UserPlus className="h-3.5 w-3.5" />} label="Открыть лид" onClick={handleOpenLead} />
+        ) : null}
       </div>
+
+      <EntitySection title="Журнал изменений">
+        <EntityActivityList
+          entries={timeline.map((item) => ({
+            id: item.id,
+            actor: item.actor,
+            text: item.message,
+            time: item.at,
+          }))}
+          emptyText="Событий пока нет"
+        />
+      </EntitySection>
     </div>
   );
 
   const sidebar = (
     <>
-      <SidebarSection title="Статус">
+      <SidebarSection title="Сводка">
         <SidebarField
           label="Статус"
-          value={<span className={`${badgeBase} ${statusTone[status]}`}>{statusLabel[status]}</span>}
+          value={<span className={`${sidebarStatusBadgeClass} ${STATUS_TONE[status]}`}>{STATUS_LABEL[status]}</span>}
         />
         <SidebarField label="Менеджер" value={base.manager} />
         <SidebarField label="Создан" value={base.createdAt} />
-        <SidebarField label="Обновлён" value={base.updatedAt} />
+        <SidebarField label="Обновлен" value={base.updatedAt} />
+        <SidebarField
+          label="Алерт"
+          value={activeAlert === 'none' ? 'Нет' : ALERT_META[activeAlert].title}
+        />
       </SidebarSection>
 
-      <SidebarSection title="Готовность к завершению">
-        <div className="space-y-1">
-          {checks.map((c) => (
-            <div key={c.label} className="flex items-center gap-1.5 text-[11px]">
-              {c.ok ? (
-                <CheckCircle2 className="w-3 h-3 text-emerald-500 flex-shrink-0" />
-              ) : (
-                <Circle className="w-3 h-3 text-gray-300 flex-shrink-0" />
-              )}
-              <span className={c.ok ? 'text-gray-700' : 'text-gray-500'}>{c.label}</span>
+      <SidebarSection title="Этапы">
+        <div className="space-y-0.5">
+          {STAGE_ORDER.map((stage) => {
+            const currentIndex = STAGE_ORDER.indexOf(status === 'cancelled' ? 'arrived' : status);
+            const stageIndex = STAGE_ORDER.indexOf(stage);
+            const passed = stageIndex < currentIndex;
+            const active = stage === status;
+            return (
+              <div
+                key={stage}
+                className={`flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] ${
+                  active ? 'font-medium text-gray-700' : passed ? 'text-gray-700' : 'text-gray-500'
+                }`}
+              >
+                {active || passed ? (
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                ) : (
+                  <Circle className="h-3 w-3 text-gray-300" />
+                )}
+                <span>{STATUS_LABEL[stage]}</span>
+              </div>
+            );
+          })}
+          {status === 'cancelled' ? (
+            <div className="flex items-center gap-1.5 rounded px-1.5 py-0.5 text-[11px] text-rose-700">
+              <XCircle className="h-3 w-3" />
+              <span>Отменен</span>
             </div>
-          ))}
-        </div>
-        <div className="pt-2">
-          <Button
-            size="sm"
-            className="h-7 w-full text-[11px]"
-            disabled={primary.disabled}
-            onClick={primary.onClick}
-          >
-            {primary.label}
-          </Button>
-          {primary.reason && (
-            <div className="text-[10px] text-gray-500 mt-1">{primary.reason}</div>
-          )}
+          ) : null}
         </div>
       </SidebarSection>
 
       <SidebarSection title="План / факт">
+        <SidebarField label="Дата" value={base.plan.plannedDate} />
         <SidebarField
-          label="План дата"
-          value={plan.plannedDate}
+          label="Окно"
+          value={`${base.plan.plannedTimeFrom}${base.plan.plannedTimeTo ? `-${base.plan.plannedTimeTo}` : ''}`}
         />
-        <SidebarField
-          label="План время"
-          value={`${plan.plannedTimeFrom}${plan.plannedTimeTo ? '–' + plan.plannedTimeTo : ''}`}
-        />
-        <SidebarField
-          label="Отправление"
-          value={
-            departedAt ? (
-              <span className="text-gray-800">{departedAt}</span>
-            ) : (
-              <span className="text-gray-400">—</span>
-            )
-          }
-        />
-        <SidebarField
-          label="Прибытие"
-          value={
-            arrivedAt ? (
-              <span className="text-gray-800">{arrivedAt}</span>
-            ) : (
-              <span className="text-gray-400">—</span>
-            )
-          }
-        />
-        <SidebarField
-          label="Завершение"
-          value={
-            completedAt ? (
-              <span className="text-gray-800">{completedAt}</span>
-            ) : (
-              <span className="text-gray-400">—</span>
-            )
-          }
-        />
-      </SidebarSection>
-
-      {alert !== 'none' && (
-        <SidebarSection title="Внимание">
-          <div className="text-[11px] text-red-700">{alertMeta[alert].title}</div>
-          <div className="text-[10px] text-gray-500 mt-0.5">
-            {alert === 'overdue_start' && 'Плановое время подачи прошло.'}
-            {alert === 'overdue_arrival' && 'Слишком долго нет фиксации прибытия.'}
-            {alert === 'stale' && 'Заказ давно не закрыт.'}
-          </div>
-        </SidebarSection>
-      )}
-
-      <SidebarSection title="Этап выезда">
-        <div className="space-y-0.5">
-          {statusOrder.map((s) => {
-            const active = s === status;
-            const passed = statusOrder.indexOf(s) < statusOrder.indexOf(status);
-            return (
-              <div
-                key={s}
-                className={`flex items-center gap-1.5 text-[11px] px-1.5 py-0.5 rounded ${
-                  active ? 'text-gray-700 font-medium' : passed ? 'text-gray-700' : 'text-gray-500'
-                }`}
-              >
-                {active || passed ? (
-                  <CheckCircle2 className="w-3 h-3 text-emerald-500" />
-                ) : (
-                  <Circle className="w-3 h-3 text-gray-300" />
-                )}
-                <span>{statusLabel[s]}</span>
-              </div>
-            );
-          })}
-        </div>
+        <SidebarField label="Старт" value={formatFact(startedAt)} />
+        <SidebarField label="Прибытие" value={formatFact(arrivedAt)} />
+        <SidebarField label="Завершение" value={formatFact(completedAt)} />
+        <SidebarField label="Отмена" value={formatFact(cancelledAt)} />
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
         <SidebarField
-          label="Бронь"
+          label="Лид"
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('reservations')}
+              className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+              onClick={handleOpenLead}
+              disabled={!hasLead}
             >
-              {linked.reservationTitle}
+              {hasLead ? base.linked.leadTitle : '—'}
             </button>
           }
         />
@@ -816,95 +763,65 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('applications')}
+              className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+              onClick={handleOpenApplication}
+              disabled={!hasApplication}
             >
-              {linked.applicationTitle}
+              {base.linked.applicationTitle}
             </button>
           }
         />
         <SidebarField
-          label="Клиент"
+          label="Бронь"
           value={
-            <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
-              {linked.clientName}
+            <button
+              type="button"
+              className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+              onClick={handleOpenReservation}
+              disabled={!hasReservation}
+            >
+              {base.linked.reservationTitle}
             </button>
           }
         />
-        {linked.leadTitle && (
-          <SidebarField
-            label="Лид"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('leads')}
-              >
-                {linked.leadTitle}
-              </button>
-            }
-          />
-        )}
-        {linked.equipmentUnit && <SidebarField label="Unit" value={linked.equipmentUnit} />}
-        {linked.subcontractor && <SidebarField label="Подрядчик" value={linked.subcontractor} />}
-      </SidebarSection>
-
-      <SidebarSection title="Последние изменения" defaultOpen={false}>
-        <div className="space-y-1">
-          {base.activity.slice(-3).map((a) => (
-            <div key={a.id} className="text-[10px] text-gray-500 leading-tight">
-              <span className="text-gray-700">{a.actor}</span> · {a.message}
-              <div className="text-gray-500">{a.at}</div>
-            </div>
-          ))}
-        </div>
+        <SidebarField
+          label="Выезд"
+          value={
+            <button
+              type="button"
+              className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+              onClick={handleOpenDeparture}
+              disabled={!departureEntityId}
+            >
+              {base.id}
+            </button>
+          }
+        />
+        <SidebarField
+          label="Завершение"
+          value={
+            <button
+              type="button"
+              className={`${sidebarTokens.link} disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline`}
+              onClick={handleOpenCompletion}
+              disabled={!hasCompletion}
+            >
+              {hasCompletion ? `CMP-${completionEntityId?.slice(0, 8).toUpperCase()}` : '—'}
+            </button>
+          }
+        />
       </SidebarSection>
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>
         <div className="space-y-1">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={handleDepart}
-            disabled={!!departedAt || status === 'cancelled'}
-          >
-            <PlayCircle className="w-3 h-3 mr-1" /> Зафиксировать отправку
+          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]" onClick={runStart} disabled={!canStart}>
+            <PlayCircle className="mr-1 h-3 w-3" /> Зафиксировать выезд
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={handleArrive}
-            disabled={!departedAt || !!arrivedAt || status === 'cancelled'}
-          >
-            <Flag className="w-3 h-3 mr-1" /> Зафиксировать прибытие
+          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]" onClick={runArrive} disabled={!canArrive}>
+            <Flag className="mr-1 h-3 w-3" /> Зафиксировать прибытие
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={handleComplete}
-            disabled={!ready || status === 'completed' || status === 'cancelled'}
-          >
-            <CheckCircle2 className="w-3 h-3 mr-1" /> Завершить заказ
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={() => setCancelOpen(true)}
-            disabled={status === 'completed' || status === 'cancelled'}
-          >
-            <XCircle className="w-3 h-3 mr-1" /> Отменить выезд
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px] text-gray-500"
-            onClick={() => openSecondary('applications')}
-          >
-            <Copy className="w-3 h-3 mr-1" /> Дублировать выезд
+          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]" onClick={runComplete} disabled={!canComplete}>
+            <CheckCircle2 className="mr-1 h-3 w-3" /> Завершить выезд
           </Button>
         </div>
       </SidebarSection>
@@ -913,8 +830,9 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
 
   return (
     <DetailShell
-      breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Departure']} />}
+      breadcrumb={<Breadcrumb items={breadcrumbItems} />}
       onClose={onClose}
+      shareUrl={shareUrl}
       main={main}
       sidebar={sidebar}
     />

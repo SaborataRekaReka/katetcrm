@@ -1,5 +1,6 @@
 import { apiRequest } from './apiClient';
 import type { DepartureApi } from './departuresApi';
+import type { StageLinkedIds } from './linkedIds';
 
 export type CompletionOutcome = 'completed' | 'unqualified';
 
@@ -58,6 +59,7 @@ export interface CompletionApi {
     deliveryNotes: string | null;
     cancellationReason: string | null;
   };
+  linkedIds: StageLinkedIds;
   derived: {
     status: CompletionStatus;
     alert: CompletionAlert;

@@ -92,13 +92,10 @@ Minimum agent validation:
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
-npm --prefix app/frontend run check:ui-consistency
 ```
 
-## Минимальная проверка релизной готовности
+## Testing reset
 
-```bash
-npm --prefix app/backend run smoke:release
-```
+Текущие smoke/e2e/ui-consistency проверки и их результаты удалены 05.05.2026 и больше не являются источником истины.
 
-Команда запускает агрегированный backend gate: stage smoke-потоки, tasks smoke (`smoke:tasks`), RBAC (`smoke:rbac` + `smoke:rbac:scope`), admin smoke и фронтовую проверку UI-консистентности.
+Новая тестовая модель должна строиться от [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md). Пока новая suite не создана, сборка и typecheck подтверждают только компилируемость, не бизнес-корректность.

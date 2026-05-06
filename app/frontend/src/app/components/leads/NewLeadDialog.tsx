@@ -45,6 +45,7 @@ type NewLeadDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   prefill?: LeadPrefill;
+  onCreated?: (leadId: string) => void;
 };
 
 type FormState = {
@@ -78,7 +79,7 @@ const SOURCE_OPTIONS: { value: SourceChannel; label: string }[] = [
   { value: 'other', label: 'Другое' },
 ];
 
-export function NewLeadDialog({ open, onOpenChange, prefill }: NewLeadDialogProps) {
+export function NewLeadDialog({ open, onOpenChange, prefill, onCreated }: NewLeadDialogProps) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +111,7 @@ export function NewLeadDialog({ open, onOpenChange, prefill }: NewLeadDialogProp
     if (!canSave) return;
     setError(null);
     try {
-      await mutation.mutateAsync({
+      const result = await mutation.mutateAsync({
         contactName: form.contactName.trim(),
         contactCompany: form.contactCompany.trim() || undefined,
         contactPhone: form.contactPhone.trim(),
@@ -122,6 +123,7 @@ export function NewLeadDialog({ open, onOpenChange, prefill }: NewLeadDialogProp
         comment: form.comment.trim() || undefined,
       });
       onOpenChange(false);
+      onCreated?.(result.lead.id);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось создать лид');
     }

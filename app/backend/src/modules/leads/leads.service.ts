@@ -20,7 +20,7 @@ export interface ActorContext {
  *   lead          → application | unqualified
  *   application   → reservation | unqualified
  *   reservation   → departure | unqualified
- *   departure     → completed | unqualified
+ *   departure     → (terminal outcomes only through completion flow)
  *   completed     → (terminal)
  *   unqualified   → (terminal)
  */
@@ -28,7 +28,7 @@ const ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
   reservation: ['departure', 'unqualified'],
-  departure: ['completed', 'unqualified'],
+  departure: [],
   completed: [],
   unqualified: [],
   cancelled: [],
@@ -74,7 +74,48 @@ export class LeadsService {
       where,
       orderBy: [{ lastActivityAt: 'desc' }],
       take: 500,
-      include: { client: true, manager: { select: { id: true, fullName: true } } },
+      include: {
+        client: true,
+        manager: { select: { id: true, fullName: true } },
+        applications: {
+          orderBy: [{ createdAt: 'desc' }],
+          take: 1,
+          select: {
+            id: true,
+            clientId: true,
+            isActive: true,
+            createdAt: true,
+            items: {
+              orderBy: [{ createdAt: 'desc' }],
+              take: 1,
+              select: {
+                id: true,
+                createdAt: true,
+                reservations: {
+                  orderBy: [{ createdAt: 'desc' }],
+                  take: 1,
+                  select: {
+                    id: true,
+                    isActive: true,
+                    createdAt: true,
+                    applicationItemId: true,
+                    departures: {
+                      orderBy: [{ scheduledAt: 'desc' }],
+                      take: 1,
+                      select: {
+                        id: true,
+                        status: true,
+                        scheduledAt: true,
+                        completion: { select: { id: true } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     return { items, total: items.length };
   }
@@ -85,7 +126,44 @@ export class LeadsService {
       include: {
         client: true,
         manager: { select: { id: true, fullName: true, email: true } },
-        applications: { where: { isActive: true } },
+        applications: {
+          orderBy: [{ createdAt: 'desc' }],
+          take: 3,
+          select: {
+            id: true,
+            clientId: true,
+            isActive: true,
+            createdAt: true,
+            items: {
+              orderBy: [{ createdAt: 'desc' }],
+              take: 3,
+              select: {
+                id: true,
+                createdAt: true,
+                reservations: {
+                  orderBy: [{ createdAt: 'desc' }],
+                  take: 3,
+                  select: {
+                    id: true,
+                    isActive: true,
+                    createdAt: true,
+                    applicationItemId: true,
+                    departures: {
+                      orderBy: [{ scheduledAt: 'desc' }],
+                      take: 3,
+                      select: {
+                        id: true,
+                        status: true,
+                        scheduledAt: true,
+                        completion: { select: { id: true } },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
     if (!lead) throw new NotFoundException('Лид не найден');
@@ -167,6 +245,17 @@ export class LeadsService {
 
   async changeStage(id: string, dto: ChangeStageDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+    if (dto.stage === 'unqualified' && !dto.reason?.trim()) {
+      throw new BadRequestException('reason is required for unqualified stage');
+    }
+    if (
+      existing.stage === 'departure' &&
+      (dto.stage === 'completed' || dto.stage === 'unqualified')
+    ) {
+      throw new BadRequestException(
+        'Завершение этапа departure выполняется через completion',
+      );
+    }
     const allowed = ALLOWED_TRANSITIONS[existing.stage];
     if (!allowed.includes(dto.stage)) {
       throw new BadRequestException(
@@ -199,6 +288,16 @@ export class LeadsService {
               companyNormalized: lead.contactCompany
                 ? lead.contactCompany.trim().toLowerCase().replace(/\s+/g, ' ')
                 : null,
+              contacts: {
+                create: [
+                  {
+                    name: lead.contactName,
+                    role: lead.contactCompany ? 'Контактное лицо' : 'Основной контакт',
+                    phone: lead.contactPhone,
+                    isPrimary: true,
+                  },
+                ],
+              },
             },
           });
           await tx.lead.update({ where: { id }, data: { clientId: created.id } });

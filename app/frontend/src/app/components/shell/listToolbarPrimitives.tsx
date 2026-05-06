@@ -13,7 +13,7 @@ import { cn } from '../ui/utils';
 
 /** Outer bar: compact height, subtle bottom border, overflow-x scroll when needed. */
 export const LIST_TOOLBAR_BAR =
-  'flex h-10 shrink-0 items-center gap-1 overflow-x-auto border-b border-border/60 bg-white px-3';
+  'scroll-thin flex h-10 shrink-0 items-center gap-1 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-white px-3';
 
 /** SelectTrigger class: borderless by default, hover reveals the frame. */
 export const LIST_TOOLBAR_TRIGGER =

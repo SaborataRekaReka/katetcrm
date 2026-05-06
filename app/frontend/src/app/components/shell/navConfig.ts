@@ -120,8 +120,7 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
         items: [
           { id: 'applications', label: 'Все заявки', icon: FileText },
           { id: 'my-applications', label: 'Мои заявки', icon: FileText },
-          { id: 'apps-no-reservation', label: 'Без брони', icon: CalendarClock },
-          { id: 'apps-ready', label: 'Готовы к выезду', icon: Truck },
+          { id: 'apps-no-reservation', label: 'Активные заявки', icon: CalendarClock },
         ],
       },
     ],
@@ -305,7 +304,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
   },
   'apps-no-reservation': {
     domain: 'sales',
-    title: 'Заявки без брони',
+    title: 'Активные заявки',
     searchPlaceholder: 'Поиск по заявкам',
     tabs: [
       { id: 'list', label: 'Список' },
@@ -314,7 +313,7 @@ export const MODULE_META: Record<string, ModuleMeta> = {
   },
   'apps-ready': {
     domain: 'sales',
-    title: 'Готовы к выезду',
+    title: 'Активные заявки',
     searchPlaceholder: 'Поиск по заявкам',
     tabs: [
       { id: 'list', label: 'Список' },

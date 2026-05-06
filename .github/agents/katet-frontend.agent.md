@@ -34,15 +34,10 @@ Root [AGENTS.md](../../AGENTS.md) is the primary source of rules. Local frontend
 
 ## Required Validation
 
+Previous browser e2e and UI-consistency commands were removed in the 05.05.2026 testing reset. Do not cite old e2e results; create new tests only from `QA_REQUIREMENTS.md`.
+
 ```bash
 npm --prefix app/frontend run build
-npm --prefix app/frontend run check:ui-consistency
-```
-
-If route/admin/control scenarios changed, add:
-
-```bash
-npm --prefix app/frontend run e2e
 ```
 
 ## Final Report

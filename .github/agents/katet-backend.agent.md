@@ -1,6 +1,6 @@
 ---
 name: "Katet Backend"
-description: "Use when: implementing Katet CRM backend changes in NestJS, Prisma, PostgreSQL, API contracts, RBAC, audit logging, integrations, imports, smoke tests, or app/backend files."
+description: "Use when: implementing Katet CRM backend changes in NestJS, Prisma, PostgreSQL, API contracts, RBAC, audit logging, integrations, imports, or app/backend files."
 tools: [read, search, edit, execute]
 argument-hint: "Describe the backend task, allowed files, and required validation."
 ---
@@ -34,21 +34,11 @@ Root [AGENTS.md](../../AGENTS.md) is the primary source of rules. Local backend 
 
 ## Required Validation
 
+Previous smoke commands were removed in the 05.05.2026 testing reset. Do not cite old smoke results; create new tests only from `QA_REQUIREMENTS.md`.
+
 ```bash
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
-```
-
-If smoke scenarios are touched, add the relevant smoke command, for example:
-
-```bash
-npm --prefix app/backend run smoke:stage3
-npm --prefix app/backend run smoke:stage5
-npm --prefix app/backend run smoke:stage6
-npm --prefix app/backend run smoke:stage7
-npm --prefix app/backend run smoke:tasks
-npm --prefix app/backend run smoke:rbac
-npm --prefix app/backend run smoke:release
 ```
 
 ## Final Report

@@ -225,13 +225,17 @@ export function InlineValue({
   onClick?: () => void;
 }) {
   if (!onClick) {
-    return <span className="inline-flex items-center gap-1 max-w-full px-1 h-5 text-gray-800 truncate">{children}</span>;
+    return (
+      <span className="inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700 truncate">
+        {children}
+      </span>
+    );
   }
   return (
     <button
       type="button"
       onClick={onClick}
-      className="inline-flex items-center gap-1 max-w-full px-1 h-5 rounded hover:bg-gray-100 transition-colors text-gray-800 truncate"
+      className="inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700 truncate hover:bg-gray-100 transition-colors"
     >
       {children}
     </button>
@@ -254,7 +258,7 @@ export const sidebarTokens = {
   title: 'text-[10px] font-medium uppercase tracking-wider text-gray-500',
   label: 'text-[11px] text-gray-500',
   value: 'text-[11px] text-gray-700',
-  link: 'text-[11px] text-blue-600 hover:underline cursor-pointer',
+  link: 'text-[11px] font-semibold text-blue-600 hover:underline cursor-pointer',
   muted: 'text-[10px] text-gray-500',
 } as const;
 
@@ -374,6 +378,7 @@ export function DetailShell({
   sidebar,
   footer,
   onShare,
+  shareUrl,
   onToggleWatch,
   isWatched,
   moreActions,
@@ -384,6 +389,7 @@ export function DetailShell({
   sidebar: ReactNode;
   footer?: ReactNode;
   onShare?: () => void;
+  shareUrl?: string | null;
   onToggleWatch?: () => void;
   isWatched?: boolean;
   moreActions?: DetailShellMenuAction[];
@@ -397,7 +403,7 @@ export function DetailShell({
       onShare();
       return;
     }
-    const href = typeof window !== 'undefined' ? window.location.href : '';
+    const href = shareUrl ?? (typeof window !== 'undefined' ? window.location.href : '');
     if (!href) return;
     const ok = await copyToClipboard(href);
     if (ok) {

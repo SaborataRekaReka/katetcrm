@@ -205,6 +205,7 @@ export function applyReservationsFilters(
         reservation.equipmentUnit,
         reservation.subcontractor,
         reservation.linked.clientName,
+        reservation.linked.clientCompany,
         reservation.linked.applicationTitle,
         reservation.linked.address,
         lead.manager,

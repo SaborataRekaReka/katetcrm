@@ -27,6 +27,7 @@ import {
 } from '../../data/mockTasks';
 import { Button } from '../ui/button';
 import { Dialog, DialogContent } from '../ui/dialog';
+import { useLayout } from '../shell/layoutStore';
 import {
   Breadcrumb,
   DetailShell,
@@ -69,6 +70,14 @@ export interface TaskUpdatePatch {
   dueDate?: string;
   tags?: string[];
 }
+
+const TASK_EDIT_FIELD_CLASS =
+  'h-6 w-full rounded px-1.5 text-[11px] leading-5 bg-transparent border border-transparent hover:border-gray-200 text-gray-800 outline-none transition-colors focus:border-blue-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60';
+
+const TASK_EDIT_TEXTAREA_CLASS =
+  'w-full min-h-[88px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent border border-transparent hover:border-gray-200 text-gray-800 outline-none transition-colors focus:border-blue-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 resize-none';
+
+const TASK_EDIT_LABEL_CLASS = 'text-[10px] uppercase tracking-wide text-gray-500';
 
 export function TaskDetailView({
   task,
@@ -135,6 +144,7 @@ function TaskDetailBody({
   const [editTags, setEditTags] = useState(task.tags.join(', '));
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { setActiveSecondaryNav } = useLayout();
 
   useEffect(() => {
     setEditTitle(task.title);
@@ -146,11 +156,28 @@ function TaskDetailBody({
     setSaveError(null);
   }, [task.id, task.title, task.description, task.priority, task.dueDate, task.tags]);
 
-  const breadcrumbItems = ['CRM', 'Задачи'];
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
+
+  const openLinkedFromBreadcrumb = () => {
+    if (!task.linkedEntity || !onOpenLinkedEntity) return;
+    onClose();
+    onOpenLinkedEntity(task.linkedEntity.domain, task.linkedEntity.id);
+  };
+
+  const breadcrumbItems: Array<{ label: string; onClick?: () => void }> = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    { label: 'Задачи', onClick: () => openSecondary('my-tasks') },
+  ];
   if (task.linkedEntity) {
-    breadcrumbItems.push(`${TASK_DOMAIN_LABEL[task.linkedEntity.domain]} · ${task.linkedEntity.id}`);
+    breadcrumbItems.push({
+      label: `${TASK_DOMAIN_LABEL[task.linkedEntity.domain]} · ${task.linkedEntity.id}`,
+      onClick: onOpenLinkedEntity ? openLinkedFromBreadcrumb : undefined,
+    });
   }
-  breadcrumbItems.push(task.id);
+  breadcrumbItems.push({ label: task.id });
 
   const cta = getTaskCta(task);
   const titleTrim = editTitle.trim();
@@ -173,8 +200,8 @@ function TaskDetailBody({
     && !isSaving;
 
   const headerChips = [
-    <StatusChip key="status" status={task.status} />,
-    <PriorityChip key="priority" priority={task.priority} />,
+    <StatusChip key="status" status={task.status} size="md" />,
+    <PriorityChip key="priority" priority={task.priority} size="md" />,
     <ToolbarPill key="assignee" icon={<User className="w-3 h-3" />} label={task.assignee} />,
     <ToolbarPill
       key="due"
@@ -185,7 +212,7 @@ function TaskDetailBody({
   ];
 
   if (task.linkedEntity) {
-    headerChips.push(<LinkedEntityChip key="linked" entity={task.linkedEntity} />);
+    headerChips.push(<LinkedEntityChip key="linked" entity={task.linkedEntity} size="md" />);
   }
 
   const handlePrimaryAction = () => {
@@ -280,24 +307,24 @@ function TaskDetailBody({
         <div className="space-y-3">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <label className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wide text-gray-500">Заголовок</span>
+              <span className={TASK_EDIT_LABEL_CLASS}>Заголовок</span>
               <input
                 type="text"
                 value={editTitle}
                 onChange={(event) => setEditTitle(event.target.value)}
                 disabled={!onUpdateTask || isSaving}
-                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                className={TASK_EDIT_FIELD_CLASS}
                 placeholder="Название задачи"
               />
             </label>
 
             <label className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wide text-gray-500">Приоритет</span>
+              <span className={TASK_EDIT_LABEL_CLASS}>Приоритет</span>
               <select
                 value={editPriority}
                 onChange={(event) => setEditPriority(event.target.value as TaskPriority)}
                 disabled={!onUpdateTask || isSaving}
-                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                className={`${TASK_EDIT_FIELD_CLASS} pr-6`}
               >
                 <option value="urgent">{TASK_PRIORITY_LABEL.urgent}</option>
                 <option value="high">{TASK_PRIORITY_LABEL.high}</option>
@@ -307,37 +334,37 @@ function TaskDetailBody({
             </label>
 
             <label className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wide text-gray-500">Дедлайн (дата)</span>
+              <span className={TASK_EDIT_LABEL_CLASS}>Дедлайн (дата)</span>
               <input
                 type="date"
                 value={editDueDate}
                 onChange={(event) => setEditDueDate(event.target.value)}
                 disabled={!onUpdateTask || isSaving}
-                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                className={`${TASK_EDIT_FIELD_CLASS} [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60`}
               />
             </label>
 
             <label className="space-y-1">
-              <span className="text-[10px] uppercase tracking-wide text-gray-500">Теги</span>
+              <span className={TASK_EDIT_LABEL_CLASS}>Теги</span>
               <input
                 type="text"
                 value={editTags}
                 onChange={(event) => setEditTags(event.target.value)}
                 disabled={!onUpdateTask || isSaving}
-                className="h-7 w-full rounded border border-gray-200 bg-white px-2 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+                className={TASK_EDIT_FIELD_CLASS}
                 placeholder="например: звонок, клиент"
               />
             </label>
           </div>
 
           <label className="space-y-1 block">
-            <span className="text-[10px] uppercase tracking-wide text-gray-500">Описание</span>
+            <span className={TASK_EDIT_LABEL_CLASS}>Описание</span>
             <textarea
               value={editDescription}
               onChange={(event) => setEditDescription(event.target.value)}
               disabled={!onUpdateTask || isSaving}
               rows={4}
-              className="w-full rounded border border-gray-200 bg-white px-2 py-1.5 text-[12px] text-gray-800 outline-none focus:border-blue-300"
+              className={TASK_EDIT_TEXTAREA_CLASS}
               placeholder="Описание задачи"
             />
           </label>
@@ -505,7 +532,7 @@ function TaskDetailBody({
 
   const sidebarSections: EntitySidebarSection[] = [
     {
-      title: 'Связанная запись',
+      title: 'Связанные записи',
       content: task.linkedEntity ? (
         <>
           <SidebarField label="Тип" value={TASK_DOMAIN_LABEL[task.linkedEntity.domain]} />
@@ -620,12 +647,17 @@ const STATUS_CONFIG: Record<TaskStatus, { cls: string; Icon: typeof Circle }> = 
   done: { cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', Icon: CheckCircle2 },
 };
 
-function StatusChip({ status }: { status: TaskStatus }) {
+const TASK_BADGE_SIZE_CLASS: Record<'sm' | 'md', string> = {
+  sm: 'h-5 px-1.5 text-[10px]',
+  md: 'h-6 px-2 text-[11px]',
+};
+
+function StatusChip({ status, size = 'sm' }: { status: TaskStatus; size?: 'sm' | 'md' }) {
   const config = STATUS_CONFIG[status];
   const Icon = config.Icon;
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded border px-1.5 h-5 text-[10px] ${config.cls}`}>
+    <span className={`inline-flex items-center gap-1 rounded border ${TASK_BADGE_SIZE_CLASS[size]} ${config.cls}`}>
       <Icon className="w-3 h-3" />
       {TASK_STATUS_LABEL[status]}
     </span>
@@ -639,18 +671,18 @@ const PRIORITY_CONFIG: Record<TaskPriority, string> = {
   low: 'text-gray-500 border-gray-200 bg-white',
 };
 
-function PriorityChip({ priority }: { priority: TaskPriority }) {
+function PriorityChip({ priority, size = 'sm' }: { priority: TaskPriority; size?: 'sm' | 'md' }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded border px-1.5 h-5 text-[10px] ${PRIORITY_CONFIG[priority]}`}>
+    <span className={`inline-flex items-center gap-1 rounded border ${TASK_BADGE_SIZE_CLASS[size]} ${PRIORITY_CONFIG[priority]}`}>
       <Flag className="w-3 h-3" />
       {TASK_PRIORITY_LABEL[priority]}
     </span>
   );
 }
 
-function LinkedEntityChip({ entity }: { entity: { domain: TaskDomain; id: string } }) {
+function LinkedEntityChip({ entity, size = 'sm' }: { entity: { domain: TaskDomain; id: string }; size?: 'sm' | 'md' }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded border border-gray-200 bg-white px-1.5 h-5 text-[10px] text-gray-600">
+    <span className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-white ${TASK_BADGE_SIZE_CLASS[size]} text-gray-600`}>
       {TASK_DOMAIN_LABEL[entity.domain]} · {entity.id}
     </span>
   );

@@ -29,6 +29,7 @@ export function buildMockClient(lead?: Lead): Client {
   const ordersHistory: ClientOrderHistoryItem[] = [
     {
       id: 'APP-00120',
+      leadId: 'LEAD-00231',
       number: 'APP-00120',
       date: '2026-04-12',
       status: 'completed',
@@ -44,6 +45,7 @@ export function buildMockClient(lead?: Lead): Client {
     },
     {
       id: 'APP-00112',
+      leadId: 'LEAD-00198',
       number: 'APP-00112',
       date: '2026-03-28',
       status: 'completed',
@@ -57,6 +59,7 @@ export function buildMockClient(lead?: Lead): Client {
     },
     {
       id: 'APP-00098',
+      leadId: 'LEAD-00154',
       number: 'APP-00098',
       date: '2026-02-14',
       status: 'completed',
@@ -70,6 +73,7 @@ export function buildMockClient(lead?: Lead): Client {
     },
     {
       id: 'APP-00081',
+      leadId: 'LEAD-00132',
       number: 'APP-00081',
       date: '2026-01-22',
       status: 'cancelled',
@@ -85,6 +89,7 @@ export function buildMockClient(lead?: Lead): Client {
   if (activeApplication) {
     ordersHistory.unshift({
       id: activeApplication.id,
+      leadId: lead ? `LEAD-${lead.id.padStart(5, '0')}` : undefined,
       number: activeApplication.id,
       date: lead?.date ?? '2026-04-25',
       status: 'in_progress',

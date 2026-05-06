@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { AppShell } from './components/shell/AppShell';
 import { LeadsKanbanPage } from './components/kanban/LeadsKanbanPage';
 import { ApplicationsWorkspacePage } from './components/application/ApplicationsWorkspacePage';
@@ -13,6 +14,19 @@ import { ModulePlaceholder } from './components/shell/ModulePlaceholder';
 import { useLayout } from './components/shell/layoutStore';
 import { useAuth } from './auth/AuthProvider';
 import { LoginScreen } from './auth/LoginScreen';
+
+function AuthRoleSync() {
+  const { user } = useAuth();
+  const { setRole } = useLayout();
+  const authRole = user?.role;
+
+  useEffect(() => {
+    if (!authRole) return;
+    setRole(authRole);
+  }, [authRole, setRole]);
+
+  return null;
+}
 
 function RouteOutlet() {
   const { activeSecondaryNav } = useLayout();
@@ -97,6 +111,7 @@ export default function App() {
   if (status === 'anonymous') return <LoginScreen />;
   return (
     <AppShell>
+      <AuthRoleSync />
       <RouteOutlet />
     </AppShell>
   );

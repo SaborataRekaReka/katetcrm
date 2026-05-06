@@ -116,6 +116,10 @@ export class ClientsService {
   }
 
   async create(dto: CreateClientDto, actorId: string | null) {
+    const contactName = dto.name.trim();
+    const contactPhone = dto.phone.trim();
+    const contactEmail = dto.email?.trim() || null;
+
     const created = await this.prisma.client.create({
       data: {
         name: dto.name,
@@ -126,6 +130,17 @@ export class ClientsService {
         email: dto.email,
         notes: dto.notes,
         favoriteEquipment: dto.favoriteEquipment ?? [],
+        contacts: {
+          create: [
+            {
+              name: contactName,
+              role: dto.company ? 'Контактное лицо' : 'Основной контакт',
+              phone: contactPhone || null,
+              email: contactEmail,
+              isPrimary: true,
+            },
+          ],
+        },
       },
     });
     await this.activity.log({

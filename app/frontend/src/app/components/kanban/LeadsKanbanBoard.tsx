@@ -17,14 +17,14 @@ const COLUMNS: KanbanColumn[] = STAGE_ORDER.map((id) => ({
   color: STAGE_BAR[id],
 }));
 
-// Допустимые переходы (зеркалит бэкенд ALLOWED_TRANSITIONS). Поддерживаем
-// одношаговый drop между соседними стадиями + в «некачественный» с любой
-// активной стадии. Обратные drops запрещены — столбец не подсвечивается.
+// Допустимые переходы для drag-and-drop между колонками в канбане.
+// Терминальные исходы из departure проводим через completion flow,
+// поэтому прямой drop в completed/unqualified здесь отключён.
 const ALLOWED: Record<StageType, StageType[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
   reservation: ['departure', 'unqualified'],
-  departure: ['completed', 'unqualified'],
+  departure: [],
   completed: [],
   unqualified: [],
 };

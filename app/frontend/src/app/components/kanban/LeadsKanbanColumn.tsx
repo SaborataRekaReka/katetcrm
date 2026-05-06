@@ -5,6 +5,7 @@ import { ApplicationKanbanCard } from './ApplicationKanbanCard';
 import { ReservationKanbanCard } from './ReservationKanbanCard';
 import { DepartureKanbanCard } from './DepartureKanbanCard';
 import { CompletedKanbanCard } from './CompletedKanbanCard';
+import { UnqualifiedKanbanCard } from './UnqualifiedKanbanCard';
 import { KanbanAddCard } from './KanbanAddCard';
 import { cn } from '../ui/utils';
 
@@ -66,8 +67,9 @@ export function LeadsKanbanColumn({
       case 'departure':
         return <DepartureKanbanCard key={lead.id} {...props} />;
       case 'completed':
-      case 'unqualified':
         return <CompletedKanbanCard key={lead.id} {...props} />;
+      case 'unqualified':
+        return <UnqualifiedKanbanCard key={lead.id} {...props} />;
       default:
         return null;
     }

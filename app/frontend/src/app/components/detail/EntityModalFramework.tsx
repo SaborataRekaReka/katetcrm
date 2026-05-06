@@ -6,10 +6,13 @@ import {
   CheckCircle2,
   ChevronDown,
   Circle,
+  FileText,
   Loader2,
   MessageSquare,
   Paperclip,
   Smile,
+  Truck,
+  UserPlus,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { Button } from '../ui/button';
@@ -38,6 +41,17 @@ export interface EntitySwitcherOption {
   onSelect?: () => void;
   disabled?: boolean;
   active?: boolean;
+}
+
+function getEntitySwitcherIcon(id: string): ReactNode {
+  if (id === 'lead') return <UserPlus className="w-3.5 h-3.5 text-gray-500" />;
+  if (id === 'application') return <FileText className="w-3.5 h-3.5 text-gray-500" />;
+  if (id === 'reservation') return <FileText className="w-3.5 h-3.5 text-gray-500" />;
+  if (id === 'departure') return <Truck className="w-3.5 h-3.5 text-gray-500" />;
+  if (id === 'completed' || id === 'completion') {
+    return <CheckCircle2 className="w-3.5 h-3.5 text-gray-500" />;
+  }
+  return <Circle className="w-3.5 h-3.5 text-gray-400" />;
 }
 
 export interface EntityModalHeaderProps {
@@ -85,6 +99,7 @@ function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary
       size="sm"
       variant={variant === 'primary' ? 'default' : 'outline'}
       className={base}
+      data-testid={variant === 'primary' ? 'entity-primary-action' : 'entity-secondary-action'}
       onClick={action.onClick}
       disabled={disabled}
     >
@@ -135,6 +150,7 @@ export function EntityModalHeader({
                 onSelect={option.onSelect}
                 disabled={option.disabled || !option.onSelect}
               >
+                <span className="mr-1.5 flex-shrink-0">{getEntitySwitcherIcon(option.id)}</span>
                 <span className="flex-1">{option.label}</span>
                 {option.active ? <Check className="w-3.5 h-3.5 text-blue-600" /> : null}
               </DropdownMenuItem>
@@ -343,12 +359,18 @@ export function EntityActivityList({
   return (
     <div className="space-y-2">
       {entries.map((entry) => (
-        <div key={entry.id} className="flex items-center gap-2 text-[11px] text-gray-600">
-          <Circle className="w-2 h-2 text-gray-300 fill-gray-300" />
-          <span className="text-gray-900">{entry.actor}</span>
-          <span className="text-gray-500">{entry.text}</span>
-          {entry.entity ? <span className="text-gray-700">{entry.entity}</span> : null}
-          <span className="text-gray-400 ml-auto">{entry.time}</span>
+        <div key={entry.id} className="flex items-start gap-2 rounded-sm px-1 py-1 text-[11px] text-gray-600">
+          <Circle className="w-2 h-2 mt-1 text-gray-300 fill-gray-300 flex-shrink-0" />
+          <div className="min-w-0 flex-1 space-y-0.5">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-gray-900 truncate">{entry.actor}</span>
+              <span className="text-gray-400 ml-auto flex-shrink-0">{entry.time}</span>
+            </div>
+            <div className="text-gray-500 leading-snug break-words">
+              <span>{entry.text}</span>
+              {entry.entity ? <span className="text-gray-700"> · {entry.entity}</span> : null}
+            </div>
+          </div>
         </div>
       ))}
     </div>

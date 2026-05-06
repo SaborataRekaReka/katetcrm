@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Truck, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { useLayout } from '../shell/layoutStore';
@@ -12,7 +12,7 @@ import { mockLeads } from '../../data/mockLeads';
 import type { Lead } from '../../types/kanban';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import { USE_API } from '../../lib/featureFlags';
-import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
+import { useDepartureQuery, useDeparturesQuery } from '../../hooks/useDeparturesQuery';
 import { toDepartureLead } from '../../lib/departureAdapter';
 
 interface Filters {
@@ -36,9 +36,20 @@ const STATUS_TONE: Record<NonNullable<Lead['departureStatus']>, string> = {
 };
 
 export function DeparturesWorkspacePage() {
-  const { activeSecondaryNav, currentView } = useLayout();
+  const {
+    activeSecondaryNav,
+    currentView,
+    activeEntityType,
+    activeEntityId,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
+  } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
   const departuresQuery = useDeparturesQuery({}, USE_API);
+  const routedDepartureQuery = useDepartureQuery(
+    activeEntityType === 'departure' ? activeEntityId : null,
+    USE_API && activeEntityType === 'departure' && !!activeEntityId,
+  );
   const [filters, setFilters] = useState<Filters>(DEFAULT);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Lead | null>(null);
@@ -95,6 +106,35 @@ export function DeparturesWorkspacePage() {
     query.length > 0;
 
   const managers = Array.from(new Set(sourceRows.map((l) => l.manager))).sort();
+
+  const handleOpenDeparture = (departure: Lead) => {
+    setSelected(departure);
+    setActiveEntityRoute('departure', departure.id);
+  };
+
+  const handleCloseDeparture = () => {
+    setSelected(null);
+    clearActiveEntityRoute();
+  };
+
+  useEffect(() => {
+    if (activeEntityType !== 'departure' || !activeEntityId) return;
+
+    if (USE_API) {
+      if (!routedDepartureQuery.data) return;
+      setSelected(toDepartureLead(routedDepartureQuery.data));
+      return;
+    }
+
+    const localDeparture = sourceRows.find((row) => row.id === activeEntityId);
+    if (!localDeparture) return;
+    setSelected(localDeparture);
+  }, [
+    activeEntityType,
+    activeEntityId,
+    sourceRows,
+    routedDepartureQuery.data,
+  ]);
 
   const handleSaveView = () => {
     void saveViewSnapshot({
@@ -179,18 +219,18 @@ export function DeparturesWorkspacePage() {
           Выезды не найдены
         </div>
       ) : effectiveView === 'list' ? (
-        <DeparturesListView rows={filtered} onRowClick={setSelected} />
+        <DeparturesListView rows={filtered} onRowClick={handleOpenDeparture} />
       ) : (
-        <DeparturesTableView rows={filtered} onRowClick={setSelected} />
+        <DeparturesTableView rows={filtered} onRowClick={handleOpenDeparture} />
       )}
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && handleCloseDeparture()}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
             <DepartureWorkspace
               lead={selected}
               apiDepartureId={USE_API ? selected.id : undefined}
-              onClose={() => setSelected(null)}
+              onClose={handleCloseDeparture}
               onOpenClient={setClientLead}
             />
           ) : null}
@@ -295,7 +335,7 @@ function DeparturesTableView({ rows, onRowClick }: { rows: Lead[]; onRowClick: (
             <th className="px-4 py-2 text-left font-medium">Выезд · Клиент</th>
             <th className="px-3 py-2 text-left font-medium">Статус</th>
             <th className="px-3 py-2 text-left font-medium">Техника</th>
-            <th className="px-3 py-2 text-left font-medium">Unit / Подрядчик</th>
+            <th className="px-3 py-2 text-left font-medium">Единица / подрядчик</th>
             <th className="px-3 py-2 text-left font-medium">Дата / окно</th>
             <th className="px-3 py-2 text-left font-medium">Адрес</th>
             <th className="px-3 py-2 text-left font-medium">Менеджер</th>

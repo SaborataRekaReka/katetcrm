@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(
     useApi
       ? null
-      : { id: 'mock-admin', email: 'admin@katet.local', role: 'admin', fullName: 'Mock Admin' },
+      : { id: 'mock-admin', email: 'admin@katet.local', role: 'admin', fullName: 'Тестовый админ' },
   );
   const [status, setStatus] = useState<AuthState['status']>(useApi ? 'loading' : 'authenticated');
 

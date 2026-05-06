@@ -11,7 +11,6 @@ The Planner Agent does not edit files. It produces task packets, ownership bound
 The Backend Agent may change:
 
 - `app/backend/**`
-- Backend-related smoke scripts under `app/backend/scripts/**`
 - Backend docs when behavior, API contracts, RBAC, integration, import, validation, or runbook content changes
 
 The Backend Agent must not change frontend files unless the task explicitly expands scope.

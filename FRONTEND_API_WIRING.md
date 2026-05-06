@@ -223,16 +223,6 @@
 
 ## 7. Validation note
 
-Этот документ основан на кодовом аудите wiring (hooks/components/adapters) и итогах release smoke.
-Дополнительно для Control analytics и RBAC scope подтверждено:
+Testing reset 05.05.2026 removed previous smoke/e2e validation commands and their results.
 
-1. `smoke:stage7` валидирует `stats/analytics` контракт по всем `viewId`.
-2. `smoke:rbac:scope` валидирует manager visibility scope на `GET /stats`, `GET /stats/reports`, `GET /stats/analytics` и `400` на невалидные analytics query.
-3. `smoke:tasks` валидирует tasks write-контур (create/status/subtask/duplicate/archive/scope) и очистку dueDate (`null`).
-4. `smoke:admin:control` валидирует runtime read/RBAC контуры для Control/Admin API (`stats/reports/analytics/activity/users/settings/integrations`).
-5. `smoke:release` включает все перечисленные сценарии (`stage7` + `tasks` + `rbac:scope` + `admin:control`) как обязательные шаги gate.
-6. Runtime strict ingest профиль проверен green: `smoke:stage6:strict`.
-7. Runtime repeat-flow стабильность проверена green: `smoke:flow:repeat`.
-8. Browser baseline e2e admin/control проверен green: `npm run e2e` (2/2).
-
-Для окончательной операционной верификации нужен расширенный runtime-pass в браузере по всем primary CTA с Network-trace.
+This document describes wiring status only. New validation must be rebuilt from `QA_REQUIREMENTS.md`, starting with the domain happy path and then extending into API/browser coverage.

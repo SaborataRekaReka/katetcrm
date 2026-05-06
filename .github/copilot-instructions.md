@@ -34,19 +34,18 @@ State the intended file list before changing files. Confirm the affected route, 
 
 ## Required Validation
 
-Minimum validation for agent changes:
+Testing reset note:
+
+- Previous smoke/e2e/ui-consistency commands were removed on 05.05.2026.
+- Do not use previous test results as evidence.
+- New test expectations must come from [QA_REQUIREMENTS.md](../QA_REQUIREMENTS.md).
+
+Minimum non-test validation for agent changes while the new suite is being rebuilt:
 
 ```bash
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
-npm --prefix app/frontend run check:ui-consistency
-```
-
-For cross-domain behavior changes, add:
-
-```bash
-npm --prefix app/backend run smoke:release
 ```
 
 ## Final Report

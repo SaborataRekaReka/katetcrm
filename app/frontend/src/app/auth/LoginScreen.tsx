@@ -37,7 +37,7 @@ export function LoginScreen() {
           <p className="text-sm text-gray-500 mt-1">Вход в систему</p>
         </div>
         <label className="block">
-          <span className="text-sm text-gray-700">Email</span>
+          <span className="text-sm text-gray-700">Эл. почта</span>
           <input
             type="email"
             required

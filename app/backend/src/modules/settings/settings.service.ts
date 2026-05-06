@@ -35,7 +35,7 @@ const DEFAULT_WORKSPACE_SETTINGS: WorkspaceSettingsState = {
       description: 'Условия перехода между стадиями',
       rows: [
         { label: 'lead → application', value: 'Требуются: контакт, тип техники' },
-        { label: 'application → reservation', value: 'Требуется: подтверждённая позиция' },
+        { label: 'application → reservation', value: 'Требуется: позиция заявки без активной брони' },
         { label: 'reservation → departure', value: 'Требуется: назначенная единица' },
         { label: 'departure → completed', value: 'Требуется: акт выполнения' },
       ],

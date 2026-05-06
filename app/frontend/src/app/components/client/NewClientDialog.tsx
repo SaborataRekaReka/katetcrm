@@ -160,13 +160,13 @@ export function NewClientDialog({ open, onOpenChange }: NewClientDialogProps) {
               />
               <PropertyRow
                 icon={<Mail className="h-3 w-3" />}
-                label="Email"
+                label="Эл. почта"
                 value={
                   <FieldInput
                     type="email"
                     value={form.email}
                     onChange={(v) => set('email', v)}
-                    placeholder="client@example.com"
+                    placeholder="info@company.ru"
                   />
                 }
               />

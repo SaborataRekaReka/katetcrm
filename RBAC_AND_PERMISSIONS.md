@@ -74,16 +74,8 @@ Before release:
 3. Direct deep-link attempts are blocked server-side.
 4. Audit captures permission-denied critical attempts where required.
 
-## 8. Automated enforcement status (implemented)
+## 8. Automated enforcement status
 
-Current smoke coverage (backend scripts):
+Testing reset 05.05.2026 removed previous automated RBAC smoke checks and their results.
 
-1. `smoke:rbac` checks forbidden manager writes in admin-only directories and blocked manager access/mutations for foreign leads/applications/reservations/departures.
-2. `smoke:rbac:scope` checks manager visibility scope on analytics endpoints:
-	- `GET /stats` manager aggregate does not leak foreign manager rows.
-	- `GET /stats/reports?periodDays=...` is available for both roles and contract-safe.
-	- `GET /stats/analytics?viewId=...&sampleTake=...` for manager does not return foreign manager distribution rows and respects `sampleTake` cap.
-	- Validation guards return `400` for invalid analytics query (`viewId`, `sampleTake`).
-3. `smoke:admin` checks manager denial for admin modules (`/users`, `/settings`, `/imports`, `/integrations` admin endpoints) and validates admin write path with audit actor-link fallback.
-
-All three checks are included in aggregate release gate `smoke:release`.
+New RBAC tests must be created from confirmed requirements in `QA_REQUIREMENTS.md`. Until then, this document describes the intended permission model, not proven automated coverage.

@@ -341,6 +341,10 @@ export class CompletionsService {
   }
 
   async create(dto: CreateCompletionDto, actor: ActorContext) {
+    if (dto.outcome === 'unqualified' && !dto.unqualifiedReason?.trim()) {
+      throw new BadRequestException('unqualifiedReason is required for unqualified outcome');
+    }
+
     const departure = await this.prisma.departure.findUnique({
       where: { id: dto.departureId },
       include: {

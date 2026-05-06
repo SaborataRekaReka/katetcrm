@@ -29,7 +29,7 @@ import { Lead } from '../../types/kanban';
 import { Completion, CompletionStatus } from '../../types/completion';
 import { buildMockCompletion } from '../../data/mockCompletion';
 import { USE_API } from '../../lib/featureFlags';
-import { badgeBase, badgeTones } from '../kanban/badgeTokens';
+import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import {
@@ -54,10 +54,17 @@ import {
   SidebarField,
   ActionButton,
   NextStepLine,
+  sidebarTokens,
 } from '../detail/DetailShell';
-import { EntityModalHeader, EntitySection, type EntityModalAction } from '../detail/EntityModalFramework';
+import {
+  EntityActivityList,
+  EntityModalHeader,
+  EntitySection,
+  type EntityModalAction,
+} from '../detail/EntityModalFramework';
 import { PhoneLink } from '../detail/ContactAtoms';
 import { useLayout } from '../shell/layoutStore';
+import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 import { CompletionWorkspaceApi } from './CompletionWorkspaceApi';
 
 interface Props {
@@ -81,6 +88,12 @@ const statusTone: Record<CompletionStatus, string> = {
   completed: badgeTones.success,
   unqualified: badgeTones.muted,
 };
+
+const sidebarStatusBadgeClass =
+  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+
+const headerStatusBadgeClass =
+  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
 
 const alertMeta = {
   stale: {
@@ -128,7 +141,7 @@ export function CompletionWorkspace({
     );
   }
 
-  const { setActiveSecondaryNav } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const base: Completion = useMemo(() => buildMockCompletion(lead), [lead]);
 
   const [status, setStatus] = useState<CompletionStatus>(base.status);
@@ -142,21 +155,86 @@ export function CompletionWorkspace({
 
   const linked = base.linked;
   const ctx = base.context;
+  const leadEntityId = linked.leadId ?? null;
+  const applicationEntityId = linked.applicationId ?? null;
+  const reservationEntityId = linked.reservationId ?? null;
+  const departureEntityId = linked.departureId ?? apiDepartureId ?? null;
+  const completionEntityId = apiCompletionId ?? lead.id ?? null;
+  const hasLinkedLead = !!leadEntityId;
+  const hasLinkedApplication = !!applicationEntityId;
+  const hasLinkedReservation = !!reservationEntityId;
+  const hasLinkedDeparture = !!departureEntityId;
+  const hasLinkedCompletion = !!completionEntityId;
+  const canOpenClient = !!onOpenClient;
+  const activeSwitcherEntityType = activeEntityType ?? 'completion';
+  const shareUrl = completionEntityId
+    ? buildAbsoluteEntityUrl('completion', completionEntityId)
+    : null;
 
   const openSecondary = (secondaryId: string) => {
     setActiveSecondaryNav(secondaryId);
     onClose();
   };
+
+  const openEntitySecondary = (
+    secondaryId: string,
+    entityType: 'lead' | 'application' | 'reservation' | 'departure' | 'completion',
+    entityId?: string | null,
+  ) => {
+    if (!entityId) return false;
+    openSecondaryWithEntity(secondaryId, entityType, entityId);
+    return true;
+  };
+
+  const breadcrumbItems = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    { label: 'Операции', onClick: () => openSecondary('completion') },
+    { label: 'Завершение' },
+  ];
+  const handleOpenLead = () => openEntitySecondary('leads', 'lead', leadEntityId);
+  const handleOpenApplication = () =>
+    openEntitySecondary('applications', 'application', applicationEntityId);
+  const handleOpenReservation = () =>
+    openEntitySecondary('reservations', 'reservation', reservationEntityId);
+  const handleOpenDeparture = () =>
+    openEntitySecondary('departures', 'departure', departureEntityId);
+  const handleOpenCompletion = () =>
+    openEntitySecondary('completion', 'completion', completionEntityId);
   const entitySwitcherOptions = [
-    { id: 'lead', label: 'Лид', onSelect: () => openSecondary('leads') },
-    { id: 'application', label: 'Заявка', onSelect: () => openSecondary('applications') },
-    { id: 'reservation', label: 'Бронь', onSelect: () => openSecondary('reservations') },
-    { id: 'departure', label: 'Выезд', onSelect: () => openSecondary('departures') },
+    {
+      id: 'lead',
+      label: 'Лид',
+      active: activeSwitcherEntityType === 'lead',
+      onSelect: hasLinkedLead ? handleOpenLead : undefined,
+      disabled: !hasLinkedLead,
+    },
+    {
+      id: 'application',
+      label: 'Заявка',
+      active: activeSwitcherEntityType === 'application',
+      onSelect: hasLinkedApplication ? handleOpenApplication : undefined,
+      disabled: !hasLinkedApplication,
+    },
+    {
+      id: 'reservation',
+      label: 'Бронь',
+      active: activeSwitcherEntityType === 'reservation',
+      onSelect: hasLinkedReservation ? handleOpenReservation : undefined,
+      disabled: !hasLinkedReservation,
+    },
+    {
+      id: 'departure',
+      label: 'Выезд',
+      active: activeSwitcherEntityType === 'departure',
+      onSelect: hasLinkedDeparture ? handleOpenDeparture : undefined,
+      disabled: !hasLinkedDeparture,
+    },
     {
       id: 'completed',
       label: 'Завершение',
-      active: true,
-      onSelect: () => openSecondary('completion'),
+      active: activeSwitcherEntityType === 'completion',
+      onSelect: hasLinkedCompletion ? handleOpenCompletion : undefined,
+      disabled: !hasLinkedCompletion,
     },
   ];
 
@@ -213,6 +291,25 @@ export function CompletionWorkspace({
     setUnqualifyOpen(false);
   };
 
+  const historyEntries = [
+    ...base.activity.map((a) => ({
+      id: a.id,
+      actor: a.actor,
+      text: a.message,
+      time: a.at,
+    })),
+    ...(status === 'completed' && !base.activity.some((a) => a.kind === 'completed') && completedAt
+      ? [
+          {
+            id: 'runtime-completed',
+            actor: completedBy ?? base.manager,
+            text: 'Заказ завершен',
+            time: completedAt,
+          },
+        ]
+      : []),
+  ];
+
   const main = (
     <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
       <EntityModalHeader
@@ -224,16 +321,18 @@ export function CompletionWorkspace({
           <>
             <button
               type="button"
-              onClick={() => openSecondary('departures')}
-              className="text-blue-600 hover:underline"
+              onClick={handleOpenDeparture}
+              disabled={!hasLinkedDeparture}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {linked.departureTitle}
             </button>{' '}
             ·{' '}
             <button
               type="button"
-              onClick={() => openSecondary('applications')}
-              className="text-blue-600 hover:underline"
+              onClick={handleOpenApplication}
+              disabled={!hasLinkedApplication}
+              className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {linked.applicationTitle}
             </button>{' '}
@@ -241,7 +340,7 @@ export function CompletionWorkspace({
             <button
               type="button"
               onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-              disabled={!onOpenClient}
+              disabled={!canOpenClient}
               className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
               {linked.clientName}
@@ -272,7 +371,8 @@ export function CompletionWorkspace({
           {
             label: 'Открыть выезд',
             iconBefore: <ExternalLink className="w-3 h-3" />,
-            onClick: () => openSecondary('departures'),
+            onClick: hasLinkedDeparture ? handleOpenDeparture : undefined,
+            disabled: !hasLinkedDeparture,
           },
           ...(!isFinal
             ? [
@@ -316,7 +416,7 @@ export function CompletionWorkspace({
         chips={[
           ...(!isCompleted
             ? [
-                <span key="status" className={`${badgeBase} ${statusTone[status]}`}>
+                <span key="status" className={`${headerStatusBadgeClass} ${statusTone[status]}`}>
                   <Flag className="w-3 h-3" />
                   {statusLabel[status]}
                 </span>,
@@ -332,17 +432,17 @@ export function CompletionWorkspace({
             key="dep"
             icon={<Truck className="w-3 h-3" />}
             label={linked.departureTitle}
-            onClick={() => openSecondary('departures')}
+            onClick={hasLinkedDeparture ? handleOpenDeparture : undefined}
           />,
           <ToolbarPill
             key="rsv"
             icon={<FileText className="w-3 h-3" />}
             label={linked.reservationTitle}
-            onClick={() => openSecondary('reservations')}
+            onClick={hasLinkedReservation ? handleOpenReservation : undefined}
           />,
           ...(base.alert !== 'none' && !isFinal
             ? [
-                <span key="alert" className={`${badgeBase} ${alertMeta[base.alert].tone}`}>
+                <span key="alert" className={`${headerStatusBadgeClass} ${alertMeta[base.alert].tone}`}>
                   <AlertTriangle className="w-3 h-3" />
                   {alertMeta[base.alert].label}
                 </span>,
@@ -407,7 +507,7 @@ export function CompletionWorkspace({
             <PropertyRow
               icon={<Activity className="w-3 h-3" />}
               label="Статус"
-              value={<span className={`${badgeBase} ${statusTone[status]}`}>{statusLabel[status]}</span>}
+              value={<span className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</span>}
             />
           )}
           <PropertyRow
@@ -416,8 +516,9 @@ export function CompletionWorkspace({
             value={
               <button
                 type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('departures')}
+                className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                onClick={handleOpenDeparture}
+                disabled={!hasLinkedDeparture}
               >
                 {linked.departureTitle}
               </button>
@@ -429,8 +530,9 @@ export function CompletionWorkspace({
             value={
               <button
                 type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('reservations')}
+                className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                onClick={handleOpenReservation}
+                disabled={!hasLinkedReservation}
               >
                 {linked.reservationTitle}
               </button>
@@ -442,8 +544,9 @@ export function CompletionWorkspace({
             value={
               <button
                 type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('applications')}
+                className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                onClick={handleOpenApplication}
+                disabled={!hasLinkedApplication}
               >
                 {linked.applicationTitle}
               </button>
@@ -466,7 +569,7 @@ export function CompletionWorkspace({
           {linked.equipmentUnit && (
             <PropertyRow
               icon={<Wrench className="w-3 h-3" />}
-              label="Unit"
+              label="Единица"
               value={<InlineValue>{linked.equipmentUnit}</InlineValue>}
             />
           )}
@@ -502,7 +605,7 @@ export function CompletionWorkspace({
           <button
             type="button"
             className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline"
-            onClick={() => openSecondary('departures')}
+            onClick={handleOpenDeparture}
           >
             <ExternalLink className="w-3 h-3" /> Открыть выезд
           </button>
@@ -726,24 +829,24 @@ export function CompletionWorkspace({
           <ActionButton
             icon={<ExternalLink className="w-3.5 h-3.5" />}
             label="Открыть выезд"
-            onClick={() => openSecondary('departures')}
+            onClick={hasLinkedDeparture ? handleOpenDeparture : undefined}
           />
           <ActionButton
             icon={<FileText className="w-3.5 h-3.5" />}
             label="Открыть бронь"
-            onClick={() => openSecondary('reservations')}
+            onClick={hasLinkedReservation ? handleOpenReservation : undefined}
           />
           <ActionButton
             icon={<FileText className="w-3.5 h-3.5" />}
             label="Открыть заявку"
-            onClick={() => openSecondary('applications')}
+            onClick={hasLinkedApplication ? handleOpenApplication : undefined}
           />
-          <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} />
+          <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={canOpenClient ? () => onOpenClient(lead) : undefined} />
           {!isCompleted && linked.leadTitle && (
             <ActionButton
               icon={<UserPlus className="w-3.5 h-3.5" />}
               label="Открыть лид"
-              onClick={() => openSecondary('leads')}
+              onClick={hasLinkedLead ? handleOpenLead : undefined}
             />
           )}
         </div>
@@ -761,7 +864,8 @@ export function CompletionWorkspace({
               <Button
                 size="sm"
                 className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
-                onClick={() => (onOpenClient ? onOpenClient(lead) : openSecondary('clients'))}
+                onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+                disabled={!canOpenClient}
               >
                 <Copy className="w-3 h-3" />
                 Создать повторный заказ
@@ -770,8 +874,8 @@ export function CompletionWorkspace({
                 size="sm"
                 variant="outline"
                 className="h-7 gap-1 text-[11px]"
-                onClick={onOpenClient ? () => onOpenClient(lead) : undefined}
-                disabled={!onOpenClient}
+                onClick={canOpenClient ? () => onOpenClient(lead) : undefined}
+                disabled={!canOpenClient}
               >
                 <Building2 className="w-3 h-3" />
                 Карточка клиента
@@ -786,24 +890,7 @@ export function CompletionWorkspace({
         <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-2">
           Журнал изменений
         </div>
-        <div className="space-y-2">
-          {base.activity.map((a) => (
-            <div key={a.id} className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{a.actor}</span>
-              <span className="text-gray-500 truncate">{a.message}</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{a.at}</span>
-            </div>
-          ))}
-          {status === 'completed' && !base.activity.some((a) => a.kind === 'completed') && completedAt && (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-emerald-400 fill-emerald-400 flex-shrink-0" />
-              <span className="text-gray-900">{completedBy ?? base.manager}</span>
-              <span className="text-gray-500 truncate">Заказ завершён</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{completedAt}</span>
-            </div>
-          )}
-        </div>
+        <EntityActivityList entries={historyEntries} emptyText="Событий пока нет" />
       </div>
     </div>
   );
@@ -813,7 +900,7 @@ export function CompletionWorkspace({
       <SidebarSection title="Статус">
         <SidebarField
           label="Статус"
-          value={<span className={`${badgeBase} ${statusTone[status]}`}>{statusLabel[status]}</span>}
+          value={<span className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</span>}
         />
         <SidebarField label="Менеджер" value={base.manager} />
         <SidebarField label="Создан" value={base.createdAt} />
@@ -901,8 +988,9 @@ export function CompletionWorkspace({
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('departures')}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={handleOpenDeparture}
+              disabled={!hasLinkedDeparture}
             >
               {linked.departureTitle}
             </button>
@@ -913,8 +1001,9 @@ export function CompletionWorkspace({
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('reservations')}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={handleOpenReservation}
+              disabled={!hasLinkedReservation}
             >
               {linked.reservationTitle}
             </button>
@@ -925,8 +1014,9 @@ export function CompletionWorkspace({
           value={
             <button
               type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('applications')}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={handleOpenApplication}
+              disabled={!hasLinkedApplication}
             >
               {linked.applicationTitle}
             </button>
@@ -935,7 +1025,7 @@ export function CompletionWorkspace({
         <SidebarField
           label="Клиент"
           value={
-            <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className="text-blue-600 hover:underline text-left disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
+            <button type="button" onClick={onOpenClient ? () => onOpenClient(lead) : undefined} disabled={!onOpenClient} className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}>
               {linked.clientName}
             </button>
           }
@@ -946,15 +1036,16 @@ export function CompletionWorkspace({
             value={
               <button
                 type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('leads')}
+                className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+                onClick={handleOpenLead}
+                disabled={!hasLinkedLead}
               >
                 {linked.leadTitle}
               </button>
             }
           />
         )}
-        {linked.equipmentUnit && <SidebarField label="Unit" value={linked.equipmentUnit} />}
+        {linked.equipmentUnit && <SidebarField label="Единица" value={linked.equipmentUnit} />}
         {linked.subcontractor && <SidebarField label="Подрядчик" value={linked.subcontractor} />}
       </SidebarSection>
 
@@ -986,7 +1077,8 @@ export function CompletionWorkspace({
             size="sm"
             variant="outline"
             className="h-6 w-full justify-start text-[11px]"
-            onClick={() => openSecondary('departures')}
+            onClick={handleOpenDeparture}
+            disabled={!hasLinkedDeparture}
           >
             <ExternalLink className="w-3 h-3 mr-1" /> Открыть выезд
           </Button>
@@ -1008,8 +1100,9 @@ export function CompletionWorkspace({
   return (
     <>
       <DetailShell
-        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Completion']} />}
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
+        shareUrl={shareUrl}
         main={main}
         sidebar={sidebar}
       />

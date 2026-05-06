@@ -26,7 +26,6 @@ import {
 } from '../detail/EntityModalFramework';
 import { PropertyRow } from '../detail/DetailShell';
 import {
-  FieldCheckbox,
   FieldInput,
   FieldSelect,
   FieldTextarea,
@@ -63,7 +62,6 @@ type FormState = {
   pricePerShift: string;
   deliveryPrice: string;
   surcharge: string;
-  readyForReservation: boolean;
 };
 
 const EMPTY_FORM: FormState = {
@@ -80,7 +78,6 @@ const EMPTY_FORM: FormState = {
   pricePerShift: '',
   deliveryPrice: '',
   surcharge: '',
-  readyForReservation: false,
 };
 
 const SOURCING_OPTIONS: { value: SourcingType; label: string }[] = [
@@ -114,7 +111,6 @@ function positionToForm(pos: ApplicationPosition): FormState {
     pricePerShift: pos.pricePerShift !== undefined ? String(pos.pricePerShift) : '',
     deliveryPrice: pos.deliveryPrice !== undefined ? String(pos.deliveryPrice) : '',
     surcharge: pos.surcharge !== undefined ? String(pos.surcharge) : '',
-    readyForReservation: pos.readyForReservation,
   };
 }
 
@@ -195,7 +191,8 @@ export function PositionDialog({
       quantity: qty,
       shiftCount: shifts,
       sourcingType: form.sourcingType,
-      readyForReservation: form.readyForReservation,
+      // По новому процессу позиция заявки автоматически доступна для этапа брони.
+      readyForReservation: true,
     };
     if (form.equipmentTypeId) body.equipmentTypeId = form.equipmentTypeId;
     if (form.plannedDate) body.plannedDate = form.plannedDate;
@@ -332,17 +329,6 @@ export function PositionDialog({
                     value={form.sourcingType}
                     onChange={(v) => set('sourcingType', v as SourcingType)}
                     options={SOURCING_OPTIONS}
-                  />
-                }
-              />
-              <PropertyRow
-                icon={<ClipboardList className="h-3 w-3" />}
-                label="Готова к брони"
-                value={
-                  <FieldCheckbox
-                    checked={form.readyForReservation}
-                    onChange={(v) => set('readyForReservation', v)}
-                    label="Отметить как готовую"
                   />
                 }
               />

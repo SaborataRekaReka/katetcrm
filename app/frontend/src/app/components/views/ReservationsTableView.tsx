@@ -97,7 +97,17 @@ export function ReservationsTableView({ rows, onRowClick, isFiltered }: Reservat
       header: 'Клиент',
       width: 180,
       sortValue: (r) => r.reservation.linked.clientName,
-      cell: (r) => <span className="truncate">{r.reservation.linked.clientName}</span>,
+      cell: (r) => {
+        const contact = r.reservation.linked.clientName || r.reservation.linked.clientCompany || '—';
+        const company = r.reservation.linked.clientCompany;
+        const suffix = company && company !== contact ? ` (${company})` : '';
+        return (
+          <span className="truncate">
+            {contact}
+            {suffix}
+          </span>
+        );
+      },
     },
     {
       id: 'application',
@@ -122,7 +132,7 @@ export function ReservationsTableView({ rows, onRowClick, isFiltered }: Reservat
     },
     {
       id: 'unit',
-      header: 'Unit',
+      header: 'Единица',
       width: 120,
       sortValue: (r) => r.reservation.equipmentUnit ?? '',
       cell: (r) =>

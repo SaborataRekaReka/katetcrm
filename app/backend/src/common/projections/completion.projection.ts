@@ -1,4 +1,5 @@
 import type { CompletionOutcome, Prisma } from '@prisma/client';
+import { buildStageLinkedIds, type StageLinkedIds } from './linked-ids';
 
 export type CompletionStatus =
   | 'ready_to_complete'
@@ -55,6 +56,7 @@ export interface CompletionView {
     deliveryNotes: string | null;
     cancellationReason: string | null;
   };
+  linkedIds: StageLinkedIds;
   derived: {
     status: CompletionStatus;
     alert: CompletionAlert;
@@ -197,6 +199,15 @@ export function projectCompletion(c: WithIncludes): CompletionView {
       deliveryNotes: c.departure.deliveryNotes,
       cancellationReason: c.departure.cancellationReason,
     },
+    linkedIds: buildStageLinkedIds({
+      leadId: c.departure.reservation.applicationItem.application.leadId,
+      applicationId: c.departure.reservation.applicationItem.applicationId,
+      reservationId: c.departure.reservationId,
+      departureId: c.departureId,
+      completionId: c.id,
+      clientId: c.departure.reservation.applicationItem.application.clientId,
+      applicationItemId: c.departure.reservation.applicationItem.id,
+    }),
     derived: {
       status: deriveStatus(c.outcome),
       alert: deriveAlert(c),

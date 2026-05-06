@@ -120,7 +120,7 @@ export function RepeatOrderDialog({
                   <span>{p.equipmentType}</span>
                   <span className="text-gray-400">× {p.quantity}</span>
                   {p.unit && (
-                    <span className="text-[10px] text-gray-500">· unit {p.unit}</span>
+                    <span className="text-[10px] text-gray-500">· ед. {p.unit}</span>
                   )}
                   {p.subcontractor && (
                     <span className="text-[10px] text-gray-500">· {p.subcontractor}</span>

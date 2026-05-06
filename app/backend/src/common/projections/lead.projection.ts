@@ -10,7 +10,19 @@
  * Хранимые boolean-флаги (isDuplicate/isUrgent/isStale/hasNoContact/
  * incompleteData) не пересчитываем — они уже колонки и обновляются сервисами.
  */
-import type { Lead, SourceChannel, Client, User } from '@prisma/client';
+import type {
+  Application,
+  ApplicationItem,
+  Client,
+  Completion,
+  Departure,
+  DepartureStatus,
+  Lead,
+  Reservation,
+  SourceChannel,
+  User,
+} from '@prisma/client';
+import { buildStageLinkedIds, type StageLinkedIds } from './linked-ids';
 
 const SOURCE_LABELS: Record<SourceChannel, string> = {
   site: 'Сайт',
@@ -23,9 +35,30 @@ const SOURCE_LABELS: Record<SourceChannel, string> = {
 
 export type LeadMissingField = 'address' | 'date' | 'contact' | 'equipment';
 
+const ACTIVE_DEPARTURE_STATUSES = new Set<DepartureStatus>([
+  'scheduled',
+  'in_transit',
+  'arrived',
+]);
+
+type CompletionLink = Pick<Completion, 'id'>;
+type DepartureLink = Pick<Departure, 'id' | 'status' | 'scheduledAt'> & {
+  completion?: CompletionLink | null;
+};
+type ReservationLink = Pick<Reservation, 'id' | 'isActive' | 'createdAt' | 'applicationItemId'> & {
+  departures?: DepartureLink[];
+};
+type ApplicationItemLink = Pick<ApplicationItem, 'id' | 'createdAt'> & {
+  reservations?: ReservationLink[];
+};
+type ApplicationLink = Pick<Application, 'id' | 'clientId' | 'isActive' | 'createdAt'> & {
+  items?: ApplicationItemLink[];
+};
+
 export interface LeadWithRelations extends Lead {
   client?: Client | null;
   manager?: Pick<User, 'id' | 'fullName' | 'email'> | { id: string; fullName: string } | null;
+  applications?: ApplicationLink[];
 }
 
 export interface LeadView {
@@ -71,6 +104,45 @@ export interface LeadView {
   lastActivityAt: string;
   createdAt: string;
   updatedAt: string;
+
+  linkedIds: StageLinkedIds;
+}
+
+function pickLinkedApplication(applications: ApplicationLink[]): ApplicationLink | null {
+  if (applications.length === 0) return null;
+  const sorted = [...applications].sort((a, b) => {
+    if (a.isActive !== b.isActive) {
+      return Number(b.isActive) - Number(a.isActive);
+    }
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+  return sorted[0] ?? null;
+}
+
+function pickLinkedReservation(application: ApplicationLink | null): ReservationLink | null {
+  if (!application) return null;
+  const reservations = (application.items ?? []).flatMap((item) => item.reservations ?? []);
+  if (reservations.length === 0) return null;
+  const sorted = [...reservations].sort((a, b) => {
+    if (a.isActive !== b.isActive) {
+      return Number(b.isActive) - Number(a.isActive);
+    }
+    return b.createdAt.getTime() - a.createdAt.getTime();
+  });
+  return sorted[0] ?? null;
+}
+
+function pickLinkedDeparture(reservation: ReservationLink | null): DepartureLink | null {
+  if (!reservation) return null;
+  const departures = reservation.departures ?? [];
+  if (departures.length === 0) return null;
+  const sorted = [...departures].sort((a, b) => {
+    const aActive = ACTIVE_DEPARTURE_STATUSES.has(a.status) ? 1 : 0;
+    const bActive = ACTIVE_DEPARTURE_STATUSES.has(b.status) ? 1 : 0;
+    if (aActive !== bActive) return bActive - aActive;
+    return b.scheduledAt.getTime() - a.scheduledAt.getTime();
+  });
+  return sorted[0] ?? null;
 }
 
 export function projectLead(lead: LeadWithRelations): LeadView {
@@ -81,6 +153,18 @@ export function projectLead(lead: LeadWithRelations): LeadView {
   if (!lead.equipmentTypeHint) missingFields.push('equipment');
 
   const managerName = lead.manager?.fullName ?? null;
+  const linkedApplication = pickLinkedApplication(lead.applications ?? []);
+  const linkedReservation = pickLinkedReservation(linkedApplication);
+  const linkedDeparture = pickLinkedDeparture(linkedReservation);
+  const linkedIds = buildStageLinkedIds({
+    leadId: lead.id,
+    applicationId: linkedApplication?.id ?? null,
+    reservationId: linkedReservation?.id ?? null,
+    departureId: linkedDeparture?.id ?? null,
+    completionId: linkedDeparture?.completion?.id ?? null,
+    clientId: lead.clientId ?? linkedApplication?.clientId ?? null,
+    applicationItemId: linkedReservation?.applicationItemId ?? null,
+  });
 
   return {
     id: lead.id,
@@ -122,6 +206,8 @@ export function projectLead(lead: LeadWithRelations): LeadView {
     lastActivityAt: lead.lastActivityAt.toISOString(),
     createdAt: lead.createdAt.toISOString(),
     updatedAt: lead.updatedAt.toISOString(),
+
+    linkedIds,
   };
 }
 

@@ -459,7 +459,7 @@ MVP считается принятым, если:
 - Admin: Imports (`preview/run/report`) и Integrations (`list/detail/retry/replay`) подключены в API-режиме.
 - Control analytics переведён на server-side контракт `GET /stats/analytics?viewId=...&sampleTake=...`.
 - Закрыт cross-module dead-control аудит для клиентских CTA/link точек в Reservation/Departure/Completion (включая API workspace-варианты) и shared affordance (`DenseDataTable`, `KpiRow`).
-- Release gate работает: `smoke:base`, `smoke:stage3`, `smoke:stage5`, `smoke:stage6`, `smoke:stage7`, `smoke:tasks`, `smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`, `smoke:admin:control`, `smoke:release`.
+- Testing reset 05.05.2026: прежние smoke/e2e команды и результаты удалены; новые тесты должны строиться от `QA_REQUIREMENTS.md`.
 
 ### 12.2 Не сделано / оставшиеся разрывы до полного MVP
 
@@ -473,8 +473,8 @@ MVP считается принятым, если:
 ### 12.3 Краткий план доведения до MVP (по шагам)
 
 1. **Усилить import/integration hardening.** Добить backend CSV safety limits/error taxonomy и CI-проверку signed webhook fixtures с production-like secret profiles.
-2. **Покрыть admin/control browser runtime-e2e.** Добавить browser/e2e проверки write-сценариев Users/Permissions/Settings и Control dashboard/reports/audit/analytics.
-3. **Усилить quality gate.** Расширить contract/regression smoke для remaining write-paths и интеграционных кейсов.
+2. **Покрыть admin/control browser runtime.** Добавить новые browser checks только после фиксации требований в `QA_REQUIREMENTS.md`.
+3. **Собрать новый quality gate.** Начать с доменного happy path, затем расширять contract/regression coverage от подтверждённых требований.
 4. **Закрыть runtime-pass по primary CTA.** Пройти browser-проверку editability/CTA-семантики во всех затронутых доменах.
 
 ---

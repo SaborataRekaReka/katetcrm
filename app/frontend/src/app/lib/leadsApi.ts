@@ -1,4 +1,5 @@
 import { apiRequest } from './apiClient';
+import type { StageLinkedIds } from './linkedIds';
 
 export type PipelineStage =
   | 'lead'
@@ -42,6 +43,7 @@ export interface LeadApi {
   lastActivityAt: string;
   createdAt: string;
   updatedAt: string;
+  linkedIds: StageLinkedIds;
 }
 
 export interface LeadListResponse {

@@ -119,7 +119,7 @@ function EventStatusPill({ status }: { status: IntegrationEventStatus }) {
 function EmptyDetails() {
   return (
     <div className="flex h-full min-h-[320px] items-center justify-center px-4 text-center text-[12px] text-muted-foreground">
-      Выберите событие из списка, чтобы посмотреть payload и выполнить retry/replay.
+      Выберите событие из списка, чтобы посмотреть данные и выполнить повтор или повторную обработку.
     </div>
   );
 }
@@ -210,7 +210,7 @@ export function IntegrationsWorkspacePage() {
           : await replayMutation.mutateAsync(payload);
 
       if (result.processed) {
-        setActionSuccess(type === 'retry' ? 'Retry выполнен успешно.' : 'Replay выполнен успешно.');
+        setActionSuccess(type === 'retry' ? 'Повтор выполнен успешно.' : 'Повторная обработка выполнена успешно.');
       } else {
         setActionError(result.failure?.errorMessage ?? 'Операция не завершилась успешно.');
       }
@@ -304,7 +304,7 @@ export function IntegrationsWorkspacePage() {
                   <th className="px-3 py-2 text-left font-medium">Статус</th>
                   <th className="px-3 py-2 text-left font-medium">Внешний ID</th>
                   <th className="px-3 py-2 text-left font-medium">Получено</th>
-                  <th className="px-3 py-2 text-right font-medium">Retry</th>
+                  <th className="px-3 py-2 text-right font-medium">Повторы</th>
                 </tr>
               </thead>
               <tbody>
@@ -405,24 +405,24 @@ export function IntegrationsWorkspacePage() {
                 <dl className="space-y-1 px-3 py-2.5 text-[12px]">
                   <Row label="Канал" value={CHANNEL_LABEL[selected.channel]} />
                   <Row label="Внешний ID" value={selected.externalId ?? '—'} mono />
-                  <Row label="Correlation ID" value={selected.correlationId ?? '—'} mono />
-                  <Row label="Idempotency" value={selected.idempotencyKey} mono />
-                  <Row label="Retry count" value={String(selected.retryCount)} />
-                  <Row label="Processed" value={formatDateTime(selected.processedAt)} />
-                  <Row label="Replayed" value={formatDateTime(selected.replayedAt)} />
-                  <Row label="Lead" value={selected.relatedLeadId ?? '—'} mono />
+                  <Row label="ID корреляции" value={selected.correlationId ?? '—'} mono />
+                  <Row label="Ключ идемпотентности" value={selected.idempotencyKey} mono />
+                  <Row label="Количество повторов" value={String(selected.retryCount)} />
+                  <Row label="Обработано" value={formatDateTime(selected.processedAt)} />
+                  <Row label="Переобработано" value={formatDateTime(selected.replayedAt)} />
+                  <Row label="Лид" value={selected.relatedLeadId ?? '—'} mono />
                 </dl>
               </section>
 
               <section className="rounded border border-border/60 bg-white">
                 <div className="border-b border-border/60 px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Retry / Replay
+                  Повтор / повторная обработка
                 </div>
                 <div className="space-y-2 px-3 py-2.5">
                   <Textarea
                     value={reason}
                     onChange={(event) => setReason(event.target.value)}
-                    placeholder="Причина retry/replay (опционально)"
+                    placeholder="Причина повтора/повторной обработки (опционально)"
                     className="min-h-[72px] text-[12px]"
                     disabled={busy}
                   />
@@ -434,7 +434,7 @@ export function IntegrationsWorkspacePage() {
                       disabled={!canRecover || busy}
                       onClick={() => void runRecovery('retry')}
                     >
-                      <RefreshCw className="h-3.5 w-3.5" /> Retry
+                      <RefreshCw className="h-3.5 w-3.5" /> Повтор
                     </Button>
                     <Button
                       size="sm"
@@ -442,7 +442,7 @@ export function IntegrationsWorkspacePage() {
                       disabled={!canRecover || busy}
                       onClick={() => void runRecovery('replay')}
                     >
-                      <RotateCcw className="h-3.5 w-3.5" /> Replay
+                      <RotateCcw className="h-3.5 w-3.5" /> Переобработать
                     </Button>
                     {selected.relatedLeadId ? (
                       <Button
@@ -457,7 +457,7 @@ export function IntegrationsWorkspacePage() {
                   </div>
                   {!canRecover ? (
                     <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <ArrowRight className="h-3 w-3" /> Retry/replay доступны только для failed событий.
+                      <ArrowRight className="h-3 w-3" /> Повтор/переобработка доступны только для событий со статусом failed.
                     </div>
                   ) : null}
                 </div>
@@ -465,7 +465,7 @@ export function IntegrationsWorkspacePage() {
 
               <section className="rounded border border-border/60 bg-white">
                 <div className="border-b border-border/60 px-3 py-2 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                  Payload summary
+                  Сводка данных
                 </div>
                 <div className="px-3 py-2.5 text-[12px]">
                   {summaryRows(selected.payloadSummary).length > 0 ? (

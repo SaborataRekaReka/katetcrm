@@ -48,7 +48,7 @@ export function toReservationRow(api: ReservationApi): ReservationRow {
   const equipmentType = api.equipmentTypeLabel ?? api.positionLabel;
 
   const lead: Lead = {
-    id: api.applicationItemId,
+    id: api.leadId ?? api.applicationItemId,
     apiClientId: api.clientId ?? undefined,
     stage: 'reservation',
     client: clientName,
@@ -89,7 +89,9 @@ export function toReservationRow(api: ReservationApi): ReservationRow {
         ? `Заявка #${api.applicationNumber}`
         : 'Заявка',
       clientId: api.clientId ?? '',
-      clientName: clientCompany ?? clientName,
+      clientName,
+      clientCompany,
+      leadId: api.leadId ?? undefined,
       positionTitle: api.positionLabel,
       equipmentType,
       quantity: 1,
@@ -163,7 +165,9 @@ export function toReservationEntity(api: ReservationApi): Reservation {
         ? `Заявка #${api.applicationNumber}`
         : 'Заявка',
       clientId: api.clientId ?? '',
-      clientName: clientCompany ?? clientName,
+      clientName,
+      clientCompany,
+      leadId: api.leadId ?? undefined,
       positionTitle: api.positionLabel,
       equipmentType,
       quantity: 1,

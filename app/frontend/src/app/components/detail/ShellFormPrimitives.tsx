@@ -19,6 +19,19 @@ import {
 import { Checkbox } from '../ui/checkbox';
 import { cn } from '../../lib/utils';
 
+const SHELL_FIELD_BASE_CLASS =
+  'w-full h-6 min-h-6 rounded px-1.5 text-[11px] leading-5 bg-transparent outline-none transition-colors border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white';
+
+const SHELL_FIELD_INVALID_CLASS = 'border-rose-300 bg-rose-50/40';
+
+const SHELL_FIELD_DISABLED_CLASS = 'opacity-60 cursor-not-allowed';
+
+const SHELL_FIELD_DATE_TIME_CLASS =
+  '[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-60';
+
+const SHELL_SELECT_TRIGGER_CLASS =
+  'h-6 min-h-6 rounded px-1.5 py-0 text-[11px] leading-5 bg-transparent border-transparent hover:border-gray-200 data-[size=default]:h-6 data-[size=sm]:h-6 *:data-[slot=select-value]:text-[11px] *:data-[slot=select-value]:leading-5 *:data-[slot=select-value]:truncate';
+
 export function FieldInput({
   value,
   onChange,
@@ -48,11 +61,11 @@ export function FieldInput({
       onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cn(
-        'w-full h-6 px-1.5 rounded text-[11px] bg-transparent',
-        'outline-none transition-colors',
-        'border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white',
-        invalid && 'border-rose-300 bg-rose-50/40',
-        disabled && 'opacity-60 cursor-not-allowed',
+        SHELL_FIELD_BASE_CLASS,
+        (type === 'date' || type === 'time') && SHELL_FIELD_DATE_TIME_CLASS,
+        type === 'number' && '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
+        invalid && SHELL_FIELD_INVALID_CLASS,
+        disabled && SHELL_FIELD_DISABLED_CLASS,
       )}
     />
   );
@@ -78,10 +91,10 @@ export function FieldTextarea({
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
       className={cn(
-        'w-full px-1.5 py-1 rounded text-[11px] bg-transparent resize-none',
+        'w-full min-h-[58px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent resize-none',
         'outline-none transition-colors',
         'border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white',
-        invalid && 'border-rose-300 bg-rose-50/40',
+        invalid && SHELL_FIELD_INVALID_CLASS,
       )}
     />
   );
@@ -106,15 +119,15 @@ export function FieldSelect({
     <Select value={value || undefined} onValueChange={onChange} disabled={disabled}>
       <SelectTrigger
         className={cn(
-          'h-6 text-[11px] bg-transparent border-transparent hover:border-gray-200',
-          invalid && 'border-rose-300 bg-rose-50/40',
+          SHELL_SELECT_TRIGGER_CLASS,
+          invalid && SHELL_FIELD_INVALID_CLASS,
         )}
       >
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="text-[11px]">
         {options.map((o) => (
-          <SelectItem key={o.value} value={o.value} className="text-[12px]">
+          <SelectItem key={o.value} value={o.value} className="text-[11px]">
             {o.label}
           </SelectItem>
         ))}

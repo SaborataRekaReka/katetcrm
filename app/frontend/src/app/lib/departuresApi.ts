@@ -1,4 +1,5 @@
 import { apiRequest } from './apiClient';
+import type { StageLinkedIds } from './linkedIds';
 
 export type DepartureStatus =
   | 'scheduled'
@@ -58,6 +59,7 @@ export interface DepartureApi {
     outcome: CompletionOutcome;
     completedAt: string;
   } | null;
+  linkedIds: StageLinkedIds;
   derived: {
     alert: DepartureAlert;
     canStart: boolean;

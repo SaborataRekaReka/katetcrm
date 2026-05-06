@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLayout } from '../shell/layoutStore';
 import { getModuleMeta } from '../shell/navConfig';
 import { ListScaffold } from '../shell/ListScaffold';
@@ -65,11 +65,19 @@ function presetFromSecondary(secondaryId: string): PresetId {
 }
 
 export function ClientsWorkspacePage() {
-  const { activeSecondaryNav, currentView } = useLayout();
+  const {
+    activeSecondaryNav,
+    currentView,
+    activeEntityType,
+    activeEntityId,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
+  } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [query, setQuery] = useState('');
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [isNewClientOpen, setIsNewClientOpen] = useState(false);
 
   useRegisterPrimaryCta(
@@ -129,6 +137,27 @@ export function ClientsWorkspacePage() {
 
   const managers = Array.from(new Set(sourceRows.map((c) => c.manager))).sort();
 
+  const openClient = (clientId: string, leadSeed?: Lead | null) => {
+    setSelectedClientId(clientId);
+    setSelectedLead(leadSeed ?? null);
+    setActiveEntityRoute('client', clientId);
+  };
+
+  const closeClient = () => {
+    setSelectedLead(null);
+    setSelectedClientId(null);
+    clearActiveEntityRoute();
+  };
+
+  useEffect(() => {
+    if (activeEntityType !== 'client' || !activeEntityId) return;
+    if (selectedClientId === activeEntityId) return;
+
+    const matched = sourceRows.find((row) => row.id === activeEntityId);
+    setSelectedLead(matched?.sourceLead ?? null);
+    setSelectedClientId(activeEntityId);
+  }, [activeEntityType, activeEntityId, selectedClientId, sourceRows]);
+
   const toolbar = (
       <SimpleToolbar
       searchPlaceholder={meta.searchPlaceholder}
@@ -174,18 +203,18 @@ export function ClientsWorkspacePage() {
           {clientsQuery.error instanceof Error ? clientsQuery.error.message : 'Не удалось загрузить клиентов.'}
         </div>
       ) : effectiveView === 'list' ? (
-        <ClientsListView rows={filtered} onRowClick={(c) => setSelectedLead(c.sourceLead)} />
+        <ClientsListView rows={filtered} onRowClick={(c) => openClient(c.id, c.sourceLead)} />
       ) : (
-        <ClientsCardsView rows={filtered} onCardClick={(c) => setSelectedLead(c.sourceLead)} />
+        <ClientsCardsView rows={filtered} onCardClick={(c) => openClient(c.id, c.sourceLead)} />
       )}
 
-      <Dialog open={!!selectedLead} onOpenChange={(o) => !o && setSelectedLead(null)}>
+      <Dialog open={!!selectedClientId} onOpenChange={(open) => !open && closeClient()}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
-          {selectedLead ? (
+          {selectedClientId ? (
             <ClientWorkspace
-              lead={selectedLead}
-              onClose={() => setSelectedLead(null)}
-              apiClientId={USE_API ? selectedLead.id : undefined}
+              lead={selectedLead ?? undefined}
+              onClose={closeClient}
+              apiClientId={USE_API ? selectedClientId : undefined}
             />
           ) : null}
         </DialogContent>

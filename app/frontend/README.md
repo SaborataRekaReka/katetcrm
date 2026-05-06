@@ -44,37 +44,18 @@ Backend должен быть запущен на `http://localhost:3001`.
 - Home dashboard (`/stats` + recent activity) и My Tasks (API write-flow: create/update/status/duplicate/archive/subtasks)
 - Admin: Imports (preview/run/report), Integrations (list/detail/retry/replay), Users (list/create/activate/role/name/password), Permissions+Settings (read/write)
 - Control: API-driven dashboard/reports/audit/analytics branches (`reports` через `GET /stats/reports`, audit filters server-side), manager-load без mock fallback
-- Browser E2E (Playwright): admin/control runtime route checks + admin users write flow (`Новый пользователь`)
+- Browser tests удалены в рамках testing reset 05.05.2026; новые сценарии должны быть написаны от `../../QA_REQUIREMENTS.md`.
 
-Оставшиеся крупные зоны: production-hardening import/integration контуров и расширение browser E2E на дополнительные негативные RBAC и CRUD-сценарии.
+Оставшиеся крупные зоны: production-hardening import/integration контуров и создание новой browser/runtime test suite после фиксации требований.
 
-## Browser E2E (Playwright)
+## Testing reset
 
-Требования:
+Playwright specs, Playwright config, test-results и e2e-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
 
-- backend запущен на `http://localhost:3001`;
-- frontend запускается с `VITE_USE_API=true`;
-- установлены браузеры Playwright (`npx playwright install`).
-
-Запуск:
+Текущая не-тестовая проверка frontend:
 
 ```bash
-npm run e2e
+npm run build
 ```
 
-Дополнительно:
-
-- `E2E_BASE_URL` — внешний URL frontend (если не `http://127.0.0.1:5173`);
-- `E2E_SKIP_WEB_SERVER=true` — не поднимать локальный `vite dev` из Playwright;
-- `E2E_ADMIN_EMAIL` / `E2E_ADMIN_PASSWORD` — учётка для admin-flow.
-
-Практическая заметка:
-
-- если на login-экране e2e возникает `Failed to fetch`, поднимите frontend на `localhost` и запустите e2e с внешним base URL:
-
-```powershell
-npm run dev -- --host localhost --port 5174
-$env:E2E_BASE_URL = "http://localhost:5174"
-$env:E2E_SKIP_WEB_SERVER = "true"
-npm run e2e
-```
+Новые frontend/browser tests должны ссылаться на requirement ids из `../../QA_REQUIREMENTS.md`.

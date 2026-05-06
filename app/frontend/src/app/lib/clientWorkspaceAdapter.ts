@@ -81,6 +81,7 @@ function toOrderHistory(app: ApplicationApi): { item: ClientOrderHistoryItem; am
   return {
     item: {
       id: app.id,
+      leadId: app.leadId,
       number: app.number,
       date: formatDate(app.requestedDate ?? app.createdAt),
       status: mapOrderStatus(app.stage),
@@ -95,6 +96,9 @@ function toOrderHistory(app: ApplicationApi): { item: ClientOrderHistoryItem; am
       amount: amountValue > 0 ? formatMoney(amountValue) : undefined,
       hasActiveReservation: hasReservation,
       hasActiveDeparture: app.stage === 'departure',
+      reservationId: app.linkedIds.reservationId ?? undefined,
+      departureId: app.linkedIds.departureId ?? undefined,
+      completionId: app.linkedIds.completionId ?? undefined,
       comment: app.comment ?? undefined,
     },
     amountValue,
@@ -138,6 +142,53 @@ function mergeTags(detail: ClientDetailApi): ClientTag[] {
     if (!uniq.has(t.label)) uniq.set(t.label, t);
   }
   return Array.from(uniq.values());
+}
+
+function normalizeOptionalText(value: string | null | undefined): string | undefined {
+  const next = value?.trim();
+  return next ? next : undefined;
+}
+
+function mapClientContacts(
+  detail: ClientDetailApi,
+  fallbackContactName?: string,
+): Client['contacts'] {
+  const mapped = detail.contacts
+    .map((c) => ({
+      id: c.id,
+      name: c.name.trim(),
+      role: normalizeOptionalText(c.role),
+      phone: normalizeOptionalText(c.phone),
+      email: normalizeOptionalText(c.email),
+      isPrimary: c.isPrimary,
+    }))
+    .filter((c) => c.name.length > 0);
+
+  if (mapped.length > 0) {
+    return mapped;
+  }
+
+  const fallbackName = normalizeOptionalText(fallbackContactName)
+    ?? normalizeOptionalText(detail.name)
+    ?? normalizeOptionalText(detail.company)
+    ?? 'Контакт';
+  const fallbackPhone = normalizeOptionalText(detail.phone);
+  const fallbackEmail = normalizeOptionalText(detail.email);
+
+  if (!fallbackName && !fallbackPhone && !fallbackEmail) {
+    return [];
+  }
+
+  return [
+    {
+      id: `fallback-contact-${detail.id}`,
+      name: fallbackName,
+      role: detail.company ? 'Контактное лицо' : 'Основной контакт',
+      phone: fallbackPhone,
+      email: fallbackEmail,
+      isPrimary: true,
+    },
+  ];
 }
 
 export function toClientWorkspaceModel(args: {
@@ -189,6 +240,10 @@ export function toClientWorkspaceModel(args: {
   );
   const firstDepartureApp = activeApps.find((a) => a.stage === 'departure');
 
+  const fallbackContactName =
+    leads.find((lead) => normalizeOptionalText(lead.contactName))?.contactName
+    ?? applications.find((app) => normalizeOptionalText(app.clientName))?.clientName;
+
   const manager =
     firstApp?.responsibleManagerName ?? leads[0]?.managerName ?? fallback.manager;
 
@@ -208,14 +263,7 @@ export function toClientWorkspaceModel(args: {
     totalRevenue: totalRevenueValue > 0 ? formatMoney(totalRevenueValue) : undefined,
     daysSinceLastOrder,
     tags: mergeTags(detail),
-    contacts: detail.contacts.map((c) => ({
-      id: c.id,
-      name: c.name,
-      role: c.role ?? undefined,
-      phone: c.phone ?? undefined,
-      email: c.email ?? undefined,
-      isPrimary: c.isPrimary,
-    })),
+    contacts: mapClientContacts(detail, fallbackContactName),
     requisites: detail.requisites
       ? {
           inn: detail.requisites.inn ?? undefined,
@@ -245,18 +293,21 @@ export function toClientWorkspaceModel(args: {
         ? {
             id: firstApp.id,
             title: `${firstApp.number} · ${firstApp.equipmentSummary}`,
+            entityId: firstApp.id,
           }
         : undefined,
       topActiveReservation: firstReservationApp
         ? {
             id: `RSV-${firstReservationApp.id.slice(-6).toUpperCase()}`,
             title: `${firstReservationApp.number} · ${firstReservationApp.equipmentSummary}`,
+            entityId: firstReservationApp.linkedIds.reservationId ?? undefined,
           }
         : undefined,
       topActiveDeparture: firstDepartureApp
         ? {
             id: `DEP-${firstDepartureApp.id.slice(-6).toUpperCase()}`,
             title: `${firstDepartureApp.number} · ${firstDepartureApp.equipmentSummary}`,
+            entityId: firstDepartureApp.linkedIds.departureId ?? undefined,
           }
         : undefined,
     },

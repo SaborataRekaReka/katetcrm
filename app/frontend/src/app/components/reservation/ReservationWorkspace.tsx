@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
   FileText,
-  ChevronDown,
   Truck,
   Building2,
   HelpCircle,
@@ -24,8 +23,10 @@ import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { deriveReservationState } from '../shell/reservationHelpers';
 import { useReleaseReservation, useUpdateReservation } from '../../hooks/useReservationMutations';
 import { useChangeLeadStage } from '../../hooks/useLeadMutations';
+import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { useReservationQuery } from '../../hooks/useReservationsQuery';
 import { useApplicationQuery } from '../../hooks/useApplicationsQuery';
+import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
 import {
   useEquipmentUnitsQuery,
   useSubcontractorsQuery,
@@ -73,9 +74,13 @@ import {
   SidebarField,
   ActionButton,
   NextStepLine,
+  resolveClientDisplay,
+  sidebarTokens,
 } from '../detail/DetailShell';
-import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { EntityActivityList, EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { UnqualifyLeadDialog } from '../leads/UnqualifyLeadDialog';
 import { useLayout } from '../shell/layoutStore';
+import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 
 interface Props {
   lead: Lead;
@@ -93,7 +98,7 @@ const stageLabel: Record<ReservationInternalStage, string> = {
   searching_subcontractor: 'Подбор подрядчика',
   subcontractor_selected: 'Подрядчик подтверждён',
   type_reserved: 'Тип забронирован',
-  unit_defined: 'Unit уточнён',
+  unit_defined: 'Единица уточнена',
   ready_for_departure: 'Готово к выезду',
   released: 'Снята',
 };
@@ -114,24 +119,39 @@ const sourceMeta = {
   undecided: { label: 'Не определено', Icon: HelpCircle, tone: badgeTones.caution },
 };
 
+const sidebarStatusBadgeClass =
+  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+
+const headerStatusBadgeClass =
+  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
+
+const propertyLinkInlineClass =
+  'inline-flex min-h-[20px] max-w-full items-center rounded px-1 text-[11px] text-blue-600 text-left truncate transition-colors hover:bg-gray-100 hover:underline disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline';
+
 export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, apiReservationId }: Props) {
-  const { setActiveSecondaryNav } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const isApiDetail = USE_API && !!apiReservationId;
   const reservationQuery = useReservationQuery(apiReservationId, USE_API && !!apiReservationId);
   const mockReservation: Reservation = useMemo(() => buildMockReservation(lead), [lead]);
 
-  // Живые справочники (unit'ы и подрядчики) из API. Фильтруем активные и
-  // сужаем по equipmentTypeId + окну plannedStart/plannedEnd текущей брони.
+  // Живые справочники (unit'ы и подрядчики) из API.
+  // Для unit'ов не режем по status, чтобы в брони не было «пусто» без
+  // объяснения: неактивные/архивные unit'ы тоже показываем, но как недоступные.
+  // Данные сужаются по equipmentTypeId + окну plannedStart/plannedEnd.
   // API исключает занятые ресурсы в пересекающемся интервале.
   const resEquipmentTypeId = reservationQuery.data?.equipmentTypeId ?? undefined;
-  const availabilityStart = reservationQuery.data?.plannedStart;
-  const availabilityEnd = reservationQuery.data?.plannedEnd;
+  const availabilityWindow =
+    reservationQuery.data?.plannedStart && reservationQuery.data?.plannedEnd
+      ? {
+          plannedStart: reservationQuery.data.plannedStart,
+          plannedEnd: reservationQuery.data.plannedEnd,
+        }
+      : null;
   const unitsQuery = useEquipmentUnitsQuery(
     {
       equipmentTypeId: resEquipmentTypeId,
-      status: 'active',
-      plannedStart: availabilityStart,
-      plannedEnd: availabilityEnd,
+      plannedStart: availabilityWindow?.plannedStart,
+      plannedEnd: availabilityWindow?.plannedEnd,
       excludeReservationId: apiReservationId,
     },
     USE_API && !!apiReservationId,
@@ -139,8 +159,8 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   const subsQuery = useSubcontractorsQuery(
     {
       status: 'active',
-      plannedStart: availabilityStart,
-      plannedEnd: availabilityEnd,
+      plannedStart: availabilityWindow?.plannedStart,
+      plannedEnd: availabilityWindow?.plannedEnd,
       excludeReservationId: apiReservationId,
     },
     USE_API && !!apiReservationId && reservationQuery.data?.source === 'subcontractor',
@@ -162,7 +182,17 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               | 'available'
               | 'busy'
               | 'maintenance',
-            note: u.activeBookingsCount ? `Активных броней: ${u.activeBookingsCount}` : undefined,
+            note:
+              [
+                u.status === 'inactive'
+                  ? 'Статус в справочнике: Неактивно'
+                  : u.status === 'archived'
+                    ? 'Статус в справочнике: Архив'
+                    : null,
+                u.activeBookingsCount ? `Активных броней: ${u.activeBookingsCount}` : null,
+              ]
+                .filter(Boolean)
+                .join(' • ') || undefined,
           }))
         : [];
       const subcontractorOptions = subsQuery.data
@@ -190,6 +220,8 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   const [releaseOpen, setReleaseOpen] = useState(false);
   const [releaseReason, setReleaseReason] = useState('');
   const [releaseError, setReleaseError] = useState<string | null>(null);
+  const [isUnqualOpen, setIsUnqualOpen] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const releaseMutation = useReleaseReservation();
   const updateResMutation = useUpdateReservation();
   const changeLeadStage = useChangeLeadStage();
@@ -211,7 +243,11 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
           time: a.at,
         }));
 
-  const canRelease = USE_API && !!apiReservationId && reservation.status === 'active';
+  const canRelease =
+    USE_API
+    && !!apiReservationId
+    && reservation.status === 'active'
+    && !!reservation.readyForDeparture;
   const canInlineEditRes = USE_API && !!apiReservationId && reservation.status === 'active';
 
   const filteredUnits = useMemo(() => {
@@ -231,18 +267,49 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         .includes(q),
     );
   }, [reservation.subcontractorOptions, subSearch]);
+  const unitsErrorText =
+    unitsQuery.error instanceof Error
+      ? unitsQuery.error.message
+      : 'Не удалось загрузить список юнитов';
+  const subsErrorText =
+    subsQuery.error instanceof Error
+      ? subsQuery.error.message
+      : 'Не удалось загрузить список подрядчиков';
+  const unitDirectoryEmpty =
+    !unitsQuery.isPending && !unitsQuery.isError && reservation.candidateUnits.length === 0;
+  const subDirectoryEmpty =
+    !subsQuery.isPending && !subsQuery.isError && reservation.subcontractorOptions.length === 0;
 
   // Источник: если можно сохранять — берём актуальный с API (через reservation.source),
   // иначе управляем локально (для mock / kanban-контекста без apiReservationId).
   const source = canInlineEditRes ? reservation.source : localSource;
 
-  const handleSourceChange = (next: 'own' | 'subcontractor' | 'undecided') => {
+  const handleSourceChange = async (next: 'own' | 'subcontractor' | 'undecided') => {
+    setActionError(null);
     if (canInlineEditRes && apiReservationId) {
-      const sourcingType = next === 'own' ? 'own' : next === 'subcontractor' ? 'subcontractor' : 'undecided';
-      updateResMutation.mutate({ id: apiReservationId, patch: { sourcingType } });
-    } else {
-      setLocalSource(next);
+      try {
+        const sourcingType =
+          next === 'own' ? 'own' : next === 'subcontractor' ? 'subcontractor' : 'undecided';
+        const internalStage: ReservationInternalStage =
+          next === 'own'
+            ? 'searching_own_equipment'
+            : next === 'subcontractor'
+              ? 'searching_subcontractor'
+              : 'needs_source_selection';
+        await updateResMutation.mutateAsync({
+          id: apiReservationId,
+          patch: { sourcingType, internalStage } as any,
+        });
+        return;
+      } catch (err) {
+        setActionError(
+          err instanceof Error ? err.message : 'Не удалось обновить источник брони',
+        );
+        return;
+      }
     }
+
+    setLocalSource(next);
   };
 
   /** Фабрика save-обработчиков для инлайн-полей брони. */
@@ -276,20 +343,78 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     onClose();
   };
 
+  const breadcrumbItems = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    { label: 'Операции', onClick: () => openSecondary('reservations') },
+    { label: 'Бронь' },
+  ];
+
+  const openEntitySecondary = (
+    secondaryId: string,
+    entityType: 'lead' | 'application' | 'reservation' | 'departure' | 'completion',
+    entityId?: string | null,
+  ) => {
+    if (!entityId) return false;
+    openSecondaryWithEntity(secondaryId, entityType, entityId);
+    return true;
+  };
+
   const linkedApplicationQuery = useApplicationQuery(
     reservation.linked.applicationId,
     USE_API && isApiDetail && !!reservation.linked.applicationId,
   );
+  const linkedIds = reservationQuery.data?.linkedIds;
+  const reservationEntityId = linkedIds?.reservationId ?? apiReservationId ?? reservation.id;
+  const applicationEntityId = linkedIds?.applicationId ?? reservation.linked.applicationId;
+  const departureLookupQuery = useDeparturesQuery(
+    { reservationId: reservationEntityId ?? undefined },
+    USE_API && isApiDetail && !!reservationEntityId,
+  );
+  const departureEntityId = linkedIds?.departureId ?? null;
+  const resolvedDepartureEntityId = useMemo(() => {
+    if (departureEntityId) return departureEntityId;
+    const items = departureLookupQuery.data?.items;
+    if (!items || items.length === 0) return null;
+    const inProgress = items.find(
+      (item) =>
+        item.status === 'scheduled'
+        || item.status === 'in_transit'
+        || item.status === 'arrived',
+    );
+    return inProgress?.id ?? items[0].id;
+  }, [departureEntityId, departureLookupQuery.data]);
+  const completionEntityId = linkedIds?.completionId ?? null;
   const resolvedLeadId =
+    linkedIds?.leadId ??
     reservation.linked.leadId ??
     linkedApplicationQuery.data?.leadId ??
     (lead.stage === 'lead' ? lead.id : undefined);
-  const hasLinkedApplication = !!reservation.linked.applicationId;
+  const hasLinkedApplication = !!applicationEntityId;
   const hasLinkedClient = !!reservation.linked.clientId;
   const canOpenClient = !!onOpenClient && hasLinkedClient;
   const hasLinkedLead = !!resolvedLeadId;
+  const linkedLeadQuery = useLeadQuery(
+    resolvedLeadId,
+    USE_API && !!resolvedLeadId,
+  );
+  const linkedLeadStage = linkedLeadQuery.data?.stage ?? lead.stage;
+  const hasLinkedDeparture = !!resolvedDepartureEntityId;
+  const hasLinkedCompletion = !!completionEntityId;
+  const isCurrentStageTail = !hasLinkedDeparture && !hasLinkedCompletion;
+  const canMarkChainUnqualified =
+    USE_API
+    && !!resolvedLeadId
+    && linkedLeadStage !== 'completed'
+    && linkedLeadStage !== 'unqualified'
+    && linkedLeadStage !== 'cancelled'
+    && isCurrentStageTail;
+  const activeSwitcherEntityType = activeEntityType ?? 'reservation';
+  const shareUrl = reservationEntityId
+    ? buildAbsoluteEntityUrl('reservation', reservationEntityId)
+    : null;
 
-  const handleOpenApplication = () => openSecondary('applications');
+  const handleOpenApplication = () =>
+    openEntitySecondary('applications', 'application', applicationEntityId);
   const handleOpenLead = async () => {
     let targetLeadId = resolvedLeadId;
 
@@ -304,62 +429,113 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
       return;
     }
 
-    if (!USE_API && targetLeadId) {
-      openSecondary('leads');
+    if (targetLeadId && openEntitySecondary('leads', 'lead', targetLeadId)) {
+      return;
     }
   };
   const handleOpenConflict = () => openSecondary('view-conflict');
-  const handleOpenDeparture = () => openSecondary('departures');
-  const handleDuplicateReservation = () => openSecondary('applications');
+  const handleOpenDeparture = (overrideDepartureId?: string | null) =>
+    openEntitySecondary(
+      'departures',
+      'departure',
+      overrideDepartureId ?? resolvedDepartureEntityId,
+    );
+  const handleOpenCompletion = () =>
+    openEntitySecondary('completion', 'completion', completionEntityId);
+  const handleDuplicateReservation = () =>
+    openEntitySecondary('applications', 'application', applicationEntityId);
+  const handleOpenUnqualify = () => {
+    if (!canMarkChainUnqualified || !resolvedLeadId) {
+      setActionError('Нельзя закрыть как некачественный: действие доступно только на последней актуальной стадии цепочки.');
+      return;
+    }
+    setActionError(null);
+    setIsUnqualOpen(true);
+  };
   const entitySwitcherOptions = [
-    ...(hasLinkedLead
-      ? [{ id: 'lead', label: 'Лид', onSelect: () => void handleOpenLead() }]
-      : []),
-    ...(hasLinkedApplication
-      ? [{ id: 'application', label: 'Заявка', onSelect: handleOpenApplication }]
-      : []),
+    {
+      id: 'lead',
+      label: 'Лид',
+      active: activeSwitcherEntityType === 'lead',
+      onSelect: hasLinkedLead ? () => void handleOpenLead() : undefined,
+      disabled: !hasLinkedLead,
+    },
+    {
+      id: 'application',
+      label: 'Заявка',
+      active: activeSwitcherEntityType === 'application',
+      onSelect: hasLinkedApplication ? handleOpenApplication : undefined,
+      disabled: !hasLinkedApplication,
+    },
     {
       id: 'reservation',
       label: 'Бронь',
-      active: true,
-      onSelect: () => openSecondary('reservations'),
+      active: activeSwitcherEntityType === 'reservation',
+      onSelect: reservationEntityId
+        ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
+        : undefined,
+      disabled: !reservationEntityId,
     },
-    { id: 'departure', label: 'Выезд', onSelect: handleOpenDeparture },
+    {
+      id: 'departure',
+      label: 'Выезд',
+      active: activeSwitcherEntityType === 'departure',
+      onSelect: hasLinkedDeparture ? () => handleOpenDeparture() : undefined,
+      disabled: !hasLinkedDeparture,
+    },
     {
       id: 'completed',
       label: 'Завершение',
-      onSelect: () => openSecondary('completion'),
+      active: activeSwitcherEntityType === 'completion',
+      onSelect: hasLinkedCompletion ? handleOpenCompletion : undefined,
+      disabled: !hasLinkedCompletion,
     },
   ];
 
   const selectFirstAvailableUnit = async () => {
-    if (canInlineEditRes && apiReservationId) {
-      const unit = reservation.candidateUnits.find((u) => u.status === 'available');
-      await updateResMutation.mutateAsync({
-        id: apiReservationId,
-        patch: {
-          sourcingType: 'own',
-          equipmentUnitId: unit?.id ?? null,
-        } as any,
-      });
-      return;
+    setActionError(null);
+    try {
+      if (canInlineEditRes && apiReservationId) {
+        const unit = reservation.candidateUnits.find((u) => u.status === 'available');
+        await updateResMutation.mutateAsync({
+          id: apiReservationId,
+          patch: {
+            sourcingType: 'own',
+            equipmentUnitId: unit?.id ?? null,
+            internalStage: unit ? 'unit_defined' : 'searching_own_equipment',
+          } as any,
+        });
+        return;
+      }
+      setLocalSource('own');
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Не удалось выбрать свою технику',
+      );
     }
-    setLocalSource('own');
   };
 
   const selectFirstSubcontractor = async () => {
-    if (canInlineEditRes && apiReservationId) {
-      const subcontractor = reservation.subcontractorOptions[0];
-      await updateResMutation.mutateAsync({
-        id: apiReservationId,
-        patch: {
-          sourcingType: 'subcontractor',
-          subcontractorId: subcontractor?.id ?? null,
-        } as any,
-      });
-      return;
+    setActionError(null);
+    try {
+      if (canInlineEditRes && apiReservationId) {
+        const subcontractor = reservation.subcontractorOptions[0];
+        await updateResMutation.mutateAsync({
+          id: apiReservationId,
+          patch: {
+            sourcingType: 'subcontractor',
+            subcontractorId: subcontractor?.id ?? null,
+            internalStage: subcontractor ? 'subcontractor_selected' : 'searching_subcontractor',
+          } as any,
+        });
+        return;
+      }
+      setLocalSource('subcontractor');
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Не удалось выбрать подрядчика',
+      );
     }
-    setLocalSource('subcontractor');
   };
 
   const handlePickAlternative = async () => {
@@ -370,38 +546,90 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     await selectFirstAvailableUnit();
   };
 
+  const tryOpenFreshDeparture = async (): Promise<boolean> => {
+    if (!reservationEntityId) return false;
+    try {
+      const nextDepartures = await departureLookupQuery.refetch();
+      const nextItems = nextDepartures.data?.items;
+      if (!nextItems || nextItems.length === 0) return false;
+      const nextInProgress = nextItems.find(
+        (item) =>
+          item.status === 'scheduled'
+          || item.status === 'in_transit'
+          || item.status === 'arrived',
+      );
+      handleOpenDeparture(nextInProgress?.id ?? nextItems[0].id);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const handlePrimaryAction = async () => {
-    if (derived.ctaDisabled) return;
-    if (conflict) {
-      handleOpenConflict();
+    setActionError(null);
+    if (hasLinkedDeparture) {
+      handleOpenDeparture();
+      return;
+    }
+    const canMoveToDepartureNow =
+      reservation.status === 'active'
+      && source !== 'undecided'
+      && (source === 'own' ? !!reservation.equipmentUnit : !!reservation.subcontractor);
+    if (!canMoveToDepartureNow) {
       return;
     }
 
-    switch (derived.stage) {
-      case 'needs_source_selection':
-      case 'searching_own_equipment':
-        await selectFirstAvailableUnit();
-        return;
-      case 'searching_subcontractor':
-        await selectFirstSubcontractor();
-        return;
-      case 'type_reserved':
-      case 'unit_defined':
-        if (canInlineEditRes && apiReservationId) {
-          await updateResMutation.mutateAsync({
-            id: apiReservationId,
-            patch: { internalStage: 'ready_for_departure' } as any,
-          });
+    const transitionLeadId = resolvedLeadId ?? null;
+    if (!transitionLeadId) {
+      setActionError('Не удалось определить связанный лид для перевода в выезд.');
+      return;
+    }
+
+    try {
+      // Явно отмечаем готовность брони перед переводом, чтобы API-проекции
+      // и список стадий оставались согласованными.
+      if (canInlineEditRes && apiReservationId && !reservation.readyForDeparture) {
+        await updateResMutation.mutateAsync({
+          id: apiReservationId,
+          patch: { internalStage: 'ready_for_departure' } as any,
+        });
+      }
+
+      if (USE_API) {
+        try {
+          await changeLeadStage.mutateAsync({ id: transitionLeadId, stage: 'departure' });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : '';
+          const isAlreadyDeparture =
+            message.includes('Недопустимый переход departure')
+            || message.includes('departure → departure')
+            || message.includes('departure -> departure');
+          const isTransitionMismatch = message.includes('Недопустимый переход');
+          const isServerError = message.includes('Internal server error');
+
+          // Конкурентный/межэкранный кейс: переход уже случился или выезд уже создан.
+          if (isAlreadyDeparture || isTransitionMismatch || isServerError) {
+            const opened = await tryOpenFreshDeparture();
+            if (opened) return;
+          }
+
+          if (!isAlreadyDeparture) {
+            throw err;
+          }
         }
-        return;
-      case 'ready_for_departure':
-        if (USE_API && lead.id) {
-          await changeLeadStage.mutateAsync({ id: lead.id, stage: 'departure' });
+        if (!resolvedDepartureEntityId) {
+          const opened = await tryOpenFreshDeparture();
+          if (opened) return;
+          setActionError('Выезд не найден после перевода. Обновите карточку и попробуйте открыть связанные записи.');
+          return;
         }
-        handleOpenDeparture();
-        return;
-      default:
-        return;
+      }
+      handleOpenDeparture();
+      return;
+    } catch (err) {
+      setActionError(
+        err instanceof Error ? err.message : 'Не удалось выполнить действие по брони',
+      );
     }
   };
 
@@ -412,16 +640,21 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   const subSelected = !!reservation.subcontractor;
   const conflict = !!reservation.hasConflict;
   const readyFlag = !!reservation.readyForDeparture;
+  const clientDisplay = resolveClientDisplay({
+    company: reservation.linked.clientCompany,
+    personName: reservation.linked.clientName,
+  });
 
   const clientLeadContext: Lead = useMemo(
     () => ({
       ...lead,
       id: reservation.linked.clientId,
-      client: reservation.linked.clientName,
+      client: reservation.linked.clientName || reservation.linked.clientCompany || lead.client,
+      company: reservation.linked.clientCompany ?? lead.company,
       equipmentType: reservation.linked.equipmentType,
       address: reservation.linked.address ?? lead.address,
     }),
-    [lead, reservation.linked],
+    [lead, reservation.linked.clientId, reservation.linked.clientName, reservation.linked.clientCompany, reservation.linked.equipmentType, reservation.linked.address],
   );
 
   // Единый источник правды: stage / nextStep / CTA выводятся из одного места.
@@ -435,28 +668,41 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   });
   const computedStage: ReservationInternalStage = derived.stage;
 
-  // Conditional checklist
-  const checks: { label: string; ok: boolean }[] = [];
-  if (source === 'undecided') {
-    checks.push({ label: 'Источник не выбран', ok: false });
-  } else {
-    checks.push({ label: 'Источник выбран', ok: true });
-    if (source === 'own') {
-      checks.push({ label: 'Unit выбран', ok: unitSelected });
-    } else if (source === 'subcontractor') {
-      checks.push({ label: 'Подрядчик выбран', ok: subSelected });
-    }
-    checks.push({ label: 'Нет конфликтов', ok: !conflict });
-    checks.push({ label: 'Готов к выезду', ok: readyFlag });
-  }
-  const ready = checks.every((c) => c.ok);
+  const checks: { label: string; ok: boolean }[] = [
+    { label: 'Бронь активна', ok: reservation.status === 'active' },
+    { label: 'Источник выбран', ok: source !== 'undecided' },
+    {
+      label:
+        source === 'subcontractor'
+          ? 'Подрядчик выбран'
+          : source === 'own'
+            ? 'Единица выбрана'
+            : 'Назначен ресурс',
+      ok:
+        source === 'undecided'
+          ? false
+          : source === 'own'
+            ? unitSelected
+            : subSelected,
+    },
+  ];
+  const missingChecklist = checks.filter((c) => !c.ok).map((c) => c.label);
+  const canMoveToDeparture = missingChecklist.length === 0;
 
-  // Primary CTA driven by computedStage — single source of truth (deriveReservationState).
-  const primary = {
-    label: derived.ctaLabel,
-    disabled: derived.ctaDisabled,
-    reason: derived.reason,
-  };
+  const primary = hasLinkedDeparture
+    ? {
+        label: 'Открыть выезд',
+        disabled: false,
+        reason: null,
+      }
+    : {
+        label: 'Перевести в выезд',
+        disabled: !canMoveToDeparture,
+        reason:
+          missingChecklist.length > 0
+            ? `Для перевода нужно: ${missingChecklist.join(', ')}`
+            : null,
+      };
 
   if (isApiDetail && reservationQuery.isPending && !reservationQuery.data) {
     return (
@@ -504,89 +750,23 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               disabled={!canOpenClient}
               className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
-              {reservation.linked.clientName}
+              {clientDisplay.primaryText}
             </button>{' '}
             · {reservation.equipmentType}
           </>
         }
-        primaryAction={{
-          label: primary.label,
-          icon: !primary.disabled ? <ArrowRight className="w-3 h-3" /> : undefined,
-          // Используем render, чтобы сохранить disabled (EntityModalAction его не прокидывает).
-          render: (
-            <Button
-              size="sm"
-              className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
-              disabled={primary.disabled}
-              onClick={() => void handlePrimaryAction()}
-            >
-              {primary.label}
-              {!primary.disabled && <ArrowRight className="w-3 h-3" />}
-            </Button>
-          ),
-        }}
-        secondaryAction={{
-          label: 'Снять бронь',
-          render: (
-            <AlertDialog open={releaseOpen} onOpenChange={setReleaseOpen}>
-              <AlertDialogTrigger asChild>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 text-[11px]"
-                  disabled={!canRelease || releaseMutation.isPending}
-                  title={!canRelease ? 'Доступно только для активной брони из API' : undefined}
-                >
-                  Снять бронь
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Снять бронь {reservation.id}?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Действие будет зафиксировано в журнале. Укажите причину (необязательно).
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <Textarea
-                  value={releaseReason}
-                  onChange={(e) => setReleaseReason(e.target.value)}
-                  placeholder="Причина снятия…"
-                  className="text-[12px]"
-                />
-                {releaseError ? (
-                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
-                    {releaseError}
-                  </div>
-                ) : null}
-                <AlertDialogFooter>
-                  <AlertDialogCancel disabled={releaseMutation.isPending}>Отмена</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleRelease();
-                    }}
-                    disabled={!canRelease || releaseMutation.isPending}
-                  >
-                    {releaseMutation.isPending ? 'Снимаем…' : 'Снять'}
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          ),
-        }}
         chips={[
           <span
             key="stage"
             className="inline-flex items-center gap-1 h-6 px-2 rounded bg-blue-500 text-white text-[11px]"
           >
             <span>{stageLabel[computedStage]}</span>
-            <ChevronDown className="w-3 h-3 opacity-80" />
           </span>,
           <ToolbarPill key="by" icon={<UserPlus className="w-3 h-3" />} label={reservation.reservedBy} />,
           <ToolbarPill
             key="date"
             icon={<Calendar className="w-3 h-3" />}
-            label={reservation.linked.plannedDate ?? 'Dates'}
+            label={reservation.linked.plannedDate ?? 'Даты'}
           />,
           <ToolbarPill key="src" icon={<SrcIcon className="w-3 h-3" />} label={src.label} />,
           ...(unitSelected
@@ -594,7 +774,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                 <ToolbarPill
                   key="unit"
                   icon={<Wrench className="w-3 h-3" />}
-                  label={`Unit: ${reservation.equipmentUnit}`}
+                  label={`Единица: ${reservation.equipmentUnit}`}
                 />,
               ]
             : []),
@@ -609,13 +789,25 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             : []),
           ...(conflict
             ? [
-                <span key="conflict" className={`${badgeBase} ${badgeTones.warning}`}>
+                <span key="conflict" className={`${headerStatusBadgeClass} ${badgeTones.warning}`}>
                   <AlertCircle className="w-3 h-3" />
                   Конфликт
                 </span>,
               ]
             : []),
         ]}
+        secondaryActions={
+          USE_API
+            ? canMarkChainUnqualified
+              ? [
+                  {
+                    label: 'Закрыть как некачественный',
+                    onClick: handleOpenUnqualify,
+                  },
+                ]
+              : undefined
+            : undefined
+        }
         className="mb-5"
       />
 
@@ -649,6 +841,12 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         </Alert>
       )}
 
+      {actionError ? (
+        <div className="mb-5 rounded border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+          {actionError}
+        </div>
+      ) : null}
+
       <EntitySection title="Основные данные" className="mb-5">
         <div className="grid grid-cols-2 gap-x-8 gap-y-0">
           <PropertyRow icon={<FileText className="w-3 h-3" />} label="ID" value={<InlineValue>{reservation.id}</InlineValue>} />
@@ -660,11 +858,11 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
           <PropertyRow
             icon={<Building2 className="w-3 h-3" />}
             label="Клиент"
-            value={<button type="button" onClick={canOpenClient ? () => onOpenClient(clientLeadContext) : undefined} disabled={!canOpenClient} className="text-[11px] text-blue-600 hover:underline text-left truncate disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">{reservation.linked.clientName}</button>}
+            value={<button type="button" onClick={canOpenClient ? () => onOpenClient(clientLeadContext) : undefined} disabled={!canOpenClient} className={propertyLinkInlineClass}>{clientDisplay.primaryText}</button>}
           />
           <PropertyRow icon={<Truck className="w-3 h-3" />} label="Тип техники" value={<InlineValue>{reservation.equipmentType}</InlineValue>} />
           {(source === 'own' || unitSelected) && (
-            <PropertyRow icon={<Wrench className="w-3 h-3" />} label="Unit" value={unitSelected ? <InlineValue>{reservation.equipmentUnit}</InlineValue> : <EmptyValue text="не выбран" />} />
+            <PropertyRow icon={<Wrench className="w-3 h-3" />} label="Единица" value={unitSelected ? <InlineValue>{reservation.equipmentUnit}</InlineValue> : <EmptyValue text="не выбран" />} />
           )}
           {(source === 'subcontractor' || subSelected) && (
             <PropertyRow icon={<Building2 className="w-3 h-3" />} label="Подрядчик" value={subSelected ? <InlineValue>{reservation.subcontractor}</InlineValue> : <EmptyValue text="не выбран" />} />
@@ -698,12 +896,12 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
           {source === 'subcontractor' && canInlineEditRes && (
             <PropertyRow
               icon={<Wrench className="w-3 h-3" />}
-              label="Обещанный unit"
+              label="Обещанная единица"
               value={
                 <InlineText
                   value={reservationQuery.data?.promisedModelOrUnit ?? ''}
                   onSave={makeResFieldSaver((v) => ({ promisedModelOrUnit: v.trim() || undefined } as any))}
-                  ariaLabel="Модель или unit, обещанный подрядчиком"
+                  ariaLabel="Модель или единица, обещанная подрядчиком"
                   placeholder="например: CAT 320D"
                   emptyDisplay={<EmptyValue />}
                 />
@@ -727,7 +925,8 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
           <button
             type="button"
             onClick={handleOpenApplication}
-            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline">
+            disabled={!hasLinkedApplication}
+            className="inline-flex items-center gap-1 text-[11px] text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed">
             <ExternalLink className="w-3 h-3" /> Открыть заявку
           </button>
         </div>
@@ -815,7 +1014,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             </span>
             {source !== 'undecided' && (
               <button
-                onClick={() => handleSourceChange(source === 'own' ? 'subcontractor' : 'own')}
+                onClick={() => {
+                  void handleSourceChange(source === 'own' ? 'subcontractor' : 'own');
+                }}
+                disabled={updateResMutation.isPending}
                 className="inline-flex items-center gap-1 h-5 px-1.5 rounded border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-[10px] text-gray-500 hover:text-gray-700"
               >
                 {source === 'own' ? <Building2 className="w-3 h-3" /> : <Truck className="w-3 h-3" />}
@@ -834,10 +1036,26 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         <div className="mb-5 border border-dashed border-gray-200 rounded-md px-3 py-3 bg-gray-50/50">
           <div className="text-[11px] text-gray-700 mb-2">Выберите источник техники, чтобы продолжить бронь</div>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" className="h-7 px-2 text-[11px]" onClick={() => handleSourceChange('own')}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-[11px]"
+              onClick={() => {
+                void handleSourceChange('own');
+              }}
+              disabled={updateResMutation.isPending}
+            >
               <Truck className="w-3 h-3 mr-1" /> Своя техника
             </Button>
-            <Button size="sm" variant="outline" className="h-7 px-2 text-[11px]" onClick={() => handleSourceChange('subcontractor')}>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-[11px]"
+              onClick={() => {
+                void handleSourceChange('subcontractor');
+              }}
+              disabled={updateResMutation.isPending}
+            >
               <Building2 className="w-3 h-3 mr-1" /> Подрядчик
             </Button>
           </div>
@@ -846,6 +1064,9 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
 
       {source === 'own' && (
         <div className="mb-5">
+          <div className="text-[10px] text-gray-500 mb-2">
+            Здесь показывается только своя техника из справочника «Единицы техники». Партнерская техника выбирается через источник «Подрядчик».
+          </div>
           {/* When a unit is already selected — collapse the candidate table into a summary.
               Conflict is surfaced inline in the summary card (same visual contract as in the
               expanded table below). */}
@@ -861,7 +1082,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
               )}
               <div className="flex-1 min-w-0 text-[11px] text-gray-800">
-                <span className="text-gray-500">Выбран unit:</span> {reservation.equipmentUnit}
+                <span className="text-gray-500">Выбрана единица:</span> {reservation.equipmentUnit}
                 {conflict && (
                   <span className={`${badgeBase} ${badgeTones.warning} ml-2`}>
                     <AlertCircle className="w-3 h-3" />
@@ -871,18 +1092,26 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               </div>
               <details className="text-[11px]">
                 <summary className="cursor-pointer inline-flex items-center gap-1 h-6 px-2 rounded border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-gray-600 list-none">
-                  <Wrench className="w-3 h-3" /> Сменить unit
+                  <Wrench className="w-3 h-3" /> Сменить единицу
                 </summary>
                 <div className="mt-2">
                   <div className="mb-2">
                     <Input
                       value={unitSearch}
                       onChange={(e) => setUnitSearch(e.target.value)}
-                      placeholder="Поиск unit по названию/номеру"
+                      placeholder="Поиск единицы по названию/номеру"
                       className="h-7 text-[11px]"
                     />
                   </div>
-                  {filteredUnits.length > 0 ? (
+                  {unitsQuery.isPending && !unitsQuery.data ? (
+                    <div className="text-[11px] text-gray-500 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                      Загружаем список юнитов...
+                    </div>
+                  ) : unitsQuery.isError ? (
+                    <div className="text-[11px] text-red-600 border border-red-200 bg-red-50 rounded px-3 py-4 text-center">
+                      {unitsErrorText}
+                    </div>
+                  ) : filteredUnits.length > 0 ? (
                     <div className="border border-gray-200 rounded-md overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -928,7 +1157,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                                       ? 'Свободен'
                                       : u.status === 'busy'
                                       ? 'Занят'
-                                      : 'ТО'}
+                                      : 'Недоступен'}
                                   </span>
                                 </TableCell>
                                 <TableCell className="py-1.5 text-gray-500">
@@ -949,7 +1178,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                                         if (!apiReservationId) return;
                                         updateResMutation.mutate({
                                           id: apiReservationId,
-                                          patch: { equipmentUnitId: u.id },
+                                          patch: {
+                                            equipmentUnitId: u.id,
+                                            internalStage: 'unit_defined',
+                                          } as any,
                                         });
                                       }}
                                     >
@@ -964,7 +1196,26 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                       </Table>
                     </div>
                   ) : (
-                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Кандидаты не найдены</div>
+                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                      {unitDirectoryEmpty ? (
+                        <div className="space-y-2">
+                          <div>Пока нет своей техники в справочнике</div>
+                          <div className="text-gray-500">
+                            Добавьте единицу техники. Тип техники выбирается прямо в карточке единицы.
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-[11px]"
+                            onClick={() => openSecondary('equipment-units')}
+                          >
+                            Открыть справочник техники
+                          </Button>
+                        </div>
+                      ) : (
+                        'Кандидаты не найдены'
+                      )}
+                    </div>
                   )}
                 </div>
               </details>
@@ -976,11 +1227,19 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                 <Input
                   value={unitSearch}
                   onChange={(e) => setUnitSearch(e.target.value)}
-                  placeholder="Поиск unit по названию/номеру"
+                  placeholder="Поиск единицы по названию/номеру"
                   className="h-7 text-[11px]"
                 />
               </div>
-              {filteredUnits.length > 0 ? (
+              {unitsQuery.isPending && !unitsQuery.data ? (
+                <div className="text-[11px] text-gray-500 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                  Загружаем список юнитов...
+                </div>
+              ) : unitsQuery.isError ? (
+                <div className="text-[11px] text-red-600 border border-red-200 bg-red-50 rounded px-3 py-4 text-center">
+                  {unitsErrorText}
+                </div>
+              ) : filteredUnits.length > 0 ? (
                 <div className="border border-gray-200 rounded-md overflow-hidden">
                   <Table>
                     <TableHeader>
@@ -999,7 +1258,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                           <TableCell className="py-1.5 text-gray-500">{u.plate ?? '—'}</TableCell>
                           <TableCell className="py-1.5">
                             <span className={`${badgeBase} ${u.status === 'available' ? badgeTones.success : u.status === 'busy' ? badgeTones.warning : badgeTones.muted}`}>
-                              {u.status === 'available' ? 'Свободен' : u.status === 'busy' ? 'Занят' : 'ТО'}
+                              {u.status === 'available' ? 'Свободен' : u.status === 'busy' ? 'Занят' : 'Недоступен'}
                             </span>
                           </TableCell>
                           <TableCell className="py-1.5 text-gray-500">{u.note ?? '—'}</TableCell>
@@ -1013,7 +1272,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                                 if (!apiReservationId) return;
                                 updateResMutation.mutate({
                                   id: apiReservationId,
-                                  patch: { equipmentUnitId: u.id },
+                                  patch: {
+                                    equipmentUnitId: u.id,
+                                    internalStage: 'unit_defined',
+                                  } as any,
                                 });
                               }}
                             >
@@ -1026,7 +1288,26 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                   </Table>
                 </div>
               ) : (
-                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Кандидаты не найдены</div>
+                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                  {unitDirectoryEmpty ? (
+                    <div className="space-y-2">
+                      <div>Пока нет своей техники в справочнике</div>
+                      <div className="text-gray-500">
+                        Добавьте единицу техники. Тип техники выбирается прямо в карточке единицы.
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 text-[11px]"
+                        onClick={() => openSecondary('equipment-units')}
+                      >
+                        Открыть справочник техники
+                      </Button>
+                    </div>
+                  ) : (
+                    'Кандидаты не найдены'
+                  )}
+                </div>
               )}
             </>
           )}
@@ -1054,7 +1335,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                       className="h-7 text-[11px]"
                     />
                   </div>
-                  {filteredSubcontractors.length > 0 ? (
+                  {subsQuery.isPending && !subsQuery.data ? (
+                    <div className="text-[11px] text-gray-500 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                      Загружаем список подрядчиков...
+                    </div>
+                  ) : subsQuery.isError ? (
+                    <div className="text-[11px] text-red-600 border border-red-200 bg-red-50 rounded px-3 py-4 text-center">
+                      {subsErrorText}
+                    </div>
+                  ) : filteredSubcontractors.length > 0 ? (
                     <div className="border border-gray-200 rounded-md overflow-hidden">
                       <Table>
                         <TableHeader>
@@ -1088,7 +1377,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                                         if (!apiReservationId) return;
                                         updateResMutation.mutate({
                                           id: apiReservationId,
-                                          patch: { subcontractorId: s.id },
+                                          patch: {
+                                            subcontractorId: s.id,
+                                            internalStage: 'subcontractor_selected',
+                                          } as any,
                                         });
                                       }}
                                     >
@@ -1103,7 +1395,23 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                       </Table>
                     </div>
                   ) : (
-                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Подрядчики не найдены</div>
+                    <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                      {subDirectoryEmpty ? (
+                        <div className="space-y-2">
+                          <div>В справочнике пока нет подрядчиков</div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="h-7 px-2 text-[11px]"
+                            onClick={() => openSecondary('subcontractors')}
+                          >
+                            Открыть справочник подрядчиков
+                          </Button>
+                        </div>
+                      ) : (
+                        'Подрядчики не найдены'
+                      )}
+                    </div>
                   )}
                 </div>
               </details>
@@ -1119,7 +1427,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                   className="h-7 text-[11px]"
                 />
               </div>
-              {filteredSubcontractors.length > 0 ? (
+              {subsQuery.isPending && !subsQuery.data ? (
+                <div className="text-[11px] text-gray-500 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                  Загружаем список подрядчиков...
+                </div>
+              ) : subsQuery.isError ? (
+                <div className="text-[11px] text-red-600 border border-red-200 bg-red-50 rounded px-3 py-4 text-center">
+                  {subsErrorText}
+                </div>
+              ) : filteredSubcontractors.length > 0 ? (
                 <div className="border border-gray-200 rounded-md overflow-hidden">
                   <Table>
                     <TableHeader>
@@ -1148,7 +1464,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                                 if (!apiReservationId) return;
                                 updateResMutation.mutate({
                                   id: apiReservationId,
-                                  patch: { subcontractorId: s.id },
+                                  patch: {
+                                    subcontractorId: s.id,
+                                    internalStage: 'subcontractor_selected',
+                                  } as any,
                                 });
                               }}
                             >
@@ -1161,7 +1480,23 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                   </Table>
                 </div>
               ) : (
-                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">Подрядчики не найдены</div>
+                <div className="text-[11px] text-gray-400 border border-dashed border-gray-200 rounded px-3 py-4 text-center">
+                  {subDirectoryEmpty ? (
+                    <div className="space-y-2">
+                      <div>В справочнике пока нет подрядчиков</div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-7 px-2 text-[11px]"
+                        onClick={() => openSecondary('subcontractors')}
+                      >
+                        Открыть справочник подрядчиков
+                      </Button>
+                    </div>
+                  ) : (
+                    'Подрядчики не найдены'
+                  )}
+                </div>
               )}
             </>
           )}
@@ -1228,20 +1563,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
 
       <div className="border-t border-gray-200 pt-4">
         <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-2">Журнал изменений</div>
-        <div className="space-y-2">
-          {activityEntries.length === 0 ? (
-            <div className="text-[11px] text-gray-400">Событий пока нет</div>
-          ) : (
-            activityEntries.map((a) => (
-              <div key={a.id} className="flex items-center gap-2 text-[11px] text-gray-600">
-                <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-                <span className="text-gray-900">{a.actor}</span>
-                <span className="text-gray-500 truncate">{a.text}</span>
-                <span className="text-gray-400 ml-auto flex-shrink-0">{a.time}</span>
-              </div>
-            ))
-          )}
-        </div>
+        <EntityActivityList entries={activityEntries} emptyText="Событий пока нет" />
       </div>
     </div>
   );
@@ -1251,10 +1573,10 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
       <SidebarSection title="Статус">
         <SidebarField
           label="Статус"
-          value={<span className={`${badgeBase} ${reservation.status === 'active' ? badgeTones.success : badgeTones.muted}`}>{reservation.status === 'active' ? 'Активна' : 'Снята'}</span>}
+          value={<span className={`${sidebarStatusBadgeClass} ${reservation.status === 'active' ? badgeTones.success : badgeTones.muted}`}>{reservation.status === 'active' ? 'Активна' : 'Снята'}</span>}
         />
         <SidebarField label="Внутренняя стадия" value={stageLabel[computedStage]} />
-        <SidebarField label="Источник" value={src.label} />
+        <SidebarField label="Источник" value={<span className={`${sidebarStatusBadgeClass} ${src.tone}`}>{src.label}</span>} />
         <SidebarField label="Создано" value={reservation.reservedAt} />
         <SidebarField label="Создал" value={reservation.reservedBy} />
       </SidebarSection>
@@ -1273,11 +1595,11 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             size="sm"
             className="h-7 w-full text-[11px]"
             onClick={() => void handlePrimaryAction()}
-            disabled={!ready || primary.disabled || updateResMutation.isPending || changeLeadStage.isPending}
+            disabled={primary.disabled || updateResMutation.isPending || changeLeadStage.isPending}
           >
             {primary.label}
           </Button>
-          {!ready && primary.reason && (
+          {primary.reason && (
             <div className="text-[10px] text-gray-500 mt-1">{primary.reason}</div>
           )}
         </div>
@@ -1315,60 +1637,109 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        {hasLinkedApplication && (
-          <SidebarField
-            label="Заявка"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={handleOpenApplication}
-              >
-                {reservation.linked.applicationTitle}
-              </button>
-            }
-          />
-        )}
+        <SidebarField
+          label="Лид"
+          value={
+            <button
+              type="button"
+              disabled={!hasLinkedLead}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={() => void handleOpenLead()}
+            >
+              {resolvedLeadId ? `LEAD-${resolvedLeadId.slice(0, 8).toUpperCase()}` : '—'}
+            </button>
+          }
+        />
+        <SidebarField
+          label="Заявка"
+          value={
+            <button
+              type="button"
+              disabled={!hasLinkedApplication}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={handleOpenApplication}
+            >
+              {hasLinkedApplication
+                ? reservation.linked.applicationTitle
+                : '—'}
+            </button>
+          }
+        />
+        <SidebarField
+          label="Бронь"
+          value={
+            <button
+              type="button"
+              className={sidebarTokens.link}
+              onClick={() =>
+                openEntitySecondary('reservations', 'reservation', reservationEntityId)
+              }
+            >
+              {reservationEntityId ? `RSV-${reservationEntityId.slice(0, 8).toUpperCase()}` : reservation.id}
+            </button>
+          }
+        />
+        <SidebarField
+          label="Выезд"
+          value={
+            <button
+              type="button"
+              disabled={!hasLinkedDeparture}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={() => handleOpenDeparture()}
+            >
+              {resolvedDepartureEntityId ? `DEP-${resolvedDepartureEntityId.slice(0, 8).toUpperCase()}` : '—'}
+            </button>
+          }
+        />
+        <SidebarField
+          label="Завершение"
+          value={
+            <button
+              type="button"
+              disabled={!hasLinkedCompletion}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+              onClick={handleOpenCompletion}
+            >
+              {completionEntityId ? `CMP-${completionEntityId.slice(0, 8).toUpperCase()}` : '—'}
+            </button>
+          }
+        />
         <SidebarField label="Позиция" value={reservation.linked.positionTitle} />
-        {canOpenClient && (
-          <SidebarField
-            label="Клиент"
-            value={
-              <button
-                type="button"
-                onClick={() => onOpenClient(clientLeadContext)}
-                className="text-blue-600 hover:underline text-left"
-              >
-                {reservation.linked.clientName}
-              </button>
-            }
-          />
-        )}
-        {reservation.linked.leadTitle && hasLinkedLead && (
-          <SidebarField
-            label="Лид"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => void handleOpenLead()}
-              >
-                {reservation.linked.leadTitle}
-              </button>
-            }
-          />
-        )}
+        <SidebarField
+          label="Клиент"
+          value={
+            <button
+              type="button"
+              disabled={!canOpenClient}
+              onClick={canOpenClient ? () => onOpenClient(clientLeadContext) : undefined}
+              className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
+            >
+              {clientDisplay.primaryText}
+            </button>
+          }
+        />
       </SidebarSection>
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>
         <div className="space-y-1">
+          {canMarkChainUnqualified ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-full justify-start text-[11px]"
+              onClick={handleOpenUnqualify}
+            >
+              <XCircle className="w-3 h-3 mr-1" /> Закрыть как некачественный
+            </Button>
+          ) : null}
           <Button
             size="sm"
             variant="outline"
             className="h-6 w-full justify-start text-[11px]"
             onClick={() => void selectFirstAvailableUnit()}
           >
-            <Wrench className="w-3 h-3 mr-1" /> Назначить unit
+            <Wrench className="w-3 h-3 mr-1" /> Назначить единицу
           </Button>
           <Button
             size="sm"
@@ -1383,24 +1754,75 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             variant="outline"
             className="h-6 w-full justify-start text-[11px] text-gray-500"
             onClick={handleDuplicateReservation}
+            disabled={!hasLinkedApplication}
           >
             <Copy className="w-3 h-3 mr-1" /> Дублировать бронь
           </Button>
-          <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]" onClick={() => setReleaseOpen(true)}>
-            <XCircle className="w-3 h-3 mr-1" /> Снять бронь
-          </Button>
+          {canRelease ? (
+            <AlertDialog open={releaseOpen} onOpenChange={setReleaseOpen}>
+              <AlertDialogTrigger asChild>
+                <Button size="sm" variant="outline" className="h-6 w-full justify-start text-[11px]">
+                  <XCircle className="w-3 h-3 mr-1" /> Снять бронь
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Снять бронь {reservation.id}?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Действие будет зафиксировано в журнале. Укажите причину (необязательно).
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <Textarea
+                  value={releaseReason}
+                  onChange={(e) => setReleaseReason(e.target.value)}
+                  placeholder="Причина снятия…"
+                  className="text-[12px]"
+                />
+                {releaseError ? (
+                  <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+                    {releaseError}
+                  </div>
+                ) : null}
+                <AlertDialogFooter>
+                  <AlertDialogCancel disabled={releaseMutation.isPending}>Отмена</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleRelease();
+                    }}
+                    disabled={!canRelease || releaseMutation.isPending}
+                  >
+                    {releaseMutation.isPending ? 'Снимаем…' : 'Снять'}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : (
+            <div className="px-1 text-[10px] text-gray-500">
+              Снятие доступно после подтверждения брони.
+            </div>
+          )}
         </div>
       </SidebarSection>
     </>
   );
 
   return (
-    <DetailShell
-      breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Reservation']} />}
-      onClose={onClose}
-      main={main}
-      sidebar={sidebar}
-    />
+    <>
+      <DetailShell
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
+        onClose={onClose}
+        shareUrl={shareUrl}
+        main={main}
+        sidebar={sidebar}
+      />
+      <UnqualifyLeadDialog
+        open={isUnqualOpen}
+        onOpenChange={setIsUnqualOpen}
+        leadId={resolvedLeadId ?? null}
+        onDone={onClose}
+      />
+    </>
   );
 }
 

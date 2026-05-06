@@ -69,7 +69,7 @@ function formatActivityTimestamp(value: string) {
 export function ApplicationDetailView({ application, activities, onClose }: ApplicationDetailViewProps) {
   const positions = application.positions;
   const totalPositions = positions.length;
-  const readyPositions = positions.filter(p => p.readyForReservation).length;
+  const queuedForReservation = positions.filter(p => p.status === 'no_reservation').length;
   const reservedPositions = positions.filter(p => p.status === 'reserved').length;
   const conflictPositions = positions.filter(p => p.reservationState === 'conflict' || p.status === 'conflict').length;
   const undecidedPositions = positions.filter(p => p.sourcingType === 'undecided').length;
@@ -148,8 +148,8 @@ export function ApplicationDetailView({ application, activities, onClose }: Appl
         />
         <SummaryPill
           icon={<CheckCircle2 className="w-3 h-3" />}
-          label={`Готово к брони: ${readyPositions} / ${totalPositions}`}
-          tone={readyPositions === totalPositions ? 'success' : 'default'}
+          label={`Ожидают брони: ${queuedForReservation} / ${totalPositions}`}
+          tone={queuedForReservation === 0 ? 'success' : 'default'}
         />
         {reservedPositions > 0 && (
           <SummaryPill
@@ -298,10 +298,10 @@ function PositionRow({ position }: { position: ApplicationPosition }) {
               {position.sourcingType === 'subcontractor' && <Building2 className="w-3 h-3" />}
               {sourcingLabel}
             </span>
-            {position.readyForReservation && (
-              <span className={`${badgeBase} ${badgeTones.success}`}>
-                <CheckCircle2 className="w-3 h-3" />
-                Готово к брони
+            {position.status === 'no_reservation' && (
+              <span className={`${badgeBase} ${badgeTones.progress}`}>
+                <Clock className="w-3 h-3" />
+                Ожидает брони
               </span>
             )}
             {position.status === 'reserved' && (
@@ -347,7 +347,7 @@ function PositionRow({ position }: { position: ApplicationPosition }) {
           </div>
         )}
         {position.unit && (
-          <div><span className="text-gray-400">Unit:</span> {position.unit}</div>
+          <div><span className="text-gray-400">Единица:</span> {position.unit}</div>
         )}
         {position.subcontractor && (
           <div className="col-span-3">

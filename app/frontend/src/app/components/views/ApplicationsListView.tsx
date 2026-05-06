@@ -41,7 +41,7 @@ const GROUP_ORDER: ApplicationGroupId[] = [
 ];
 
 const GROUP_META: Record<ApplicationGroupId, { title: string; color: string }> = {
-  no_reservation: { title: 'Без брони', color: 'bg-[#E74C3C]' },
+  no_reservation: { title: 'Активные заявки', color: 'bg-[#E74C3C]' },
   in_reservation_work: { title: 'В работе по брони', color: 'bg-[#F5A623]' },
   ready_for_departure: { title: 'Готовы к выезду', color: 'bg-[#50C878]' },
   on_departure: { title: 'В выезде', color: 'bg-[#4A90E2]' },
@@ -71,12 +71,14 @@ interface ApplicationsListViewProps {
 }
 
 export function ApplicationsListView({ applications, onRowClick, isFiltered }: ApplicationsListViewProps) {
-  const groups: GroupedListGroup<Application>[] = GROUP_ORDER.map((g) => ({
-    id: g,
-    title: GROUP_META[g].title,
-    colorClass: GROUP_META[g].color,
-    items: applications.filter((a) => computeGroup(a) === g),
-  }));
+  const groups: GroupedListGroup<Application>[] = GROUP_ORDER
+    .map((g) => ({
+      id: g,
+      title: GROUP_META[g].title,
+      colorClass: GROUP_META[g].color,
+      items: applications.filter((a) => computeGroup(a) === g),
+    }))
+    .filter((group) => group.items.length > 0);
 
   if (applications.length === 0) {
     return (

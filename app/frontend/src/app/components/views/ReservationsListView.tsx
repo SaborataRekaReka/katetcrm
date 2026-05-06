@@ -64,6 +64,7 @@ interface ReservationsListViewProps {
   isFiltered?: boolean;
   onReleaseReservation?: (row: ReservationRow) => void;
   onOpenApplication?: (row: ReservationRow) => void;
+  canOpenApplication?: (row: ReservationRow) => boolean;
   onOpenChangeUnit?: (row: ReservationRow) => void;
   onOpenSelectSubcontractor?: (row: ReservationRow) => void;
   onOpenMoveToDeparture?: (row: ReservationRow) => void;
@@ -75,6 +76,7 @@ export function ReservationsListView({
   isFiltered,
   onReleaseReservation,
   onOpenApplication,
+  canOpenApplication,
   onOpenChangeUnit,
   onOpenSelectSubcontractor,
   onOpenMoveToDeparture,
@@ -111,7 +113,7 @@ export function ReservationsListView({
           >
             <div className="px-4">Бронь · клиент</div>
             <div className="px-3">Источник</div>
-            <div className="px-3">Unit / подрядчик</div>
+            <div className="px-3">Единица / подрядчик</div>
             <div className="px-3">Тип техники</div>
             <div className="px-3">Дата / окно</div>
             <div className="px-3">Адрес</div>
@@ -125,7 +127,11 @@ export function ReservationsListView({
             row={row}
             onClick={() => onRowClick(row)}
             onRelease={onReleaseReservation ? () => onReleaseReservation(row) : undefined}
-            onOpenApplication={onOpenApplication ? () => onOpenApplication(row) : undefined}
+            onOpenApplication={
+              onOpenApplication && (canOpenApplication ? canOpenApplication(row) : true)
+                ? () => onOpenApplication(row)
+                : undefined
+            }
             onOpenChangeUnit={onOpenChangeUnit ? () => onOpenChangeUnit(row) : undefined}
             onOpenSelectSubcontractor={
               onOpenSelectSubcontractor ? () => onOpenSelectSubcontractor(row) : undefined
@@ -199,6 +205,10 @@ function ReservationListRow({
       : reservation.source === 'undecided'
         ? '—'
         : 'не выбран';
+  const clientLabel = reservation.linked.clientName || reservation.linked.clientCompany || '—';
+  const showClientCompany =
+    !!reservation.linked.clientCompany
+    && reservation.linked.clientCompany !== clientLabel;
 
   return (
     <div
@@ -221,7 +231,10 @@ function ReservationListRow({
         />
         <div className="min-w-0 flex-1 truncate">
           <span className="text-[13px] font-medium text-foreground">{reservation.id}</span>
-          <span className="ml-1.5 text-[12px] text-muted-foreground">· {reservation.linked.clientName}</span>
+          <span className="ml-1.5 text-[12px] text-muted-foreground">· {clientLabel}</span>
+          {showClientCompany ? (
+            <span className="ml-1 text-[12px] text-muted-foreground/80">({reservation.linked.clientCompany})</span>
+          ) : null}
           <span className="ml-1 text-[11px] text-muted-foreground/70">
             · {reservation.linked.applicationTitle}
           </span>
@@ -281,7 +294,7 @@ function ReservationListRow({
               disabled={reservation.source !== 'own' || !onOpenChangeUnit}
               onSelect={onOpenChangeUnit}
             >
-              <Wrench className="mr-1 h-3.5 w-3.5" /> Сменить unit
+              <Wrench className="mr-1 h-3.5 w-3.5" /> Сменить единицу
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={reservation.source !== 'subcontractor' || !onOpenSelectSubcontractor}

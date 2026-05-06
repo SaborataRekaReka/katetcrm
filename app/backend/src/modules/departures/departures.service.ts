@@ -235,6 +235,9 @@ export class DeparturesService {
     ) {
       throw new NotFoundException('Reservation not found');
     }
+    if (!reservation.equipmentUnitId) {
+      throw new BadRequestException('Cannot create departure without selected equipment unit');
+    }
 
     const activeDeparture = await this.prisma.departure.findFirst({
       where: {
@@ -271,26 +274,31 @@ export class DeparturesService {
 
   async update(id: string, dto: UpdateDepartureDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+
+    const terminalStatusRequested =
+      dto.status === 'completed' || dto.status === 'cancelled';
+    const terminalFieldsRequested =
+      dto.completedAt !== undefined ||
+      dto.cancelledAt !== undefined ||
+      dto.cancellationReason !== undefined;
+    if (terminalStatusRequested || terminalFieldsRequested) {
+      throw new BadRequestException(
+        'Terminal transition must use /departures/:id/complete or /departures/:id/cancel',
+      );
+    }
+
     const nextStatus = dto.status ?? existing.status;
     this.assertAllowedTransition(existing.status, nextStatus);
 
     const now = new Date();
     let startedAt = this.parseOptionalDate(dto.startedAt, 'startedAt');
     let arrivedAt = this.parseOptionalDate(dto.arrivedAt, 'arrivedAt');
-    let completedAt = this.parseOptionalDate(dto.completedAt, 'completedAt');
-    let cancelledAt = this.parseOptionalDate(dto.cancelledAt, 'cancelledAt');
 
-    if (nextStatus === 'in_transit' && startedAt === undefined && !existing.startedAt) {
+    if (dto.status === 'in_transit' && startedAt === undefined && !existing.startedAt) {
       startedAt = now;
     }
-    if (nextStatus === 'arrived' && arrivedAt === undefined && !existing.arrivedAt) {
+    if (dto.status === 'arrived' && arrivedAt === undefined && !existing.arrivedAt) {
       arrivedAt = now;
-    }
-    if (nextStatus === 'completed' && completedAt === undefined && !existing.completedAt) {
-      completedAt = now;
-    }
-    if (nextStatus === 'cancelled' && cancelledAt === undefined && !existing.cancelledAt) {
-      cancelledAt = now;
     }
 
     const updated = await this.prisma.departure.update({
@@ -303,8 +311,6 @@ export class DeparturesService {
             : undefined,
         startedAt,
         arrivedAt,
-        completedAt,
-        cancelledAt,
         cancellationReason:
           dto.cancellationReason === undefined
             ? undefined
@@ -358,14 +364,24 @@ export class DeparturesService {
     if (existing.status === 'completed' || existing.status === 'cancelled') {
       throw new BadRequestException('Departure is already terminal');
     }
-    return this.update(
-      id,
-      {
+
+    const updated = await this.prisma.departure.update({
+      where: { id },
+      data: {
         status: 'cancelled',
-        cancelledAt: new Date().toISOString(),
+        cancelledAt: new Date(),
         cancellationReason: dto.reason ?? 'manual_cancel',
       },
-      actor,
-    );
+    });
+
+    await this.activity.log({
+      action: 'stage_changed',
+      entityType: 'departure',
+      entityId: id,
+      summary: `Departure status: ${existing.status} -> cancelled`,
+      actorId: actor.id,
+    });
+
+    return updated;
   }
 }

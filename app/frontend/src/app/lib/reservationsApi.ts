@@ -1,5 +1,6 @@
 import { apiRequest } from './apiClient';
 import type { SourcingType } from './applicationsApi';
+import type { StageLinkedIds } from './linkedIds';
 
 export type ReservationInternalStage =
   | 'needs_source_selection'
@@ -40,6 +41,7 @@ export interface ReservationApi {
   id: string;
   applicationItemId: string;
   applicationId: string;
+  leadId: string | null;
   applicationNumber: string | null;
   clientId: string | null;
   clientName: string | null;
@@ -65,6 +67,7 @@ export interface ReservationApi {
   plannedEnd: string;
   hasConflict: boolean;
   conflict: ReservationConflictApi | null;
+  linkedIds: StageLinkedIds;
   readyForDeparture: boolean;
   subcontractorConfirmation: SubcontractorConfirmationStatus;
   promisedModelOrUnit: string | null;
@@ -84,6 +87,7 @@ export interface ReservationListParams {
   equipmentUnitId?: string;
   subcontractorId?: string;
   isActive?: string;
+  query?: string;
 }
 
 export function listReservations(params: ReservationListParams = {}) {

@@ -51,8 +51,10 @@ import {
 import { useChangeLeadStage, useUpdateLead } from '../../hooks/useLeadMutations';
 import { useUpdateApplication, useDeleteApplicationItem } from '../../hooks/useApplicationMutations';
 import { useCreateReservation } from '../../hooks/useReservationMutations';
+import { useCreateClient } from '../../hooks/useClientMutations';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { useApplicationQuery, useApplicationsQuery } from '../../hooks/useApplicationsQuery';
+import { useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { mapActivityEntries } from '../../lib/activityMapper';
@@ -80,6 +82,8 @@ import type { SourceChannel } from '../../lib/leadsApi';
 import { updateLead as updateLeadApi } from '../../lib/leadsApi';
 import { updateApplication } from '../../lib/applicationsApi';
 import { useLayout } from '../shell/layoutStore';
+import { buildAbsoluteEntityUrl } from '../shell/routeSync';
+import { RelatedRecordsFields, type RelatedRecordItem } from './RelatedRecordsFields';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
 
@@ -99,6 +103,15 @@ const BOOL_OPTIONS: { value: string; label: string }[] = [
 
 const UNASSIGNED_MANAGER_OPTION = '__unassigned_manager__';
 
+const propertyLinkInlineClass =
+  'inline-flex min-h-[20px] max-w-full items-center rounded px-1 text-[11px] text-blue-600 text-left truncate hover:bg-gray-100 hover:underline transition-colors disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed';
+
+const headerStatusBadgeClass =
+  'inline-flex items-center gap-1 h-6 px-1.5 rounded border text-[11px]';
+
+const sidebarStatusBadgeClass =
+  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+
 interface LeadDetailModalProps {
   lead?: Lead;
   application?: Application;
@@ -106,6 +119,10 @@ interface LeadDetailModalProps {
   onOpenClient?: () => void;
   onOpenLead?: (leadId: string) => void;
   onEditApplication?: () => void;
+  onWorkflowNavigate?: (
+    target: 'application' | 'reservation',
+    payload?: { leadId?: string; reservationId?: string },
+  ) => void;
 }
 
 const positionStatusMeta: Record<
@@ -113,7 +130,7 @@ const positionStatusMeta: Record<
   { label: string; tone: string; Icon: React.ComponentType<{ className?: string }> }
 > = {
   no_reservation: { label: 'Нет брони', tone: badgeTones.muted, Icon: AlertCircle },
-  unit_selected: { label: 'Unit выбран', tone: badgeTones.progress, Icon: Wrench },
+  unit_selected: { label: 'Единица выбрана', tone: badgeTones.progress, Icon: Wrench },
   reserved: { label: 'Забронировано', tone: badgeTones.success, Icon: CheckCircle2 },
   conflict: { label: 'Конфликт', tone: badgeTones.warning, Icon: AlertCircle },
 };
@@ -155,9 +172,11 @@ function getPrimaryCTA(
   hasLinkedApplication = false,
 ): { label: string; secondary?: string } {
   if (isLead) {
+    const canMarkUnqualified =
+      stage !== 'completed' && stage !== 'unqualified' && stage !== 'cancelled';
     return {
       label: hasLinkedApplication ? 'Открыть заявку' : 'Перевести в заявку',
-      secondary: 'Пометить некачественным',
+      secondary: canMarkUnqualified ? 'Пометить некачественным' : undefined,
     };
   }
 
@@ -177,16 +196,16 @@ function getPrimaryCTA(
 
 function deriveAppReadiness(app: Application) {
   const total = app.positions.length;
-  const ready = app.positions.filter((p) => p.readyForReservation).length;
+  const inReservation = app.positions.filter((p) => p.status && p.status !== 'no_reservation').length;
 
   if (total === 0) return { label: 'Нет данных', tone: badgeTones.warning, Icon: AlertCircle };
-  if (ready === total) return { label: 'Готово к брони', tone: badgeTones.success, Icon: CheckCircle2 };
-  if (ready > 0) return { label: `${ready}/${total} готовы`, tone: badgeTones.progress, Icon: Package };
+  if (inReservation === total) return { label: 'Передано в бронирование', tone: badgeTones.success, Icon: CheckCircle2 };
+  if (inReservation > 0) return { label: `${inReservation}/${total} в бронировании`, tone: badgeTones.progress, Icon: Package };
 
   const hasNoData = app.positions.some((p) => p.sourcingType === 'undecided');
-  if (hasNoData) return { label: 'Нет данных', tone: badgeTones.warning, Icon: AlertCircle };
+  if (hasNoData) return { label: 'Потребности сформированы', tone: badgeTones.progress, Icon: AlertCircle };
 
-  return { label: 'Ждёт sourcing', tone: badgeTones.caution, Icon: Clock };
+  return { label: 'Готово к передаче в бронь', tone: badgeTones.progress, Icon: Clock };
 }
 
 function normalizeDatePart(value?: string | null): string | null {
@@ -251,21 +270,20 @@ function PositionCard({
 }) {
   const src = sourcingMeta[pos.sourcingType];
   const SrcIcon = src.Icon;
-  const status = pos.status || (pos.readyForReservation ? 'unit_selected' : 'no_reservation');
+  const status = pos.status ?? 'no_reservation';
   const st = positionStatusMeta[status];
   const StIcon = st.Icon;
 
   let nextStep: string | null;
   if (status === 'reserved') nextStep = null;
   else if (status === 'conflict') nextStep = 'Разрешить конфликт';
+  else if (status === 'no_reservation') nextStep = 'Создать бронь';
   else if (pos.sourcingType === 'undecided') nextStep = 'Выбрать sourcing';
-  else if (pos.sourcingType === 'own' && !pos.unit) nextStep = 'Назначить unit';
-  else if (pos.sourcingType === 'subcontractor' && !pos.subcontractor) nextStep = 'Выбрать подрядчика';
-  else if (status === 'unit_selected') nextStep = null;
-  else nextStep = 'Заполнить данные';
+  else nextStep = 'Продолжить обработку';
 
-  const reservationExists = status === 'reserved';
-  const readyForBooking = status === 'unit_selected';
+  const reservationExists =
+    status === 'reserved' || status === 'conflict' || status === 'unit_selected';
+  const readyForBooking = status === 'no_reservation';
 
   return (
     <div className="border border-gray-200 rounded-md bg-white p-2.5 space-y-2">
@@ -349,8 +367,16 @@ function PositionCard({
   );
 }
 
-export function LeadDetailModal({ lead: initialLead, application: initialApplication, onClose, onOpenClient, onOpenLead, onEditApplication }: LeadDetailModalProps) {
-  const { setActiveSecondaryNav } = useLayout();
+export function LeadDetailModal({
+  lead: initialLead,
+  application: initialApplication,
+  onClose,
+  onOpenClient,
+  onOpenLead,
+  onEditApplication,
+  onWorkflowNavigate,
+}: LeadDetailModalProps) {
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUnqualOpen, setIsUnqualOpen] = useState(false);
@@ -364,6 +390,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   const changeStage = useChangeLeadStage();
   const updateLead = useUpdateLead();
   const createReservation = useCreateReservation();
+  const createClientMutation = useCreateClient();
   const updateAppMutation = useUpdateApplication();
   const deleteItemMutation = useDeleteApplicationItem();
 
@@ -393,8 +420,15 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     { leadId: lead?.id, scope: 'mine' },
     USE_API && isLead && !!lead?.id,
   );
-  const hasLinkedApplication =
-    isLead && ((leadApplicationsQuery.data?.items.length ?? 0) > 0);
+  const linkedLeadQuery = useLeadQuery(
+    application?.leadId,
+    USE_API && !isLead && !!application?.leadId,
+  );
+  const activeReservationsQuery = useReservationsQuery(
+    { applicationId: application?.id, isActive: 'true' },
+    USE_API && !isLead && !!application?.id,
+  );
+  const existingReservationId = activeReservationsQuery.data?.items?.[0]?.id ?? null;
 
   const managerOptions = useMemo(() => {
     const options = (managersQuery.data ?? []).map((manager) => ({
@@ -449,16 +483,239 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     };
   };
   const entityType = isLead ? 'Лид' : 'Заявка';
-  const listName = isLead ? 'Leads' : 'Applications';
+  const listName = isLead ? 'Лиды' : 'Заявки';
   const title = isLead ? lead.client : application!.number;
-  const cta = getPrimaryCTA(application?.stage || lead?.stage, isLead, hasLinkedApplication);
   const appReadiness = !isLead ? deriveAppReadiness(application!) : null;
-  const stageForSwitcher = isLead ? lead!.stage : application!.stage;
+  const activeSwitcherEntityType = activeEntityType ?? (isLead ? 'lead' : 'application');
+
+  const linkedIds = isLead ? leadDetailQuery.data?.linkedIds : applicationDetailQuery.data?.linkedIds;
+  const firstLinkedApplicationId = leadApplicationsQuery.data?.items[0]?.id ?? null;
+  const leadEntityId = isLead
+    ? (lead?.id ?? linkedIds?.leadId ?? null)
+    : (application?.leadId ?? linkedIds?.leadId ?? null);
+  const applicationEntityId = isLead
+    ? (linkedIds?.applicationId ?? firstLinkedApplicationId)
+    : (application?.id ?? linkedIds?.applicationId ?? null);
+  const reservationEntityId = linkedIds?.reservationId ?? existingReservationId;
+  const hasLinkedReservation = !!reservationEntityId;
+  const departureEntityId = linkedIds?.departureId ?? null;
+  const completionEntityId = linkedIds?.completionId ?? null;
+  const hasLinkedApplication = !!applicationEntityId;
+  const hasDownstreamForLead =
+    !!applicationEntityId || hasLinkedReservation || !!departureEntityId || !!completionEntityId;
+  const hasDownstreamForApplication =
+    hasLinkedReservation || !!departureEntityId || !!completionEntityId;
+  const isCurrentStageTail = isLead ? !hasDownstreamForLead : !hasDownstreamForApplication;
+  const targetLeadIdForUnqualify = leadEntityId;
+  const linkedLeadStage = isLead ? lead?.stage : linkedLeadQuery.data?.stage;
+  const canMarkChainUnqualified =
+    USE_API
+    && !!targetLeadIdForUnqualify
+    && linkedLeadStage !== 'completed'
+    && linkedLeadStage !== 'unqualified'
+    && linkedLeadStage !== 'cancelled'
+    && isCurrentStageTail;
+  const canMarkUnqualified = isLead && canMarkChainUnqualified;
+  const cta = getPrimaryCTA(application?.stage || lead?.stage, isLead, hasLinkedApplication);
+  const clientEntityId = isLead
+    ? (lead?.apiClientId ?? linkedIds?.clientId ?? null)
+    : (application?.clientId ?? linkedIds?.clientId ?? null);
+  const canOpenClientDetails = !!clientEntityId;
+  const clientRecordLabel = canOpenClientDetails ? 'Клиент' : 'Контакт';
+  const shareEntityType = isLead ? 'lead' : 'application';
+  const shareEntityId = isLead ? lead?.id : application?.id;
+  const shareUrl = shareEntityId
+    ? buildAbsoluteEntityUrl(shareEntityType, shareEntityId)
+    : null;
+
+  const openSecondary = (secondaryId: string) => {
+    setActiveSecondaryNav(secondaryId);
+    onClose();
+  };
+
+  const openEntitySecondary = (
+    secondaryId: string,
+    targetEntityType: 'lead' | 'application' | 'reservation' | 'departure' | 'completion' | 'client',
+    targetEntityId?: string | null,
+  ) => {
+    if (!targetEntityId) return false;
+    openSecondaryWithEntity(secondaryId, targetEntityType, targetEntityId);
+    return true;
+  };
+
+  const formatEntityLink = (prefix: string, entityId?: string | null): string | null => {
+    if (!entityId) return null;
+    return `${prefix}-${entityId.slice(0, 8).toUpperCase()}`;
+  };
+  const normalizeDisplayText = (value?: string | null): string | null => {
+    const text = value?.trim();
+    if (!text || text === '—') return null;
+    return text;
+  };
+
+  const openClientDetails = () => {
+    if (!clientEntityId) return;
+    if (onOpenClient) {
+      onOpenClient();
+      return;
+    }
+    openEntitySecondary('clients', 'client', clientEntityId);
+  };
+
+  const handleCreateClientFromLead = async () => {
+    if (!lead || !USE_API || canOpenClientDetails) return;
+
+    const contactName = lead.client?.trim() ?? '';
+    const contactCompany = lead.company?.trim() ?? '';
+    const phone = lead.phone?.trim() ?? '';
+
+    if (!contactName && !contactCompany) {
+      setStageError('Нельзя создать клиента: заполните имя контакта или компанию в лиде.');
+      return;
+    }
+    if (!phone || phone === '—') {
+      setStageError('Нельзя создать клиента: в лиде не указан телефон.');
+      return;
+    }
+
+    setStageError(null);
+    try {
+      const created = await createClientMutation.mutateAsync({
+        name: contactName || contactCompany,
+        company: contactCompany || undefined,
+        phone,
+        notes: lead.address ? `Адрес из лида: ${lead.address}` : undefined,
+      });
+
+      await updateLead.mutateAsync({
+        id: lead.id,
+        patch: { clientId: created.id },
+      });
+
+      openEntitySecondary('clients', 'client', created.id);
+    } catch (err) {
+      setStageError(
+        err instanceof Error
+          ? err.message
+          : 'Не удалось создать клиента из лида',
+      );
+    }
+  };
+  const leadClientDisplay = resolveClientDisplay({
+    company: lead?.company,
+    personName: lead?.client,
+  });
+  const applicationClientDisplay = resolveClientDisplay({
+    company: application?.clientCompany,
+    personName: application?.clientName,
+  });
+  const leadClientPrimaryText = normalizeDisplayText(leadClientDisplay.primaryText);
+  const leadClientSecondaryText = normalizeDisplayText(leadClientDisplay.secondaryText);
+  const applicationClientPrimaryText = normalizeDisplayText(applicationClientDisplay.primaryText);
+  const applicationClientSecondaryText = normalizeDisplayText(applicationClientDisplay.secondaryText);
+
+  const leadRelatedRecordItems: RelatedRecordItem[] = isLead ? [
+    {
+      label: 'Лид',
+      text: formatEntityLink('LEAD', leadEntityId),
+      onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
+    },
+    {
+      label: 'Заявка',
+      text: formatEntityLink('APP', applicationEntityId),
+      onClick: applicationEntityId
+        ? () => openEntitySecondary('applications', 'application', applicationEntityId)
+        : null,
+    },
+    {
+      label: 'Бронь',
+      text: formatEntityLink('RSV', reservationEntityId),
+      onClick: reservationEntityId
+        ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
+        : null,
+    },
+    {
+      label: 'Выезд',
+      text: formatEntityLink('DEP', departureEntityId),
+      onClick: departureEntityId
+        ? () => openEntitySecondary('departures', 'departure', departureEntityId)
+        : null,
+    },
+    {
+      label: 'Завершение',
+      text: formatEntityLink('CMP', completionEntityId),
+      onClick: completionEntityId
+        ? () => openEntitySecondary('completion', 'completion', completionEntityId)
+        : null,
+    },
+    {
+      label: clientRecordLabel,
+      text: leadClientPrimaryText,
+      onClick: leadClientPrimaryText && canOpenClientDetails ? openClientDetails : null,
+    },
+    ...(leadClientSecondaryText
+      ? [
+          {
+            label: 'Контактное лицо',
+            text: leadClientSecondaryText,
+          },
+        ]
+      : []),
+  ] : [];
+
+  const applicationRelatedRecordItems: RelatedRecordItem[] = !isLead ? [
+    {
+      label: 'Лид',
+      text: formatEntityLink('LEAD', leadEntityId),
+      onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
+    },
+    {
+      label: 'Заявка',
+      text: application?.number ?? null,
+      onClick: applicationEntityId
+        ? () => openEntitySecondary('applications', 'application', applicationEntityId)
+        : null,
+    },
+    {
+      label: 'Бронь',
+      text: formatEntityLink('RSV', reservationEntityId),
+      onClick: reservationEntityId
+        ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
+        : null,
+    },
+    {
+      label: 'Выезд',
+      text: formatEntityLink('DEP', departureEntityId),
+      onClick: departureEntityId
+        ? () => openEntitySecondary('departures', 'departure', departureEntityId)
+        : null,
+    },
+    {
+      label: 'Завершение',
+      text: formatEntityLink('CMP', completionEntityId),
+      onClick: completionEntityId
+        ? () => openEntitySecondary('completion', 'completion', completionEntityId)
+        : null,
+    },
+    {
+      label: clientRecordLabel,
+      text: applicationClientPrimaryText,
+      onClick: applicationClientPrimaryText && canOpenClientDetails ? openClientDetails : null,
+    },
+    ...(applicationClientSecondaryText
+      ? [
+          {
+            label: 'Контактное лицо',
+            text: applicationClientSecondaryText,
+          },
+        ]
+      : []),
+  ] : [];
 
   const breadcrumbItems = [
     { label: 'CRM', onClick: () => openSecondary('overview') },
     {
-      label: 'Sales',
+      label: 'Продажи',
       onClick: () => openSecondary(isLead ? 'leads' : 'applications'),
     },
     { label: listName },
@@ -468,40 +725,37 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     {
       id: 'lead',
       label: 'Лид',
-      active:
-        stageForSwitcher === 'lead'
-        || stageForSwitcher === 'unqualified'
-        || stageForSwitcher === 'cancelled',
-      onSelect: () => {
-        if (!isLead && openLinkedLead(true)) {
-          return;
-        }
-        openSecondary('leads');
-      },
+      active: activeSwitcherEntityType === 'lead',
+      onSelect: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : undefined,
+      disabled: !leadEntityId,
     },
     {
       id: 'application',
       label: 'Заявка',
-      active: stageForSwitcher === 'application',
-      onSelect: () => openSecondary('applications'),
+      active: activeSwitcherEntityType === 'application',
+      onSelect: applicationEntityId ? () => openEntitySecondary('applications', 'application', applicationEntityId) : undefined,
+      disabled: !applicationEntityId,
     },
     {
       id: 'reservation',
       label: 'Бронь',
-      active: stageForSwitcher === 'reservation',
-      onSelect: () => openSecondary('reservations'),
+      active: activeSwitcherEntityType === 'reservation',
+      onSelect: reservationEntityId ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId) : undefined,
+      disabled: !reservationEntityId,
     },
     {
       id: 'departure',
       label: 'Выезд',
-      active: stageForSwitcher === 'departure',
-      onSelect: () => openSecondary('departures'),
+      active: activeSwitcherEntityType === 'departure',
+      onSelect: departureEntityId ? () => openEntitySecondary('departures', 'departure', departureEntityId) : undefined,
+      disabled: !departureEntityId,
     },
     {
       id: 'completed',
       label: 'Завершение',
-      active: stageForSwitcher === 'completed',
-      onSelect: () => openSecondary('completion'),
+      active: activeSwitcherEntityType === 'completion',
+      onSelect: completionEntityId ? () => openEntitySecondary('completion', 'completion', completionEntityId) : undefined,
+      disabled: !completionEntityId,
     },
   ];
 
@@ -519,6 +773,10 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     setStageError(null);
     try {
       await changeStage.mutateAsync({ id: lead.id, stage: 'application' });
+      if (onWorkflowNavigate) {
+        onWorkflowNavigate('application', { leadId: lead.id });
+        return;
+      }
       onClose();
     } catch (err) {
       setStageError(err instanceof Error ? err.message : 'Не удалось перевести в заявку');
@@ -526,23 +784,40 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   };
 
   const handleOpenUnqualify = () => {
-    if (!lead) return;
+    if (!canMarkChainUnqualified || !targetLeadIdForUnqualify) {
+      setStageError('Нельзя закрыть как некачественный: действие доступно только на последней актуальной стадии цепочки.');
+      return;
+    }
     setStageError(null);
     setIsUnqualOpen(true);
   };
 
-  const openSecondary = (secondaryId: string) => {
-    setActiveSecondaryNav(secondaryId);
-    onClose();
+  const navigateToReservation = (reservationId?: string | null) => {
+    const opened = openEntitySecondary('reservations', 'reservation', reservationId);
+    if (!opened && onWorkflowNavigate) {
+      onWorkflowNavigate('reservation', {
+        leadId: application?.leadId,
+        reservationId: reservationId ?? undefined,
+      });
+    }
   };
 
   const openLinkedLead = (closeCurrent = false): boolean => {
-    if (!application?.leadId || !onOpenLead) return false;
-    onOpenLead(application.leadId);
-    if (closeCurrent) {
+    if (!application?.leadId) return false;
+
+    if (onOpenLead) {
+      onOpenLead(application.leadId);
+      if (closeCurrent) {
+        onClose();
+      }
+      return true;
+    }
+
+    const opened = openEntitySecondary('leads', 'lead', application.leadId);
+    if (opened && closeCurrent) {
       onClose();
     }
-    return true;
+    return opened;
   };
 
   const handleMarkDuplicate = async () => {
@@ -556,19 +831,19 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
   };
 
   const canPrepareReservation =
-    !!application &&
-    USE_API &&
-    application.stage !== 'departure' &&
-    application.stage !== 'completed' &&
-    application.stage !== 'cancelled';
+    !!application
+    && USE_API
+    && application.stage !== 'departure'
+    && application.stage !== 'completed'
+    && application.stage !== 'cancelled';
 
   const canMoveLeadToReservation =
-    !!application?.leadId &&
-    USE_API &&
-    application.stage !== 'reservation' &&
-    application.stage !== 'departure' &&
-    application.stage !== 'completed' &&
-    application.stage !== 'cancelled';
+    !!application?.leadId
+    && USE_API
+    && application.stage !== 'reservation'
+    && application.stage !== 'departure'
+    && application.stage !== 'completed'
+    && application.stage !== 'cancelled';
 
   const handlePrepareReservation = async () => {
     if (!application || !canPrepareReservation) return;
@@ -576,7 +851,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     setStageError(null);
 
     const toCreate = application.positions.filter(
-      (p) => p.readyForReservation && (!p.status || p.status === 'no_reservation'),
+      (p) => !p.status || p.status === 'no_reservation',
     );
     const hasAnyReservation = application.positions.some(
       (p) => p.status === 'unit_selected' || p.status === 'reserved' || p.status === 'conflict',
@@ -630,10 +905,11 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
 
   if (isLead) {
     toolbarChips.push(
-      <ToolbarPill
+      <SourceBadge
         key="source"
-        icon={<SourceBadge source={lead!.source} channel={lead!.sourceChannel} size="sm" />}
-        label={<span className="sr-only">Источник</span>}
+        source={lead!.source}
+        channel={lead!.sourceChannel}
+        size="md"
       />,
     );
 
@@ -643,10 +919,10 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       );
     }
 
-    if (lead!.isNew) toolbarChips.push(<span key="new" className={`${badgeBase} ${badgeTones.success}`}>Новый</span>);
-    if (lead!.isDuplicate) toolbarChips.push(<span key="dup" className={`${badgeBase} ${badgeTones.caution}`}>Дубль</span>);
-    if (lead!.isStale) toolbarChips.push(<span key="stale" className={`${badgeBase} ${badgeTones.muted}`}>Завис</span>);
-    if (lead!.hasNoContact) toolbarChips.push(<span key="no-contact" className={`${badgeBase} ${badgeTones.caution}`}>Без контакта</span>);
+    if (lead!.isNew) toolbarChips.push(<span key="new" className={`${headerStatusBadgeClass} ${badgeTones.success}`}>Новый</span>);
+    if (lead!.isDuplicate) toolbarChips.push(<span key="dup" className={`${headerStatusBadgeClass} ${badgeTones.caution}`}>Дубль</span>);
+    if (lead!.isStale) toolbarChips.push(<span key="stale" className={`${headerStatusBadgeClass} ${badgeTones.muted}`}>Завис</span>);
+    if (lead!.hasNoContact) toolbarChips.push(<span key="no-contact" className={`${headerStatusBadgeClass} ${badgeTones.caution}`}>Без контакта</span>);
   } else {
     toolbarChips.push(<ToolbarPill key="positions" icon={<FileText className="w-3 h-3" />} label={`Позиций: ${application!.positions.length}`} />);
     if (appReadiness) {
@@ -658,8 +934,14 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
 
   const linkedActions = isLead ? (
     <>
-      {lead!.isDuplicate ? (
-        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={onOpenClient} />
+      {canOpenClientDetails ? (
+        <ActionButton icon={<Building2 className="w-3.5 h-3.5" />} label="Открыть клиента" onClick={openClientDetails} />
+      ) : USE_API ? (
+        <ActionButton
+          icon={<LinkIcon className="w-3.5 h-3.5" />}
+          label="Создать клиента"
+          onClick={() => void handleCreateClientFromLead()}
+        />
       ) : (
         <ActionButton icon={<LinkIcon className="w-3.5 h-3.5" />} label="Связать с клиентом" onClick={onOpenClient} />
       )}
@@ -676,19 +958,15 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       <ActionButton
         icon={<Building2 className="w-3.5 h-3.5" />}
         label="Открыть клиента"
-        onClick={onOpenClient}
+        onClick={canOpenClientDetails ? openClientDetails : onOpenClient}
       />
       {application!.leadId ? (
         <ActionButton
           icon={<UserIcon className="w-3.5 h-3.5" />}
           label="Открыть лид"
-          onClick={
-            onOpenLead
-              ? () => {
-                  void openLinkedLead();
-                }
-              : undefined
-          }
+          onClick={() => {
+            void openLinkedLead();
+          }}
         />
       ) : null}
       {USE_API ? (
@@ -732,7 +1010,17 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                 label: cta.label,
                 icon: <ArrowRight className="w-3 h-3" />,
                 onClick: hasLinkedApplication
-                  ? () => openSecondary('applications')
+                  ? () => {
+                      const opened = openEntitySecondary(
+                        'applications',
+                        'application',
+                        applicationEntityId,
+                      );
+                      if (!opened && onWorkflowNavigate && lead) {
+                        onWorkflowNavigate('application', { leadId: lead.id });
+                        return;
+                      }
+                    }
                   : canPromoteToApplication
                     ? handlePromoteToApplication
                     : undefined,
@@ -740,7 +1028,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             : undefined
         }
         secondaryAction={
-          isLead && cta.secondary
+          isLead && canMarkUnqualified && cta.secondary
             ? {
                 label: cta.secondary,
                 onClick: USE_API ? handleOpenUnqualify : undefined,
@@ -748,19 +1036,34 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             : undefined
         }
         secondaryActions={
-          !isLead && USE_API && application!.stage !== 'cancelled'
+          !isLead && USE_API
             ? [
-                {
-                  label: 'Отменить заявку',
-                  onClick: () => setIsCancelAppOpen(true),
-                },
+                ...(canMarkChainUnqualified
+                  ? [
+                      {
+                        label: 'Закрыть как некачественный',
+                        onClick: handleOpenUnqualify,
+                      },
+                    ]
+                  : []),
+                ...(application!.stage !== 'cancelled'
+                  ? [
+                      {
+                        label: 'Отменить заявку',
+                        onClick: () => setIsCancelAppOpen(true),
+                      },
+                    ]
+                  : []),
               ]
             : undefined
         }
       />
 
-      {isLead && stageError ? (
-        <div className="-mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700">
+      {stageError ? (
+        <div
+          role="alert"
+          className="-mt-2 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-[12px] text-red-700"
+        >
           {stageError}
         </div>
       ) : null}
@@ -771,9 +1074,9 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
         </div>
       ) : null}
 
-      {isLead && lead!.isDuplicate && (
+      {isLead && lead!.isDuplicate && canOpenClientDetails && (
         <div className="-mt-2 text-[11px] text-blue-600">
-          <button type="button" onClick={onOpenClient} className="hover:underline">
+          <button type="button" onClick={openClientDetails} className="hover:underline">
             Открыть клиента
           </button>
         </div>
@@ -795,8 +1098,9 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                       lead!.company ? (
                         <button
                           type="button"
-                          onClick={onOpenClient}
-                          className="text-[11px] text-blue-600 hover:underline text-left truncate"
+                          onClick={canOpenClientDetails ? openClientDetails : undefined}
+                          className={propertyLinkInlineClass}
+                          disabled={!canOpenClientDetails}
                         >
                           {clientDisplay.primaryText}
                         </button>
@@ -958,8 +1262,9 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                     value={
                       <button
                         type="button"
-                        onClick={onOpenClient}
-                        className="text-[11px] text-blue-600 hover:underline text-left truncate"
+                        onClick={canOpenClientDetails ? openClientDetails : undefined}
+                        className={propertyLinkInlineClass}
+                        disabled={!canOpenClientDetails}
                       >
                         {clientDisplay.primaryText}
                       </button>
@@ -990,13 +1295,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                     label={application!.clientCompany ? 'Контактное лицо' : 'Компания'}
                     value={
                       application!.clientCompany ? (
-                        <InlineText
-                          value={clientDisplay.secondaryText ?? ''}
-                          onSave={makeAppFieldSaver((v) => ({ clientName: v.trim() }))}
-                          ariaLabel="Контактное лицо"
-                          disabled={!canInlineEditApp}
-                          emptyDisplay={<EmptyValue />}
-                        />
+                        <InlineValue>{clientDisplay.secondaryText ?? '—'}</InlineValue>
                       ) : (
                         <EmptyValue text="физ. лицо" />
                       )
@@ -1007,16 +1306,12 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                     icon={<Phone className="w-3 h-3" />}
                     label="Телефон"
                     value={
-                      <InlineText
-                        value={application!.clientPhone ?? ''}
-                        onSave={makeAppFieldSaver((v) => ({ clientPhone: v.trim() }))}
-                        ariaLabel="Телефон"
-                        disabled={!canInlineEditApp}
-                        required
-                        emptyDisplay={
-                          <span className="text-[11px] text-amber-600">Не заполнено · нужно для связи</span>
-                        }
-                      />
+                      <div className="space-y-0.5">
+                        <InlineValue>{application!.clientPhone ?? '—'}</InlineValue>
+                        {canInlineEditApp ? (
+                          <span className="text-[10px] text-gray-500">Редактируйте телефон в карточке клиента.</span>
+                        ) : null}
+                      </div>
                     }
                   />
                   <PropertyRow
@@ -1176,7 +1471,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       title: 'Статус и мета',
       content: (
         <>
-          <SidebarField label="Этап" value={<span className={`${badgeBase} ${badgeTones.source}`}>Лид</span>} />
+          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>Лид</span>} />
           <SidebarField label="Источник" value={<SourceBadge source={lead!.source} channel={lead!.sourceChannel} size="sm" />} />
           <SidebarField label="Создан" value="21.04.2026" />
           <SidebarField label="Активность" value={lead!.lastActivity} />
@@ -1195,12 +1490,12 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             if (lead!.hasNoContact || !lead!.phone) missing.push('контакт');
 
             return missing.length === 0 ? (
-              <div className={`${badgeBase} ${badgeTones.success}`}>
+              <div className={`${sidebarStatusBadgeClass} ${badgeTones.success}`}>
                 <CheckCircle2 className="w-3 h-3" /> Готов к заявке
               </div>
             ) : (
               <div className="space-y-1">
-                <div className={`${badgeBase} ${badgeTones.caution}`}>
+                <div className={`${sidebarStatusBadgeClass} ${badgeTones.caution}`}>
                   <AlertCircle className="w-3 h-3" /> Не хватает данных
                 </div>
                 <div className="text-[11px] text-gray-600">Заполните: {missing.join(', ')}</div>
@@ -1211,7 +1506,23 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
             <Button
               size="sm"
               className="h-7 w-full text-[11px]"
-              onClick={hasLinkedApplication ? () => openSecondary('applications') : canPromoteToApplication ? handlePromoteToApplication : undefined}
+              onClick={
+                hasLinkedApplication
+                  ? () => {
+                      const opened = openEntitySecondary(
+                        'applications',
+                        'application',
+                        applicationEntityId,
+                      );
+                      if (!opened && onWorkflowNavigate && lead) {
+                        onWorkflowNavigate('application', { leadId: lead.id });
+                        return;
+                      }
+                    }
+                  : canPromoteToApplication
+                    ? handlePromoteToApplication
+                    : undefined
+              }
               disabled={hasLinkedApplication ? false : !canPromoteToApplication || changeStage.isPending}
             >
               {hasLinkedApplication
@@ -1227,17 +1538,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     {
       title: 'Связанные записи',
       content: (
-        <>
-          <SidebarField
-            label="Клиент"
-            value={
-              <button type="button" className={sidebarTokens.link} onClick={onOpenClient}>
-                {lead!.client}
-              </button>
-            }
-          />
-          {lead!.company && <SidebarField label="Компания" value={lead!.company} />}
-        </>
+        <RelatedRecordsFields items={leadRelatedRecordItems} />
       ),
     },
     {
@@ -1251,7 +1552,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       title: 'Статус и мета',
       content: (
         <>
-          <SidebarField label="Этап" value={<span className={`${badgeBase} ${badgeTones.progress}`}>Заявка</span>} />
+          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.progress}`}>Заявка</span>} />
           <SidebarField label="Номер" value={application!.number} />
           <SidebarField label="Обновлено" value={application!.lastActivity} />
           <SidebarField label="Менеджер" value={application!.responsibleManager} />
@@ -1262,21 +1563,29 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       title: 'Готовность к брони',
       content: appReadiness ? (
         <>
-          <div className={`${badgeBase} ${appReadiness.tone}`}>
+          <div className={`${sidebarStatusBadgeClass} ${appReadiness.tone}`}>
             <appReadiness.Icon className="w-3 h-3" />
             {appReadiness.label}
           </div>
           <div className="text-[11px] text-gray-500 mt-1">
-            {application!.positions.filter((p) => p.readyForReservation).length} из {application!.positions.length} позиций готовы
+            {application!.positions.filter((p) => p.status && p.status !== 'no_reservation').length} из {application!.positions.length} позиций в бронировании
           </div>
           <div className="pt-2">
             <Button
               size="sm"
               className="h-7 w-full text-[11px]"
-              onClick={() => void handlePrepareReservation()}
-              disabled={!canPrepareReservation || changeStage.isPending || createReservation.isPending}
+              onClick={
+                hasLinkedReservation
+                  ? () => navigateToReservation(reservationEntityId)
+                  : () => void handlePrepareReservation()
+              }
+              disabled={
+                hasLinkedReservation
+                  ? false
+                  : !canPrepareReservation || changeStage.isPending || createReservation.isPending
+              }
             >
-              Подготовить к брони
+              {hasLinkedReservation ? 'Открыть бронь' : 'Подготовить к брони'}
             </Button>
           </div>
         </>
@@ -1287,30 +1596,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
     {
       title: 'Связанные записи',
       content: (
-        <>
-          <SidebarField
-            label="Клиент"
-            value={
-              <button type="button" className={sidebarTokens.link} onClick={onOpenClient}>
-                {application!.clientName}
-              </button>
-            }
-          />
-          {application!.leadId && (
-            <SidebarField
-              label="Лид"
-              value={
-                <button
-                  type="button"
-                  className="text-blue-600 hover:underline text-left"
-                  onClick={onOpenLead ? () => onOpenLead(application!.leadId!) : () => openSecondary('leads')}
-                >
-                  LEAD-{application!.leadId}
-                </button>
-              }
-            />
-          )}
-        </>
+        <RelatedRecordsFields items={applicationRelatedRecordItems} />
       ),
     },
     {
@@ -1318,7 +1604,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       content: (
         <div className="space-y-1">
           {application!.positions.map((position, index) => {
-            const status = position.status || (position.readyForReservation ? 'unit_selected' : 'no_reservation');
+            const status = position.status || 'no_reservation';
             const statusMeta = positionStatusMeta[status];
 
             return (
@@ -1326,7 +1612,7 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
                 <span className="truncate text-gray-700">
                   {index + 1}. {position.equipmentType}
                 </span>
-                <span className={`${badgeBase} ${statusMeta.tone} flex-shrink-0`}>
+                <span className={`${sidebarStatusBadgeClass} ${statusMeta.tone} flex-shrink-0`}>
                   <statusMeta.Icon className="w-2.5 h-2.5" />
                   {statusMeta.label}
                 </span>
@@ -1357,15 +1643,17 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
           >
             Отметить как дубль
           </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={handleOpenUnqualify}
-            disabled={!USE_API}
-          >
-            Пометить некачественным
-          </Button>
+          {canMarkUnqualified ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-full justify-start text-[11px]"
+              onClick={handleOpenUnqualify}
+              disabled={!USE_API}
+            >
+              Пометить некачественным
+            </Button>
+          ) : null}
         </div>
       }
     />
@@ -1383,6 +1671,16 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
           >
             Открыть список заявок
           </Button>
+          {canMarkChainUnqualified ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-full justify-start text-[11px]"
+              onClick={handleOpenUnqualify}
+            >
+              Закрыть как некачественный
+            </Button>
+          ) : null}
           <Button
             size="sm"
             variant="outline"
@@ -1402,18 +1700,13 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
       <DetailShell
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
+        shareUrl={shareUrl}
         main={main}
         sidebar={sidebar}
       />
       {isLead ? (
         <>
           <EditLeadDialog open={isEditOpen} onOpenChange={setIsEditOpen} lead={lead ?? null} />
-          <UnqualifyLeadDialog
-            open={isUnqualOpen}
-            onOpenChange={setIsUnqualOpen}
-            leadId={lead?.id ?? null}
-            onDone={onClose}
-          />
         </>
       ) : (
         <>
@@ -1499,6 +1792,12 @@ export function LeadDetailModal({ lead: initialLead, application: initialApplica
           ) : null}
         </>
       )}
+      <UnqualifyLeadDialog
+        open={isUnqualOpen}
+        onOpenChange={setIsUnqualOpen}
+        leadId={targetLeadIdForUnqualify ?? null}
+        onDone={onClose}
+      />
     </>
   );
 }

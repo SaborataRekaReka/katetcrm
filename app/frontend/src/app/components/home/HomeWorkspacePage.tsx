@@ -62,6 +62,10 @@ import {
   useUpdateTaskMutation,
   useUpdateTaskStatusMutation,
 } from '../../hooks/useTaskMutations';
+import type { RouteEntityType } from '../shell/routeSync';
+import type { Lead } from '../../types/kanban';
+import { Dialog, DialogContent } from '../ui/dialog';
+import { ReservationWorkspace } from '../reservation/ReservationWorkspace';
 
 export function HomeWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -335,15 +339,76 @@ function computeDuePresentation(dueDate?: string): Pick<Task, 'dueDate' | 'dueKi
   };
 }
 
+const TASK_DOMAIN_ROUTE_META: Record<Exclude<TaskDomain, 'client'>, {
+  primary: string;
+  secondary: string;
+  entityType: RouteEntityType;
+}> = {
+  lead: { primary: 'sales', secondary: 'leads', entityType: 'lead' },
+  application: { primary: 'sales', secondary: 'applications', entityType: 'application' },
+  reservation: { primary: 'ops', secondary: 'reservations', entityType: 'reservation' },
+  departure: { primary: 'ops', secondary: 'departures', entityType: 'departure' },
+  completion: { primary: 'ops', secondary: 'completion', entityType: 'completion' },
+};
+
+function normalizeTaskLinkedEntityId(rawId: string): string | null {
+  const id = rawId.trim();
+  if (!id) return null;
+
+  // Mock task links use display identifiers that are not stable route IDs.
+  if (/^(LEAD|APP|RSV|DEP|CMP)-\d+$/i.test(id)) {
+    return null;
+  }
+
+  return id;
+}
+
+function openTaskLinkedEntity(
+  domain: TaskDomain,
+  rawId: string,
+  setActivePrimaryNav: (v: string) => void,
+  setActiveSecondaryNav: (v: string) => void,
+  openSecondaryWithEntity: (secondaryId: string, entityType: RouteEntityType, entityId: string) => void,
+) {
+  if (domain === 'client') {
+    setActivePrimaryNav('clients');
+    setActiveSecondaryNav('clients');
+    return;
+  }
+
+  const routeMeta = TASK_DOMAIN_ROUTE_META[domain];
+  setActivePrimaryNav(routeMeta.primary);
+
+  const entityId = normalizeTaskLinkedEntityId(rawId);
+  if (entityId) {
+    openSecondaryWithEntity(routeMeta.secondary, routeMeta.entityType, entityId);
+    return;
+  }
+
+  setActiveSecondaryNav(routeMeta.secondary);
+}
+
 function MyTasksPage() {
   if (USE_API) {
     return <ApiMyTasksPage />;
   }
 
   const [tasks, setTasks] = useState<Task[]>(mockTasks);
+  const [query, setQuery] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
-  const grouped = useMemo(() => groupTasksByDue(tasks), [tasks]);
+  const { setActivePrimaryNav, setActiveSecondaryNav, openSecondaryWithEntity } = useLayout();
+  const filteredTasks = useMemo(() => {
+    const q = normalizeSearchQuery(query);
+    if (!q) return tasks;
+
+    return tasks.filter((task) => {
+      const linked = task.linkedEntity ? `${task.linkedEntity.domain} ${task.linkedEntity.id}` : '';
+      return `${task.id} ${task.title} ${task.assignee ?? ''} ${task.reporter ?? ''} ${task.description ?? ''} ${task.tags.join(' ')} ${linked}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [tasks, query]);
+  const grouped = useMemo(() => groupTasksByDue(filteredTasks), [filteredTasks]);
   const selectedTask = useMemo(
     () => tasks.find((t) => t.id === selectedTaskId) ?? null,
     [tasks, selectedTaskId],
@@ -363,35 +428,14 @@ function MyTasksPage() {
     return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
   };
 
-  const openLinked = (domain: TaskDomain, _id: string) => {
-    // Navigate to the domain workspace. Detail-specific routing is not yet wired,
-    // so the list view is the closest match.
-    switch (domain) {
-      case 'lead':
-        setActivePrimaryNav('sales');
-        setActiveSecondaryNav('leads');
-        break;
-      case 'application':
-        setActivePrimaryNav('sales');
-        setActiveSecondaryNav('applications');
-        break;
-      case 'client':
-        setActivePrimaryNav('clients');
-        setActiveSecondaryNav('clients');
-        break;
-      case 'reservation':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('reservations');
-        break;
-      case 'departure':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('departures');
-        break;
-      case 'completion':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('completion');
-        break;
-    }
+  const openLinked = (domain: TaskDomain, id: string) => {
+    openTaskLinkedEntity(
+      domain,
+      id,
+      setActivePrimaryNav,
+      setActiveSecondaryNav,
+      openSecondaryWithEntity,
+    );
     setSelectedTaskId(null);
   };
 
@@ -593,6 +637,15 @@ function MyTasksPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
+      <input
+        data-crm-search-input="true"
+        aria-label="Поиск задач"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        className="sr-only"
+        tabIndex={-1}
+      />
+
       <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
         <div className="flex flex-1 items-center gap-4 text-[12px] text-muted-foreground">
           <SummaryChip tone="danger" label="Просрочено" value={grouped.overdue.length} />
@@ -600,7 +653,9 @@ function MyTasksPage() {
           <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
           <SummaryChip label="Позже" value={grouped.later.length} />
           <SummaryChip label="Без срока" value={grouped.none.length} />
-          <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {tasks.length}</span>
+          <span className="ml-2 text-[11px] text-muted-foreground/80">
+            {query.trim().length > 0 ? `Показано · ${filteredTasks.length} из ${tasks.length}` : `Всего · ${tasks.length}`}
+          </span>
         </div>
         <Button variant="outline" size="sm" className="h-7 gap-1 text-[12px]" onClick={handleCreateTask}>
           <PlusCircle className="h-3.5 w-3.5" />
@@ -609,14 +664,28 @@ function MyTasksPage() {
       </div>
 
       <GroupedListPage>
+        {filteredTasks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 px-6 py-20 text-center">
+            <Sparkles className="h-8 w-8 text-muted-foreground/50" />
+            <h3 className="text-[13px] font-medium text-foreground">
+              {tasks.length === 0 ? 'Задач нет' : 'По запросу ничего не найдено'}
+            </h3>
+            <p className="max-w-sm text-[12px] text-muted-foreground">
+              {tasks.length === 0
+                ? 'Добавьте первую задачу для работы в этом разделе.'
+                : 'Измените строку поиска в хидере, чтобы расширить выборку.'}
+            </p>
+          </div>
+        ) : null}
+
         {DUE_GROUPS.map((g) => {
-          const tasks = grouped[g.key];
-          if (tasks.length === 0) return null;
+          const dueRows = grouped[g.key];
+          if (dueRows.length === 0) return null;
           return (
             <div key={g.key}>
-              <ListGroupHeader title={g.label} count={tasks.length} tone={g.tone} />
+              <ListGroupHeader title={g.label} count={dueRows.length} tone={g.tone} />
               <ListGroup>
-                {tasks.map((t) => (
+                {dueRows.map((t) => (
                   <TaskListRow
                     key={t.id}
                     id={t.id}
@@ -654,7 +723,8 @@ function MyTasksPage() {
 }
 
 function ApiMyTasksPage() {
-  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const { setActivePrimaryNav, setActiveSecondaryNav, openSecondaryWithEntity } = useLayout();
+  const [query, setQuery] = useState('');
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
@@ -669,40 +739,32 @@ function ApiMyTasksPage() {
   const isPending = USE_API && tasksQuery.isPending && !tasksQuery.data;
   const isError = USE_API && tasksQuery.isError && !tasksQuery.data;
   const tasks = tasksQuery.data?.items ?? [];
+  const filteredTasks = useMemo(() => {
+    const q = normalizeSearchQuery(query);
+    if (!q) return tasks;
+
+    return tasks.filter((task) => {
+      const linked = task.linkedEntity ? `${task.linkedEntity.domain} ${task.linkedEntity.id}` : '';
+      return `${task.id} ${task.title} ${task.assignee ?? ''} ${task.reporter ?? ''} ${task.description ?? ''} ${task.tags.join(' ')} ${linked}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [query, tasks]);
   const selectedTask = useMemo(
     () => tasks.find((t) => t.id === selectedTaskId) ?? null,
     [tasks, selectedTaskId],
   );
 
-  const grouped = useMemo(() => groupTasksByDue(tasks), [tasks]);
+  const grouped = useMemo(() => groupTasksByDue(filteredTasks), [filteredTasks]);
 
-  const openLinked = (domain: TaskDomain, _id: string) => {
-    switch (domain) {
-      case 'lead':
-        setActivePrimaryNav('sales');
-        setActiveSecondaryNav('leads');
-        break;
-      case 'application':
-        setActivePrimaryNav('sales');
-        setActiveSecondaryNav('applications');
-        break;
-      case 'client':
-        setActivePrimaryNav('clients');
-        setActiveSecondaryNav('clients');
-        break;
-      case 'reservation':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('reservations');
-        break;
-      case 'departure':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('departures');
-        break;
-      case 'completion':
-        setActivePrimaryNav('ops');
-        setActiveSecondaryNav('completion');
-        break;
-    }
+  const openLinked = (domain: TaskDomain, id: string) => {
+    openTaskLinkedEntity(
+      domain,
+      id,
+      setActivePrimaryNav,
+      setActiveSecondaryNav,
+      openSecondaryWithEntity,
+    );
     setSelectedTaskId(null);
   };
 
@@ -785,6 +847,15 @@ function ApiMyTasksPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
+      <input
+        data-crm-search-input="true"
+        aria-label="Поиск задач"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        className="sr-only"
+        tabIndex={-1}
+      />
+
       <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
         <div className="flex flex-1 items-center gap-4 text-[12px] text-muted-foreground">
           <SummaryChip tone="danger" label="Просрочено" value={grouped.overdue.length} />
@@ -792,7 +863,9 @@ function ApiMyTasksPage() {
           <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
           <SummaryChip label="Позже" value={grouped.later.length} />
           <SummaryChip label="Без срока" value={grouped.none.length} />
-          <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {tasks.length}</span>
+          <span className="ml-2 text-[11px] text-muted-foreground/80">
+            {query.trim().length > 0 ? `Показано · ${filteredTasks.length} из ${tasks.length}` : `Всего · ${tasks.length}`}
+          </span>
         </div>
         <Button
           variant="outline"
@@ -831,6 +904,14 @@ function ApiMyTasksPage() {
             <h3 className="text-[13px] font-medium text-foreground">Задач нет</h3>
             <p className="max-w-sm text-[12px] text-muted-foreground">
               По текущим лидам нет записей, требующих действия.
+            </p>
+          </div>
+        ) : filteredTasks.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-2 px-6 py-20 text-center">
+            <Sparkles className="h-8 w-8 text-muted-foreground/50" />
+            <h3 className="text-[13px] font-medium text-foreground">По запросу ничего не найдено</h3>
+            <p className="max-w-sm text-[12px] text-muted-foreground">
+              Измените строку поиска в хидере, чтобы увидеть больше задач.
             </p>
           </div>
         ) : (
@@ -912,8 +993,11 @@ function SummaryChip({
 /* ---------------------------- Urgent today ------------------------------ */
 
 function UrgentTodayPage() {
-  const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const { setActivePrimaryNav, setActiveSecondaryNav, openSecondaryWithEntity } = useLayout();
   const leadsQuery = useLeadsQuery({ scope: 'all' }, USE_API);
+  const [query, setQuery] = useState('');
+  const [inlineReservationId, setInlineReservationId] = useState<string | null>(null);
+  const [inlineReservationLead, setInlineReservationLead] = useState<Lead | null>(null);
 
   const isPending = USE_API && leadsQuery.isPending && !leadsQuery.data;
   const isError = USE_API && leadsQuery.isError && !leadsQuery.data;
@@ -931,6 +1015,13 @@ function UrgentTodayPage() {
         isUrgent: boolean;
         hasConflict: boolean;
         departureToday: boolean;
+        linkedIds?: {
+          leadId: string | null;
+          applicationId: string | null;
+          reservationId: string | null;
+          departureId: string | null;
+          completionId: string | null;
+        };
       }>;
     }
 
@@ -961,6 +1052,13 @@ function UrgentTodayPage() {
         isUrgent: l.isUrgent,
         hasConflict: false,
         departureToday,
+        linkedIds: {
+          leadId: l.linkedIds.leadId,
+          applicationId: l.linkedIds.applicationId,
+          reservationId: l.linkedIds.reservationId,
+          departureId: l.linkedIds.departureId,
+          completionId: l.linkedIds.completionId,
+        },
       };
     });
   }, [leadsQuery.data]);
@@ -975,13 +1073,24 @@ function UrgentTodayPage() {
     [apiRows],
   );
 
+  const filteredUrgent = useMemo(() => {
+    const q = normalizeSearchQuery(query);
+    if (!q) return urgent;
+
+    return urgent.filter((l) => {
+      return `${l.id} ${l.company ?? ''} ${l.client} ${l.equipmentType} ${l.manager} ${stageLabel(l.stage)}`
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [query, urgent]);
+
   const groups = useMemo(() => {
     return {
-      urgent: urgent.filter((l) => l.isUrgent && !l.hasConflict && !(USE_API ? l.departureToday : l.departureStatus === 'today')),
-      conflicts: urgent.filter((l) => l.hasConflict),
-      today: urgent.filter((l) => (USE_API ? l.departureToday : l.departureStatus === 'today')),
+      urgent: filteredUrgent.filter((l) => l.isUrgent && !l.hasConflict && !(USE_API ? l.departureToday : l.departureStatus === 'today')),
+      conflicts: filteredUrgent.filter((l) => l.hasConflict),
+      today: filteredUrgent.filter((l) => (USE_API ? l.departureToday : l.departureStatus === 'today')),
     };
-  }, [urgent]);
+  }, [filteredUrgent]);
 
   const goLead = () => {
     setActivePrimaryNav('sales');
@@ -1016,13 +1125,178 @@ function UrgentTodayPage() {
     }
   };
 
+  const normalizeEntityId = (rawId: string | null | undefined): string | null => {
+    if (!rawId) return null;
+    const id = rawId.trim();
+    if (!id) return null;
+
+    // Demo/mock ids are display labels and cannot be used as routed entity ids.
+    if (/^(LEAD|APP|RSV|DEP|CMP|CL)-\d+$/i.test(id)) {
+      return null;
+    }
+
+    return id;
+  };
+
+  const openLinkedEntity = (
+    primary: string,
+    secondary: string,
+    entityType: RouteEntityType,
+    rawId: string | null | undefined,
+  ) => {
+    const entityId = normalizeEntityId(rawId);
+    if (!entityId) return false;
+    setActivePrimaryNav(primary);
+    openSecondaryWithEntity(secondary, entityType, entityId);
+    return true;
+  };
+
+  const toInlineReservationLead = (row: {
+    id: string;
+    stage: string;
+    company: string | null;
+    client: string;
+    equipmentType: string;
+    manager: string;
+    lastActivity: string;
+    isUrgent: boolean;
+    hasConflict: boolean;
+    departureToday: boolean;
+    linkedIds?: {
+      leadId: string | null;
+      applicationId: string | null;
+      reservationId: string | null;
+      departureId: string | null;
+      completionId: string | null;
+    };
+  }): Lead => {
+    const fallbackLeadId = normalizeEntityId(row.linkedIds?.leadId ?? row.id) ?? row.id;
+    return {
+      id: fallbackLeadId,
+      stage: 'reservation',
+      client: row.client,
+      company: row.company ?? undefined,
+      phone: '—',
+      source: 'Приоритеты',
+      equipmentType: row.equipmentType,
+      manager: row.manager,
+      lastActivity: row.lastActivity,
+      isUrgent: row.isUrgent,
+      hasConflict: row.hasConflict,
+      departureStatus: row.departureToday ? 'today' : undefined,
+    };
+  };
+
+  const openInlineReservation = (
+    row: {
+      id: string;
+      stage: string;
+      company: string | null;
+      client: string;
+      equipmentType: string;
+      manager: string;
+      lastActivity: string;
+      isUrgent: boolean;
+      hasConflict: boolean;
+      departureToday: boolean;
+      linkedIds?: {
+        leadId: string | null;
+        applicationId: string | null;
+        reservationId: string | null;
+        departureId: string | null;
+        completionId: string | null;
+      };
+    },
+    rawReservationId: string | null | undefined,
+  ) => {
+    const reservationId = normalizeEntityId(rawReservationId);
+    if (!reservationId) return false;
+    setInlineReservationLead(toInlineReservationLead(row));
+    setInlineReservationId(reservationId);
+    return true;
+  };
+
+  const closeInlineReservation = () => {
+    setInlineReservationId(null);
+    setInlineReservationLead(null);
+  };
+
+  const openEntityRow = (row: {
+    id: string;
+    stage: string;
+    linkedIds?: {
+      leadId: string | null;
+      applicationId: string | null;
+      reservationId: string | null;
+      departureId: string | null;
+      completionId: string | null;
+    };
+  }) => {
+    if (!USE_API) {
+      openEntity(row.stage);
+      return;
+    }
+
+    const linked = row.linkedIds;
+
+    if (row.stage === 'departure') {
+      if (openLinkedEntity('ops', 'departures', 'departure', linked?.departureId)) return;
+      if (openInlineReservation(row, linked?.reservationId)) return;
+      if (openLinkedEntity('sales', 'applications', 'application', linked?.applicationId)) return;
+      if (openLinkedEntity('sales', 'leads', 'lead', linked?.leadId ?? row.id)) return;
+      goDepartures();
+      return;
+    }
+
+    if (row.stage === 'reservation') {
+      if (openInlineReservation(row, linked?.reservationId)) return;
+      if (openLinkedEntity('sales', 'applications', 'application', linked?.applicationId)) return;
+      if (openLinkedEntity('sales', 'leads', 'lead', linked?.leadId ?? row.id)) return;
+      goReservations();
+      return;
+    }
+
+    if (row.stage === 'application') {
+      if (openLinkedEntity('sales', 'applications', 'application', linked?.applicationId)) return;
+      if (openLinkedEntity('sales', 'leads', 'lead', linked?.leadId ?? row.id)) return;
+      setActivePrimaryNav('sales');
+      setActiveSecondaryNav('applications');
+      return;
+    }
+
+    if (row.stage === 'completed') {
+      if (openLinkedEntity('ops', 'completion', 'completion', linked?.completionId)) return;
+      if (openLinkedEntity('ops', 'departures', 'departure', linked?.departureId)) return;
+      if (openInlineReservation(row, linked?.reservationId)) return;
+      if (openLinkedEntity('sales', 'applications', 'application', linked?.applicationId)) return;
+      if (openLinkedEntity('sales', 'leads', 'lead', linked?.leadId ?? row.id)) return;
+      setActivePrimaryNav('ops');
+      setActiveSecondaryNav('completion');
+      return;
+    }
+
+    if (openLinkedEntity('sales', 'leads', 'lead', linked?.leadId ?? row.id)) return;
+    goLead();
+  };
+
   return (
     <div className="flex h-full min-h-0 flex-col">
+      <input
+        data-crm-search-input="true"
+        aria-label="Поиск приоритетов"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        className="sr-only"
+        tabIndex={-1}
+      />
+
       <div className="flex shrink-0 items-center gap-4 border-b border-border/60 bg-white px-4 py-2 text-[12px]">
         <SummaryChip tone="danger" label="Срочные лиды" value={groups.urgent.length} />
         <SummaryChip tone="danger" label="Конфликты" value={groups.conflicts.length} />
         <SummaryChip tone="progress" label="Выезды сегодня" value={groups.today.length} />
-        <span className="ml-2 text-[11px] text-muted-foreground/80">Всего · {urgent.length}</span>
+        <span className="ml-2 text-[11px] text-muted-foreground/80">
+          {query.trim().length > 0 ? `Показано · ${filteredUrgent.length} из ${urgent.length}` : `Всего · ${urgent.length}`}
+        </span>
       </div>
 
       <GroupedListPage>
@@ -1069,7 +1343,7 @@ function UrgentTodayPage() {
                   secondary={`${stageLabel(l.stage)} · ${l.manager}`}
                   badge={<TagPill label="Срочно" tone="danger" />}
                   trailing={l.lastActivity}
-                  onClick={() => openEntity(l.stage)}
+                  onClick={() => openEntityRow(l)}
                 />
               ))}
             </ListGroup>
@@ -1107,7 +1381,7 @@ function UrgentTodayPage() {
                   secondary={`${stageLabel(l.stage)} · ${l.manager}`}
                   badge={<TagPill label="Конфликт" tone="warning" />}
                   trailing={l.lastActivity}
-                  onClick={() => openEntity(l.stage)}
+                  onClick={() => openEntityRow(l)}
                 />
               ))}
             </ListGroup>
@@ -1145,25 +1419,48 @@ function UrgentTodayPage() {
                   secondary={`${stageLabel(l.stage)} · ${l.manager}`}
                   badge={<TagPill label="Сегодня" tone="progress" />}
                   trailing={l.lastActivity}
-                  onClick={() => openEntity(l.stage)}
+                  onClick={() => openEntityRow(l)}
                 />
               ))}
             </ListGroup>
           </div>
         ) : null}
 
-        {urgent.length === 0 ? (
+        {filteredUrgent.length === 0 ? (
           <div className="flex flex-col items-center justify-center gap-2 px-6 py-20 text-center">
             <Sparkles className="h-8 w-8 text-muted-foreground/50" />
-            <h3 className="text-[13px] font-medium text-foreground">Срочных задач нет</h3>
+            <h3 className="text-[13px] font-medium text-foreground">
+              {urgent.length === 0 ? 'Срочных задач нет' : 'По запросу ничего не найдено'}
+            </h3>
             <p className="max-w-sm text-[12px] text-muted-foreground">
-              Всё под контролем — можно заняться плановой работой.
+              {urgent.length === 0
+                ? 'Всё под контролем — можно заняться плановой работой.'
+                : 'Попробуйте изменить строку поиска в хидере.'}
             </p>
           </div>
         ) : null}
           </>
         )}
       </GroupedListPage>
+
+      <Dialog
+        open={!!inlineReservationId}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeInlineReservation();
+          }
+        }}
+      >
+        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+          {inlineReservationLead && inlineReservationId ? (
+            <ReservationWorkspace
+              lead={inlineReservationLead}
+              apiReservationId={inlineReservationId}
+              onClose={closeInlineReservation}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -1173,6 +1470,7 @@ function UrgentTodayPage() {
 function RecentActivityPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const activityQuery = useActivitySearchQuery({ take: 40 }, USE_API);
+  const [query, setQuery] = useState('');
 
   const formatRelative = (iso: string) => {
     const ts = Date.parse(iso);
@@ -1229,11 +1527,11 @@ function RecentActivityPage() {
       return [
         { id: 'a1', at: '10 мин назад', actor: 'Сидоров Б.', text: 'создал лид', entity: 'ИП Морозов', kind: 'lead' as const, icon: <PlusCircle className="h-3.5 w-3.5" /> },
         { id: 'a2', at: '30 мин назад', actor: 'Петров А.', text: 'перевёл в работу', entity: 'APP-2024-002', kind: 'application' as const, icon: <Activity className="h-3.5 w-3.5" /> },
-        { id: 'a3', at: '45 мин назад', actor: 'Иванова С.', text: 'назначила unit EXC-001 на', entity: 'RSV-00012', kind: 'reservation' as const, icon: <Settings className="h-3.5 w-3.5" /> },
+        { id: 'a3', at: '45 мин назад', actor: 'Иванова С.', text: 'назначила единицу EXC-001 на', entity: 'RSV-00012', kind: 'reservation' as const, icon: <Settings className="h-3.5 w-3.5" /> },
         { id: 'a4', at: '1 ч назад', actor: 'Водитель Кузнецов', text: 'прибыл на объект', entity: 'DEP-00009', kind: 'departure' as const, icon: <Truck className="h-3.5 w-3.5" /> },
         { id: 'a5', at: '2 ч назад', actor: 'Сидоров Б.', text: 'подписал акт', entity: 'CMP-00011', kind: 'completed' as const, icon: <CheckSquare className="h-3.5 w-3.5" /> },
         { id: 'a6', at: '3 ч назад', actor: 'Петров А.', text: 'перевёл лид в заявку', entity: 'LEAD-00014', kind: 'application' as const, icon: <ArrowRight className="h-3.5 w-3.5" /> },
-        { id: 'a7', at: 'Вчера, 18:20', actor: 'Admin', text: 'оставил комментарий', entity: 'TASK-00021', kind: 'lead' as const, icon: <MessageSquare className="h-3.5 w-3.5" /> },
+        { id: 'a7', at: 'Вчера, 18:20', actor: 'Админ', text: 'оставил комментарий', entity: 'TASK-00021', kind: 'lead' as const, icon: <MessageSquare className="h-3.5 w-3.5" /> },
         { id: 'a8', at: 'Вчера, 17:05', actor: 'Сидоров Б.', text: 'загрузил вложение в', entity: 'APP-2024-001', kind: 'application' as const, icon: <Paperclip className="h-3.5 w-3.5" /> },
         { id: 'a9', at: 'Вчера, 14:45', actor: 'Иванова С.', text: 'подтвердила бронь', entity: 'RSV-00011', kind: 'reservation' as const, icon: <History className="h-3.5 w-3.5" /> },
       ];
@@ -1241,21 +1539,28 @@ function RecentActivityPage() {
     [activityQuery.data],
   );
 
+  const filteredItems = useMemo(() => {
+    const q = normalizeSearchQuery(query);
+    if (!q) return items;
+
+    return items.filter((it) => `${it.actor} ${it.text} ${it.entity} ${it.at}`.toLowerCase().includes(q));
+  }, [items, query]);
+
   const isPending = USE_API && activityQuery.isPending && !activityQuery.data;
   const isError = USE_API && activityQuery.isError && !activityQuery.data;
 
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
 
-  const todayItems = items.filter((it) => {
-    if (!USE_API) return items.indexOf(it) < 6;
+  const todayItems = filteredItems.filter((it) => {
+    if (!USE_API) return filteredItems.indexOf(it) < 6;
     const raw = activityQuery.data?.items.find((e) => e.id === it.id);
     if (!raw) return false;
     const ts = Date.parse(raw.createdAt);
     return Number.isFinite(ts) && ts >= todayStart.getTime();
   });
 
-  const yesterdayItems = items.filter((it) => !todayItems.some((x) => x.id === it.id));
+  const yesterdayItems = filteredItems.filter((it) => !todayItems.some((x) => x.id === it.id));
 
   const openEntity = (kind: 'lead' | 'application' | 'reservation' | 'departure' | 'completed') => {
     switch (kind) {
@@ -1286,17 +1591,30 @@ function RecentActivityPage() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
+      <input
+        data-crm-search-input="true"
+        aria-label="Поиск по событиям"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        className="sr-only"
+        tabIndex={-1}
+      />
+
       <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2 text-[11px] text-muted-foreground">
         <span>События по воронке за сегодня и вчера</span>
-        <span className="ml-auto tabular-nums">{items.length} записей</span>
+        <span className="ml-auto tabular-nums">
+          {query.trim().length > 0 ? `${filteredItems.length} из ${items.length}` : `${items.length}`} записей
+        </span>
       </div>
       <GroupedListPage>
         {isPending ? (
           <div className="px-4 py-6 text-[12px] text-muted-foreground">Загружаем события...</div>
         ) : isError ? (
           <div className="px-4 py-6 text-[12px] text-rose-700">Не удалось загрузить события.</div>
-        ) : items.length === 0 ? (
-          <div className="px-4 py-6 text-[12px] text-muted-foreground">Событий пока нет.</div>
+        ) : filteredItems.length === 0 ? (
+          <div className="px-4 py-6 text-[12px] text-muted-foreground">
+            {items.length === 0 ? 'Событий пока нет.' : 'По запросу ничего не найдено.'}
+          </div>
         ) : (
           <>
             <ListGroupHeader title="Сегодня" count={todayItems.length} />
@@ -1338,6 +1656,7 @@ function RecentActivityPage() {
 
 function QuickLinksPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
+  const [query, setQuery] = useState('');
   const go = (p: string, s: string) => {
     setActivePrimaryNav(p);
     setActiveSecondaryNav(s);
@@ -1372,11 +1691,38 @@ function QuickLinksPage() {
     },
   ];
 
+  const filteredGroups = useMemo(() => {
+    const q = normalizeSearchQuery(query);
+    if (!q) return GROUPS;
+
+    return GROUPS
+      .map((group) => ({
+        ...group,
+        links: group.links.filter((link) => `${group.title} ${link.label} ${link.description}`.toLowerCase().includes(q)),
+      }))
+      .filter((group) => group.links.length > 0);
+  }, [query]);
+
   return (
     <DashboardPage>
+      <input
+        data-crm-search-input="true"
+        aria-label="Поиск быстрых переходов"
+        value={query}
+        onChange={(event) => setQuery(event.target.value)}
+        className="sr-only"
+        tabIndex={-1}
+      />
+
       <CompactPageHeader title="Быстрые переходы" subtitle="Ярлыки к ключевым разделам CRM" />
       <div className="flex flex-col gap-5">
-        {GROUPS.map((g) => (
+        {filteredGroups.length === 0 ? (
+          <div className="rounded border border-dashed border-border/70 px-3 py-4 text-[12px] text-muted-foreground">
+            По запросу ничего не найдено.
+          </div>
+        ) : null}
+
+        {filteredGroups.map((g) => (
           <section key={g.title} className="flex flex-col gap-2">
             <h3 className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
               {g.title}
@@ -1400,6 +1746,10 @@ function QuickLinksPage() {
 }
 
 /* ------------------------------- Helpers -------------------------------- */
+
+function normalizeSearchQuery(value: string): string {
+  return value.trim().toLowerCase();
+}
 
 const STAGE_COLOR: Record<string, string> = {
   lead: 'bg-sky-500',

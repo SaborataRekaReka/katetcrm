@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, FileText } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { useLayout } from '../shell/layoutStore';
@@ -13,6 +13,7 @@ import type { Lead } from '../../types/kanban';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import { USE_API } from '../../lib/featureFlags';
 import {
+  useCompletionQuery,
   useCompletionsQuery,
   usePendingCompletionsQuery,
 } from '../../hooks/useCompletionsQuery';
@@ -29,9 +30,20 @@ interface Filters {
 const DEFAULT: Filters = { manager: 'all', completion: 'all', equipment: 'all' };
 
 export function CompletionWorkspacePage() {
-  const { activeSecondaryNav, currentView } = useLayout();
+  const {
+    activeSecondaryNav,
+    currentView,
+    activeEntityType,
+    activeEntityId,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
+  } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
   const completionsQuery = useCompletionsQuery({}, USE_API);
+  const routedCompletionQuery = useCompletionQuery(
+    activeEntityType === 'completion' ? activeEntityId : null,
+    USE_API && activeEntityType === 'completion' && !!activeEntityId,
+  );
   const pendingCompletionsQuery = usePendingCompletionsQuery(
     {},
     USE_API && activeSecondaryNav === 'view-no-completion',
@@ -39,6 +51,8 @@ export function CompletionWorkspacePage() {
   const [filters, setFilters] = useState<Filters>(DEFAULT);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Lead | null>(null);
+  const [selectedCompletionIdOverride, setSelectedCompletionIdOverride] = useState<string | null>(null);
+  const [selectedDepartureIdOverride, setSelectedDepartureIdOverride] = useState<string | null>(null);
   const [clientLead, setClientLead] = useState<Lead | null>(null);
 
   const effectiveView: 'list' | 'table' = currentView === 'table' ? 'table' : 'list';
@@ -110,6 +124,34 @@ export function CompletionWorkspacePage() {
     query.length > 0;
 
   const managers = Array.from(new Set(sourceRows.map((l) => l.manager))).sort();
+
+  const handleOpenCompletion = (row: Lead) => {
+    setSelected(row);
+    const completionId = completionByDepartureId.get(row.id) ?? null;
+    setSelectedCompletionIdOverride(completionId);
+    setSelectedDepartureIdOverride(row.id);
+    if (completionId) {
+      setActiveEntityRoute('completion', completionId);
+    } else {
+      clearActiveEntityRoute();
+    }
+  };
+
+  const handleCloseCompletion = () => {
+    setSelected(null);
+    setSelectedCompletionIdOverride(null);
+    setSelectedDepartureIdOverride(null);
+    clearActiveEntityRoute();
+  };
+
+  useEffect(() => {
+    if (activeEntityType !== 'completion' || !activeEntityId) return;
+
+    if (!USE_API || !routedCompletionQuery.data) return;
+    setSelected(toCompletionLeadFromCompletion(routedCompletionQuery.data));
+    setSelectedCompletionIdOverride(routedCompletionQuery.data.id);
+    setSelectedDepartureIdOverride(routedCompletionQuery.data.departureId);
+  }, [activeEntityType, activeEntityId, routedCompletionQuery.data]);
 
   const handleSaveView = () => {
     void saveViewSnapshot({
@@ -228,7 +270,7 @@ export function CompletionWorkspacePage() {
               {filtered.map((l) => (
                 <tr
                   key={l.id}
-                  onClick={() => setSelected(l)}
+                  onClick={() => handleOpenCompletion(l)}
                   className="cursor-pointer border-b border-border/40 hover:bg-muted/30"
                 >
                   <td className="px-4 py-2.5">
@@ -273,14 +315,20 @@ export function CompletionWorkspacePage() {
         </div>
       )}
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && handleCloseCompletion()}>
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
             <CompletionWorkspace
               lead={selected}
-              apiDepartureId={USE_API ? selected.id : undefined}
-              apiCompletionId={USE_API ? completionByDepartureId.get(selected.id) : undefined}
-              onClose={() => setSelected(null)}
+              apiDepartureId={
+                USE_API ? (selectedDepartureIdOverride ?? selected.id) : undefined
+              }
+              apiCompletionId={
+                USE_API
+                  ? (selectedCompletionIdOverride ?? completionByDepartureId.get(selected.id))
+                  : undefined
+              }
+              onClose={handleCloseCompletion}
               onOpenClient={setClientLead}
             />
           ) : null}

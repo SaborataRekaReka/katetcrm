@@ -2,104 +2,137 @@
 
 ## 1. Purpose
 
-This file defines practical test strategy for MVP reliability.
+This document defines the new testing strategy after the project testing reset of 05.05.2026.
 
-## 2. Test layers
+The previous test suite, previous test commands, and previous test results are invalid for future quality decisions. They were removed because the project behavior changed and their expectations are no longer trusted.
 
-1. Smoke tests (fast, every build).
-2. Critical E2E flows (release gate).
-3. RBAC and permission checks.
-4. Route/content consistency checks.
-5. View regression checks (board/list/table).
+## 2. Source of truth
 
-## 3. Smoke tests
+[QA_REQUIREMENTS.md](QA_REQUIREMENTS.md) is the only accepted source of truth for new test expectations.
 
-Minimum smoke coverage:
+Rules:
 
-1. `smoke:base` validates auth + lead intake + stage transition + duplicates + activity baseline.
-2. `smoke:stage3` validates applications/items/reservations policies and terminal invariants.
-3. `smoke:stage5` validates reservation -> departure -> completion flow and release cascades.
-4. `smoke:stage6` validates integrations ingest idempotency + retry/replay guards (+ signed fixtures when secrets configured).
-5. `smoke:stage6:strict` validates signed webhook fixtures in enforced-auth mode with production-like secret profile.
-6. `smoke:stage7` validates stats/import/audit contracts including `stats/analytics` views and mixed valid/invalid import run/report behavior (`issues`, `errorReportCsv`, accounting).
-7. `smoke:tasks` validates tasks write contour (`create/status/subtask/duplicate/archive/scope`) including `dueDate` clear path.
-8. `smoke:rbac` validates manager denial for admin-only directories and foreign-ownership operations.
-9. `smoke:rbac:scope` validates manager scope on `stats/reports/analytics` and analytics query validation (`400`).
-10. `smoke:admin` validates admin write scenarios (`users/settings/permissions`) and manager-deny checks.
-11. `smoke:admin:control` validates admin/control runtime read endpoints + manager deny (`stats/reports/analytics/activity/users/settings/integrations`).
-12. Aggregate `smoke:release` runs all checks above + frontend `check:ui-consistency`.
+1. Do not reuse assertions from deleted smoke scripts, deleted Playwright specs, old runbooks, or old result snapshots.
+2. Do not cite previous green runs as evidence that behavior is correct.
+3. If expected behavior is unclear, ask the product owner and record the answer in [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md) before writing a test.
+4. Product docs may provide context, but test expectations must be confirmed in [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md).
+5. Every new test must reference one or more requirement ids from [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md).
 
-Repeat-flow stability runbook: `docs/repeat-flow-runbook.md` (`smoke:flow:repeat`).
+## 3. Current baseline
 
-Validation snapshot (28.04.2026):
+There is intentionally no trusted automated test suite after the reset.
 
-1. `smoke:stage6:strict` passed in enforced-signature profile.
-2. `smoke:flow:repeat` passed (3 iterations).
-3. Browser baseline `npm --prefix app/frontend run e2e` passed (admin/control, 2/2).
+Allowed non-test validation while the new suite is being designed:
 
-## 4. Critical E2E flows
+1. Backend TypeScript validation: `npm --prefix app/backend run typecheck`.
+2. Backend build: `npm --prefix app/backend run build`.
+3. Frontend build: `npm --prefix app/frontend run build`.
 
-Required E2E scenarios:
+These commands only prove that the code compiles/builds. They do not prove business correctness.
 
-1. Lead intake -> convert to application.
-2. Multi-item application -> reservation for at least one item.
-3. Reservation conflict appears as warning and flow remains operable.
-4. Reservation ready -> departure -> completed.
-5. Completed/unqualified releases active reservation.
-6. Repeat order from client context.
-7. Browser runtime checks for admin/control: `npm --prefix app/frontend run e2e`.
+## 4. New test creation order
 
-## 5. RBAC checks
+Build the new suite from the domain happy path outward.
 
-Mandatory checks:
+1. Domain happy path: Lead -> Application -> Reservation -> Departure -> Completed.
+2. Domain negative path: Lead/Application/Departure -> Unqualified or Cancelled where confirmed.
+3. Reservation behavior: source selection, unit/subcontractor assignment, conflict warning, release policy.
+4. API contracts: request/response shape, validation errors, auth errors, and state transitions.
+5. RBAC: admin/manager visibility, direct API access, direct route/deep-link attempts.
+6. UI behavior: route/title/search/CTA/data consistency and board/list/table/detail semantics.
+7. Integration/import behavior: only after the product owner confirms exact ingest/import expectations.
+8. Regression and visual stability: responsive layout, overflow, dialogs, forms, and accessibility.
 
-1. Manager cannot access admin-only sections/routes/apis.
-2. Admin can access admin modules.
-3. Manager cannot mutate or read foreign entities outside visibility scope.
-4. Manager analytics scope does not leak foreign manager rows.
-5. Forbidden operations and invalid protected inputs return proper permission/validation states (`403`/`400`).
+## 5. Requirement format
 
-## 6. Route/content consistency checks
+Each behavior in [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md) must be testable and should include:
 
-For each tested route/context:
+1. Requirement id.
+2. User-facing intent.
+3. Preconditions.
+4. Action sequence.
+5. Expected domain state.
+6. Expected API response or persisted data when relevant.
+7. Expected UI state when relevant.
+8. Audit/activity expectation when relevant.
+9. Open questions or explicit non-goals.
 
-1. Route/state id matches title.
-2. Search placeholder is contextual.
-3. CTA is contextual and executable.
-4. Loaded data corresponds to module context.
+## 6. Test layers to create
 
-## 7. Board/List/Table regression checks
+### 6.1 Backend unit tests
 
-For leads/applications/reservations where applicable:
+Use for deterministic business rules that do not require a browser:
 
-1. View switching preserves active filter context.
-2. Status signals are consistent across views.
-3. Row/card click opens same entity detail semantics.
+1. Stage transition rules.
+2. Readiness derivation.
+3. Conflict detection rules.
+4. Mapper/projection behavior.
+5. Validation and normalization helpers.
 
-## 8. Reservation conflict behavior checks
+### 6.2 Backend integration tests
 
-Must verify:
+Use for database-backed invariants:
 
-1. Conflict is shown visually as warning.
-2. Conflict does not hard-block save by default.
-3. Conflict context is auditable.
+1. One active Application per Lead.
+2. One active Reservation per ApplicationItem.
+3. Reservation release cascade.
+4. Completion/unqualified terminal behavior.
+5. Audit/activity persistence.
+6. Integration idempotency once confirmed.
 
-## 9. Lead -> Completed happy path
+### 6.3 API contract tests
 
-Golden path to verify end-to-end:
+Use for `/api/v1` behavior:
 
-1. Create/ingest lead.
-2. Convert to application.
-3. Create reservation.
-4. Mark ready for departure.
-5. Complete order.
-6. Validate audit entries and reservation release.
+1. Authenticated and unauthenticated access.
+2. Success payload shape.
+3. Validation errors.
+4. Permission errors.
+5. State changes and returned linked ids.
 
-## 10. Exit criteria for release
+### 6.4 Frontend unit/component tests
 
-Release gate passes only if:
+Use for UI logic without full browser journeys:
 
-1. `smoke:release` is fully green.
-2. Critical E2E/runtime scenarios for touched domains are green.
-3. RBAC negative and scope checks (`smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`, `smoke:admin:control`) are green.
-4. No route/title/CTA/data mismatch regressions in touched modules.
+1. Route sync.
+2. Navigation metadata.
+3. API adapters.
+4. React Query hook invalidation.
+5. Dialog/form states.
+6. Detail workspace state rendering.
+
+### 6.5 Browser E2E tests
+
+Use only after the corresponding [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md) ids are confirmed:
+
+1. Full happy path in the browser.
+2. Critical negative path in the browser.
+3. RBAC user journeys.
+4. Route/back/forward/deep-link behavior.
+5. Board/list/table/detail open behavior.
+6. Import/integration operator journeys once confirmed.
+
+## 7. Definition of done for a new test
+
+A new test is acceptable only when:
+
+1. It references a requirement id from [QA_REQUIREMENTS.md](QA_REQUIREMENTS.md).
+2. Its data setup is explicit and repeatable.
+3. It does not depend on deleted test output or old seeded assumptions unless those assumptions are reconfirmed.
+4. It verifies domain state, not only UI text.
+5. It is deterministic in local runs and CI.
+6. It has clear failure output.
+
+## 8. Release criteria after rebuild
+
+Release criteria are suspended until the new suite exists.
+
+The first new release gate should include, in order:
+
+1. Typecheck/build commands.
+2. New backend domain happy-path tests.
+3. New API contract tests for the same path.
+4. New browser happy-path test.
+5. New RBAC tests for the touched route/domain/UI/state surface.
+
+No release gate should include deleted smoke/e2e commands.

@@ -61,6 +61,7 @@ export interface ClientOrderPosition {
 
 export interface ClientOrderHistoryItem {
   id: string;
+  leadId?: string;
   number: string;
   date: string;
   status: ClientOrderStatus;
@@ -81,9 +82,9 @@ export interface ClientActiveRecords {
   applicationsCount: number;
   reservationsCount: number;
   departuresCount: number;
-  topActiveApplication?: { id: string; title: string };
-  topActiveReservation?: { id: string; title: string };
-  topActiveDeparture?: { id: string; title: string };
+  topActiveApplication?: { id: string; title: string; entityId?: string };
+  topActiveReservation?: { id: string; title: string; entityId?: string };
+  topActiveDeparture?: { id: string; title: string; entityId?: string };
 }
 
 export interface ClientPossibleDuplicate {

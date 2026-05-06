@@ -54,9 +54,8 @@ Future-ready target (production backend integration):
 - Инварианты уровня БД: partial unique index на одну активную `Application` на
   `Lead` и одну активную `Reservation` на `ApplicationItem`; уникальность
   `IntegrationEvent` по `(channel, externalId)` для идемпотентности.
-- Release-check контур: `smoke:base`, `smoke:stage3`, `smoke:stage5`,
-  `smoke:stage6`, `smoke:stage7`, `smoke:tasks`, `smoke:rbac`, `smoke:rbac:scope`, `smoke:admin`,
-  `smoke:release`.
+- Testing reset 05.05.2026: previous smoke/e2e commands and results were removed.
+  New test expectations must be rebuilt from `QA_REQUIREMENTS.md`.
 
 Текущие обязательные свойства:
 

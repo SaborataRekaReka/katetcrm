@@ -148,11 +148,11 @@ export function ReservationsToolbar({
       </Select>
 
       <Select value={filters.unitSelection} onValueChange={(v) => setField('unitSelection', v as ReservationsFiltersState['unitSelection'])}>
-        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[120px]`}><SelectValue placeholder="Unit" /></SelectTrigger>
+        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[120px]`}><SelectValue placeholder="Единица" /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Unit: любой</SelectItem>
-          <SelectItem value="selected">Unit выбран</SelectItem>
-          <SelectItem value="not_selected">Unit не выбран</SelectItem>
+          <SelectItem value="all">Единица: любая</SelectItem>
+          <SelectItem value="selected">Единица выбрана</SelectItem>
+          <SelectItem value="not_selected">Единица не выбрана</SelectItem>
         </SelectContent>
       </Select>
 

@@ -386,7 +386,7 @@ export function EditClientDialog({ open, onOpenChange, client }: EditClientDialo
               />
               <PropertyRow
                 icon={<Mail className="h-3 w-3" />}
-                label="Email"
+                label="Эл. почта"
                 value={
                   <FieldInput
                     type="email"
@@ -468,7 +468,7 @@ export function EditClientDialog({ open, onOpenChange, client }: EditClientDialo
                           setTouched(true);
                           setContact(contact.localId, 'email', v);
                         }}
-                        placeholder="Email"
+                        placeholder="Эл. почта"
                       />
                     </div>
                   </div>

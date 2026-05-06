@@ -4,7 +4,7 @@ import { SourceChannel } from '../../types/kanban';
 interface SourceBadgeProps {
   source?: string;
   channel?: SourceChannel;
-  size?: 'xs' | 'sm';
+  size?: 'xs' | 'sm' | 'md';
   className?: string;
 }
 
@@ -37,7 +37,12 @@ export function SourceBadge({ source, channel, size = 'xs', className = '' }: So
   const meta = channelMeta[resolved];
   const Icon = meta.icon;
   const label = source && resolved === 'other' ? source : meta.label;
-  const text = size === 'sm' ? 'text-[11px] h-5' : 'text-[10px] h-4';
+  const text =
+    size === 'md'
+      ? 'text-[11px] h-6'
+      : size === 'sm'
+        ? 'text-[11px] h-5'
+        : 'text-[10px] h-4';
 
   return (
     <span

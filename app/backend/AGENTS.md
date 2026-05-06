@@ -14,7 +14,7 @@ Before backend edits, read:
 6. [../../RBAC_AND_PERMISSIONS.md](../../RBAC_AND_PERMISSIONS.md)
 7. [../../TESTING_STRATEGY.md](../../TESTING_STRATEGY.md)
 8. [README.md](./README.md)
-9. Relevant module, DTO, service, controller, Prisma, and smoke files.
+9. Relevant module, DTO, service, controller, Prisma, and [../../QA_REQUIREMENTS.md](../../QA_REQUIREMENTS.md) when tests are involved.
 
 ## Backend Context
 
@@ -44,6 +44,8 @@ Before backend edits, read:
 
 ## Validation
 
+Previous smoke scripts and smoke commands were removed in the 05.05.2026 testing reset. Do not use old smoke results as evidence.
+
 Minimum backend validation:
 
 ```bash
@@ -51,18 +53,4 @@ npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 ```
 
-Add relevant smoke checks when touched behavior requires it:
-
-```bash
-npm --prefix app/backend run smoke:base
-npm --prefix app/backend run smoke:stage3
-npm --prefix app/backend run smoke:stage5
-npm --prefix app/backend run smoke:stage6
-npm --prefix app/backend run smoke:stage7
-npm --prefix app/backend run smoke:tasks
-npm --prefix app/backend run smoke:rbac
-npm --prefix app/backend run smoke:rbac:scope
-npm --prefix app/backend run smoke:admin
-npm --prefix app/backend run smoke:admin:control
-npm --prefix app/backend run smoke:release
-```
+New backend tests must reference requirement ids from [../../QA_REQUIREMENTS.md](../../QA_REQUIREMENTS.md).

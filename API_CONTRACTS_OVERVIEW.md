@@ -27,6 +27,7 @@ Primary groups (current):
 16. `/tasks/*`
 17. `/users/*`
 18. `/settings/*`
+19. `/navigation/*`
 
 ## 3. Domain contract notes
 
@@ -164,6 +165,17 @@ Contract expectations:
 4. `users/permissions-matrix/:capabilityId` updates role toggles in Admin permissions workspace.
 5. `settings/workspace` provides canonical read model for Admin settings dashboard.
 6. `settings/workspace/sections/:sectionId` updates section rows in Admin settings workspace.
+
+### 3.10 Navigation (deep-link resolver)
+
+- `GET /api/v1/navigation/deep-link?entityType=lead|application|reservation|departure|completion&entityId=<id>`
+
+Contract expectations:
+
+1. Returns canonical navigation target (`secondaryId`, `entityType`, `entityId`) for shared-link/open-by-id scenarios.
+2. Returns deterministic `linkedIds` chain (`leadId`, `applicationId`, `reservationId`, `departureId`, `completionId`, `clientId`, `applicationItemId`) for stage switcher UX.
+3. Uses existing server-side visibility checks; foreign entity access returns role-appropriate deny (`403` or `404` depending on domain policy).
+4. Unknown entity ids return `404`; invalid `entityType` returns `400`.
 
 ## 4. Error handling policy
 

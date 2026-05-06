@@ -123,30 +123,30 @@ prisma/
 Открытые задачи:
 
 - `imports`: production-hardening CSV-пайплайна (лимиты, профили ошибок, runbook retry/replay).
-- Дополнительные e2e/contract tests для import/integration сценариев.
+- Новые tests для import/integration сценариев должны быть написаны только после фиксации требований в `../../QA_REQUIREMENTS.md`.
 
-## Smoke-проверки (release gate)
+## Testing reset
 
-Быстрые сценарные проверки backend:
+Smoke-скрипты и smoke-команды удалены 05.05.2026. Их результаты больше не являются источником истины.
 
-- `npm run smoke:base`
-- `npm run smoke:stage3`
-- `npm run smoke:stage5`
-- `npm run smoke:stage6`
-- `npm run smoke:stage6:strict` (strict profile: signatures required + all channel secrets configured)
-- `npm run smoke:stage7`
-- `npm run smoke:tasks`
-- `npm run smoke:rbac`
-- `npm run smoke:rbac:scope` (RBAC scope + validation checks для `/stats`, `/stats/reports`, `/stats/analytics`)
-- `npm run smoke:admin`
-- `npm run smoke:admin:control` (runtime read/RBAC checks для Control/Admin API: `/stats`, `/stats/reports`, `/stats/analytics`, `/activity`, `/users`, `/settings`, `/integrations/events`)
-- `npm run smoke:flow:repeat` (повтор happy-path `lead -> ... -> completed` для runtime stability)
-
-Сводный запуск полного gate:
+Текущая не-тестовая проверка backend:
 
 ```bash
-npm run smoke:release
+npm run typecheck
+npm run build
 ```
+
+Новые backend tests должны ссылаться на requirement ids из `../../QA_REQUIREMENTS.md`.
+
+## One-off backfill
+
+Если в старых данных у клиента пустой `contacts`, можно заполнить primary-контакт из связанного лида/профиля клиента:
+
+```bash
+npm run backfill:client-contacts
+```
+
+Скрипт идемпотентен для уже заполненных клиентов: обрабатывает только записи без `client_contacts`.
 
 ## Integrations ingest auth
 

@@ -76,7 +76,9 @@ export function InlineSelect<V extends string = string>({
 
   if (disabled) {
     return (
-      <span className={`text-[11px] text-gray-700 ${className ?? ''}`.trim()}>
+      <span
+        className={`inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700 ${className ?? ''}`.trim()}
+      >
         {selected
           ? renderValue
             ? renderValue(internal, selected)
@@ -92,7 +94,7 @@ export function InlineSelect<V extends string = string>({
         <SelectTrigger
           aria-label={ariaLabel}
           className={
-            'h-6 gap-1 rounded border-transparent bg-transparent px-1 py-0 text-[11px] text-gray-700 hover:bg-gray-100 focus:border-blue-400 focus:ring-0 [&>svg]:hidden ' +
+            'h-5 min-h-[20px] gap-1 rounded border-transparent bg-transparent px-1 py-0 text-[11px] text-gray-700 hover:bg-gray-100 focus:border-blue-400 focus:ring-0 [&>svg]:hidden ' +
             (className ?? '')
           }
         >

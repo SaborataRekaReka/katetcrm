@@ -1,5 +1,6 @@
 import { apiRequest } from './apiClient';
 import type { PipelineStage, SourceChannel } from './leadsApi';
+import type { StageLinkedIds } from './linkedIds';
 
 export type SourcingType = 'own' | 'subcontractor' | 'undecided';
 export type DeliveryMode = 'pickup' | 'delivery';
@@ -91,6 +92,7 @@ export interface ApplicationApi {
   subcontractorSummary: string | null;
   applicationGroup: ApplicationGroup;
   readyForDeparture: boolean;
+  linkedIds: StageLinkedIds;
 }
 
 export interface ApplicationListParams {

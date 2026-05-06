@@ -51,8 +51,9 @@ Planner / Backend Agent / Frontend Agent / QA Reviewer / Docs Agent.
 npm --prefix app/backend run typecheck
 npm --prefix app/backend run build
 npm --prefix app/frontend run build
-npm --prefix app/frontend run check:ui-consistency
 ```
+
+Testing reset note: removed smoke/e2e/ui-consistency commands must not be used. New tests must reference requirement ids from `QA_REQUIREMENTS.md`.
 
 ## Final report format
 

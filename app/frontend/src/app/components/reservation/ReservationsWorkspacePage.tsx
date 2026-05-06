@@ -23,11 +23,11 @@ import { ClientWorkspace } from '../client/ClientWorkspace';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
 import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
-import { useReservationsQuery } from '../../hooks/useReservationsQuery';
+import { useReservationQuery, useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
-import { toReservationRows } from '../../lib/reservationAdapter';
+import { toReservationRow, toReservationRows } from '../../lib/reservationAdapter';
 import { isApiErrorStatus } from '../../lib/apiErrors';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import {
@@ -47,7 +47,15 @@ import {
  * «Создать из заявки», переводящая в раздел Заявок.
  */
 export function ReservationsWorkspacePage() {
-  const { activeSecondaryNav, currentView, setActiveSecondaryNav } = useLayout();
+  const {
+    activeSecondaryNav,
+    currentView,
+    activeEntityType,
+    activeEntityId,
+    setActiveSecondaryNav,
+    setActiveEntityRoute,
+    clearActiveEntityRoute,
+  } = useLayout();
   const [filters, setFilters] = useState<ReservationsFiltersState>(DEFAULT_RESERVATIONS_FILTERS);
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState<Lead | null>(null);
@@ -65,13 +73,17 @@ export function ReservationsWorkspacePage() {
   // бэке), либо mock (fallback без флага USE_API). Оба пути приводятся к
   // единому ReservationRow, так что фильтры/рендер не разветвляются.
   const reservationsQuery = useReservationsQuery({ isActive: undefined }, USE_API);
+  const routedReservationQuery = useReservationQuery(
+    activeEntityType === 'reservation' ? activeEntityId : null,
+    USE_API && activeEntityType === 'reservation' && !!activeEntityId,
+  );
   const applicationsQuery = useApplicationsQuery({ scope: 'all' }, USE_API);
 
   const reservationCandidates = useMemo<ReservationCreateCandidate[]>(() => {
     if (!USE_API || !applicationsQuery.data) return [];
     return applicationsQuery.data.items.flatMap((app) =>
       app.positions
-        .filter((p) => p.readyForReservation && p.status === 'no_reservation')
+        .filter((p) => p.status === 'no_reservation')
         .map((p) => ({
           applicationItemId: p.id,
           applicationId: app.id,
@@ -140,13 +152,29 @@ export function ReservationsWorkspacePage() {
     filters.readyForDeparture ||
     query.length > 0;
 
+  const normalizeEntityRouteId = (id?: string | null): string | null => {
+    if (!id) return null;
+    const value = id.trim();
+    if (!value) return null;
+    if (/^(LEAD|APP|RSV|DEP|CMP|CL)-\d+$/i.test(value)) {
+      return null;
+    }
+    return value;
+  };
+
+  const canOpenApplicationFromRow = (row: ReservationRow): boolean =>
+    !!normalizeEntityRouteId(row.reservation.linked.applicationId);
+
   const handleRowClick = (row: ReservationRow) => {
     setSelected(row.lead);
     setSelectedReservationId(row.reservation.id);
+    setActiveEntityRoute('reservation', row.reservation.id);
     setIsOpen(true);
   };
-  const handleOpenApplicationFromRow = () => {
-    setActiveSecondaryNav('applications');
+  const handleOpenApplicationFromRow = (row: ReservationRow) => {
+    const applicationEntityId = normalizeEntityRouteId(row.reservation.linked.applicationId);
+    if (!applicationEntityId) return;
+    setActiveEntityRoute('application', applicationEntityId);
   };
   const handleOpenChangeUnitFromRow = (row: ReservationRow) => {
     handleRowClick(row);
@@ -161,6 +189,7 @@ export function ReservationsWorkspacePage() {
     setIsOpen(false);
     setSelected(null);
     setSelectedReservationId(null);
+    clearActiveEntityRoute();
   };
   const handleOpenClient = (lead: Lead) => {
     setClientLead(lead);
@@ -208,6 +237,30 @@ export function ReservationsWorkspacePage() {
     }
   }, [isLeadOverlayOpen, overlayLeadQuery.isError, overlayLeadQuery.error]);
 
+  useEffect(() => {
+    if (activeEntityType !== 'reservation' || !activeEntityId) return;
+
+    if (USE_API) {
+      if (!routedReservationQuery.data) return;
+      const routed = toReservationRow(routedReservationQuery.data);
+      setSelected(routed.lead);
+      setSelectedReservationId(routed.reservation.id);
+      setIsOpen(true);
+      return;
+    }
+
+    const localRow = allRows.find((row) => row.reservation.id === activeEntityId);
+    if (!localRow) return;
+    setSelected(localRow.lead);
+    setSelectedReservationId(localRow.reservation.id);
+    setIsOpen(true);
+  }, [
+    activeEntityType,
+    activeEntityId,
+    routedReservationQuery.data,
+    allRows,
+  ]);
+
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">
       <WorkspaceHeader />
@@ -220,7 +273,7 @@ export function ReservationsWorkspacePage() {
       />
       <div className="flex h-8 shrink-0 items-center gap-2 border-b border-border/40 bg-muted/20 px-4 text-[11px] text-muted-foreground">
         <span>
-          Новые брони можно создать прямо здесь из готовых позиций заявки.
+          Новые брони можно создать прямо здесь из позиций заявки без активной брони.
         </span>
         {USE_API ? (
           <Button
@@ -251,6 +304,7 @@ export function ReservationsWorkspacePage() {
           onRowClick={handleRowClick}
           isFiltered={hasActiveFilter || activeSecondaryNav.startsWith('view-')}
           onOpenApplication={handleOpenApplicationFromRow}
+          canOpenApplication={canOpenApplicationFromRow}
           onOpenChangeUnit={handleOpenChangeUnitFromRow}
           onOpenSelectSubcontractor={handleOpenSelectSubcontractorFromRow}
           onOpenMoveToDeparture={handleOpenMoveToDepartureFromRow}
@@ -263,7 +317,16 @@ export function ReservationsWorkspacePage() {
         />
       )}
 
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            handleClose();
+            return;
+          }
+          setIsOpen(true);
+        }}
+      >
         <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
             <ReservationWorkspace
@@ -283,7 +346,7 @@ export function ReservationsWorkspacePage() {
             <ClientWorkspace
               lead={clientLead}
               onClose={handleCloseClient}
-              apiClientId={USE_API ? clientLead.id : undefined}
+              apiClientId={USE_API ? clientLead.apiClientId : undefined}
             />
           )}
         </DialogContent>

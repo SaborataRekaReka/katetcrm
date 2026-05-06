@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import type { Prisma, UserRole } from '@prisma/client';
+import type { Prisma, SourcingType, UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ActivityService } from '../activity/activity.service';
 import { projectApplication } from '../../common/projections/application.projection';
@@ -72,10 +72,18 @@ export class ApplicationsService {
           include: {
             equipmentType: true,
             reservations: {
-              where: { isActive: true },
+              orderBy: [{ createdAt: 'desc' }],
+              take: 3,
               include: {
                 equipmentUnit: true,
                 subcontractor: true,
+                departures: {
+                  orderBy: [{ scheduledAt: 'desc' }],
+                  take: 3,
+                  include: {
+                    completion: { select: { id: true } },
+                  },
+                },
               },
             },
           },
@@ -163,10 +171,18 @@ export class ApplicationsService {
           include: {
             equipmentType: true,
             reservations: {
-              where: { isActive: true },
+              orderBy: [{ createdAt: 'desc' }],
+              take: 3,
               include: {
                 equipmentUnit: true,
                 subcontractor: true,
+                departures: {
+                  orderBy: [{ scheduledAt: 'desc' }],
+                  take: 3,
+                  include: {
+                    completion: { select: { id: true } },
+                  },
+                },
               },
             },
           },
@@ -217,6 +233,31 @@ export class ApplicationsService {
     return normalized;
   }
 
+  private validateReadyForReservation(input: {
+    readyForReservation: boolean;
+    quantity: number;
+    plannedDate: string | Date | null;
+    plannedTimeFrom: string | null;
+    plannedTimeTo: string | null;
+    address: string | null;
+    sourcingType: SourcingType;
+  }) {
+    if (!input.readyForReservation) return;
+
+    const missing: string[] = [];
+    if (!input.quantity || input.quantity < 1) missing.push('quantity');
+    if (!input.plannedDate) missing.push('plannedDate');
+    if (!input.plannedTimeFrom || !input.plannedTimeTo) missing.push('plannedTimeFrom/plannedTimeTo');
+    if (!input.address?.trim()) missing.push('address');
+    if (input.sourcingType === 'undecided') missing.push('sourcingType');
+
+    if (missing.length > 0) {
+      throw new BadRequestException(
+        `readyForReservation=true requires fields: ${missing.join(', ')}`,
+      );
+    }
+  }
+
   async addItem(appId: string, dto: CreateApplicationItemDto, actor: ActorContext) {
     const app = await this.get(appId, actor);
     if (!app.isActive) {
@@ -226,12 +267,27 @@ export class ApplicationsService {
       const t = await this.prisma.equipmentType.findUnique({ where: { id: dto.equipmentTypeId } });
       if (!t) throw new BadRequestException('Указанный тип техники не найден');
     }
+
+    const nextQuantity = dto.quantity ?? 1;
+    const nextSourcingType = dto.sourcingType ?? 'undecided';
+    const nextReadyForReservation = dto.readyForReservation ?? false;
+
+    this.validateReadyForReservation({
+      readyForReservation: nextReadyForReservation,
+      quantity: nextQuantity,
+      plannedDate: dto.plannedDate ?? null,
+      plannedTimeFrom: dto.plannedTimeFrom ?? null,
+      plannedTimeTo: dto.plannedTimeTo ?? null,
+      address: dto.address ?? null,
+      sourcingType: nextSourcingType,
+    });
+
     const item = await this.prisma.applicationItem.create({
       data: {
         applicationId: appId,
         equipmentTypeId: dto.equipmentTypeId,
         equipmentTypeLabel: dto.equipmentTypeLabel,
-        quantity: dto.quantity ?? 1,
+        quantity: nextQuantity,
         shiftCount: dto.shiftCount ?? 1,
         overtimeHours: dto.overtimeHours,
         downtimeHours: dto.downtimeHours,
@@ -240,11 +296,11 @@ export class ApplicationsService {
         plannedTimeTo: dto.plannedTimeTo,
         address: dto.address,
         comment: dto.comment,
-        sourcingType: dto.sourcingType ?? 'undecided',
+        sourcingType: nextSourcingType,
         pricePerShift: this.toDecimal(dto.pricePerShift, 'pricePerShift'),
         deliveryPrice: this.toDecimal(dto.deliveryPrice, 'deliveryPrice'),
         surcharge: this.toDecimal(dto.surcharge, 'surcharge'),
-        readyForReservation: dto.readyForReservation ?? false,
+        readyForReservation: nextReadyForReservation,
       },
     });
     await this.prisma.application.update({
@@ -280,6 +336,25 @@ export class ApplicationsService {
 
   async updateItem(itemId: string, dto: UpdateApplicationItemDto, actor: ActorContext) {
     const item = await this.getItem(itemId, actor);
+    const nextSourcingType = dto.sourcingType ?? item.sourcingType;
+    const nextReadyForReservation = dto.readyForReservation ?? item.readyForReservation;
+    const nextQuantity = dto.quantity ?? item.quantity;
+    const nextPlannedDate =
+      dto.plannedDate ?? (item.plannedDate ? item.plannedDate.toISOString() : null);
+    const nextPlannedTimeFrom = dto.plannedTimeFrom ?? item.plannedTimeFrom;
+    const nextPlannedTimeTo = dto.plannedTimeTo ?? item.plannedTimeTo;
+    const nextAddress = dto.address ?? item.address;
+
+    this.validateReadyForReservation({
+      readyForReservation: nextReadyForReservation,
+      quantity: nextQuantity,
+      plannedDate: nextPlannedDate,
+      plannedTimeFrom: nextPlannedTimeFrom,
+      plannedTimeTo: nextPlannedTimeTo,
+      address: nextAddress,
+      sourcingType: nextSourcingType,
+    });
+
     const updated = await this.prisma.applicationItem.update({
       where: { id: itemId },
       data: {

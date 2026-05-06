@@ -10,25 +10,36 @@ export type ApplicationGroupId =
   | 'completed'
   | 'cancelled';
 
+function isReservedPosition(appPosition: Application['positions'][number]): boolean {
+  if (appPosition.status) {
+    return appPosition.status !== 'no_reservation';
+  }
+  return appPosition.readyForReservation;
+}
+
+function isReadyPosition(appPosition: Application['positions'][number]): boolean {
+  if (appPosition.status) {
+    return appPosition.status === 'reserved';
+  }
+  return appPosition.readyForReservation;
+}
+
 export function computeGroup(app: Application): ApplicationGroupId {
   if (app.stage === 'completed') return 'completed';
   if (app.stage === 'cancelled') return 'cancelled';
   if (app.stage === 'departure') return 'on_departure';
   const total = app.positions.length;
-  const reserved = app.positions.filter(
-    (p) => p.status === 'reserved' || p.status === 'unit_selected' || p.readyForReservation,
-  ).length;
+  const positionsReserved = app.positions.filter((p) => isReservedPosition(p)).length;
+  const positionsReady = app.positions.filter((p) => isReadyPosition(p)).length;
   const hasConflict = app.positions.some((p) => p.status === 'conflict' || p.reservationState === 'conflict');
-  const allReady = total > 0 && reserved === total && !hasConflict;
+  const allReady = total > 0 && positionsReady === total && !hasConflict;
   if (allReady) return 'ready_for_departure';
-  if (reserved === 0) return 'no_reservation';
+  if (positionsReserved === 0) return 'no_reservation';
   return 'in_reservation_work';
 }
 
 export function countReservedPositions(app: Application): number {
-  return app.positions.filter(
-    (p) => p.status === 'reserved' || p.status === 'unit_selected' || p.readyForReservation,
-  ).length;
+  return app.positions.filter((p) => isReservedPosition(p)).length;
 }
 
 export function hasAnyConflict(app: Application): boolean {

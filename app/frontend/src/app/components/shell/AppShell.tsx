@@ -5,6 +5,7 @@ import { GlobalTopbar } from './GlobalTopbar';
 import { NotificationStrip } from './NotificationStrip';
 import { PrimaryRail } from './PrimaryRail';
 import { SecondarySidebar } from './SecondarySidebar';
+import { GlobalEntityOverlayHost } from './GlobalEntityOverlayHost';
 
 function KeyboardShortcuts() {
   const { toggleSidebar } = useLayout();
@@ -38,6 +39,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               </main>
             </div>
           </div>
+          <GlobalEntityOverlayHost />
         </div>
       </TooltipProvider>
     </LayoutProvider>

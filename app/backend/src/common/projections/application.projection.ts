@@ -28,6 +28,9 @@ import type {
   Application,
   ApplicationItem,
   Client,
+  Completion,
+  Departure,
+  DepartureStatus,
   EquipmentType,
   EquipmentUnit,
   PipelineStage,
@@ -37,6 +40,7 @@ import type {
   User,
   DeliveryMode,
 } from '@prisma/client';
+import { buildStageLinkedIds, type StageLinkedIds } from './linked-ids';
 
 export type ApplicationItemStatus =
   | 'no_reservation'
@@ -54,9 +58,20 @@ export type ApplicationGroup =
 
 export type DominantSourcing = 'own' | 'subcontractor' | 'mixed' | 'undecided';
 
+const ACTIVE_DEPARTURE_STATUSES = new Set<DepartureStatus>([
+  'scheduled',
+  'in_transit',
+  'arrived',
+]);
+
+type DepartureWithCompletion = Pick<Departure, 'id' | 'status' | 'scheduledAt'> & {
+  completion?: Pick<Completion, 'id'> | null;
+};
+
 type ReservationWithRelations = Reservation & {
   equipmentUnit?: EquipmentUnit | null;
   subcontractor?: Subcontractor | null;
+  departures?: DepartureWithCompletion[];
 };
 
 type ApplicationItemWithRelations = ApplicationItem & {
@@ -148,6 +163,14 @@ export interface ApplicationView {
   subcontractorSummary: string | null;
   applicationGroup: ApplicationGroup;
   readyForDeparture: boolean;
+  linkedIds: StageLinkedIds;
+}
+
+interface LinkedReservationSelection {
+  reservationId: string | null;
+  applicationItemId: string | null;
+  departureId: string | null;
+  completionId: string | null;
 }
 
 function projectItem(item: ApplicationItemWithRelations): ApplicationItemView {
@@ -232,8 +255,9 @@ function computeSubcontractorSummary(positions: ApplicationItemView[]): string |
 
 function computeApplicationGroup(
   stage: PipelineStage,
-  positions: ApplicationItemView[],
+  positionsTotal: number,
   positionsReserved: number,
+  positionsReady: number,
   hasAnyConflict: boolean,
 ): ApplicationGroup {
   if (stage === 'completed') return 'completed';
@@ -241,30 +265,76 @@ function computeApplicationGroup(
   // but application UI/domain terminal state is "cancelled".
   if (stage === 'cancelled' || stage === 'unqualified') return 'cancelled';
   if (stage === 'departure') return 'on_departure';
-  const total = positions.length;
-  if (total > 0 && positionsReserved === total && !hasAnyConflict) {
+  if (positionsTotal > 0 && positionsReady === positionsTotal && !hasAnyConflict) {
     return 'ready_for_departure';
   }
   if (positionsReserved === 0) return 'no_reservation';
   return 'in_reservation_work';
 }
 
+function pickLinkedReservation(items: ApplicationItemWithRelations[]): LinkedReservationSelection {
+  const reservations = items.flatMap((item) =>
+    (item.reservations ?? []).map((reservation) => ({
+      reservation,
+      applicationItemId: item.id,
+    })),
+  );
+
+  if (reservations.length === 0) {
+    return {
+      reservationId: null,
+      applicationItemId: null,
+      departureId: null,
+      completionId: null,
+    };
+  }
+
+  reservations.sort((a, b) => {
+    if (a.reservation.isActive !== b.reservation.isActive) {
+      return Number(b.reservation.isActive) - Number(a.reservation.isActive);
+    }
+    return b.reservation.createdAt.getTime() - a.reservation.createdAt.getTime();
+  });
+
+  const selected = reservations[0];
+  if (!selected) {
+    return {
+      reservationId: null,
+      applicationItemId: null,
+      departureId: null,
+      completionId: null,
+    };
+  }
+
+  const departure = [...(selected.reservation.departures ?? [])].sort((a, b) => {
+    const aActive = ACTIVE_DEPARTURE_STATUSES.has(a.status) ? 1 : 0;
+    const bActive = ACTIVE_DEPARTURE_STATUSES.has(b.status) ? 1 : 0;
+    if (aActive !== bActive) return bActive - aActive;
+    return b.scheduledAt.getTime() - a.scheduledAt.getTime();
+  })[0];
+
+  return {
+    reservationId: selected.reservation.id,
+    applicationItemId: selected.applicationItemId,
+    departureId: departure?.id ?? null,
+    completionId: departure?.completion?.id ?? null,
+  };
+}
+
 export function projectApplication(app: ApplicationWithRelations): ApplicationView {
-  const positions = (app.items ?? []).map(projectItem);
+  const sourceItems = app.items ?? [];
+  const positions = sourceItems.map(projectItem);
 
   const positionsTotal = positions.length;
-  const positionsReserved = positions.filter(
-    (p) => p.status === 'reserved' || p.status === 'unit_selected' || p.readyForReservation,
-  ).length;
-  const positionsReady = positions.filter(
-    (p) => p.status === 'reserved' || p.readyForReservation,
-  ).length;
+  const positionsReserved = positions.filter((p) => p.status !== 'no_reservation').length;
+  const positionsReady = positions.filter((p) => p.status === 'reserved').length;
   const hasAnyConflict = positions.some((p) => p.status === 'conflict');
 
   const applicationGroup = computeApplicationGroup(
     app.stage,
-    positions,
+    positionsTotal,
     positionsReserved,
+    positionsReady,
     hasAnyConflict,
   );
   const readyForDeparture =
@@ -272,6 +342,7 @@ export function projectApplication(app: ApplicationWithRelations): ApplicationVi
 
   const client = app.client ?? null;
   const manager = app.responsibleManager ?? null;
+  const linked = pickLinkedReservation(sourceItems);
 
   return {
     id: app.id,
@@ -314,6 +385,15 @@ export function projectApplication(app: ApplicationWithRelations): ApplicationVi
     subcontractorSummary: computeSubcontractorSummary(positions),
     applicationGroup,
     readyForDeparture,
+    linkedIds: buildStageLinkedIds({
+      leadId: app.leadId,
+      applicationId: app.id,
+      reservationId: linked.reservationId,
+      departureId: linked.departureId,
+      completionId: linked.completionId,
+      clientId: app.clientId,
+      applicationItemId: linked.applicationItemId,
+    }),
   };
 }
 

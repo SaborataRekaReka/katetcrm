@@ -107,6 +107,10 @@ export class ReleaseReservationDto {
 export class ReservationListQueryDto {
   @IsOptional()
   @IsString()
+  query?: string;
+
+  @IsOptional()
+  @IsString()
   applicationId?: string;
 
   @IsOptional()

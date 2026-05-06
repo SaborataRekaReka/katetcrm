@@ -33,4 +33,23 @@ export default defineConfig({
 
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
+
+  build: {
+    chunkSizeWarningLimit: 900,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined
+
+          if (id.includes('@mui/') || id.includes('@emotion/')) return 'vendor-mui'
+          if (id.includes('@radix-ui/')) return 'vendor-radix'
+          if (id.includes('react-dnd') || id.includes('dnd-core')) return 'vendor-dnd'
+          if (id.includes('recharts') || id.includes('react-slick') || id.includes('embla-carousel')) return 'vendor-visual'
+          if (id.includes('@tanstack/react-query')) return 'vendor-query'
+
+          return undefined
+        },
+      },
+    },
+  },
 })

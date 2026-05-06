@@ -57,12 +57,14 @@ import {
   SidebarField,
   ActionButton,
 } from '../detail/DetailShell';
-import { EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { EntityActivityList, EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
 import { PhoneLink, EmailLink } from '../detail/ContactAtoms';
+import { RelatedRecordsTimeline, type RelatedRecordChain } from '../detail/RelatedRecordsTimeline';
 import { RepeatOrderDialog, type RepeatOrderPayload } from './RepeatOrderDialog';
 import { EditClientDialog } from './EditClientDialog';
 import { NewLeadDialog } from '../leads/NewLeadDialog';
 import { useLayout } from '../shell/layoutStore';
+import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 
 interface Props {
   lead?: Lead;
@@ -94,8 +96,14 @@ const leadStatusMeta: Record<ClientLeadStatus, { label: string; tone: string }> 
   unqualified: { label: 'Некачественный', tone: badgeTones.muted },
 };
 
+const headerStatusBadgeClass =
+  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
+
+const sidebarStatusBadgeClass =
+  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+
 export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
-  const { setActiveSecondaryNav } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity } = useLayout();
   const mockBase: Client = useMemo(() => buildMockClient(lead), [lead]);
   const resolvedApiClientId = apiClientId ?? lead?.apiClientId;
   const isApiDetailMode = USE_API && !!resolvedApiClientId;
@@ -249,10 +257,39 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     onClose();
   };
 
+  const openEntitySecondary = (
+    secondaryId: string,
+    entityType: 'lead' | 'application' | 'reservation' | 'departure' | 'completion',
+    entityId?: string | null,
+  ) => {
+    if (!entityId) return false;
+    openSecondaryWithEntity(secondaryId, entityType, entityId);
+    return true;
+  };
+
+  const breadcrumbItems = [
+    { label: 'CRM', onClick: () => openSecondary('overview') },
+    { label: 'Клиенты', onClick: () => openSecondary('clients') },
+    { label: 'Клиент' },
+  ];
+
+  const normalizeEntityRouteId = (id?: string | null): string | null => {
+    if (!id) return null;
+    const value = id.trim();
+    if (!value) return null;
+
+    // Mock demo IDs are display-only codes and should not be used as route entity IDs.
+    if (/^(LEAD|APP|RSV|DEP|CMP)-\d+$/i.test(value)) {
+      return null;
+    }
+
+    return value;
+  };
+
   if (isPrimaryPending) {
     return (
       <DetailShell
-        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Clients']} />}
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
         main={(
           <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-muted-foreground">
@@ -267,7 +304,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   if (isPrimaryError) {
     return (
       <DetailShell
-        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Clients']} />}
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
         main={(
           <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-rose-700">
@@ -324,6 +361,152 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
   const completedOrders = base.ordersHistory.filter((o) => o.status === 'completed');
   const lastCompleted = completedOrders[0] ?? null;
+  const historyEntries = useMemo(
+    () => [
+      ...base.activity.map((a) => ({
+        id: a.id,
+        actor: a.actor,
+        text: a.message,
+        time: a.at,
+      })),
+      ...(createdLeadId
+        ? [{
+            id: `repeat-order-${createdLeadId}`,
+            actor: base.manager ?? 'Менеджер',
+            text: `Повтор заказа → ${createdLeadId}`,
+            time: 'только что',
+          }]
+        : []),
+    ],
+    [base.activity, base.manager, createdLeadId],
+  );
+  const shareClientEntityId = normalizeEntityRouteId(resolvedApiClientId ?? base.id);
+  const shareUrl = shareClientEntityId
+    ? buildAbsoluteEntityUrl('client', shareClientEntityId)
+    : null;
+  const leadById = new Map(base.leadsHistory.map((item) => [item.id, item]));
+  const leadChainsUsed = new Set<string>();
+  const relatedRecordChains: RelatedRecordChain[] = base.ordersHistory.map((order) => {
+    const chain: RelatedRecordChain = [];
+
+    const leadId = order.leadId ?? null;
+    const leadEntityId = normalizeEntityRouteId(leadId);
+    const linkedLead = leadId ? leadById.get(leadId) : null;
+    if (leadId) {
+      leadChainsUsed.add(leadId);
+      chain.push({
+        stage: 'Лид',
+        details: linkedLead ? `${linkedLead.id} · ${linkedLead.date}` : leadId,
+        onClick: leadEntityId
+          ? () => openEntitySecondary('leads', 'lead', leadEntityId)
+          : null,
+      });
+    }
+
+    const applicationEntityId = normalizeEntityRouteId(order.id);
+    chain.push({
+      stage: 'Заявка',
+      details: `${order.number} · ${order.date}`,
+      onClick: applicationEntityId
+        ? () => openEntitySecondary('applications', 'application', applicationEntityId)
+        : null,
+    });
+
+    const reservationEntityId = normalizeEntityRouteId(order.reservationId);
+    if (reservationEntityId) {
+      chain.push({
+        stage: 'Бронь',
+        details: reservationEntityId,
+        onClick: () => openEntitySecondary('reservations', 'reservation', reservationEntityId),
+      });
+    }
+
+    const departureEntityId = normalizeEntityRouteId(order.departureId);
+    if (departureEntityId) {
+      chain.push({
+        stage: 'Выезд',
+        details: departureEntityId,
+        onClick: () => openEntitySecondary('departures', 'departure', departureEntityId),
+      });
+    }
+
+    const completionEntityId = normalizeEntityRouteId(order.completionId);
+    if (completionEntityId) {
+      chain.push({
+        stage: 'Завершен',
+        details: completionEntityId,
+        onClick: () => openEntitySecondary('completion', 'completion', completionEntityId),
+      });
+    }
+
+    return chain;
+  });
+
+  const standaloneLeadChains: RelatedRecordChain[] = base.leadsHistory
+    .filter((leadItem) => !leadChainsUsed.has(leadItem.id))
+    .map((leadItem) => {
+      const leadEntityId = normalizeEntityRouteId(leadItem.id);
+      return [
+        {
+          stage: 'Лид',
+          details: `${leadItem.id} · ${leadItem.date}`,
+          onClick: leadEntityId
+            ? () => openEntitySecondary('leads', 'lead', leadEntityId)
+            : null,
+        },
+      ];
+    });
+
+  const allRelatedRecordChains: RelatedRecordChain[] = [
+    ...relatedRecordChains,
+    ...standaloneLeadChains,
+  ];
+
+  // Active records are tail nodes of chains, except chains that already reached completion.
+  const activeChainTailRecords = allRelatedRecordChains
+    .map((chain) => chain[chain.length - 1])
+    .filter((node): node is NonNullable<(typeof allRelatedRecordChains)[number][number]> => !!node)
+    .filter((node) => node.stage !== 'Завершен');
+
+  const activeTailStats = activeChainTailRecords.reduce(
+    (acc, node) => {
+      if (node.stage === 'Лид') acc.leadsCount += 1;
+      if (node.stage === 'Заявка') acc.applicationsCount += 1;
+      if (node.stage === 'Бронь') acc.reservationsCount += 1;
+      if (node.stage === 'Выезд') acc.departuresCount += 1;
+      return acc;
+    },
+    {
+      leadsCount: 0,
+      applicationsCount: 0,
+      reservationsCount: 0,
+      departuresCount: 0,
+    },
+  );
+
+  const activeRowLabel = (stage: string) => {
+    if (stage === 'Лид') return 'Активный лид';
+    if (stage === 'Заявка') return 'Активная заявка';
+    if (stage === 'Бронь') return 'Активная бронь';
+    if (stage === 'Выезд') return 'Активный выезд';
+    return 'Активная запись';
+  };
+
+  const activeRowIcon = (stage: string) => {
+    if (stage === 'Лид') return <UserIcon className="w-3.5 h-3.5 text-blue-500" />;
+    if (stage === 'Выезд') return <Truck className="w-3.5 h-3.5 text-blue-500" />;
+    return <FileText className="w-3.5 h-3.5 text-blue-500" />;
+  };
+
+  const topActiveApplicationEntityId = normalizeEntityRouteId(
+    base.activeRecords.topActiveApplication?.entityId,
+  );
+  const topActiveReservationEntityId = normalizeEntityRouteId(
+    base.activeRecords.topActiveReservation?.entityId,
+  );
+  const topActiveDepartureEntityId = normalizeEntityRouteId(
+    base.activeRecords.topActiveDeparture?.entityId,
+  );
 
   // Primary CTA: повторить заказ (если есть завершённый) или создать лид.
   const primary = lastCompleted
@@ -463,7 +646,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
             : []),
         ]}
         chips={[
-          <span key="type" className={`${badgeBase} ${badgeTones.source}`}>
+          <span key="type" className={`${headerStatusBadgeClass} ${badgeTones.source}`}>
             {base.type === 'company'
               ? <Building2 className="w-3 h-3" />
               : <UserIcon className="w-3 h-3" />}
@@ -479,7 +662,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="app"
                   icon={<FileText className="w-3 h-3 text-blue-500" />}
                   label={`Заявка ${base.activeRecords.topActiveApplication.id}`}
-                  onClick={() => openSecondary('applications')}
+                  onClick={topActiveApplicationEntityId
+                    ? () => openEntitySecondary('applications', 'application', topActiveApplicationEntityId)
+                    : undefined}
                 />,
               ]
             : []),
@@ -489,7 +674,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="rsv"
                   icon={<FileText className="w-3 h-3 text-blue-500" />}
                   label={`Бронь ${base.activeRecords.topActiveReservation.id}`}
-                  onClick={() => openSecondary('reservations')}
+                  onClick={topActiveReservationEntityId
+                    ? () => openEntitySecondary('reservations', 'reservation', topActiveReservationEntityId)
+                    : undefined}
                 />,
               ]
             : []),
@@ -499,7 +686,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   key="dep"
                   icon={<Truck className="w-3 h-3 text-blue-500" />}
                   label={`Выезд ${base.activeRecords.topActiveDeparture.id}`}
-                  onClick={() => openSecondary('departures')}
+                  onClick={topActiveDepartureEntityId
+                    ? () => openEntitySecondary('departures', 'departure', topActiveDepartureEntityId)
+                    : undefined}
                 />,
               ]
             : []),
@@ -614,13 +803,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           />
           <PropertyRow
             icon={<Mail className="w-3 h-3" />}
-            label="Основной email"
+            label="Основная эл. почта"
             value={
               canInlineEditClient ? (
                 <InlineText
                   value={base.primaryEmail ?? ''}
-                  ariaLabel="Email клиента"
-                  placeholder="Добавить email…"
+                  ariaLabel="Эл. почта клиента"
+                  placeholder="Добавить эл. почту…"
                   emptyDisplay={<EmptyValue />}
                   onSave={makeClientFieldSaver((v) => ({ email: v.trim() || undefined }))}
                 />
@@ -819,58 +1008,30 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       </div>
 
       {/* Active records summary inline */}
-      {(base.activeRecords.applicationsCount +
-        base.activeRecords.reservationsCount +
-        base.activeRecords.departuresCount +
-        base.activeRecords.leadsCount) > 0 && (
+      {activeChainTailRecords.length > 0 && (
         <div className="mb-5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Активные записи</div>
           <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
-            {base.activeRecords.topActiveApplication && (
+            {activeChainTailRecords.map((node, index) => (
               <ActiveRow
-                icon={<FileText className="w-3.5 h-3.5 text-blue-500" />}
-                label="Активная заявка"
+                key={`${node.stage}-${node.details ?? 'record'}-${index}`}
+                icon={activeRowIcon(node.stage)}
+                label={activeRowLabel(node.stage)}
                 value={
-                  <button
-                    type="button"
-                    className="text-blue-600 hover:underline"
-                    onClick={() => openSecondary('applications')}
-                  >
-                    {base.activeRecords.topActiveApplication.title}
-                  </button>
+                  node.onClick ? (
+                    <button
+                      type="button"
+                      className="text-blue-600 hover:underline"
+                      onClick={node.onClick}
+                    >
+                      {node.details}
+                    </button>
+                  ) : (
+                    <span>{node.details}</span>
+                  )
                 }
               />
-            )}
-            {base.activeRecords.topActiveReservation && (
-              <ActiveRow
-                icon={<FileText className="w-3.5 h-3.5 text-blue-500" />}
-                label="Активная бронь"
-                value={
-                  <button
-                    type="button"
-                    className="text-blue-600 hover:underline"
-                    onClick={() => openSecondary('reservations')}
-                  >
-                    {base.activeRecords.topActiveReservation.title}
-                  </button>
-                }
-              />
-            )}
-            {base.activeRecords.topActiveDeparture && (
-              <ActiveRow
-                icon={<Truck className="w-3.5 h-3.5 text-blue-500" />}
-                label="Активный выезд"
-                value={
-                  <button
-                    type="button"
-                    className="text-blue-600 hover:underline"
-                    onClick={() => openSecondary('departures')}
-                  >
-                    {base.activeRecords.topActiveDeparture.title}
-                  </button>
-                }
-              />
-            )}
+            ))}
           </div>
         </div>
       )}
@@ -953,45 +1114,51 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           </div>
         </div>
         <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
-          {base.ordersHistory.map((o) => (
-            <div key={o.id} className="flex items-center gap-3 px-3 py-1.5">
-              <span className={`${badgeBase} ${orderStatusMeta[o.status].tone} flex-shrink-0`}>
-                {orderStatusMeta[o.status].label}
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    className="text-[11px] text-blue-600 hover:underline"
-                    onClick={() => openSecondary('applications')}
-                  >
-                    {o.number}
-                  </button>
-                  <span className="text-[10px] text-gray-500">· {o.date}</span>
-                  {o.amount && (
-                    <span className="text-[10px] text-gray-500">· {o.amount}</span>
-                  )}
-                  {o.hasActiveReservation && (
-                    <span className={`${badgeBase} ${badgeTones.progress}`}>Бронь</span>
-                  )}
-                  {o.hasActiveDeparture && (
-                    <span className={`${badgeBase} ${badgeTones.progress}`}>Выезд</span>
+          {base.ordersHistory.map((o) => {
+            const applicationEntityId = normalizeEntityRouteId(o.id);
+            return (
+              <div key={o.id} className="flex items-center gap-3 px-3 py-1.5">
+                <span className={`${badgeBase} ${orderStatusMeta[o.status].tone} flex-shrink-0`}>
+                  {orderStatusMeta[o.status].label}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      className="text-[11px] text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                      onClick={applicationEntityId
+                        ? () => openEntitySecondary('applications', 'application', applicationEntityId)
+                        : undefined}
+                      disabled={!applicationEntityId}
+                    >
+                      {o.number}
+                    </button>
+                    <span className="text-[10px] text-gray-500">· {o.date}</span>
+                    {o.amount && (
+                      <span className="text-[10px] text-gray-500">· {o.amount}</span>
+                    )}
+                    {o.hasActiveReservation && (
+                      <span className={`${badgeBase} ${badgeTones.progress}`}>Бронь</span>
+                    )}
+                    {o.hasActiveDeparture && (
+                      <span className={`${badgeBase} ${badgeTones.progress}`}>Выезд</span>
+                    )}
+                  </div>
+                  <div className="text-[10px] text-gray-500 truncate">{o.equipmentSummary}{o.address ? ` · ${o.address}` : ''}</div>
+                </div>
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  {o.status === 'completed' && (
+                    <button
+                      className="text-[11px] text-blue-600 hover:underline"
+                      onClick={() => handleRepeatFromOrder(o)}
+                    >
+                      Повторить
+                    </button>
                   )}
                 </div>
-                <div className="text-[10px] text-gray-500 truncate">{o.equipmentSummary}{o.address ? ` · ${o.address}` : ''}</div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                {o.status === 'completed' && (
-                  <button
-                    className="text-[11px] text-blue-600 hover:underline"
-                    onClick={() => handleRepeatFromOrder(o)}
-                  >
-                    Повторить
-                  </button>
-                )}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -1003,29 +1170,33 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           </div>
         </div>
         <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
-          {base.leadsHistory.map((l) => (
-            <div key={l.id} className="flex items-center gap-3 px-3 py-1.5">
-              <span className={`${badgeBase} ${leadStatusMeta[l.status].tone} flex-shrink-0`}>
-                {leadStatusMeta[l.status].label}
-              </span>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    className="text-[11px] text-blue-600 hover:underline"
-                    onClick={() => openSecondary('leads')}
-                  >
-                    {l.id}
-                  </button>
-                  <span className="text-[10px] text-gray-500">· {l.date}</span>
-                  <span className="text-[10px] text-gray-500">· {l.source}</span>
-                </div>
-                <div className="text-[10px] text-gray-500 truncate">
-                  {l.equipmentType}{l.address ? ` · ${l.address}` : ''} · {l.manager}
+          {base.leadsHistory.map((l) => {
+            const leadEntityId = normalizeEntityRouteId(l.id);
+            return (
+              <div key={l.id} className="flex items-center gap-3 px-3 py-1.5">
+                <span className={`${badgeBase} ${leadStatusMeta[l.status].tone} flex-shrink-0`}>
+                  {leadStatusMeta[l.status].label}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      className="text-[11px] text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                      onClick={leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : undefined}
+                      disabled={!leadEntityId}
+                    >
+                      {l.id}
+                    </button>
+                    <span className="text-[10px] text-gray-500">· {l.date}</span>
+                    <span className="text-[10px] text-gray-500">· {l.source}</span>
+                  </div>
+                  <div className="text-[10px] text-gray-500 truncate">
+                    {l.equipmentType}{l.address ? ` · ${l.address}` : ''} · {l.manager}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -1091,24 +1262,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-2">
           Журнал изменений
         </div>
-        <div className="space-y-2">
-          {base.activity.map((a) => (
-            <div key={a.id} className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-gray-300 fill-gray-300 flex-shrink-0" />
-              <span className="text-gray-900">{a.actor}</span>
-              <span className="text-gray-500 truncate">{a.message}</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{a.at}</span>
-            </div>
-          ))}
-          {createdLeadId && (
-            <div className="flex items-center gap-2 text-[11px] text-gray-600">
-              <Circle className="w-2 h-2 text-emerald-400 fill-emerald-400 flex-shrink-0" />
-              <span className="text-gray-900">{base.manager ?? 'Менеджер'}</span>
-              <span className="text-gray-500 truncate">Повтор заказа → {createdLeadId}</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">только что</span>
-            </div>
-          )}
-        </div>
+        <EntityActivityList entries={historyEntries} emptyText="Событий пока нет" />
       </div>
     </div>
   );
@@ -1119,7 +1273,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <SidebarField
           label="Тип"
           value={
-            <span className={`${badgeBase} ${badgeTones.source}`}>
+            <span className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>
               {base.type === 'company' ? 'Юр. лицо' : 'Физ. лицо'}
             </span>
           }
@@ -1137,12 +1291,12 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         )}
       </SidebarSection>
 
-      <SidebarSection title="Активные записи">
+      <SidebarSection title={`Активные записи (${activeChainTailRecords.length})`}>
         <div className="space-y-1">
-          <ActiveCounter label="Лиды" count={base.activeRecords.leadsCount} />
-          <ActiveCounter label="Заявки" count={base.activeRecords.applicationsCount} />
-          <ActiveCounter label="Брони" count={base.activeRecords.reservationsCount} />
-          <ActiveCounter label="Выезды" count={base.activeRecords.departuresCount} />
+          <ActiveCounter label="Лиды" count={activeTailStats.leadsCount} />
+          <ActiveCounter label="Заявки" count={activeTailStats.applicationsCount} />
+          <ActiveCounter label="Брони" count={activeTailStats.reservationsCount} />
+          <ActiveCounter label="Выезды" count={activeTailStats.departuresCount} />
         </div>
       </SidebarSection>
 
@@ -1183,76 +1337,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       </SidebarSection>
 
       <SidebarSection title="Связанные записи">
-        {base.activeRecords.topActiveApplication && (
-          <SidebarField
-            label="Заявка"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('applications')}
-              >
-                {base.activeRecords.topActiveApplication.title}
-              </button>
-            }
-          />
-        )}
-        {base.activeRecords.topActiveReservation && (
-          <SidebarField
-            label="Бронь"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('reservations')}
-              >
-                {base.activeRecords.topActiveReservation.title}
-              </button>
-            }
-          />
-        )}
-        {base.activeRecords.topActiveDeparture && (
-          <SidebarField
-            label="Выезд"
-            value={
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('departures')}
-              >
-                {base.activeRecords.topActiveDeparture.title}
-              </button>
-            }
-          />
-        )}
-        <SidebarField
-          label="Последний завершён"
-          value={
-            lastCompleted ? (
-              <button
-                type="button"
-                className="text-blue-600 hover:underline text-left"
-                onClick={() => openSecondary('completion')}
-              >
-                {lastCompleted.number}
-              </button>
-            ) : (
-              <span className="text-gray-400">—</span>
-            )
-          }
-        />
-        <SidebarField
-          label="Лиды"
-          value={
-            <button
-              type="button"
-              className="text-blue-600 hover:underline text-left"
-              onClick={() => openSecondary('leads')}
-            >
-              {`${base.leadsHistory.length} в истории`}
-            </button>
-          }
-        />
+        <RelatedRecordsTimeline chains={allRelatedRecordChains} />
       </SidebarSection>
 
       <SidebarSection title="Последние изменения" defaultOpen={false}>
@@ -1318,8 +1403,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   return (
     <>
       <DetailShell
-        breadcrumb={<Breadcrumb items={['CRM', 'Sales', 'Clients']} />}
+        breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
+        shareUrl={shareUrl}
         main={main}
         sidebar={sidebar}
       />

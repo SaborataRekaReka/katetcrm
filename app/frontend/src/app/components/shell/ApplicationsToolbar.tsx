@@ -78,7 +78,6 @@ export function ApplicationsToolbar({
     filters.sourcing !== 'all' ||
     filters.equipment !== 'all' ||
     filters.readinessReservation !== 'all' ||
-    filters.readyForDeparture ||
     filters.conflict ||
     query.length > 0;
 
@@ -129,12 +128,8 @@ export function ApplicationsToolbar({
           <SelectValue placeholder="Статус" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Все статусы</SelectItem>
+          <SelectItem value="all">Продажи: все</SelectItem>
           <SelectItem value="application">В работе</SelectItem>
-          <SelectItem value="reservation">Бронь</SelectItem>
-          <SelectItem value="departure">Выезд</SelectItem>
-          <SelectItem value="completed">Завершена</SelectItem>
-          <SelectItem value="cancelled">Отменена</SelectItem>
         </SelectContent>
       </Select>
 
@@ -144,14 +139,12 @@ export function ApplicationsToolbar({
           setField('readinessReservation', v as ApplicationsFiltersState['readinessReservation'])
         }
       >
-        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[140px]`}>
-          <SelectValue placeholder="Готовность" />
+        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[160px]`}>
+          <SelectValue placeholder="Активность заявки" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Готовность: все</SelectItem>
-          <SelectItem value="ready">Готовы к брони</SelectItem>
-          <SelectItem value="waiting">Частично</SelectItem>
-          <SelectItem value="no_data">Без брони</SelectItem>
+          <SelectItem value="all">Активность: все</SelectItem>
+          <SelectItem value="no_data">Требуют подготовки</SelectItem>
         </SelectContent>
       </Select>
 
@@ -185,11 +178,6 @@ export function ApplicationsToolbar({
 
       <ToolbarDivider />
 
-      <ToolbarToggle
-        label="Готовы к выезду"
-        active={filters.readyForDeparture}
-        onClick={() => setField('readyForDeparture', !filters.readyForDeparture)}
-      />
       <ToolbarToggle
         label="Конфликт"
         active={filters.conflict}

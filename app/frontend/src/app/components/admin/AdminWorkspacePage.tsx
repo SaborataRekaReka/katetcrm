@@ -1,4 +1,4 @@
-import { type ChangeEvent, useMemo, useRef, useState } from 'react';
+import { type ChangeEvent, type ReactNode, useMemo, useRef, useState } from 'react';
 import {
   AlertCircle,
   Bell,
@@ -9,7 +9,6 @@ import {
   FileSpreadsheet,
   Loader2,
   Play,
-  Plus,
   Settings as SettingsIcon,
   Shield,
   Upload,
@@ -29,6 +28,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../ui/dialog';
+import { Input } from '../ui/input';
 import { DashboardPage, CompactPageHeader, WidgetCard } from '../shell/dashboard';
 import { IntegrationsWorkspacePage } from '../integrations/IntegrationsWorkspacePage';
 import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
@@ -36,6 +44,7 @@ import { useImportPreviewMutation, useRunImportMutation } from '../../hooks/useI
 import { useUpdateWorkspaceSection } from '../../hooks/useSettingsMutations';
 import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
 import { usePermissionsMatrixQuery, useUsersQuery } from '../../hooks/useUsersQuery';
+import { useRegisterPrimaryCta } from '../shell/primaryCtaStore';
 import {
   useCreateUser,
   useUpdatePermissionCapability,
@@ -104,7 +113,7 @@ const FALLBACK_IMPORT_LOG: ImportLogRow[] = [
     createdAt: '2026-04-20T14:32:00.000Z',
     entityType: 'lead',
     entityId: 'mock-lead-001',
-    actor: 'Admin',
+    actor: 'Админ',
     source: 'leads-2024-q1.csv',
     imported: 124,
     duplicates: 3,
@@ -117,7 +126,7 @@ const FALLBACK_IMPORT_LOG: ImportLogRow[] = [
     createdAt: '2026-04-18T10:05:00.000Z',
     entityType: 'client',
     entityId: 'mock-client-002',
-    actor: 'Admin',
+    actor: 'Админ',
     source: 'clients-crm-legacy.xlsx',
     imported: 412,
     duplicates: 14,
@@ -130,7 +139,7 @@ const FALLBACK_IMPORT_LOG: ImportLogRow[] = [
     createdAt: '2026-04-15T18:40:00.000Z',
     entityType: 'reservation',
     entityId: 'mock-reservation-003',
-    actor: 'Admin',
+    actor: 'Админ',
     source: 'reservations-history.csv',
     imported: 96,
     duplicates: 0,
@@ -143,7 +152,7 @@ const FALLBACK_IMPORT_LOG: ImportLogRow[] = [
     createdAt: '2026-04-10T12:20:00.000Z',
     entityType: 'application',
     entityId: 'mock-application-004',
-    actor: 'Admin',
+    actor: 'Админ',
     source: 'applications-bad-format.csv',
     imported: 0,
     duplicates: 0,
@@ -174,7 +183,7 @@ const IMPORT_FIELD_CONFIG: Record<
     { id: 'name', label: 'Имя', required: true },
     { id: 'phone', label: 'Телефон', required: true },
     { id: 'company', label: 'Компания' },
-    { id: 'email', label: 'Email' },
+    { id: 'email', label: 'Эл. почта' },
     { id: 'notes', label: 'Заметки' },
     { id: 'externalSourceId', label: 'Внешний ID' },
   ],
@@ -1030,6 +1039,48 @@ function ImportStatusPill({ status }: { status: ImportLogStatus }) {
   return <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] ${it.cls}`}>{it.label}</span>;
 }
 
+const SETTINGS_SECTION_TITLE_FALLBACK: Record<string, string> = {
+  company: 'Организация',
+  general: 'Общие',
+  stages: 'Этапы воронки',
+  notifications: 'Уведомления',
+  seed: 'Сид',
+};
+
+const SETTINGS_SECTION_DESCRIPTION_FALLBACK: Record<string, string> = {
+  company: 'Общая информация о компании',
+  general: 'Базовые настройки рабочего пространства',
+  stages: 'Условия перехода между стадиями',
+  notifications: 'Каналы и события',
+  seed: 'Покрытие статусов сущностей',
+};
+
+const SETTINGS_ROW_LABEL_FALLBACK: Record<string, string[]> = {
+  general: ['Профиль seed', 'Часовой пояс'],
+  seed: ['Leads', 'Reservations', 'Departures', 'Completions', 'Tasks'],
+};
+
+function isCorruptedSettingText(value: string): boolean {
+  const trimmed = value.trim();
+  if (!trimmed) return false;
+  return /\?{2,}|�/.test(trimmed);
+}
+
+function getDisplaySectionTitle(sectionId: string, title: string): string {
+  if (!isCorruptedSettingText(title)) return title;
+  return SETTINGS_SECTION_TITLE_FALLBACK[sectionId] ?? title;
+}
+
+function getDisplaySectionDescription(sectionId: string, description: string): string {
+  if (!isCorruptedSettingText(description)) return description;
+  return SETTINGS_SECTION_DESCRIPTION_FALLBACK[sectionId] ?? description;
+}
+
+function getDisplayRowLabel(sectionId: string, rowIndex: number, label: string): string {
+  if (!isCorruptedSettingText(label)) return label;
+  return SETTINGS_ROW_LABEL_FALLBACK[sectionId]?.[rowIndex] ?? `Поле ${rowIndex + 1}`;
+}
+
 function SettingsPage() {
   const FALLBACK_SECTIONS = [
     {
@@ -1050,10 +1101,10 @@ function SettingsPage() {
       description: 'Условия перехода между стадиями',
       icon: <Workflow className="h-3.5 w-3.5" />,
       rows: [
-        { label: 'lead → application', value: 'Требуются: контакт, тип техники' },
-        { label: 'application → reservation', value: 'Требуется: подтверждённая позиция' },
-        { label: 'reservation → departure', value: 'Требуется: назначенная единица' },
-        { label: 'departure → completed', value: 'Требуется: акт выполнения' },
+        { label: 'лид → заявка', value: 'Требуются: контакт, тип техники' },
+        { label: 'заявка → бронь', value: 'Требуется: позиция заявки без активной брони' },
+        { label: 'бронь → выезд', value: 'Требуется: назначенная единица' },
+        { label: 'выезд → завершено', value: 'Требуется: акт выполнения' },
       ],
     },
     {
@@ -1062,9 +1113,9 @@ function SettingsPage() {
       description: 'Каналы и события',
       icon: <Bell className="h-3.5 w-3.5" />,
       rows: [
-        { label: 'Срочный лид', value: 'Email + в интерфейсе' },
+        { label: 'Срочный лид', value: 'Эл. почта + в интерфейсе' },
         { label: 'Конфликт брони', value: 'В интерфейсе' },
-        { label: 'Просроченный выезд', value: 'Email + SMS ответственному' },
+        { label: 'Просроченный выезд', value: 'Эл. почта + SMS ответственному' },
       ],
     },
   ];
@@ -1073,12 +1124,12 @@ function SettingsPage() {
   const updateSectionMutation = useUpdateWorkspaceSection();
   const [settingsMutationError, setSettingsMutationError] = useState<string | null>(null);
   const [settingsMutationSuccess, setSettingsMutationSuccess] = useState<string | null>(null);
-  const [draftValuesBySection, setDraftValuesBySection] = useState<Record<string, Record<number, string>>>({});
+  const [draftValuesBySection, setDraftValuesBySection] = useState<Record<string, string[]>>({});
 
   const sections = useMemo(() => {
     if (!USE_API) return FALLBACK_SECTIONS;
 
-    const iconById: Record<string, React.ReactNode> = {
+    const iconById: Record<string, ReactNode> = {
       company: <Building2 className="h-3.5 w-3.5" />,
       general: <Building2 className="h-3.5 w-3.5" />,
       stages: <Workflow className="h-3.5 w-3.5" />,
@@ -1091,49 +1142,73 @@ function SettingsPage() {
     }));
   }, [settingsQuery.data]);
 
-  const handleSettingValueSave = async (
+  const hasCorruptedLabels = useMemo(
+    () => sections.some((section) => (
+      isCorruptedSettingText(section.title)
+      || isCorruptedSettingText(section.description)
+      || section.rows.some((row) => isCorruptedSettingText(row.label))
+    )),
+    [sections],
+  );
+
+  const getDraftValue = (sectionId: string, rowIndex: number, fallback: string) => {
+    const sectionDraft = draftValuesBySection[sectionId];
+    if (!sectionDraft) return fallback;
+    return sectionDraft[rowIndex] ?? fallback;
+  };
+
+  const isSectionDirty = (sectionId: string, rows: Array<{ label: string; value: string }>) =>
+    rows.some((row, index) => getDraftValue(sectionId, index, row.value) !== row.value);
+
+  const resetSectionDraft = (sectionId: string) => {
+    setDraftValuesBySection((prev) => {
+      if (!prev[sectionId]) return prev;
+      const next = { ...prev };
+      delete next[sectionId];
+      return next;
+    });
+  };
+
+  const handleSettingValueChange = (sectionId: string, rowIndex: number, value: string) => {
+    setDraftValuesBySection((prev) => {
+      const nextSection = [...(prev[sectionId] ?? [])];
+      nextSection[rowIndex] = value;
+      return {
+        ...prev,
+        [sectionId]: nextSection,
+      };
+    });
+  };
+
+  const handleSaveSection = async (
     sectionId: string,
-    rowIndex: number,
-    nextValueRaw: string,
+    sectionTitle: string,
     rows: Array<{ label: string; value: string }>,
   ) => {
     setSettingsMutationError(null);
     setSettingsMutationSuccess(null);
 
-    const current = rows[rowIndex];
-    if (!current) return;
+    const nextRows = rows.map((row, index) => ({
+      ...row,
+      value: getDraftValue(sectionId, index, row.value).trim(),
+    }));
 
-    const nextValue = nextValueRaw.trim();
-    if (nextValue.length === 0) {
+    const hasEmpty = nextRows.some((row) => row.value.length === 0);
+    if (hasEmpty) {
       setSettingsMutationError('Значение настройки не может быть пустым.');
-      setDraftValuesBySection((prev) => ({
-        ...prev,
-        [sectionId]: { ...(prev[sectionId] ?? {}), [rowIndex]: current.value },
-      }));
       return;
     }
 
-    if (nextValue === current.value) return;
-
-    if (!USE_API) return;
+    const changed = nextRows.some((row, index) => row.value !== rows[index]?.value);
+    if (!changed || !USE_API) return;
 
     try {
-      const nextRows = rows.map((row, index) => (
-        index === rowIndex
-          ? { ...row, value: nextValue }
-          : row
-      ));
-
-      const updated = await updateSectionMutation.mutateAsync({
+      await updateSectionMutation.mutateAsync({
         sectionId,
         patch: { rows: nextRows },
       });
-
-      setSettingsMutationSuccess(`Секция «${updated.title}» обновлена.`);
-      setDraftValuesBySection((prev) => ({
-        ...prev,
-        [sectionId]: {},
-      }));
+      setSettingsMutationSuccess(`Секция «${sectionTitle}» обновлена.`);
+      resetSectionDraft(sectionId);
     } catch (error) {
       setSettingsMutationError(error instanceof Error ? error.message : 'Не удалось обновить настройки.');
     }
@@ -1147,6 +1222,19 @@ function SettingsPage() {
           subtitle="Базовые параметры рабочего пространства"
           icon={<SettingsIcon className="h-3.5 w-3.5" />}
         />
+
+        <WidgetCard>
+          <div className="space-y-1.5 text-[12px] text-muted-foreground">
+            <p>Изменения в настройках сохраняются по секциям, а не автоматически.</p>
+            <p>Отредактируйте поля и нажмите «Сохранить секцию». Кнопка активируется только при изменениях.</p>
+          </div>
+        </WidgetCard>
+
+        {hasCorruptedLabels ? (
+          <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+            Часть подписей пришла в некорректной кодировке. На экране показаны восстановленные названия полей.
+          </div>
+        ) : null}
 
         {settingsMutationError ? (
           <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
@@ -1180,41 +1268,80 @@ function SettingsPage() {
               <div className="px-3 py-2 text-[12px] text-muted-foreground">Настройки пока не заданы.</div>
             </WidgetCard>
           ) : (
-            sections.map((s) => (
-              <WidgetCard key={s.id} title={s.title} description={s.description} icon={s.icon} bodyPadded={false}>
-                <dl className="divide-y divide-border/40">
-                  {s.rows.map((r, i) => (
-                    <div key={i} className="grid grid-cols-[220px_1fr] gap-4 px-4 py-2.5 text-[12px]">
-                      <dt className="text-muted-foreground">{r.label}</dt>
-                      <dd className="text-foreground">
-                        {USE_API ? (
-                          <input
-                            value={draftValuesBySection[s.id]?.[i] ?? r.value}
-                            onChange={(event) => {
-                              const value = event.target.value;
-                              setDraftValuesBySection((prev) => ({
-                                ...prev,
-                                [s.id]: {
-                                  ...(prev[s.id] ?? {}),
-                                  [i]: value,
-                                },
-                              }));
-                            }}
-                            onBlur={(event) => {
-                              void handleSettingValueSave(s.id, i, event.target.value, s.rows);
-                            }}
-                            disabled={updateSectionMutation.isPending}
-                            className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
-                          />
-                        ) : (
-                          r.value
-                        )}
-                      </dd>
+            sections.map((s) => {
+              const displayTitle = getDisplaySectionTitle(s.id, s.title);
+              const displayDescription = getDisplaySectionDescription(s.id, s.description);
+              const sectionDirty = isSectionDirty(s.id, s.rows);
+
+              return (
+                <WidgetCard
+                  key={s.id}
+                  title={displayTitle}
+                  description={displayDescription}
+                  icon={s.icon}
+                  bodyPadded={false}
+                  action={USE_API ? (
+                    <div className="flex items-center gap-1.5">
+                      <span className="rounded border border-border/60 bg-muted/30 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                        Полей: {s.rows.length}
+                      </span>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 px-2 text-[11px]"
+                        onClick={() => resetSectionDraft(s.id)}
+                        disabled={!sectionDirty || updateSectionMutation.isPending}
+                      >
+                        Сбросить
+                      </Button>
+                      <Button
+                        size="sm"
+                        className="h-6 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
+                        onClick={() => {
+                          void handleSaveSection(s.id, displayTitle, s.rows);
+                        }}
+                        disabled={!sectionDirty || updateSectionMutation.isPending}
+                      >
+                        {updateSectionMutation.isPending ? 'Сохранение...' : 'Сохранить секцию'}
+                      </Button>
                     </div>
-                  ))}
-                </dl>
-              </WidgetCard>
-            ))
+                  ) : null}
+                >
+                  <dl className="divide-y divide-border/40">
+                    {s.rows.map((r, i) => {
+                      const currentValue = getDraftValue(s.id, i, r.value);
+                      const displayLabel = getDisplayRowLabel(s.id, i, r.label);
+                      const rowDirty = currentValue !== r.value;
+
+                      return (
+                        <div key={i} className="grid grid-cols-[220px_1fr] gap-4 px-4 py-2.5 text-[12px]">
+                          <dt className="text-muted-foreground">{displayLabel}</dt>
+                          <dd className="text-foreground">
+                            {USE_API ? (
+                              <div className="space-y-1">
+                                <input
+                                  value={currentValue}
+                                  onChange={(event) => {
+                                    handleSettingValueChange(s.id, i, event.target.value);
+                                  }}
+                                  disabled={updateSectionMutation.isPending}
+                                  className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                                />
+                                {rowDirty ? (
+                                  <div className="text-[10px] text-[#2358d1]">Есть несохраненное изменение</div>
+                                ) : null}
+                              </div>
+                            ) : (
+                              r.value
+                            )}
+                          </dd>
+                        </div>
+                      );
+                    })}
+                  </dl>
+                </WidgetCard>
+              );
+            })
           )
         )}
       </DashboardPage>
@@ -1223,6 +1350,7 @@ function SettingsPage() {
 }
 
 function UsersPage() {
+  const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta('users');
   const [query, setQuery] = useState('');
   const [role, setRole] = useState<'all' | UserRole>('all');
@@ -1230,6 +1358,9 @@ function UsersPage() {
   const [nameDraftById, setNameDraftById] = useState<Record<string, string>>({});
   const [mutationError, setMutationError] = useState<string | null>(null);
   const [mutationSuccess, setMutationSuccess] = useState<string | null>(null);
+  const [resetPasswordUserId, setResetPasswordUserId] = useState<string | null>(null);
+  const [resetPasswordDraft, setResetPasswordDraft] = useState('');
+  const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
 
   type UsersRow = {
     id: string;
@@ -1244,7 +1375,7 @@ function UsersPage() {
     { id: 'U-001', name: 'Петров А.', email: 'petrov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 09:12' },
     { id: 'U-002', name: 'Сидоров Б.', email: 'sidorov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 08:40' },
     { id: 'U-003', name: 'Иванова С.', email: 'ivanova@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-21 17:05' },
-    { id: 'U-004', name: 'Admin', email: 'admin@katet.ru', role: 'admin', active: true, lastLogin: '2026-04-22 10:00' },
+    { id: 'U-004', name: 'Админ', email: 'admin@katet.ru', role: 'admin', active: true, lastLogin: '2026-04-22 10:00' },
     { id: 'U-005', name: 'Кузнецов Д.', email: 'kuznetsov@katet.ru', role: 'manager', active: false, lastLogin: '2025-12-02 14:20' },
   ]);
 
@@ -1407,37 +1538,59 @@ function UsersPage() {
     );
   };
 
-  const handleResetPassword = async (userId: string) => {
+  const closeResetPasswordDialog = () => {
+    setResetPasswordUserId(null);
+    setResetPasswordDraft('');
+    setResetPasswordError(null);
+  };
+
+  const handleResetPasswordSubmit = async () => {
     setMutationError(null);
     setMutationSuccess(null);
+    setResetPasswordError(null);
 
-    const nextPassword = globalThis.prompt('Введите новый пароль (минимум 6 символов):');
-    if (nextPassword === null) return;
+    if (!resetPasswordUserId) return;
 
-    const trimmed = nextPassword.trim();
+    const trimmed = resetPasswordDraft.trim();
     if (trimmed.length < 6) {
-      setMutationError('Пароль должен содержать минимум 6 символов.');
+      setResetPasswordError('Пароль должен содержать минимум 6 символов.');
       return;
     }
 
     if (USE_API) {
       try {
         const updated = await updateUserMutation.mutateAsync({
-          id: userId,
+          id: resetPasswordUserId,
           patch: { password: trimmed },
         });
         setMutationSuccess(`Пароль пользователя ${updated.fullName} обновлён.`);
+        closeResetPasswordDialog();
       } catch (error) {
-        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить пароль.');
+        setResetPasswordError(error instanceof Error ? error.message : 'Не удалось обновить пароль.');
       }
       return;
     }
 
-    const current = sourceRows.find((u) => u.id === userId);
+    const current = sourceRows.find((u) => u.id === resetPasswordUserId);
     if (current) {
       setMutationSuccess(`Пароль пользователя ${current.name} обновлён.`);
     }
+    closeResetPasswordDialog();
   };
+
+  const resetPasswordUser = useMemo(
+    () => sourceRows.find((u) => u.id === resetPasswordUserId) ?? null,
+    [resetPasswordUserId, sourceRows],
+  );
+
+  useRegisterPrimaryCta(
+    activeSecondaryNav,
+    createUserMutation.isPending
+      ? null
+      : () => {
+        void handleCreateUser();
+      },
+  );
 
   const toolbar = (
     <SimpleToolbar
@@ -1476,23 +1629,6 @@ function UsersPage() {
         setRole('all');
         setActive('all');
       }}
-      extraUtility={
-        <Button
-          size="sm"
-          className="h-7 gap-1 bg-[#2a6af0] px-2.5 text-[12px] text-white hover:bg-[#2358d1]"
-          onClick={() => {
-            void handleCreateUser();
-          }}
-          disabled={createUserMutation.isPending}
-        >
-          {createUserMutation.isPending ? (
-            <Loader2 className="h-3.5 w-3.5 animate-spin" />
-          ) : (
-            <Plus className="h-3.5 w-3.5" />
-          )}
-          {createUserMutation.isPending ? 'Создаём...' : 'Новый пользователь'}
-        </Button>
-      }
     />
   );
 
@@ -1531,7 +1667,7 @@ function UsersPage() {
               <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-2 text-left font-medium">ID</th>
                 <th className="px-3 py-2 text-left font-medium">Имя</th>
-                <th className="px-3 py-2 text-left font-medium">Email</th>
+                <th className="px-3 py-2 text-left font-medium">Эл. почта</th>
                 <th className="px-3 py-2 text-left font-medium">Роль</th>
                 <th className="px-3 py-2 text-left font-medium">Активен</th>
                 <th className="px-3 py-2 text-left font-medium">Последний апдейт</th>
@@ -1576,8 +1712,8 @@ function UsersPage() {
                         disabled={updateUserMutation.isPending}
                         className="h-7 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
                       >
-                        <option value="admin">admin</option>
-                        <option value="manager">manager</option>
+                        <option value="admin">Админ</option>
+                        <option value="manager">Менеджер</option>
                       </select>
                     </td>
                     <td className="px-3 py-2.5">
@@ -1610,7 +1746,9 @@ function UsersPage() {
                           variant="ghost"
                           className="h-6 px-2 text-[11px]"
                           onClick={() => {
-                            void handleResetPassword(u.id);
+                            setResetPasswordUserId(u.id);
+                            setResetPasswordDraft('');
+                            setResetPasswordError(null);
                           }}
                           disabled={updateUserMutation.isPending}
                         >
@@ -1625,6 +1763,63 @@ function UsersPage() {
           </table>
         ) : null}
       </div>
+
+      <Dialog
+        open={!!resetPasswordUserId}
+        onOpenChange={(open) => {
+          if (!open) closeResetPasswordDialog();
+        }}
+      >
+        <DialogContent className="sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle>Сброс пароля</DialogTitle>
+            <DialogDescription>
+              {resetPasswordUser
+                ? `Укажите новый пароль для пользователя ${resetPasswordUser.name}.`
+                : 'Укажите новый пароль для выбранного пользователя.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            <label className="block text-[12px] text-muted-foreground" htmlFor="admin-reset-password-input">
+              Новый пароль
+            </label>
+            <Input
+              id="admin-reset-password-input"
+              type="password"
+              value={resetPasswordDraft}
+              placeholder="Минимум 6 символов"
+              onChange={(event) => {
+                setResetPasswordDraft(event.target.value);
+                setResetPasswordError(null);
+              }}
+              disabled={updateUserMutation.isPending}
+            />
+            {resetPasswordError ? (
+              <div className="text-[12px] text-rose-700">{resetPasswordError}</div>
+            ) : null}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={closeResetPasswordDialog}
+              disabled={updateUserMutation.isPending}
+            >
+              Отмена
+            </Button>
+            <Button
+              className="bg-[#2a6af0] text-white hover:bg-[#2358d1]"
+              onClick={() => {
+                void handleResetPasswordSubmit();
+              }}
+              disabled={updateUserMutation.isPending || !resetPasswordUserId}
+            >
+              {updateUserMutation.isPending ? 'Сохраняем...' : 'Сохранить пароль'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </ListScaffold>
   );
 }

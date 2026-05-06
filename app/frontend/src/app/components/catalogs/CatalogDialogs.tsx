@@ -175,6 +175,10 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
         />
 
         <div className="mt-5 space-y-5">
+          <div className="rounded border border-blue-100 bg-blue-50/70 px-3 py-2 text-[11px] text-blue-900">
+            Единицы техники в этом разделе — это собственный парк. Партнерская техника ведется через справочник подрядчиков.
+          </div>
+
           <EntitySection title="Основное">
             <EntityMetaGrid>
               <PropertyRow
@@ -607,17 +611,26 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
                 icon={<Layers className="h-3 w-3" />}
                 label="Тип техники *"
                 value={
-                  <FieldSelect
-                    value={form.equipmentTypeId}
-                    onChange={(v) => {
-                      set('equipmentTypeId', v);
-                      setTouched(true);
-                    }}
-                    options={typeOptions}
-                    placeholder="Выберите тип"
-                    invalid={touched && !typeValid}
-                    disabled={typesQuery.isLoading}
-                  />
+                  <div className="space-y-1">
+                    <FieldSelect
+                      value={form.equipmentTypeId}
+                      onChange={(v) => {
+                        set('equipmentTypeId', v);
+                        setTouched(true);
+                      }}
+                      options={typeOptions}
+                      placeholder="Выберите тип"
+                      invalid={touched && !typeValid}
+                      disabled={typesQuery.isLoading}
+                    />
+                    {typesQuery.data && typesQuery.data.length === 0 ? (
+                      <div className="text-[10px] text-amber-700">
+                        Сначала добавьте тип техники в разделе «Типы техники», затем создайте единицу.
+                      </div>
+                    ) : (
+                      <div className="text-[10px] text-gray-500">Поле обязательное для сохранения единицы техники.</div>
+                    )}
+                  </div>
                 }
               />
               <PropertyRow
@@ -986,7 +999,7 @@ export function SubcontractorDialog({
               />
               <PropertyRow
                 icon={<UserIcon className="h-3 w-3" />}
-                label="Email"
+                label="Эл. почта"
                 value={
                   <FieldInput
                     type="email"

@@ -1,31 +1,40 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig } from '@playwright/test'
 
-const localBaseUrl = 'http://localhost:5173';
-const baseURL = process.env.E2E_BASE_URL ?? localBaseUrl;
-const shouldStartLocalFrontend = !process.env.E2E_SKIP_WEB_SERVER && baseURL === localBaseUrl;
+const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:5173'
+const apiBaseURL = process.env.E2E_API_BASE_URL ?? 'http://localhost:3001/api/v1'
 
 export default defineConfig({
   testDir: './e2e',
+  timeout: 30_000,
   fullyParallel: false,
-  retries: process.env.CI ? 2 : 0,
+  workers: 1,
+  retries: process.env.CI ? 1 : 0,
+  expect: {
+    timeout: 10_000,
+  },
   use: {
     baseURL,
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
   },
-  webServer: shouldStartLocalFrontend
-    ? {
-        command: 'npm run dev -- --host 127.0.0.1 --port 5173',
-        url: localBaseUrl,
-        reuseExistingServer: true,
-        timeout: 120_000,
-      }
-    : undefined,
-  projects: [
+  webServer: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      command: 'npm --prefix ../backend run start',
+      url: `${apiBaseURL}/health`,
+      reuseExistingServer: true,
+      timeout: 180_000,
+    },
+    {
+      command: 'npm run dev -- --host localhost --port 5173',
+      url: baseURL,
+      reuseExistingServer: true,
+      timeout: 180_000,
+      env: {
+        VITE_USE_API: 'true',
+        VITE_API_BASE_URL: apiBaseURL,
+      },
     },
   ],
-});
+  reporter: [['list']],
+})

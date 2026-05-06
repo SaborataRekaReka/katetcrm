@@ -160,10 +160,11 @@ export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Pr
 
   if (!res.ok) {
     if (res.status === 401) throw new AuthError(body);
-    const message =
+    const messageFromBody =
       typeof body === 'object' && body !== null && 'message' in body
         ? String((body as { message: unknown }).message)
-        : `HTTP ${res.status}`;
+        : null;
+    const message = res.status === 403 ? 'Доступ запрещен (403)' : messageFromBody ?? `HTTP ${res.status}`;
     throw new ApiError(res.status, message, body);
   }
   return body as T;
