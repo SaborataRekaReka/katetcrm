@@ -8,8 +8,9 @@ import { useAuth } from './AuthProvider';
  */
 export function LoginScreen() {
   const { login } = useAuth();
-  const [email, setEmail] = useState('admin@katet.local');
-  const [password, setPassword] = useState('admin123');
+  const showDemoAccounts = import.meta.env.DEV;
+  const [email, setEmail] = useState(showDemoAccounts ? 'admin@katet.local' : '');
+  const [password, setPassword] = useState(showDemoAccounts ? 'admin123' : '');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -64,11 +65,13 @@ export function LoginScreen() {
         >
           {pending ? 'Вход…' : 'Войти'}
         </button>
-        <div className="text-xs text-gray-500">
-          Тестовые аккаунты: <br />
-          admin@katet.local / admin123 <br />
-          manager@katet.local / manager123
-        </div>
+        {showDemoAccounts ? (
+          <div className="text-xs text-gray-500">
+            Тестовые аккаунты: <br />
+            admin@katet.local / admin123 <br />
+            manager@katet.local / manager123
+          </div>
+        ) : null}
       </form>
     </div>
   );

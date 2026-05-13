@@ -37,8 +37,12 @@ interface RequestOptions {
   signal?: AbortSignal;
 }
 
-function baseUrlWithSlash() {
-  return BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+function resolveBaseUrl() {
+  const baseUrl = BASE_URL.endsWith('/') ? BASE_URL : `${BASE_URL}/`;
+  if (/^https?:\/\//i.test(baseUrl)) return baseUrl;
+
+  const origin = typeof window === 'undefined' ? 'http://localhost' : window.location.origin;
+  return new URL(baseUrl.replace(/^\/+/, ''), `${origin}/`).toString();
 }
 
 function dispatchAuthChanged() {
@@ -61,7 +65,7 @@ async function requestTokenRefresh(): Promise<string | null> {
   if (!refreshToken) return null;
 
   try {
-    const refreshUrl = new URL('auth/refresh', baseUrlWithSlash()).toString();
+    const refreshUrl = new URL('auth/refresh', resolveBaseUrl()).toString();
     const res = await fetch(refreshUrl, {
       method: 'POST',
       headers: {
@@ -116,7 +120,7 @@ function getRefreshedAccessToken() {
 }
 
 export async function apiRequest<T>(path: string, opts: RequestOptions = {}): Promise<T> {
-  const url = new URL(path.replace(/^\//, ''), baseUrlWithSlash());
+  const url = new URL(path.replace(/^\//, ''), resolveBaseUrl());
   if (opts.query) {
     for (const [k, v] of Object.entries(opts.query)) {
       if (v !== undefined && v !== '') url.searchParams.set(k, String(v));
