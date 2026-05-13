@@ -9,6 +9,12 @@ import * as bcrypt from 'bcryptjs';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ActivityService } from '../activity/activity.service';
 import {
+  DEFAULT_PERMISSIONS_MATRIX,
+  PERMISSIONS_MATRIX_KEY,
+  type PermissionsMatrixState,
+  normalizePermissionsMatrix,
+} from './permissions-matrix.defaults';
+import {
   CreateUserDto,
   ListUsersQueryDto,
   UpdatePermissionCapabilityDto,
@@ -24,75 +30,6 @@ const USER_SELECT = {
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.UserSelect;
-
-export interface PermissionCapability {
-  id: string;
-  label: string;
-  matrix: Record<UserRole, boolean>;
-}
-
-export interface PermissionsMatrixState {
-  roles: UserRole[];
-  capabilities: PermissionCapability[];
-}
-
-const PERMISSIONS_MATRIX_KEY = 'admin.permissions_matrix.v1';
-
-const DEFAULT_PERMISSIONS_MATRIX: PermissionsMatrixState = {
-  roles: ['admin', 'manager'],
-  capabilities: [
-    {
-      id: 'leads.read',
-      label: 'Чтение лидов',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'leads.write',
-      label: 'Редактирование лидов',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'applications.write',
-      label: 'Редактирование заявок',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'reservations.confirm',
-      label: 'Подтверждение броней',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'departures.start',
-      label: 'Запуск выездов',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'completion.sign',
-      label: 'Подписание актов',
-      matrix: { admin: true, manager: true },
-    },
-    {
-      id: 'catalogs.write',
-      label: 'Управление справочниками',
-      matrix: { admin: true, manager: false },
-    },
-    {
-      id: 'admin.users',
-      label: 'Управление пользователями',
-      matrix: { admin: true, manager: false },
-    },
-    {
-      id: 'admin.permissions',
-      label: 'Управление правами',
-      matrix: { admin: true, manager: false },
-    },
-    {
-      id: 'admin.imports',
-      label: 'Импорты',
-      matrix: { admin: true, manager: false },
-    },
-  ],
-};
 
 function cloneJson<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
@@ -239,6 +176,10 @@ export class UsersService {
       throw new BadRequestException('Нет изменений для сохранения.');
     }
 
+    if (capability.id === 'admin.permissions' && dto.admin === false) {
+      throw new BadRequestException('Нельзя отключить право управления матрицей для роли admin.');
+    }
+
     if (dto.label !== undefined) capability.label = dto.label.trim();
     if (dto.admin !== undefined) capability.matrix.admin = dto.admin;
     if (dto.manager !== undefined) capability.matrix.manager = dto.manager;
@@ -281,12 +222,7 @@ export class UsersService {
       return fallback;
     }
 
-    const payload = existing.payload as PermissionsMatrixState | null;
-    if (!payload || !Array.isArray(payload.roles) || !Array.isArray(payload.capabilities)) {
-      return fallback;
-    }
-
-    return cloneJson(payload);
+    return normalizePermissionsMatrix(existing.payload);
   }
 
   private async persistPermissionsMatrix(matrix: PermissionsMatrixState) {

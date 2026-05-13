@@ -4,8 +4,6 @@ import {
   Package,
   Building2,
   Archive,
-  CheckCircle2,
-  List,
   FolderTree,
   Star,
   Phone,
@@ -15,7 +13,6 @@ import { useLayout } from '../shell/layoutStore';
 import { getModuleMeta } from '../shell/navConfig';
 import { ListScaffold } from '../shell/ListScaffold';
 import { SimpleToolbar } from '../shell/SimpleToolbar';
-import { EntityPresetTabs, type EntityPreset } from '../shell/EntityPresetTabs';
 import { EntityListTable, type EntityColumn } from '../shell/EntityListTable';
 import { parseInitialRoute, writeRoute } from '../shell/routeSync';
 import { cn } from '../ui/utils';
@@ -182,20 +179,19 @@ function applyStatusPreset<T extends { status?: Status }>(rows: T[], preset: Pre
 function buildPresets<T extends { status?: Status }>(
   navId: string,
   rows: T[],
-): EntityPreset[] | null {
+): Array<{ id: PresetId; label: string; count: number }> | null {
   const ids = PRESETS_BY_NAV[navId];
   if (!ids) return null;
-  const mk = (id: PresetId, label: string, icon: React.ReactNode): EntityPreset => ({
+  const mk = (id: PresetId, label: string) => ({
     id,
     label,
-    icon,
     count: applyStatusPreset(rows, id).length,
   });
-  const map: Record<PresetId, EntityPreset> = {
-    all: mk('all', 'Все', <List className="h-3 w-3" />),
-    active: mk('active', 'Активные', <CheckCircle2 className="h-3 w-3" />),
-    inactive: mk('inactive', 'Неактивные', <Archive className="h-3 w-3" />),
-    archived: mk('archived', 'Архив', <Archive className="h-3 w-3" />),
+  const map: Record<PresetId, ReturnType<typeof mk>> = {
+    all: mk('all', 'Все'),
+    active: mk('active', 'Активные'),
+    inactive: mk('inactive', 'Неактивные'),
+    archived: mk('archived', 'Архив'),
   };
   return ids.map((id) => map[id]);
 }
@@ -927,23 +923,33 @@ export function CatalogsWorkspacePage() {
     return null;
   }, [activeSecondaryNav, unitsRows, subsRows]);
 
+  const presetFilter = presets
+    ? [
+        {
+          id: 'status-preset',
+          value: preset,
+          placeholder: 'Статус',
+          width: 148,
+          options: presets.map((p) => ({ value: p.id, label: `${p.label} (${p.count})` })),
+          onChange: (id: string) => setPreset(id as PresetId),
+        },
+      ]
+    : undefined;
+
+  const resetToolbar = () => {
+    setQuery('');
+    if (presets) setPreset('all');
+  };
+
   const toolbar = (
-    <div className="flex flex-col">
-      {presets ? (
-        <EntityPresetTabs
-          presets={presets}
-          activeId={preset}
-          onChange={(id) => setPreset(id as PresetId)}
-        />
-      ) : null}
-      <SimpleToolbar
-        searchPlaceholder={meta.searchPlaceholder}
-        query={query}
-        onQueryChange={setQuery}
-        hasActive={query.length > 0}
-        onReset={() => setQuery('')}
-      />
-    </div>
+    <SimpleToolbar
+      searchPlaceholder={meta.searchPlaceholder}
+      query={query}
+      onQueryChange={setQuery}
+      filters={presetFilter}
+      hasActive={query.length > 0 || (presets !== null && preset !== 'all')}
+      onReset={resetToolbar}
+    />
   );
 
   return (

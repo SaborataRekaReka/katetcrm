@@ -91,7 +91,7 @@ export function LeadsKanbanColumn({
         if (dropActive) onColumnDrop?.();
       }}
       className={cn(
-        'flex h-full w-[272px] shrink-0 flex-col rounded-lg bg-[#f1f2f4]/60 transition-colors',
+        'flex h-full w-[86vw] max-w-[272px] shrink-0 flex-col rounded-lg bg-[#f1f2f4]/60 transition-colors sm:w-[272px]',
         dropActive && 'ring-1 ring-emerald-300/60 bg-emerald-50/40',
         dropActive && isOver && 'ring-2 ring-emerald-400 bg-emerald-50/70',
         dropDisabled && 'opacity-60',

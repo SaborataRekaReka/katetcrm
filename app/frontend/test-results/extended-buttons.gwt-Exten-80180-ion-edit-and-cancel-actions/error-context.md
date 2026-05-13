@@ -1,0 +1,2779 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: extended-buttons.gwt.spec.ts >> Extended Buttons GWT (QA-REQ: 025..027, 032) >> E2E-013 application edit and cancel actions
+- Location: e2e\extended-buttons.gwt.spec.ts:271:3
+
+# Error details
+
+```
+Error: Unexpected UI runtime issues:
+console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 3
+
+- Array []
++ Array [
++   "console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+```
+
+# Page snapshot
+
+```yaml
+- generic [active]:
+  - generic:
+    - generic:
+      - banner:
+        - generic:
+          - generic: К
+          - generic: Катет CRM
+        - generic:
+          - generic:
+            - img
+            - textbox:
+              - /placeholder: Поиск по заявкам
+            - generic: Ctrl K
+        - generic:
+          - button: Менеджер
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - generic: MA
+            - img
+      - generic:
+        - complementary:
+          - generic:
+            - navigation:
+              - button:
+                - img
+              - button [pressed]:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+        - generic:
+          - complementary:
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - heading [level=2]: Продажи
+                - generic:
+                  - button:
+                    - img
+                  - button:
+                    - img
+              - generic:
+                - generic:
+                  - button:
+                    - img
+                    - generic: Лиды
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Все лиды
+                    - button:
+                      - img
+                      - generic: Мои лиды
+                - generic:
+                  - button:
+                    - img
+                    - generic: Заявки
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Все заявки
+                    - button:
+                      - img
+                      - generic: Мои заявки
+                    - button:
+                      - img
+                      - generic: Активные заявки
+                - generic:
+                  - button:
+                    - img
+                    - generic: Представления продаж
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Срочные лиды
+                    - button:
+                      - img
+                      - generic: Без первого контакта
+                    - button:
+                      - img
+                      - generic: Ждут перевода в заявку
+                    - button:
+                      - img
+                      - generic: Требуют брони
+                    - button:
+                      - img
+                      - generic: Зависшие
+                    - button:
+                      - img
+                      - generic: Дубли
+              - generic:
+                - button:
+                  - img
+                  - generic: Черновик
+          - main:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=1]: Заявки
+                - generic:
+                  - button:
+                    - img
+                    - generic: Список
+                  - button:
+                    - img
+                    - generic: Таблица
+              - generic:
+                - generic:
+                  - img
+                  - textbox:
+                    - /placeholder: Поиск по заявкам
+                - combobox:
+                  - generic: Все
+                  - img
+                - combobox:
+                  - generic: Все менеджеры
+                  - img
+                - combobox:
+                  - generic: "Продажи: все"
+                  - img
+                - combobox:
+                  - generic: "Активность: все"
+                  - img
+                - combobox:
+                  - generic: Парк + подрядчик
+                  - img
+                - combobox:
+                  - generic: Все типы
+                  - img
+                - button: Конфликт
+                - generic:
+                  - button:
+                    - img
+                    - generic: Сохранить вид
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Заявка · клиент
+                      - generic: Позиции
+                      - generic: Типы техники
+                      - generic: Дата / окно
+                      - generic: Адрес
+                      - generic: Менеджер
+                      - generic: Обновлено
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Активные заявки
+                      - generic: "49"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000208
+                              - generic: · QA INT003-1778080094695-7674 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000207
+                              - generic: · QA INT002-1778080094440-8387 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000206
+                              - generic: · QA INT001-1778080094186-1333 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000198
+                              - generic: · QA APIC005-1778080086873-3247 Lead
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000197
+                              - generic: · QA APIC004-1778080086576-73 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000190
+                              - generic: · QA INT003-1778080070841-6362 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000189
+                              - generic: · QA INT002-1778080070520-5105 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000188
+                              - generic: · QA INT001-1778080070164-6692 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000180
+                              - generic: · QA APIC005-1778080048828-6321 Lead
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000179
+                              - generic: · QA APIC004-1778080048452-1580 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000172
+                              - generic: · E2E App 003-1778012410768-816
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000170
+                              - generic: · E2E App 003-1778012207919-27
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000163
+                              - generic: · E2E App 003-1778011710887-109
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000156
+                              - generic: · E2E App 003-1778011390094-659
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000155
+                              - generic: · E2E 009 009-1778011285034-806
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000149
+                              - generic: · E2E App 003-1778011264216-47
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000143
+                              - generic: · E2E App 003-1778010714458-575
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000137
+                              - generic: · E2E App 003-1778010617940-628
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000136
+                              - generic: · E2E App 003-1778009609260-944
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000135
+                              - generic: · E2E App 003-1778009504481-140
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000134
+                              - generic: · E2E App 003-1778009322874-205
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000127
+                              - generic: · QA INT003-1778008668313-3620 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000126
+                              - generic: · QA INT002-1778008668028-8493 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000125
+                              - generic: · QA INT001-1778008667750-879 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000117
+                              - generic: · QA APIC005-1778008650043-9771 Lead
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000116
+                              - generic: · QA APIC004-1778008649730-2 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000113
+                              - generic: · QA INT003-1778008436244-6617 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000112
+                              - generic: · QA INT002-1778008435857-5748 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000111
+                              - generic: · QA INT001-1778008435552-9570 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000104
+                              - generic: · QA APIC005-1778008416188-180 Lead
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000103
+                              - generic: · QA APIC004-1778008415839-8613 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000100
+                              - generic: · QA INT003-1778008377164-6759 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000099
+                              - generic: · QA INT002-1778008376862-3926 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000098
+                              - generic: · QA INT001-1778008376549-5202 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000092
+                              - generic: · QA APIC005-1778008360590-5234 Lead
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 0/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000091
+                              - generic: · QA APIC004-1778008360231-6505 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000090
+                              - generic: · QA INT-001 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000089
+                              - generic: · QA APIC-004 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000082
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000075
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000066
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000062
+                              - generic: · Flow Test
+                              - generic: (Flow LLC)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000053
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000043
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000034
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000025
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000016
+                              - generic: · Ivan Test
+                              - generic: (OOO Romashka)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000012
+                              - generic: · Писюня
+                              - generic: (Писюня)
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "0"
+                            - generic: поз.
+                            - generic: 0/0
+                          - generic: "03.05"
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-2026-0001
+                              - generic: · Марина Кузнецова
+                              - generic: (ЗАО ТехМонтаж)
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 0/1
+                          - generic: Самосвал
+                          - generic: 01.05 · 09:00–14:00
+                          - generic: Москва, ул. Лётчика Бабушкина, 20
+                          - generic: Сергей Продажи
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: В работе по брони
+                      - generic: "55"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000210
+                              - generic: · QA INT005-1778080095267-9319 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000209
+                              - generic: · QA INT004-1778080094977-992 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000205
+                              - generic: · QA APIC012-1778080089172-9913 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000202
+                              - generic: · QA APIC008CANCEL-1778080088035-5005 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000200
+                              - generic: · QA APIC007-1778080087448-4144 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000199
+                              - generic: · QA APIC006-1778080087117-3343 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000192
+                              - generic: · QA INT005-1778080071419-8697 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000191
+                              - generic: · QA INT004-1778080071070-5069 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000187
+                              - generic: · QA APIC012-1778080052829-2146 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000184
+                              - generic: · QA APIC008CANCEL-1778080050358-9220 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000182
+                              - generic: · QA APIC007-1778080049584-9066 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000181
+                              - generic: · QA APIC006-1778080049138-3487 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000175
+                              - generic: · E2E 006 006-1778012425233-183
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000174
+                              - generic: · E2E 005 005-1778012421144-870
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000173
+                              - generic: · E2E 004 004-1778012414014-959
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000166
+                              - generic: · E2E 006 006-1778011720058-402
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000165
+                              - generic: · E2E 005 005-1778011717245-381
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000164
+                              - generic: · E2E 004 004-1778011713468-393
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000159
+                              - generic: · E2E 006 006-1778011399225-85
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000158
+                              - generic: · E2E 005 005-1778011396373-137
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000157
+                              - generic: · E2E 004 004-1778011392660-665
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000152
+                              - generic: · E2E 006 006-1778011273043-743
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000151
+                              - generic: · E2E 005 005-1778011270265-774
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000150
+                              - generic: · E2E 004 004-1778011266540-324
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000145
+                              - generic: · E2E 005 005-1778010720989-560
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000144
+                              - generic: · E2E 004 004-1778010717595-714
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000140
+                              - generic: · E2E 006 006-1778010627950-533
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000139
+                              - generic: · E2E 005 005-1778010623572-102
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000138
+                              - generic: · E2E 004 004-1778010620538-104
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: E2E
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000129
+                              - generic: · QA INT005-1778008668902-896 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000128
+                              - generic: · QA INT004-1778008668560-1720 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000124
+                              - generic: · QA APIC012-1778008653583-2367 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000121
+                              - generic: · QA APIC008CANCEL-1778008651326-4386 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000119
+                              - generic: · QA APIC007-1778008650682-4099 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000118
+                              - generic: · QA APIC006-1778008650337-1020 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000115
+                              - generic: · QA INT005-1778008436889-2557 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000114
+                              - generic: · QA INT004-1778008436526-8769 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000110
+                              - generic: · QA APIC012-1778008418500-7155 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000108
+                              - generic: · QA APIC008CANCEL-1778008417588-9816 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000106
+                              - generic: · QA APIC007-1778008416880-7627 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000105
+                              - generic: · QA APIC006-1778008416503-3726 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000102
+                              - generic: · QA INT005-1778008377739-9308 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000101
+                              - generic: · QA INT004-1778008377433-555 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000097
+                              - generic: · QA APIC012-1778008362757-4153 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000094
+                              - generic: · QA APIC007-1778008361306-5789 Lead
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000093
+                              - generic: · QA APIC006-1778008360913-5073 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "2"
+                            - generic: поз.
+                            - generic: 2/2
+                          - generic: QA
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000084
+                              - generic: · Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000077
+                              - generic: · Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000068
+                              - generic: · Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000055
+                              - generic: · Del Test
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000045
+                              - generic: · Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000036
+                              - generic: · Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - text: конфликт
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000027
+                              - generic: · Del Test
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-000018
+                              - generic: · Del Test
+                            - generic:
+                              - generic: источник?
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: ToDelete
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: APP-2026-0009
+                              - generic: · Марина Кузнецова
+                              - generic: (ЗАО ТехМонтаж)
+                            - generic:
+                              - generic:
+                                - img
+                                - text: парк
+                          - generic:
+                            - generic: "1"
+                            - generic: поз.
+                            - generic: 1/1
+                          - generic: Кран
+                          - generic: 02.05 · 10:00–18:00
+                          - generic: Москва, ул. Ильинка, 4
+                          - generic: Сергей Продажи
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Готовы к выезду
+                      - generic: "12"
+    - region "Notifications alt+T"
+  - dialog [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e6]:
+          - button "CRM" [ref=e7]:
+            - img [ref=e8]
+            - generic [ref=e9]: CRM
+          - generic [ref=e10]:
+            - img [ref=e11]
+            - button "Продажи" [ref=e13]:
+              - generic [ref=e14]: Продажи
+          - generic [ref=e15]:
+            - img [ref=e16]
+            - generic [ref=e19]: Заявки
+        - generic [ref=e20]:
+          - button "Поделиться" [ref=e21]:
+            - img [ref=e22]
+          - button "Следить за карточкой" [ref=e28]:
+            - img [ref=e29]
+          - button "Ещё действия" [ref=e32]:
+            - img [ref=e33]
+          - button [ref=e38]:
+            - img [ref=e39]
+      - generic [ref=e42]:
+        - generic [ref=e45]:
+          - banner [ref=e46]:
+            - button "Заявка" [ref=e47]:
+              - generic [ref=e48]: Заявка
+              - img [ref=e49]
+            - generic [ref=e51]:
+              - heading "APP-000215" [level=1] [ref=e52]
+              - button "Закрыть как некачественный" [ref=e55]
+            - generic [ref=e56]:
+              - generic [ref=e58]:
+                - img [ref=e59]
+                - generic [ref=e62]: Manager User
+              - generic [ref=e64]:
+                - img [ref=e65]
+                - generic [ref=e67]: 07.05.2026
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e73]: "Позиций: 0"
+              - generic [ref=e75]:
+                - img [ref=e76]
+                - generic [ref=e78]: Нет данных
+          - generic [ref=e79]:
+            - heading "Основные данные" [level=3] [ref=e81]
+            - generic [ref=e83]:
+              - generic [ref=e84]:
+                - generic [ref=e85]:
+                  - img [ref=e87]
+                  - generic [ref=e90]: Клиент
+                - button "E2E 013 Lead 013-1778080174696-931" [ref=e92]
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - img [ref=e96]
+                  - generic [ref=e99]: Менеджер
+                - combobox "Ответственный менеджер" [ref=e102]:
+                  - generic:
+                    - generic:
+                      - generic: Manager User
+              - generic [ref=e103]:
+                - generic [ref=e104]:
+                  - img [ref=e106]
+                  - generic [ref=e110]: Компания
+                - generic [ref=e111]: физ. лицо
+              - generic [ref=e112]:
+                - generic [ref=e113]:
+                  - img [ref=e115]
+                  - generic [ref=e118]: Позиций
+                - generic [ref=e120]: "0"
+              - generic [ref=e121]:
+                - generic [ref=e122]:
+                  - img [ref=e124]
+                  - generic [ref=e126]: Телефон
+                - generic [ref=e128]:
+                  - generic [ref=e129]: "+79007469673"
+                  - text: Редактируйте телефон в карточке клиента.
+              - generic [ref=e130]:
+                - generic [ref=e131]:
+                  - img [ref=e133]
+                  - generic [ref=e136]: Адрес
+                - button "Адрес" [ref=e138]:
+                  - generic [ref=e139]: Москва, E2E-013, 251
+              - generic [ref=e140]:
+                - generic [ref=e141]:
+                  - img [ref=e143]
+                  - generic [ref=e145]: Желаемая дата
+                - button "Желаемая дата" [ref=e147]: 07.05.2026
+              - generic [ref=e148]:
+                - generic [ref=e149]:
+                  - img [ref=e151]
+                  - generic [ref=e153]: Срочно
+                - combobox "Признак срочности" [ref=e156]:
+                  - generic:
+                    - generic:
+                      - generic: Нет
+              - generic [ref=e157]:
+                - generic [ref=e158]:
+                  - img [ref=e160]
+                  - generic [ref=e163]: Ночная работа
+                - combobox "Ночная работа" [ref=e166]:
+                  - generic:
+                    - generic:
+                      - generic: Нет
+          - generic [ref=e167]:
+            - generic [ref=e168]:
+              - heading "Позиции заявки" [level=3] [ref=e169]
+              - button "Добавить позицию" [ref=e171]:
+                - img [ref=e172]
+                - text: Добавить позицию
+            - generic [ref=e174]: В заявке пока нет позиций
+          - generic [ref=e175]:
+            - heading "Комментарий" [level=3] [ref=e177]
+            - button "Комментарий" [ref=e179]:
+              - generic [ref=e180]: Created by Playwright e2e
+          - generic [ref=e181]:
+            - heading "Связанные действия" [level=3] [ref=e183]
+            - generic [ref=e185]:
+              - button "Открыть клиента" [ref=e186]:
+                - img [ref=e188]
+                - text: Открыть клиента
+              - button "Открыть лид" [ref=e192]:
+                - img [ref=e194]
+                - text: Открыть лид
+              - button "Редактировать заявку" [ref=e197]:
+                - img [ref=e199]
+                - text: Редактировать заявку
+          - generic [ref=e201]:
+            - generic [ref=e202]:
+              - button "Комментарии 2" [ref=e203]:
+                - img [ref=e204]
+                - generic [ref=e206]: Комментарии
+                - generic [ref=e207]: "2"
+              - button "Журнал изменений" [ref=e208]:
+                - img [ref=e209]
+                - generic [ref=e211]: Журнал изменений
+            - generic [ref=e212]:
+              - generic [ref=e213]:
+                - generic [ref=e214]: А
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]: Анна Смирнова
+                    - generic [ref=e218]: 2 часа назад
+                  - generic [ref=e219]: Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.
+              - generic [ref=e220]:
+                - generic [ref=e221]: И
+                - generic [ref=e222]:
+                  - generic [ref=e223]:
+                    - generic [ref=e224]: Иван Петров
+                    - generic [ref=e225]: вчера, 18:22
+                  - generic [ref=e226]: Отправил КП, ждём подтверждение по позициям.
+        - complementary [ref=e227]:
+          - generic [ref=e228]:
+            - button "Статус и мета" [ref=e230]:
+              - img [ref=e231]
+              - generic [ref=e233]: Статус и мета
+            - generic [ref=e234]:
+              - generic [ref=e235]:
+                - generic [ref=e236]: Этап
+                - generic [ref=e238]: Заявка
+              - generic [ref=e239]:
+                - generic [ref=e240]: Номер
+                - generic [ref=e241]: APP-000215
+              - generic [ref=e242]:
+                - generic [ref=e243]: Обновлено
+                - generic [ref=e244]: только что
+              - generic [ref=e245]:
+                - generic [ref=e246]: Менеджер
+                - generic [ref=e247]: Manager User
+          - generic [ref=e248]:
+            - button "Готовность к брони" [ref=e250]:
+              - img [ref=e251]
+              - generic [ref=e253]: Готовность к брони
+            - generic [ref=e254]:
+              - generic [ref=e255]:
+                - img [ref=e256]
+                - text: Нет данных
+              - generic [ref=e258]: 0 из 0 позиций в бронировании
+              - generic [ref=e259]:
+                - button "Подготовить к брони" [disabled]
+          - generic [ref=e260]:
+            - button "Связанные записи" [ref=e262]:
+              - img [ref=e263]
+              - generic [ref=e265]: Связанные записи
+            - generic [ref=e266]:
+              - generic [ref=e267]:
+                - generic [ref=e268]: Лид
+                - button "LEAD-CMOU70ZG" [ref=e270] [cursor=pointer]
+              - generic [ref=e271]:
+                - generic [ref=e272]: Заявка
+                - button "APP-000215" [ref=e274] [cursor=pointer]
+              - generic [ref=e275]:
+                - generic [ref=e276]: Клиент
+                - button "E2E 013 Lead 013-1778080174696-931" [ref=e278] [cursor=pointer]
+          - button "Позиции" [ref=e281]:
+            - img [ref=e282]
+            - generic [ref=e284]: Позиции
+          - generic [ref=e286]:
+            - button "История" [ref=e288]:
+              - img [ref=e289]
+              - generic [ref=e291]: История
+            - generic [ref=e293]:
+              - generic [ref=e294]:
+                - img [ref=e295]
+                - generic [ref=e297]:
+                  - generic [ref=e298]:
+                    - generic [ref=e299]: Manager User
+                    - generic [ref=e300]: только что
+                  - generic [ref=e301]: "изменена стадия · Заявка APP-000215 отменена: E2E-013 cancel reason 013-cancel-1778080179421-746"
+              - generic [ref=e302]:
+                - img [ref=e303]
+                - generic [ref=e305]:
+                  - generic [ref=e306]:
+                    - generic [ref=e307]: Manager User
+                    - generic [ref=e308]: только что
+                  - generic [ref=e309]: обновлено · Обновлена заявка APP-000215
+          - button "Быстрые действия" [ref=e312]:
+            - img [ref=e313]
+            - generic [ref=e315]: Быстрые действия
+```
+
+# Test source
+
+```ts
+  49  |   refreshToken: string
+  50  |   user: {
+  51  |     id: string
+  52  |     email: string
+  53  |     role: TestRole
+  54  |     fullName: string
+  55  |   }
+  56  | }
+  57  | 
+  58  | type LeadPayload = {
+  59  |   id: string
+  60  |   contactName: string
+  61  | }
+  62  | 
+  63  | type CreateLeadResult = {
+  64  |   lead: LeadPayload
+  65  | }
+  66  | 
+  67  | type ApplicationsListResult = {
+  68  |   items: Array<{ id: string }>
+  69  | }
+  70  | 
+  71  | function apiUrl(path: string): string {
+  72  |   const cleanBase = API_BASE_URL.replace(/\/+$/, '')
+  73  |   const cleanPath = path.replace(/^\/+/, '')
+  74  |   return `${cleanBase}/${cleanPath}`
+  75  | }
+  76  | 
+  77  | export function enableUiFailureGuards(page: Page): void {
+  78  |   if (uiFailureGuards.has(page)) {
+  79  |     return
+  80  |   }
+  81  | 
+  82  |   const consoleErrors: string[] = []
+  83  |   const failedApiRequests: string[] = []
+  84  |   const allowedConsoleErrorPatterns: RegExp[] = []
+  85  |   const apiBase = API_BASE_URL.replace(/\/+$/, '')
+  86  | 
+  87  |   const onConsole: UiFailureGuardState['onConsole'] = (message) => {
+  88  |     if (message.type() !== 'error') {
+  89  |       return
+  90  |     }
+  91  | 
+  92  |     const text = message.text()
+  93  |     if (isKnownConsoleBaselineError(text)) {
+  94  |       return
+  95  |     }
+  96  |     if (allowedConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+  97  |       return
+  98  |     }
+  99  | 
+  100 |     const location = message.location()
+  101 |     const source = location.url ? `${location.url}:${location.lineNumber ?? 0}:${location.columnNumber ?? 0}` : 'unknown'
+  102 |     consoleErrors.push(`${source} :: ${text}`)
+  103 |   }
+  104 | 
+  105 |   const onRequestFailed: UiFailureGuardState['onRequestFailed'] = (request) => {
+  106 |     const url = request.url()
+  107 |     if (!url.startsWith(apiBase)) {
+  108 |       return
+  109 |     }
+  110 | 
+  111 |     const errorText = request.failure()?.errorText ?? 'unknown-error'
+  112 |     if (errorText.includes('ERR_ABORTED')) {
+  113 |       return
+  114 |     }
+  115 | 
+  116 |     failedApiRequests.push(`${request.method()} ${url} :: ${errorText}`)
+  117 |   }
+  118 | 
+  119 |   page.on('console', onConsole)
+  120 |   page.on('requestfailed', onRequestFailed)
+  121 |   uiFailureGuards.set(page, {
+  122 |     consoleErrors,
+  123 |     failedApiRequests,
+  124 |     allowedConsoleErrorPatterns,
+  125 |     onConsole,
+  126 |     onRequestFailed,
+  127 |   })
+  128 | }
+  129 | 
+  130 | export async function assertUiFailureGuards(page: Page, options: { failOnIssues?: boolean } = {}): Promise<void> {
+  131 |   const state = uiFailureGuards.get(page)
+  132 |   if (!state) {
+  133 |     return
+  134 |   }
+  135 | 
+  136 |   page.off('console', state.onConsole)
+  137 |   page.off('requestfailed', state.onRequestFailed)
+  138 |   uiFailureGuards.delete(page)
+  139 | 
+  140 |   const issues = [
+  141 |     ...state.consoleErrors.map((entry) => `console.error ${entry}`),
+  142 |     ...state.failedApiRequests.map((entry) => `requestfailed ${entry}`),
+  143 |   ]
+  144 | 
+  145 |   if (issues.length === 0 || options.failOnIssues === false) {
+  146 |     return
+  147 |   }
+  148 | 
+> 149 |   expect(issues, `Unexpected UI runtime issues:\n${issues.join('\n')}`).toEqual([])
+      |                                                                         ^ Error: Unexpected UI runtime issues:
+  150 | }
+  151 | 
+  152 | export async function sendApiRequest<T>(
+  153 |   request: APIRequestContext,
+  154 |   path: string,
+  155 |   options: {
+  156 |     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  157 |     token?: string
+  158 |     body?: unknown
+  159 |     expectedStatus?: number
+  160 |   } = {},
+  161 | ): Promise<T> {
+  162 |   const headers: Record<string, string> = { Accept: 'application/json' }
+  163 |   if (options.token) {
+  164 |     headers.Authorization = `Bearer ${options.token}`
+  165 |   }
+  166 |   if (options.body !== undefined) {
+  167 |     headers['Content-Type'] = 'application/json'
+  168 |   }
+  169 | 
+  170 |   const response = await request.fetch(apiUrl(path), {
+  171 |     method: options.method ?? 'GET',
+  172 |     headers,
+  173 |     data: options.body,
+  174 |   })
+  175 |   const status = response.status()
+  176 | 
+  177 |   const raw = await response.text()
+  178 |   const payload = raw
+  179 |     ? (() => {
+  180 |         try {
+  181 |           return JSON.parse(raw)
+  182 |         } catch {
+  183 |           return raw
+  184 |         }
+  185 |       })()
+  186 |     : null
+  187 | 
+  188 |   if (options.expectedStatus !== undefined && status !== options.expectedStatus) {
+  189 |     throw new Error(
+  190 |       `API ${options.method ?? 'GET'} ${path} expected ${options.expectedStatus}, got ${status}: ${JSON.stringify(payload)}`,
+  191 |     )
+  192 |   }
+  193 | 
+  194 |   if (options.expectedStatus === undefined && !response.ok()) {
+  195 |     throw new Error(
+  196 |       `API ${options.method ?? 'GET'} ${path} failed with ${status}: ${JSON.stringify(payload)}`,
+  197 |     )
+  198 |   }
+  199 | 
+  200 |   return payload as T
+  201 | }
+  202 | 
+  203 | export function uniqueSeed(prefix: string): string {
+  204 |   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  205 | }
+  206 | 
+  207 | export function uniquePhone(): string {
+  208 |   const tail = `${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 90 + 10)}`
+  209 |   return `+7900${tail}`
+  210 | }
+  211 | 
+  212 | export async function apiLogin(request: APIRequestContext, role: TestRole): Promise<AuthPayload> {
+  213 |   const credentials = ROLE_CREDENTIALS[role]
+  214 |   return sendApiRequest<AuthPayload>(request, 'auth/login', {
+  215 |     method: 'POST',
+  216 |     body: credentials,
+  217 |   })
+  218 | }
+  219 | 
+  220 | export async function createLeadViaApi(
+  221 |   request: APIRequestContext,
+  222 |   token: string,
+  223 |   overrides: Partial<{
+  224 |     contactName: string
+  225 |     contactPhone: string
+  226 |     equipmentTypeHint: string
+  227 |     address: string
+  228 |     requestedDate: string
+  229 |   }> = {},
+  230 | ): Promise<LeadPayload> {
+  231 |   const oneDayAhead = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  232 | 
+  233 |   const response = await sendApiRequest<CreateLeadResult>(request, 'leads', {
+  234 |     method: 'POST',
+  235 |     token,
+  236 |     body: {
+  237 |       contactName: overrides.contactName ?? `E2E ${uniqueSeed('lead')}`,
+  238 |       contactPhone: overrides.contactPhone ?? uniquePhone(),
+  239 |       source: 'manual',
+  240 |       equipmentTypeHint: overrides.equipmentTypeHint ?? 'Экскаватор',
+  241 |       requestedDate: overrides.requestedDate ?? oneDayAhead.toISOString(),
+  242 |       address: overrides.address ?? 'Москва, Тестовая улица, 1',
+  243 |       comment: 'Created by Playwright e2e',
+  244 |     },
+  245 |   })
+  246 | 
+  247 |   return response.lead
+  248 | }
+  249 | 
+```

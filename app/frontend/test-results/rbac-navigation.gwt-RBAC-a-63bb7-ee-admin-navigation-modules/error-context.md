@@ -1,0 +1,6284 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: rbac-navigation.gwt.spec.ts >> RBAC and Navigation GWT (QA-REQ: 032..035) >> E2E-011 manager does not see admin navigation modules
+- Location: e2e\rbac-navigation.gwt.spec.ts:45:3
+
+# Error details
+
+```
+Error: Unexpected UI runtime issues:
+console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 3
+
+- Array []
++ Array [
++   "console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: К
+        - generic [ref=e7]: Катет CRM
+      - generic [ref=e9]:
+        - img
+        - textbox "Быстрый поиск" [ref=e10]:
+          - /placeholder: Поиск по лидам
+        - generic: Ctrl K
+      - generic [ref=e11]:
+        - button "Менеджер" [ref=e12]
+        - button "Уведомления" [ref=e13]:
+          - img [ref=e14]
+        - button "Помощь" [ref=e17]:
+          - img [ref=e18]
+        - button "Профиль" [ref=e21]:
+          - generic [ref=e22]: MA
+          - img [ref=e23]
+    - generic [ref=e25]:
+      - complementary [ref=e26]:
+        - navigation [ref=e29]:
+          - button "Главная" [ref=e30]:
+            - img [ref=e31]
+          - button "Продажи" [pressed] [ref=e34]:
+            - img [ref=e35]
+          - button "Клиенты" [ref=e39]:
+            - img [ref=e40]
+          - button "Операции" [ref=e45]:
+            - img [ref=e46]
+          - button "Справочники" [ref=e51]:
+            - img [ref=e52]
+          - button "Контроль" [ref=e56]:
+            - img [ref=e57]
+      - generic [ref=e59]:
+        - complementary [ref=e60]:
+          - generic [ref=e61]:
+            - generic [ref=e62]:
+              - generic [ref=e63]:
+                - img [ref=e64]
+                - heading "Продажи" [level=2] [ref=e67]
+              - generic [ref=e68]:
+                - button "Поиск по меню" [ref=e69]:
+                  - img [ref=e70]
+                - button "Свернуть меню" [ref=e73]:
+                  - img [ref=e74]
+            - generic [ref=e77]:
+              - generic [ref=e78]:
+                - button "Лиды" [ref=e79]:
+                  - img [ref=e80]
+                  - generic [ref=e82]: Лиды
+                - generic [ref=e83]:
+                  - button "Все лиды" [ref=e84]:
+                    - img [ref=e85]
+                    - generic [ref=e89]: Все лиды
+                  - button "Мои лиды" [ref=e90]:
+                    - img [ref=e91]
+                    - generic [ref=e95]: Мои лиды
+              - generic [ref=e96]:
+                - button "Заявки" [ref=e97]:
+                  - img [ref=e98]
+                  - generic [ref=e100]: Заявки
+                - generic [ref=e101]:
+                  - button "Все заявки" [ref=e102]:
+                    - img [ref=e103]
+                    - generic [ref=e106]: Все заявки
+                  - button "Мои заявки" [ref=e107]:
+                    - img [ref=e108]
+                    - generic [ref=e111]: Мои заявки
+                  - button "Активные заявки" [ref=e112]:
+                    - img [ref=e113]
+                    - generic [ref=e117]: Активные заявки
+              - generic [ref=e119]:
+                - button "Представления продаж" [ref=e120]:
+                  - img [ref=e121]
+                  - generic [ref=e123]: Представления продаж
+                - generic [ref=e124]:
+                  - button "Срочные лиды" [ref=e125]:
+                    - img [ref=e126]
+                    - generic [ref=e128]: Срочные лиды
+                  - button "Без первого контакта" [ref=e129]:
+                    - img [ref=e130]
+                    - generic [ref=e133]: Без первого контакта
+                  - button "Ждут перевода в заявку" [ref=e134]:
+                    - img [ref=e135]
+                    - generic [ref=e138]: Ждут перевода в заявку
+                  - button "Требуют брони" [ref=e139]:
+                    - img [ref=e140]
+                    - generic [ref=e143]: Требуют брони
+                  - button "Зависшие" [ref=e144]:
+                    - img [ref=e145]
+                    - generic [ref=e148]: Зависшие
+                  - button "Дубли" [ref=e149]:
+                    - img [ref=e150]
+                    - generic [ref=e153]: Дубли
+            - button "Черновик" [ref=e155]:
+              - img [ref=e156]
+              - generic [ref=e159]: Черновик
+        - main [ref=e160]:
+          - generic [ref=e161]:
+            - generic [ref=e162]:
+              - generic [ref=e163]:
+                - heading "Лиды" [level=1] [ref=e164]
+                - button "Новый лид" [ref=e165]:
+                  - img [ref=e166]
+                  - generic [ref=e167]: Новый лид
+              - generic [ref=e168]:
+                - button "Доска" [ref=e169]:
+                  - img [ref=e170]
+                  - generic [ref=e175]: Доска
+                - button "Список" [ref=e176]:
+                  - img [ref=e177]
+                  - generic [ref=e178]: Список
+                - button "Таблица" [ref=e179]:
+                  - img [ref=e180]
+                  - generic [ref=e182]: Таблица
+            - generic [ref=e183]:
+              - generic [ref=e184]:
+                - img
+                - textbox "Поиск по лидам" [ref=e185]
+              - combobox [ref=e186]:
+                - generic: Все
+                - img
+              - combobox [ref=e187]:
+                - generic: Все менеджеры
+                - img
+              - combobox [ref=e188]:
+                - generic: Все источники
+                - img
+              - combobox [ref=e189]:
+                - generic: Все типы
+                - img
+              - button "Срочные" [ref=e191]
+              - button "Дубли" [ref=e192]
+              - button "Зависшие" [ref=e193]
+              - button "Сохранить вид" [ref=e195]:
+                - img [ref=e196]
+                - generic [ref=e198]: Сохранить вид
+            - generic [ref=e199]:
+              - button "Новые лиды 0" [ref=e200]:
+                - img [ref=e202]
+                - generic [ref=e204]:
+                  - generic [ref=e205]: Новые лиды
+                  - generic [ref=e206]: "0"
+              - button "Без первого контакта 1" [ref=e207]:
+                - img [ref=e209]
+                - generic [ref=e212]:
+                  - generic [ref=e213]: Без первого контакта
+                  - generic [ref=e214]: "1"
+              - button "Ждут перевода в заявку 99" [ref=e215]:
+                - img [ref=e217]
+                - generic [ref=e221]:
+                  - generic [ref=e222]: Ждут перевода в заявку
+                  - generic [ref=e223]: "99"
+              - button "Требуют брони 97" [ref=e224]:
+                - img [ref=e226]
+                - generic [ref=e228]:
+                  - generic [ref=e229]: Требуют брони
+                  - generic [ref=e230]: "97"
+              - button "Выезды сегодня 0" [ref=e231]:
+                - img [ref=e233]
+                - generic [ref=e238]:
+                  - generic [ref=e239]: Выезды сегодня
+                  - generic [ref=e240]: "0"
+              - button "Зависшие 1" [ref=e241]:
+                - img [ref=e243]
+                - generic [ref=e246]:
+                  - generic [ref=e247]: Зависшие
+                  - generic [ref=e248]: "1"
+              - button "Дубли 96" [ref=e249]:
+                - img [ref=e251]
+                - generic [ref=e254]:
+                  - generic [ref=e255]: Дубли
+                  - generic [ref=e256]: "96"
+              - button "Конфликт брони 0" [ref=e257]:
+                - img [ref=e259]
+                - generic [ref=e261]:
+                  - generic [ref=e262]: Конфликт брони
+                  - generic [ref=e263]: "0"
+            - generic [ref=e265]:
+              - generic [ref=e266]:
+                - generic [ref=e268]:
+                  - heading "Лид" [level=3] [ref=e270]
+                  - generic [ref=e271]: "99"
+                - generic [ref=e272]:
+                  - generic [ref=e274] [cursor=pointer]:
+                    - generic [ref=e277]: E2E Manager 011-1778080290784-570
+                    - generic [ref=e279]:
+                      - img [ref=e280]
+                      - generic [ref=e283]: Ручной
+                    - generic [ref=e285]:
+                      - img [ref=e286]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e288]:
+                      - generic [ref=e289]:
+                        - img [ref=e290]
+                        - link "+79009496085" [ref=e292]:
+                          - /url: tel:+79009496085
+                      - generic [ref=e293]: —
+                    - generic [ref=e294]:
+                      - generic [ref=e295]:
+                        - img [ref=e296]
+                        - generic [ref=e299]: Manager User
+                      - generic [ref=e300]: только что
+                  - generic [ref=e302] [cursor=pointer]:
+                    - generic [ref=e305]: E2E Route 010-1778080280710-703
+                    - generic [ref=e307]:
+                      - img [ref=e308]
+                      - generic [ref=e311]: Ручной
+                    - generic [ref=e313]:
+                      - img [ref=e314]
+                      - text: Готов к заявке
+                    - generic [ref=e317]:
+                      - generic [ref=e318]:
+                        - img [ref=e319]
+                        - link "+79008071064" [ref=e321]:
+                          - /url: tel:+79008071064
+                      - generic [ref=e322]: Экскаватор
+                      - generic [ref=e323]:
+                        - img [ref=e324]
+                        - generic [ref=e326]: 07.05.2026
+                    - generic [ref=e327]:
+                      - generic [ref=e328]:
+                        - img [ref=e329]
+                        - generic [ref=e332]: Manager User
+                      - generic [ref=e333]: только что
+                  - generic [ref=e335] [cursor=pointer]:
+                    - generic [ref=e336]:
+                      - generic [ref=e338]: E2E Duplicate 002-1778080225376-622
+                      - generic [ref=e339]: Дубль
+                    - generic [ref=e341]:
+                      - img [ref=e342]
+                      - generic [ref=e345]: Ручной
+                    - generic [ref=e347]:
+                      - img [ref=e348]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e350]:
+                      - generic [ref=e351]:
+                        - img [ref=e352]
+                        - link "+79002537610" [ref=e354]:
+                          - /url: tel:+79002537610
+                      - generic [ref=e355]: —
+                    - generic [ref=e356]:
+                      - generic [ref=e357]:
+                        - img [ref=e358]
+                        - generic [ref=e361]: Manager User
+                      - generic [ref=e362]: 1 мин назад
+                  - generic [ref=e364] [cursor=pointer]:
+                    - generic [ref=e367]: E2E Existing 002-1778080225376-301
+                    - generic [ref=e369]:
+                      - img [ref=e370]
+                      - generic [ref=e373]: Ручной
+                    - generic [ref=e375]:
+                      - img [ref=e376]
+                      - text: Готов к заявке
+                    - generic [ref=e379]:
+                      - generic [ref=e380]:
+                        - img [ref=e381]
+                        - link "+79002537610" [ref=e383]:
+                          - /url: tel:+79002537610
+                      - generic [ref=e384]: Экскаватор
+                      - generic [ref=e385]:
+                        - img [ref=e386]
+                        - generic [ref=e388]: 07.05.2026
+                    - generic [ref=e389]:
+                      - generic [ref=e390]:
+                        - img [ref=e391]
+                        - generic [ref=e394]: Manager User
+                      - generic [ref=e395]: 1 мин назад
+                  - generic [ref=e397] [cursor=pointer]:
+                    - generic [ref=e400]: E2E Lead 001-1778080212826-632
+                    - generic [ref=e402]:
+                      - img [ref=e403]
+                      - generic [ref=e406]: Ручной
+                    - generic [ref=e408]:
+                      - img [ref=e409]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e411]:
+                      - generic [ref=e412]:
+                        - img [ref=e413]
+                        - link "+79001935965" [ref=e415]:
+                          - /url: tel:+79001935965
+                      - generic [ref=e416]: —
+                    - generic [ref=e417]:
+                      - generic [ref=e418]:
+                        - img [ref=e419]
+                        - generic [ref=e422]: Manager User
+                      - generic [ref=e423]: 1 мин назад
+                  - generic [ref=e425] [cursor=pointer]:
+                    - generic [ref=e428]: E2E 016 016-1778080198119-30
+                    - generic [ref=e430]:
+                      - img [ref=e431]
+                      - generic [ref=e434]: Ручной
+                    - generic [ref=e436]:
+                      - img [ref=e437]
+                      - text: Готов к заявке
+                    - generic [ref=e440]:
+                      - generic [ref=e441]:
+                        - img [ref=e442]
+                        - link "+79009811978" [ref=e444]:
+                          - /url: tel:+79009811978
+                      - generic [ref=e445]: Бетононасос
+                      - generic [ref=e446]:
+                        - img [ref=e447]
+                        - generic [ref=e449]: 09.05.2026
+                    - generic [ref=e450]:
+                      - generic [ref=e451]:
+                        - img [ref=e452]
+                        - generic [ref=e455]: Manager User
+                      - generic [ref=e456]: 1 мин назад
+                  - generic [ref=e458] [cursor=pointer]:
+                    - generic [ref=e459]:
+                      - generic [ref=e461]: E2E 012 Lead 012-1778080147523-968
+                      - generic [ref=e462]: Дубль
+                    - generic [ref=e464]:
+                      - img [ref=e465]
+                      - generic [ref=e468]: Ручной
+                    - generic [ref=e470]:
+                      - img [ref=e471]
+                      - text: Готов к заявке
+                    - generic [ref=e474]:
+                      - generic [ref=e475]:
+                        - img [ref=e476]
+                        - link "+79004752320" [ref=e478]:
+                          - /url: tel:+79004752320
+                      - generic [ref=e479]: Экскаватор
+                      - generic [ref=e480]:
+                        - img [ref=e481]
+                        - generic [ref=e483]: 07.05.2026
+                    - generic [ref=e484]:
+                      - generic [ref=e485]:
+                        - img [ref=e486]
+                        - generic [ref=e489]: Manager User
+                      - generic [ref=e490]: 2 мин назад
+                  - generic [ref=e492] [cursor=pointer]:
+                    - generic [ref=e495]: QA INT-009 Lead
+                    - generic [ref=e497]:
+                      - img [ref=e498]
+                      - generic [ref=e501]: Ручной
+                    - generic [ref=e503]:
+                      - img [ref=e504]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e506]:
+                      - generic [ref=e507]:
+                        - img [ref=e508]
+                        - link "+790980096802" [ref=e510]:
+                          - /url: tel:+790980096802
+                      - generic [ref=e511]: —
+                    - generic [ref=e512]:
+                      - generic [ref=e513]:
+                        - img [ref=e514]
+                        - generic [ref=e517]: Manager User
+                      - generic [ref=e518]: 3 мин назад
+                  - generic [ref=e520] [cursor=pointer]:
+                    - generic [ref=e521]:
+                      - generic [ref=e523]: QA APIC-003 Lead B
+                      - generic [ref=e524]: Дубль
+                    - generic [ref=e526]:
+                      - img [ref=e527]
+                      - generic [ref=e530]: Ручной
+                    - generic [ref=e532]:
+                      - img [ref=e533]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e535]:
+                      - generic [ref=e536]:
+                        - img [ref=e537]
+                        - link "+79990031778080086" [ref=e539]:
+                          - /url: tel:+79990031778080086
+                      - generic [ref=e540]: —
+                    - generic [ref=e541]:
+                      - generic [ref=e542]:
+                        - img [ref=e543]
+                        - generic [ref=e546]: Manager User
+                      - generic [ref=e547]: 3 мин назад
+                  - generic [ref=e549] [cursor=pointer]:
+                    - generic [ref=e552]: QA APIC-003 Lead A
+                    - generic [ref=e554]:
+                      - img [ref=e555]
+                      - generic [ref=e558]: Ручной
+                    - generic [ref=e560]:
+                      - img [ref=e561]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e563]:
+                      - generic [ref=e564]:
+                        - img [ref=e565]
+                        - link "+79990031778080086" [ref=e567]:
+                          - /url: tel:+79990031778080086
+                      - generic [ref=e568]: —
+                    - generic [ref=e569]:
+                      - generic [ref=e570]:
+                        - img [ref=e571]
+                        - generic [ref=e574]: Manager User
+                      - generic [ref=e575]: 3 мин назад
+                  - generic [ref=e577] [cursor=pointer]:
+                    - generic [ref=e580]: QA APIC-002 Lead
+                    - generic [ref=e582]:
+                      - img [ref=e583]
+                      - generic [ref=e586]: Ручной
+                    - generic [ref=e588]:
+                      - img [ref=e589]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e591]:
+                      - generic [ref=e592]:
+                        - img [ref=e593]
+                        - link "+79990021778080086" [ref=e595]:
+                          - /url: tel:+79990021778080086
+                      - generic [ref=e596]: —
+                    - generic [ref=e597]:
+                      - generic [ref=e598]:
+                        - img [ref=e599]
+                        - generic [ref=e602]: Manager User
+                      - generic [ref=e603]: 3 мин назад
+                  - generic [ref=e605] [cursor=pointer]:
+                    - generic [ref=e608]: QA INT-009 Lead
+                    - generic [ref=e610]:
+                      - img [ref=e611]
+                      - generic [ref=e614]: Ручной
+                    - generic [ref=e616]:
+                      - img [ref=e617]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e619]:
+                      - generic [ref=e620]:
+                        - img [ref=e621]
+                        - link "+790980073506" [ref=e623]:
+                          - /url: tel:+790980073506
+                      - generic [ref=e624]: —
+                    - generic [ref=e625]:
+                      - generic [ref=e626]:
+                        - img [ref=e627]
+                        - generic [ref=e630]: Manager User
+                      - generic [ref=e631]: 3 мин назад
+                  - generic [ref=e633] [cursor=pointer]:
+                    - generic [ref=e634]:
+                      - generic [ref=e636]: QA APIC-003 Lead B
+                      - generic [ref=e637]: Дубль
+                    - generic [ref=e639]:
+                      - img [ref=e640]
+                      - generic [ref=e643]: Ручной
+                    - generic [ref=e645]:
+                      - img [ref=e646]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e648]:
+                      - generic [ref=e649]:
+                        - img [ref=e650]
+                        - link "+79990031778080048" [ref=e652]:
+                          - /url: tel:+79990031778080048
+                      - generic [ref=e653]: —
+                    - generic [ref=e654]:
+                      - generic [ref=e655]:
+                        - img [ref=e656]
+                        - generic [ref=e659]: Manager User
+                      - generic [ref=e660]: 4 мин назад
+                  - generic [ref=e662] [cursor=pointer]:
+                    - generic [ref=e665]: QA APIC-003 Lead A
+                    - generic [ref=e667]:
+                      - img [ref=e668]
+                      - generic [ref=e671]: Ручной
+                    - generic [ref=e673]:
+                      - img [ref=e674]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e676]:
+                      - generic [ref=e677]:
+                        - img [ref=e678]
+                        - link "+79990031778080048" [ref=e680]:
+                          - /url: tel:+79990031778080048
+                      - generic [ref=e681]: —
+                    - generic [ref=e682]:
+                      - generic [ref=e683]:
+                        - img [ref=e684]
+                        - generic [ref=e687]: Manager User
+                      - generic [ref=e688]: 4 мин назад
+                  - generic [ref=e690] [cursor=pointer]:
+                    - generic [ref=e693]: QA APIC-002 Lead
+                    - generic [ref=e695]:
+                      - img [ref=e696]
+                      - generic [ref=e699]: Ручной
+                    - generic [ref=e701]:
+                      - img [ref=e702]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e704]:
+                      - generic [ref=e705]:
+                        - img [ref=e706]
+                        - link "+79990021778080048" [ref=e708]:
+                          - /url: tel:+79990021778080048
+                      - generic [ref=e709]: —
+                    - generic [ref=e710]:
+                      - generic [ref=e711]:
+                        - img [ref=e712]
+                        - generic [ref=e715]: Manager User
+                      - generic [ref=e716]: 4 мин назад
+                  - generic [ref=e718] [cursor=pointer]:
+                    - generic [ref=e721]: E2E 009 Lead 009-1778012468339-797
+                    - generic [ref=e723]:
+                      - img [ref=e724]
+                      - generic [ref=e727]: Ручной
+                    - generic [ref=e729]:
+                      - img [ref=e730]
+                      - text: Готов к заявке
+                    - generic [ref=e733]:
+                      - generic [ref=e734]:
+                        - img [ref=e735]
+                        - link "+79006833983" [ref=e737]:
+                          - /url: tel:+79006833983
+                      - generic [ref=e738]: Экскаватор
+                      - generic [ref=e739]:
+                        - img [ref=e740]
+                        - generic [ref=e742]: 07.05.2026
+                    - generic [ref=e743]:
+                      - generic [ref=e744]:
+                        - img [ref=e745]
+                        - generic [ref=e748]: Manager User
+                      - generic [ref=e749]: 18 ч назад
+                  - generic [ref=e751] [cursor=pointer]:
+                    - generic [ref=e754]: E2E Manager 011-1778012453068-814
+                    - generic [ref=e756]:
+                      - img [ref=e757]
+                      - generic [ref=e760]: Ручной
+                    - generic [ref=e762]:
+                      - img [ref=e763]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e765]:
+                      - generic [ref=e766]:
+                        - img [ref=e767]
+                        - link "+79005621214" [ref=e769]:
+                          - /url: tel:+79005621214
+                      - generic [ref=e770]: —
+                    - generic [ref=e771]:
+                      - generic [ref=e772]:
+                        - img [ref=e773]
+                        - generic [ref=e776]: Manager User
+                      - generic [ref=e777]: 18 ч назад
+                  - generic [ref=e779] [cursor=pointer]:
+                    - generic [ref=e782]: E2E Route 010-1778012441070-151
+                    - generic [ref=e784]:
+                      - img [ref=e785]
+                      - generic [ref=e788]: Ручной
+                    - generic [ref=e790]:
+                      - img [ref=e791]
+                      - text: Готов к заявке
+                    - generic [ref=e794]:
+                      - generic [ref=e795]:
+                        - img [ref=e796]
+                        - link "+79004107019" [ref=e798]:
+                          - /url: tel:+79004107019
+                      - generic [ref=e799]: Экскаватор
+                      - generic [ref=e800]:
+                        - img [ref=e801]
+                        - generic [ref=e803]: 07.05.2026
+                    - generic [ref=e804]:
+                      - generic [ref=e805]:
+                        - img [ref=e806]
+                        - generic [ref=e809]: Manager User
+                      - generic [ref=e810]: 18 ч назад
+                  - generic [ref=e812] [cursor=pointer]:
+                    - generic [ref=e813]:
+                      - generic [ref=e815]: E2E Duplicate 002-1778012404357-923
+                      - generic [ref=e816]: Дубль
+                    - generic [ref=e818]:
+                      - img [ref=e819]
+                      - generic [ref=e822]: Ручной
+                    - generic [ref=e824]:
+                      - img [ref=e825]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e827]:
+                      - generic [ref=e828]:
+                        - img [ref=e829]
+                        - link "+79000435742" [ref=e831]:
+                          - /url: tel:+79000435742
+                      - generic [ref=e832]: —
+                    - generic [ref=e833]:
+                      - generic [ref=e834]:
+                        - img [ref=e835]
+                        - generic [ref=e838]: Manager User
+                      - generic [ref=e839]: 18 ч назад
+                  - generic [ref=e841] [cursor=pointer]:
+                    - generic [ref=e844]: E2E Existing 002-1778012404357-40
+                    - generic [ref=e846]:
+                      - img [ref=e847]
+                      - generic [ref=e850]: Ручной
+                    - generic [ref=e852]:
+                      - img [ref=e853]
+                      - text: Готов к заявке
+                    - generic [ref=e856]:
+                      - generic [ref=e857]:
+                        - img [ref=e858]
+                        - link "+79000435742" [ref=e860]:
+                          - /url: tel:+79000435742
+                      - generic [ref=e861]: Экскаватор
+                      - generic [ref=e862]:
+                        - img [ref=e863]
+                        - generic [ref=e865]: 07.05.2026
+                    - generic [ref=e866]:
+                      - generic [ref=e867]:
+                        - img [ref=e868]
+                        - generic [ref=e871]: Manager User
+                      - generic [ref=e872]: 18 ч назад
+                  - generic [ref=e874] [cursor=pointer]:
+                    - generic [ref=e877]: E2E Lead 001-1778012396822-260
+                    - generic [ref=e879]:
+                      - img [ref=e880]
+                      - generic [ref=e883]: Ручной
+                    - generic [ref=e885]:
+                      - img [ref=e886]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e888]:
+                      - generic [ref=e889]:
+                        - img [ref=e890]
+                        - link "+79000132490" [ref=e892]:
+                          - /url: tel:+79000132490
+                      - generic [ref=e893]: —
+                    - generic [ref=e894]:
+                      - generic [ref=e895]:
+                        - img [ref=e896]
+                        - generic [ref=e899]: Manager User
+                      - generic [ref=e900]: 18 ч назад
+                  - generic [ref=e902] [cursor=pointer]:
+                    - generic [ref=e905]: E2E 009 Lead 009-1778012230542-169
+                    - generic [ref=e907]:
+                      - img [ref=e908]
+                      - generic [ref=e911]: Ручной
+                    - generic [ref=e913]:
+                      - img [ref=e914]
+                      - text: Готов к заявке
+                    - generic [ref=e917]:
+                      - generic [ref=e918]:
+                        - img [ref=e919]
+                        - link "+79003054276" [ref=e921]:
+                          - /url: tel:+79003054276
+                      - generic [ref=e922]: Экскаватор
+                      - generic [ref=e923]:
+                        - img [ref=e924]
+                        - generic [ref=e926]: 07.05.2026
+                    - generic [ref=e927]:
+                      - generic [ref=e928]:
+                        - img [ref=e929]
+                        - generic [ref=e932]: Manager User
+                      - generic [ref=e933]: 18 ч назад
+                  - generic [ref=e935] [cursor=pointer]:
+                    - generic [ref=e938]: E2E Manager 011-1778012216837-315
+                    - generic [ref=e940]:
+                      - img [ref=e941]
+                      - generic [ref=e944]: Ручной
+                    - generic [ref=e946]:
+                      - img [ref=e947]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e949]:
+                      - generic [ref=e950]:
+                        - img [ref=e951]
+                        - link "+79002064461" [ref=e953]:
+                          - /url: tel:+79002064461
+                      - generic [ref=e954]: —
+                    - generic [ref=e955]:
+                      - generic [ref=e956]:
+                        - img [ref=e957]
+                        - generic [ref=e960]: Manager User
+                      - generic [ref=e961]: 18 ч назад
+                  - generic [ref=e963] [cursor=pointer]:
+                    - generic [ref=e966]: E2E Lead 001-1778012198047-540
+                    - generic [ref=e968]:
+                      - img [ref=e969]
+                      - generic [ref=e972]: Ручной
+                    - generic [ref=e974]:
+                      - img [ref=e975]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e977]:
+                      - generic [ref=e978]:
+                        - img [ref=e979]
+                        - link "+79000348227" [ref=e981]:
+                          - /url: tel:+79000348227
+                      - generic [ref=e982]: —
+                    - generic [ref=e983]:
+                      - generic [ref=e984]:
+                        - img [ref=e985]
+                        - generic [ref=e988]: Manager User
+                      - generic [ref=e989]: 18 ч назад
+                  - generic [ref=e991] [cursor=pointer]:
+                    - generic [ref=e994]: E2E 009 Lead 009-1778011760308-12
+                    - generic [ref=e996]:
+                      - img [ref=e997]
+                      - generic [ref=e1000]: Ручной
+                    - generic [ref=e1002]:
+                      - img [ref=e1003]
+                      - text: Готов к заявке
+                    - generic [ref=e1006]:
+                      - generic [ref=e1007]:
+                        - img [ref=e1008]
+                        - link "+79006030830" [ref=e1010]:
+                          - /url: tel:+79006030830
+                      - generic [ref=e1011]: Экскаватор
+                      - generic [ref=e1012]:
+                        - img [ref=e1013]
+                        - generic [ref=e1015]: 07.05.2026
+                    - generic [ref=e1016]:
+                      - generic [ref=e1017]:
+                        - img [ref=e1018]
+                        - generic [ref=e1021]: Manager User
+                      - generic [ref=e1022]: 19 ч назад
+                  - generic [ref=e1024] [cursor=pointer]:
+                    - generic [ref=e1027]: E2E Manager 011-1778011748492-994
+                    - generic [ref=e1029]:
+                      - img [ref=e1030]
+                      - generic [ref=e1033]: Ручной
+                    - generic [ref=e1035]:
+                      - img [ref=e1036]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1038]:
+                      - generic [ref=e1039]:
+                        - img [ref=e1040]
+                        - link "+79005200843" [ref=e1042]:
+                          - /url: tel:+79005200843
+                      - generic [ref=e1043]: —
+                    - generic [ref=e1044]:
+                      - generic [ref=e1045]:
+                        - img [ref=e1046]
+                        - generic [ref=e1049]: Manager User
+                      - generic [ref=e1050]: 19 ч назад
+                  - generic [ref=e1052] [cursor=pointer]:
+                    - generic [ref=e1055]: E2E Route 010-1778011734814-452
+                    - generic [ref=e1057]:
+                      - img [ref=e1058]
+                      - generic [ref=e1061]: Ручной
+                    - generic [ref=e1063]:
+                      - img [ref=e1064]
+                      - text: Готов к заявке
+                    - generic [ref=e1067]:
+                      - generic [ref=e1068]:
+                        - img [ref=e1069]
+                        - link "+79003481457" [ref=e1071]:
+                          - /url: tel:+79003481457
+                      - generic [ref=e1072]: Экскаватор
+                      - generic [ref=e1073]:
+                        - img [ref=e1074]
+                        - generic [ref=e1076]: 07.05.2026
+                    - generic [ref=e1077]:
+                      - generic [ref=e1078]:
+                        - img [ref=e1079]
+                        - generic [ref=e1082]: Manager User
+                      - generic [ref=e1083]: 19 ч назад
+                  - generic [ref=e1085] [cursor=pointer]:
+                    - generic [ref=e1086]:
+                      - generic [ref=e1088]: E2E Duplicate 002-1778011705369-677
+                      - generic [ref=e1089]: Дубль
+                    - generic [ref=e1091]:
+                      - img [ref=e1092]
+                      - generic [ref=e1095]: Ручной
+                    - generic [ref=e1097]:
+                      - img [ref=e1098]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1100]:
+                      - generic [ref=e1101]:
+                        - img [ref=e1102]
+                        - link "+79000536932" [ref=e1104]:
+                          - /url: tel:+79000536932
+                      - generic [ref=e1105]: —
+                    - generic [ref=e1106]:
+                      - generic [ref=e1107]:
+                        - img [ref=e1108]
+                        - generic [ref=e1111]: Manager User
+                      - generic [ref=e1112]: 19 ч назад
+                  - generic [ref=e1114] [cursor=pointer]:
+                    - generic [ref=e1117]: E2E Existing 002-1778011705369-212
+                    - generic [ref=e1119]:
+                      - img [ref=e1120]
+                      - generic [ref=e1123]: Ручной
+                    - generic [ref=e1125]:
+                      - img [ref=e1126]
+                      - text: Готов к заявке
+                    - generic [ref=e1129]:
+                      - generic [ref=e1130]:
+                        - img [ref=e1131]
+                        - link "+79000536932" [ref=e1133]:
+                          - /url: tel:+79000536932
+                      - generic [ref=e1134]: Экскаватор
+                      - generic [ref=e1135]:
+                        - img [ref=e1136]
+                        - generic [ref=e1138]: 07.05.2026
+                    - generic [ref=e1139]:
+                      - generic [ref=e1140]:
+                        - img [ref=e1141]
+                        - generic [ref=e1144]: Manager User
+                      - generic [ref=e1145]: 19 ч назад
+                  - generic [ref=e1147] [cursor=pointer]:
+                    - generic [ref=e1150]: E2E Lead 001-1778011697657-467
+                    - generic [ref=e1152]:
+                      - img [ref=e1153]
+                      - generic [ref=e1156]: Ручной
+                    - generic [ref=e1158]:
+                      - img [ref=e1159]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1161]:
+                      - generic [ref=e1162]:
+                        - img [ref=e1163]
+                        - link "+79000258946" [ref=e1165]:
+                          - /url: tel:+79000258946
+                      - generic [ref=e1166]: —
+                    - generic [ref=e1167]:
+                      - generic [ref=e1168]:
+                        - img [ref=e1169]
+                        - generic [ref=e1172]: Manager User
+                      - generic [ref=e1173]: 19 ч назад
+                  - generic [ref=e1175] [cursor=pointer]:
+                    - generic [ref=e1178]: E2E Manager 011-1778011425263-533
+                    - generic [ref=e1180]:
+                      - img [ref=e1181]
+                      - generic [ref=e1184]: Ручной
+                    - generic [ref=e1186]:
+                      - img [ref=e1187]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1189]:
+                      - generic [ref=e1190]:
+                        - img [ref=e1191]
+                        - link "+79002856696" [ref=e1193]:
+                          - /url: tel:+79002856696
+                      - generic [ref=e1194]: —
+                    - generic [ref=e1195]:
+                      - generic [ref=e1196]:
+                        - img [ref=e1197]
+                        - generic [ref=e1200]: Manager User
+                      - generic [ref=e1201]: 19 ч назад
+                  - generic [ref=e1203] [cursor=pointer]:
+                    - generic [ref=e1206]: E2E Route 010-1778011416858-559
+                    - generic [ref=e1208]:
+                      - img [ref=e1209]
+                      - generic [ref=e1212]: Ручной
+                    - generic [ref=e1214]:
+                      - img [ref=e1215]
+                      - text: Готов к заявке
+                    - generic [ref=e1218]:
+                      - generic [ref=e1219]:
+                        - img [ref=e1220]
+                        - link "+79001685822" [ref=e1222]:
+                          - /url: tel:+79001685822
+                      - generic [ref=e1223]: Экскаватор
+                      - generic [ref=e1224]:
+                        - img [ref=e1225]
+                        - generic [ref=e1227]: 07.05.2026
+                    - generic [ref=e1228]:
+                      - generic [ref=e1229]:
+                        - img [ref=e1230]
+                        - generic [ref=e1233]: Manager User
+                      - generic [ref=e1234]: 19 ч назад
+                  - generic [ref=e1236] [cursor=pointer]:
+                    - generic [ref=e1239]: E2E 009 Lead 009-1778011411269-609
+                    - generic [ref=e1241]:
+                      - img [ref=e1242]
+                      - generic [ref=e1245]: Ручной
+                    - generic [ref=e1247]:
+                      - img [ref=e1248]
+                      - text: Готов к заявке
+                    - generic [ref=e1251]:
+                      - generic [ref=e1252]:
+                        - img [ref=e1253]
+                        - link "+79001126974" [ref=e1255]:
+                          - /url: tel:+79001126974
+                      - generic [ref=e1256]: Экскаватор
+                      - generic [ref=e1257]:
+                        - img [ref=e1258]
+                        - generic [ref=e1260]: 07.05.2026
+                    - generic [ref=e1261]:
+                      - generic [ref=e1262]:
+                        - img [ref=e1263]
+                        - generic [ref=e1266]: Manager User
+                      - generic [ref=e1267]: 19 ч назад
+                  - generic [ref=e1269] [cursor=pointer]:
+                    - generic [ref=e1270]:
+                      - generic [ref=e1272]: E2E Duplicate 002-1778011382870-576
+                      - generic [ref=e1273]: Дубль
+                    - generic [ref=e1275]:
+                      - img [ref=e1276]
+                      - generic [ref=e1279]: Ручной
+                    - generic [ref=e1281]:
+                      - img [ref=e1282]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1284]:
+                      - generic [ref=e1285]:
+                        - img [ref=e1286]
+                        - link "+79008287093" [ref=e1288]:
+                          - /url: tel:+79008287093
+                      - generic [ref=e1289]: —
+                    - generic [ref=e1290]:
+                      - generic [ref=e1291]:
+                        - img [ref=e1292]
+                        - generic [ref=e1295]: Manager User
+                      - generic [ref=e1296]: 19 ч назад
+                  - generic [ref=e1298] [cursor=pointer]:
+                    - generic [ref=e1301]: E2E Existing 002-1778011382870-349
+                    - generic [ref=e1303]:
+                      - img [ref=e1304]
+                      - generic [ref=e1307]: Ручной
+                    - generic [ref=e1309]:
+                      - img [ref=e1310]
+                      - text: Готов к заявке
+                    - generic [ref=e1313]:
+                      - generic [ref=e1314]:
+                        - img [ref=e1315]
+                        - link "+79008287093" [ref=e1317]:
+                          - /url: tel:+79008287093
+                      - generic [ref=e1318]: Экскаватор
+                      - generic [ref=e1319]:
+                        - img [ref=e1320]
+                        - generic [ref=e1322]: 07.05.2026
+                    - generic [ref=e1323]:
+                      - generic [ref=e1324]:
+                        - img [ref=e1325]
+                        - generic [ref=e1328]: Manager User
+                      - generic [ref=e1329]: 19 ч назад
+                  - generic [ref=e1331] [cursor=pointer]:
+                    - generic [ref=e1334]: E2E Lead 001-1778011376675-478
+                    - generic [ref=e1336]:
+                      - img [ref=e1337]
+                      - generic [ref=e1340]: Ручной
+                    - generic [ref=e1342]:
+                      - img [ref=e1343]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1345]:
+                      - generic [ref=e1346]:
+                        - img [ref=e1347]
+                        - link "+79007980455" [ref=e1349]:
+                          - /url: tel:+79007980455
+                      - generic [ref=e1350]: —
+                    - generic [ref=e1351]:
+                      - generic [ref=e1352]:
+                        - img [ref=e1353]
+                        - generic [ref=e1356]: Manager User
+                      - generic [ref=e1357]: 19 ч назад
+                  - generic [ref=e1359] [cursor=pointer]:
+                    - generic [ref=e1362]: E2E Manager 011-1778011320724-89
+                    - generic [ref=e1364]:
+                      - img [ref=e1365]
+                      - generic [ref=e1368]: Ручной
+                    - generic [ref=e1370]:
+                      - img [ref=e1371]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1373]:
+                      - generic [ref=e1374]:
+                        - img [ref=e1375]
+                        - link "+79002298097" [ref=e1377]:
+                          - /url: tel:+79002298097
+                      - generic [ref=e1378]: —
+                    - generic [ref=e1379]:
+                      - generic [ref=e1380]:
+                        - img [ref=e1381]
+                        - generic [ref=e1384]: Manager User
+                      - generic [ref=e1385]: 19 ч назад
+                  - generic [ref=e1387] [cursor=pointer]:
+                    - generic [ref=e1390]: E2E Route 010-1778011310181-777
+                    - generic [ref=e1392]:
+                      - img [ref=e1393]
+                      - generic [ref=e1396]: Ручной
+                    - generic [ref=e1398]:
+                      - img [ref=e1399]
+                      - text: Готов к заявке
+                    - generic [ref=e1402]:
+                      - generic [ref=e1403]:
+                        - img [ref=e1404]
+                        - link "+79001018142" [ref=e1406]:
+                          - /url: tel:+79001018142
+                      - generic [ref=e1407]: Экскаватор
+                      - generic [ref=e1408]:
+                        - img [ref=e1409]
+                        - generic [ref=e1411]: 07.05.2026
+                    - generic [ref=e1412]:
+                      - generic [ref=e1413]:
+                        - img [ref=e1414]
+                        - generic [ref=e1417]: Manager User
+                      - generic [ref=e1418]: 19 ч назад
+                  - generic [ref=e1420] [cursor=pointer]:
+                    - generic [ref=e1421]:
+                      - generic [ref=e1423]: E2E Duplicate 002-1778011258108-350
+                      - generic [ref=e1424]: Дубль
+                    - generic [ref=e1426]:
+                      - img [ref=e1427]
+                      - generic [ref=e1430]: Ручной
+                    - generic [ref=e1432]:
+                      - img [ref=e1433]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1435]:
+                      - generic [ref=e1436]:
+                        - img [ref=e1437]
+                        - link "+79005810756" [ref=e1439]:
+                          - /url: tel:+79005810756
+                      - generic [ref=e1440]: —
+                    - generic [ref=e1441]:
+                      - generic [ref=e1442]:
+                        - img [ref=e1443]
+                        - generic [ref=e1446]: Manager User
+                      - generic [ref=e1447]: 19 ч назад
+                  - generic [ref=e1449] [cursor=pointer]:
+                    - generic [ref=e1452]: E2E Existing 002-1778011258108-724
+                    - generic [ref=e1454]:
+                      - img [ref=e1455]
+                      - generic [ref=e1458]: Ручной
+                    - generic [ref=e1460]:
+                      - img [ref=e1461]
+                      - text: Готов к заявке
+                    - generic [ref=e1464]:
+                      - generic [ref=e1465]:
+                        - img [ref=e1466]
+                        - link "+79005810756" [ref=e1468]:
+                          - /url: tel:+79005810756
+                      - generic [ref=e1469]: Экскаватор
+                      - generic [ref=e1470]:
+                        - img [ref=e1471]
+                        - generic [ref=e1473]: 07.05.2026
+                    - generic [ref=e1474]:
+                      - generic [ref=e1475]:
+                        - img [ref=e1476]
+                        - generic [ref=e1479]: Manager User
+                      - generic [ref=e1480]: 19 ч назад
+                  - generic [ref=e1482] [cursor=pointer]:
+                    - generic [ref=e1485]: E2E Lead 001-1778011248662-798
+                    - generic [ref=e1487]:
+                      - img [ref=e1488]
+                      - generic [ref=e1491]: Ручной
+                    - generic [ref=e1493]:
+                      - img [ref=e1494]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1496]:
+                      - generic [ref=e1497]:
+                        - img [ref=e1498]
+                        - link "+79005527951" [ref=e1500]:
+                          - /url: tel:+79005527951
+                      - generic [ref=e1501]: —
+                    - generic [ref=e1502]:
+                      - generic [ref=e1503]:
+                        - img [ref=e1504]
+                        - generic [ref=e1507]: Manager User
+                      - generic [ref=e1508]: 19 ч назад
+                  - generic [ref=e1510] [cursor=pointer]:
+                    - generic [ref=e1513]: E2E Manager 011-1778010747502-224
+                    - generic [ref=e1515]:
+                      - img [ref=e1516]
+                      - generic [ref=e1519]: Ручной
+                    - generic [ref=e1521]:
+                      - img [ref=e1522]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1524]:
+                      - generic [ref=e1525]:
+                        - img [ref=e1526]
+                        - link "+79005072760" [ref=e1528]:
+                          - /url: tel:+79005072760
+                      - generic [ref=e1529]: —
+                    - generic [ref=e1530]:
+                      - generic [ref=e1531]:
+                        - img [ref=e1532]
+                        - generic [ref=e1535]: Manager User
+                      - generic [ref=e1536]: 19 ч назад
+                  - generic [ref=e1538] [cursor=pointer]:
+                    - generic [ref=e1541]: E2E Route 010-1778010737608-121
+                    - generic [ref=e1543]:
+                      - img [ref=e1544]
+                      - generic [ref=e1547]: Ручной
+                    - generic [ref=e1549]:
+                      - img [ref=e1550]
+                      - text: Готов к заявке
+                    - generic [ref=e1553]:
+                      - generic [ref=e1554]:
+                        - img [ref=e1555]
+                        - link "+79003760892" [ref=e1557]:
+                          - /url: tel:+79003760892
+                      - generic [ref=e1558]: Экскаватор
+                      - generic [ref=e1559]:
+                        - img [ref=e1560]
+                        - generic [ref=e1562]: 07.05.2026
+                    - generic [ref=e1563]:
+                      - generic [ref=e1564]:
+                        - img [ref=e1565]
+                        - generic [ref=e1568]: Manager User
+                      - generic [ref=e1569]: 19 ч назад
+                  - generic [ref=e1571] [cursor=pointer]:
+                    - generic [ref=e1572]:
+                      - generic [ref=e1574]: E2E Duplicate 002-1778010708633-841
+                      - generic [ref=e1575]: Дубль
+                    - generic [ref=e1577]:
+                      - img [ref=e1578]
+                      - generic [ref=e1581]: Ручной
+                    - generic [ref=e1583]:
+                      - img [ref=e1584]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1586]:
+                      - generic [ref=e1587]:
+                        - img [ref=e1588]
+                        - link "+79000863376" [ref=e1590]:
+                          - /url: tel:+79000863376
+                      - generic [ref=e1591]: —
+                    - generic [ref=e1592]:
+                      - generic [ref=e1593]:
+                        - img [ref=e1594]
+                        - generic [ref=e1597]: Manager User
+                      - generic [ref=e1598]: 19 ч назад
+                  - generic [ref=e1600] [cursor=pointer]:
+                    - generic [ref=e1603]: E2E Existing 002-1778010708633-504
+                    - generic [ref=e1605]:
+                      - img [ref=e1606]
+                      - generic [ref=e1609]: Ручной
+                    - generic [ref=e1611]:
+                      - img [ref=e1612]
+                      - text: Готов к заявке
+                    - generic [ref=e1615]:
+                      - generic [ref=e1616]:
+                        - img [ref=e1617]
+                        - link "+79000863376" [ref=e1619]:
+                          - /url: tel:+79000863376
+                      - generic [ref=e1620]: Экскаватор
+                      - generic [ref=e1621]:
+                        - img [ref=e1622]
+                        - generic [ref=e1624]: 07.05.2026
+                    - generic [ref=e1625]:
+                      - generic [ref=e1626]:
+                        - img [ref=e1627]
+                        - generic [ref=e1630]: Manager User
+                      - generic [ref=e1631]: 19 ч назад
+                  - generic [ref=e1633] [cursor=pointer]:
+                    - generic [ref=e1636]: E2E Lead 001-1778010703012-62
+                    - generic [ref=e1638]:
+                      - img [ref=e1639]
+                      - generic [ref=e1642]: Ручной
+                    - generic [ref=e1644]:
+                      - img [ref=e1645]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1647]:
+                      - generic [ref=e1648]:
+                        - img [ref=e1649]
+                        - link "+79000571476" [ref=e1651]:
+                          - /url: tel:+79000571476
+                      - generic [ref=e1652]: —
+                    - generic [ref=e1653]:
+                      - generic [ref=e1654]:
+                        - img [ref=e1655]
+                        - generic [ref=e1658]: Manager User
+                      - generic [ref=e1659]: 19 ч назад
+                  - generic [ref=e1661] [cursor=pointer]:
+                    - generic [ref=e1664]: E2E Manager 011-1778010656712-660
+                    - generic [ref=e1666]:
+                      - img [ref=e1667]
+                      - generic [ref=e1670]: Ручной
+                    - generic [ref=e1672]:
+                      - img [ref=e1673]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1675]:
+                      - generic [ref=e1676]:
+                        - img [ref=e1677]
+                        - link "+79006177257" [ref=e1679]:
+                          - /url: tel:+79006177257
+                      - generic [ref=e1680]: —
+                    - generic [ref=e1681]:
+                      - generic [ref=e1682]:
+                        - img [ref=e1683]
+                        - generic [ref=e1686]: Manager User
+                      - generic [ref=e1687]: 19 ч назад
+                  - generic [ref=e1689] [cursor=pointer]:
+                    - generic [ref=e1692]: E2E Route 010-1778010643412-491
+                    - generic [ref=e1694]:
+                      - img [ref=e1695]
+                      - generic [ref=e1698]: Ручной
+                    - generic [ref=e1700]:
+                      - img [ref=e1701]
+                      - text: Готов к заявке
+                    - generic [ref=e1704]:
+                      - generic [ref=e1705]:
+                        - img [ref=e1706]
+                        - link "+79004341242" [ref=e1708]:
+                          - /url: tel:+79004341242
+                      - generic [ref=e1709]: Экскаватор
+                      - generic [ref=e1710]:
+                        - img [ref=e1711]
+                        - generic [ref=e1713]: 07.05.2026
+                    - generic [ref=e1714]:
+                      - generic [ref=e1715]:
+                        - img [ref=e1716]
+                        - generic [ref=e1719]: Manager User
+                      - generic [ref=e1720]: 19 ч назад
+                  - generic [ref=e1722] [cursor=pointer]:
+                    - generic [ref=e1723]:
+                      - generic [ref=e1725]: E2E Duplicate 002-1778010609991-333
+                      - generic [ref=e1726]: Дубль
+                    - generic [ref=e1728]:
+                      - img [ref=e1729]
+                      - generic [ref=e1732]: Ручной
+                    - generic [ref=e1734]:
+                      - img [ref=e1735]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1737]:
+                      - generic [ref=e1738]:
+                        - img [ref=e1739]
+                        - link "+79000999167" [ref=e1741]:
+                          - /url: tel:+79000999167
+                      - generic [ref=e1742]: —
+                    - generic [ref=e1743]:
+                      - generic [ref=e1744]:
+                        - img [ref=e1745]
+                        - generic [ref=e1748]: Manager User
+                      - generic [ref=e1749]: 19 ч назад
+                  - generic [ref=e1751] [cursor=pointer]:
+                    - generic [ref=e1754]: E2E Existing 002-1778010609991-266
+                    - generic [ref=e1756]:
+                      - img [ref=e1757]
+                      - generic [ref=e1760]: Ручной
+                    - generic [ref=e1762]:
+                      - img [ref=e1763]
+                      - text: Готов к заявке
+                    - generic [ref=e1766]:
+                      - generic [ref=e1767]:
+                        - img [ref=e1768]
+                        - link "+79000999167" [ref=e1770]:
+                          - /url: tel:+79000999167
+                      - generic [ref=e1771]: Экскаватор
+                      - generic [ref=e1772]:
+                        - img [ref=e1773]
+                        - generic [ref=e1775]: 07.05.2026
+                    - generic [ref=e1776]:
+                      - generic [ref=e1777]:
+                        - img [ref=e1778]
+                        - generic [ref=e1781]: Manager User
+                      - generic [ref=e1782]: 19 ч назад
+                  - generic [ref=e1784] [cursor=pointer]:
+                    - generic [ref=e1787]: E2E Lead 001-1778010603471-259
+                    - generic [ref=e1789]:
+                      - img [ref=e1790]
+                      - generic [ref=e1793]: Ручной
+                    - generic [ref=e1795]:
+                      - img [ref=e1796]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1798]:
+                      - generic [ref=e1799]:
+                        - img [ref=e1800]
+                        - link "+79000721774" [ref=e1802]:
+                          - /url: tel:+79000721774
+                      - generic [ref=e1803]: —
+                    - generic [ref=e1804]:
+                      - generic [ref=e1805]:
+                        - img [ref=e1806]
+                        - generic [ref=e1809]: Manager User
+                      - generic [ref=e1810]: 19 ч назад
+                  - generic [ref=e1812] [cursor=pointer]:
+                    - generic [ref=e1815]: E2E Manager 011-1778009626364-189
+                    - generic [ref=e1817]:
+                      - img [ref=e1818]
+                      - generic [ref=e1821]: Ручной
+                    - generic [ref=e1823]:
+                      - img [ref=e1824]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1826]:
+                      - generic [ref=e1827]:
+                        - img [ref=e1828]
+                        - link "+79009629694" [ref=e1830]:
+                          - /url: tel:+79009629694
+                      - generic [ref=e1831]: —
+                    - generic [ref=e1832]:
+                      - generic [ref=e1833]:
+                        - img [ref=e1834]
+                        - generic [ref=e1837]: Manager User
+                      - generic [ref=e1838]: 19 ч назад
+                  - generic [ref=e1840] [cursor=pointer]:
+                    - generic [ref=e1843]: E2E Route 010-1778009613408-823
+                    - generic [ref=e1845]:
+                      - img [ref=e1846]
+                      - generic [ref=e1849]: Ручной
+                    - generic [ref=e1851]:
+                      - img [ref=e1852]
+                      - text: Готов к заявке
+                    - generic [ref=e1855]:
+                      - generic [ref=e1856]:
+                        - img [ref=e1857]
+                        - link "+79009613408" [ref=e1859]:
+                          - /url: tel:+79009613408
+                      - generic [ref=e1860]: Экскаватор
+                      - generic [ref=e1861]:
+                        - img [ref=e1862]
+                        - generic [ref=e1864]: 07.05.2026
+                    - generic [ref=e1865]:
+                      - generic [ref=e1866]:
+                        - img [ref=e1867]
+                        - generic [ref=e1870]: Manager User
+                      - generic [ref=e1871]: 19 ч назад
+                  - generic [ref=e1873] [cursor=pointer]:
+                    - generic [ref=e1876]: E2E Lead 001-1778009599299-779
+                    - generic [ref=e1878]:
+                      - img [ref=e1879]
+                      - generic [ref=e1882]: Ручной
+                    - generic [ref=e1884]:
+                      - img [ref=e1885]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1887]:
+                      - generic [ref=e1888]:
+                        - img [ref=e1889]
+                        - link "+79009605611" [ref=e1891]:
+                          - /url: tel:+79009605611
+                      - generic [ref=e1892]: —
+                    - generic [ref=e1893]:
+                      - generic [ref=e1894]:
+                        - img [ref=e1895]
+                        - generic [ref=e1898]: Manager User
+                      - generic [ref=e1899]: 19 ч назад
+                  - generic [ref=e1901] [cursor=pointer]:
+                    - generic [ref=e1904]: E2E Manager 011-1778009556645-607
+                    - generic [ref=e1906]:
+                      - img [ref=e1907]
+                      - generic [ref=e1910]: Ручной
+                    - generic [ref=e1912]:
+                      - img [ref=e1913]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1915]:
+                      - generic [ref=e1916]:
+                        - img [ref=e1917]
+                        - link "+79009559489" [ref=e1919]:
+                          - /url: tel:+79009559489
+                      - generic [ref=e1920]: —
+                    - generic [ref=e1921]:
+                      - generic [ref=e1922]:
+                        - img [ref=e1923]
+                        - generic [ref=e1926]: Manager User
+                      - generic [ref=e1927]: 19 ч назад
+                  - generic [ref=e1929] [cursor=pointer]:
+                    - generic [ref=e1932]: E2E Route 010-1778009507806-745
+                    - generic [ref=e1934]:
+                      - img [ref=e1935]
+                      - generic [ref=e1938]: Ручной
+                    - generic [ref=e1940]:
+                      - img [ref=e1941]
+                      - text: Готов к заявке
+                    - generic [ref=e1944]:
+                      - generic [ref=e1945]:
+                        - img [ref=e1946]
+                        - link "+79009507806" [ref=e1948]:
+                          - /url: tel:+79009507806
+                      - generic [ref=e1949]: Экскаватор
+                      - generic [ref=e1950]:
+                        - img [ref=e1951]
+                        - generic [ref=e1953]: 07.05.2026
+                    - generic [ref=e1954]:
+                      - generic [ref=e1955]:
+                        - img [ref=e1956]
+                        - generic [ref=e1959]: Manager User
+                      - generic [ref=e1960]: 19 ч назад
+                  - generic [ref=e1962] [cursor=pointer]:
+                    - generic [ref=e1965]: E2E Lead 001-1778009497392-197
+                    - generic [ref=e1967]:
+                      - img [ref=e1968]
+                      - generic [ref=e1971]: Ручной
+                    - generic [ref=e1973]:
+                      - img [ref=e1974]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1976]:
+                      - generic [ref=e1977]:
+                        - img [ref=e1978]
+                        - link "+79009501295" [ref=e1980]:
+                          - /url: tel:+79009501295
+                      - generic [ref=e1981]: —
+                    - generic [ref=e1982]:
+                      - generic [ref=e1983]:
+                        - img [ref=e1984]
+                        - generic [ref=e1987]: Manager User
+                      - generic [ref=e1988]: 19 ч назад
+                  - generic [ref=e1990] [cursor=pointer]:
+                    - generic [ref=e1993]: E2E Route 010-1778009347608-60
+                    - generic [ref=e1995]:
+                      - img [ref=e1996]
+                      - generic [ref=e1999]: Ручной
+                    - generic [ref=e2001]:
+                      - img [ref=e2002]
+                      - text: Готов к заявке
+                    - generic [ref=e2005]:
+                      - generic [ref=e2006]:
+                        - img [ref=e2007]
+                        - link "+79009347608" [ref=e2009]:
+                          - /url: tel:+79009347608
+                      - generic [ref=e2010]: Экскаватор
+                      - generic [ref=e2011]:
+                        - img [ref=e2012]
+                        - generic [ref=e2014]: 07.05.2026
+                    - generic [ref=e2015]:
+                      - generic [ref=e2016]:
+                        - img [ref=e2017]
+                        - generic [ref=e2020]: Manager User
+                      - generic [ref=e2021]: 19 ч назад
+                  - generic [ref=e2023] [cursor=pointer]:
+                    - generic [ref=e2026]: QA INT-009 Lead
+                    - generic [ref=e2028]:
+                      - img [ref=e2029]
+                      - generic [ref=e2032]: Ручной
+                    - generic [ref=e2034]:
+                      - img [ref=e2035]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2037]:
+                      - generic [ref=e2038]:
+                        - img [ref=e2039]
+                        - link "+790908670521" [ref=e2041]:
+                          - /url: tel:+790908670521
+                      - generic [ref=e2042]: —
+                    - generic [ref=e2043]:
+                      - generic [ref=e2044]:
+                        - img [ref=e2045]
+                        - generic [ref=e2048]: Manager User
+                      - generic [ref=e2049]: 19 ч назад
+                  - generic [ref=e2051] [cursor=pointer]:
+                    - generic [ref=e2052]:
+                      - generic [ref=e2054]: QA APIC-003 Lead B
+                      - generic [ref=e2055]: Дубль
+                    - generic [ref=e2057]:
+                      - img [ref=e2058]
+                      - generic [ref=e2061]: Ручной
+                    - generic [ref=e2063]:
+                      - img [ref=e2064]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2066]:
+                      - generic [ref=e2067]:
+                        - img [ref=e2068]
+                        - link "+79990031778008649" [ref=e2070]:
+                          - /url: tel:+79990031778008649
+                      - generic [ref=e2071]: —
+                    - generic [ref=e2072]:
+                      - generic [ref=e2073]:
+                        - img [ref=e2074]
+                        - generic [ref=e2077]: Manager User
+                      - generic [ref=e2078]: 19 ч назад
+                  - generic [ref=e2080] [cursor=pointer]:
+                    - generic [ref=e2083]: QA APIC-003 Lead A
+                    - generic [ref=e2085]:
+                      - img [ref=e2086]
+                      - generic [ref=e2089]: Ручной
+                    - generic [ref=e2091]:
+                      - img [ref=e2092]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2094]:
+                      - generic [ref=e2095]:
+                        - img [ref=e2096]
+                        - link "+79990031778008649" [ref=e2098]:
+                          - /url: tel:+79990031778008649
+                      - generic [ref=e2099]: —
+                    - generic [ref=e2100]:
+                      - generic [ref=e2101]:
+                        - img [ref=e2102]
+                        - generic [ref=e2105]: Manager User
+                      - generic [ref=e2106]: 19 ч назад
+                  - generic [ref=e2108] [cursor=pointer]:
+                    - generic [ref=e2111]: QA APIC-002 Lead
+                    - generic [ref=e2113]:
+                      - img [ref=e2114]
+                      - generic [ref=e2117]: Ручной
+                    - generic [ref=e2119]:
+                      - img [ref=e2120]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2122]:
+                      - generic [ref=e2123]:
+                        - img [ref=e2124]
+                        - link "+79990021778008649" [ref=e2126]:
+                          - /url: tel:+79990021778008649
+                      - generic [ref=e2127]: —
+                    - generic [ref=e2128]:
+                      - generic [ref=e2129]:
+                        - img [ref=e2130]
+                        - generic [ref=e2133]: Manager User
+                      - generic [ref=e2134]: 19 ч назад
+                  - generic [ref=e2136] [cursor=pointer]:
+                    - generic [ref=e2137]:
+                      - generic [ref=e2139]: QA APIC-003 Lead B
+                      - generic [ref=e2140]: Дубль
+                    - generic [ref=e2142]:
+                      - img [ref=e2143]
+                      - generic [ref=e2146]: Ручной
+                    - generic [ref=e2148]:
+                      - img [ref=e2149]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2151]:
+                      - generic [ref=e2152]:
+                        - img [ref=e2153]
+                        - link "+79990031778008415" [ref=e2155]:
+                          - /url: tel:+79990031778008415
+                      - generic [ref=e2156]: —
+                    - generic [ref=e2157]:
+                      - generic [ref=e2158]:
+                        - img [ref=e2159]
+                        - generic [ref=e2162]: Manager User
+                      - generic [ref=e2163]: 19 ч назад
+                  - generic [ref=e2165] [cursor=pointer]:
+                    - generic [ref=e2168]: QA APIC-003 Lead A
+                    - generic [ref=e2170]:
+                      - img [ref=e2171]
+                      - generic [ref=e2174]: Ручной
+                    - generic [ref=e2176]:
+                      - img [ref=e2177]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2179]:
+                      - generic [ref=e2180]:
+                        - img [ref=e2181]
+                        - link "+79990031778008415" [ref=e2183]:
+                          - /url: tel:+79990031778008415
+                      - generic [ref=e2184]: —
+                    - generic [ref=e2185]:
+                      - generic [ref=e2186]:
+                        - img [ref=e2187]
+                        - generic [ref=e2190]: Manager User
+                      - generic [ref=e2191]: 19 ч назад
+                  - generic [ref=e2193] [cursor=pointer]:
+                    - generic [ref=e2196]: QA APIC-002 Lead
+                    - generic [ref=e2198]:
+                      - img [ref=e2199]
+                      - generic [ref=e2202]: Ручной
+                    - generic [ref=e2204]:
+                      - img [ref=e2205]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2207]:
+                      - generic [ref=e2208]:
+                        - img [ref=e2209]
+                        - link "+79990021778008415" [ref=e2211]:
+                          - /url: tel:+79990021778008415
+                      - generic [ref=e2212]: —
+                    - generic [ref=e2213]:
+                      - generic [ref=e2214]:
+                        - img [ref=e2215]
+                        - generic [ref=e2218]: Manager User
+                      - generic [ref=e2219]: 19 ч назад
+                  - generic [ref=e2221] [cursor=pointer]:
+                    - generic [ref=e2222]:
+                      - generic [ref=e2224]: QA APIC-003 Lead B
+                      - generic [ref=e2225]: Дубль
+                    - generic [ref=e2227]:
+                      - img [ref=e2228]
+                      - generic [ref=e2231]: Ручной
+                    - generic [ref=e2233]:
+                      - img [ref=e2234]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2236]:
+                      - generic [ref=e2237]:
+                        - img [ref=e2238]
+                        - link "+79990031778008360" [ref=e2240]:
+                          - /url: tel:+79990031778008360
+                      - generic [ref=e2241]: —
+                    - generic [ref=e2242]:
+                      - generic [ref=e2243]:
+                        - img [ref=e2244]
+                        - generic [ref=e2247]: Manager User
+                      - generic [ref=e2248]: 19 ч назад
+                  - generic [ref=e2250] [cursor=pointer]:
+                    - generic [ref=e2253]: QA APIC-003 Lead A
+                    - generic [ref=e2255]:
+                      - img [ref=e2256]
+                      - generic [ref=e2259]: Ручной
+                    - generic [ref=e2261]:
+                      - img [ref=e2262]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2264]:
+                      - generic [ref=e2265]:
+                        - img [ref=e2266]
+                        - link "+79990031778008360" [ref=e2268]:
+                          - /url: tel:+79990031778008360
+                      - generic [ref=e2269]: —
+                    - generic [ref=e2270]:
+                      - generic [ref=e2271]:
+                        - img [ref=e2272]
+                        - generic [ref=e2275]: Manager User
+                      - generic [ref=e2276]: 19 ч назад
+                  - generic [ref=e2278] [cursor=pointer]:
+                    - generic [ref=e2281]: QA APIC-002 Lead
+                    - generic [ref=e2283]:
+                      - img [ref=e2284]
+                      - generic [ref=e2287]: Ручной
+                    - generic [ref=e2289]:
+                      - img [ref=e2290]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2292]:
+                      - generic [ref=e2293]:
+                        - img [ref=e2294]
+                        - link "+79990021778008359" [ref=e2296]:
+                          - /url: tel:+79990021778008359
+                      - generic [ref=e2297]: —
+                    - generic [ref=e2298]:
+                      - generic [ref=e2299]:
+                        - img [ref=e2300]
+                        - generic [ref=e2303]: Manager User
+                      - generic [ref=e2304]: 19 ч назад
+                  - generic [ref=e2306] [cursor=pointer]:
+                    - generic [ref=e2307]:
+                      - generic [ref=e2309]: QA APIC-003 Lead B
+                      - generic [ref=e2310]: Дубль
+                    - generic [ref=e2312]:
+                      - img [ref=e2313]
+                      - generic [ref=e2316]: Ручной
+                    - generic [ref=e2318]:
+                      - img [ref=e2319]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2321]:
+                      - generic [ref=e2322]:
+                        - img [ref=e2323]
+                        - link "+79990031778007779" [ref=e2325]:
+                          - /url: tel:+79990031778007779
+                      - generic [ref=e2326]: —
+                    - generic [ref=e2327]:
+                      - generic [ref=e2328]:
+                        - img [ref=e2329]
+                        - generic [ref=e2332]: Manager User
+                      - generic [ref=e2333]: 20 ч назад
+                  - generic [ref=e2335] [cursor=pointer]:
+                    - generic [ref=e2338]: QA APIC-003 Lead A
+                    - generic [ref=e2340]:
+                      - img [ref=e2341]
+                      - generic [ref=e2344]: Ручной
+                    - generic [ref=e2346]:
+                      - img [ref=e2347]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2349]:
+                      - generic [ref=e2350]:
+                        - img [ref=e2351]
+                        - link "+79990031778007779" [ref=e2353]:
+                          - /url: tel:+79990031778007779
+                      - generic [ref=e2354]: —
+                    - generic [ref=e2355]:
+                      - generic [ref=e2356]:
+                        - img [ref=e2357]
+                        - generic [ref=e2360]: Manager User
+                      - generic [ref=e2361]: 20 ч назад
+                  - generic [ref=e2363] [cursor=pointer]:
+                    - generic [ref=e2366]: QA APIC-002 Lead
+                    - generic [ref=e2368]:
+                      - img [ref=e2369]
+                      - generic [ref=e2372]: Ручной
+                    - generic [ref=e2374]:
+                      - img [ref=e2375]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2377]:
+                      - generic [ref=e2378]:
+                        - img [ref=e2379]
+                        - link "+79990021778007778" [ref=e2381]:
+                          - /url: tel:+79990021778007778
+                      - generic [ref=e2382]: —
+                    - generic [ref=e2383]:
+                      - generic [ref=e2384]:
+                        - img [ref=e2385]
+                        - generic [ref=e2388]: Manager User
+                      - generic [ref=e2389]: 20 ч назад
+                  - generic [ref=e2391] [cursor=pointer]:
+                    - generic [ref=e2393]:
+                      - generic [ref=e2394]: Stage7 Valid 791b269e
+                      - generic [ref=e2395]: Stage7 Invalid LLC 791b269e
+                    - generic [ref=e2397]:
+                      - img [ref=e2398]
+                      - generic [ref=e2401]: Ручной
+                    - generic [ref=e2403]:
+                      - img [ref=e2404]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2406]:
+                      - generic [ref=e2407]:
+                        - img [ref=e2408]
+                        - link "+7 (495) 182-24-96" [ref=e2410]:
+                          - /url: tel:+74951822496
+                      - generic [ref=e2411]: —
+                    - generic [ref=e2412]:
+                      - generic [ref=e2413]:
+                        - img [ref=e2414]
+                        - generic [ref=e2417]: Admin User
+                      - generic [ref=e2418]: 5 дн назад
+                  - generic [ref=e2420] [cursor=pointer]:
+                    - generic [ref=e2422]:
+                      - generic [ref=e2423]: Stage7 Import A 791b269e
+                      - generic [ref=e2424]: Stage7 LLC 791b269e
+                    - generic [ref=e2426]:
+                      - img [ref=e2427]
+                      - generic [ref=e2430]: Ручной
+                    - generic [ref=e2432]:
+                      - img [ref=e2433]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2435]:
+                      - generic [ref=e2436]:
+                        - img [ref=e2437]
+                        - link "+7 (495) 182-24-94" [ref=e2439]:
+                          - /url: tel:+74951822494
+                      - generic [ref=e2440]: —
+                    - generic [ref=e2441]:
+                      - generic [ref=e2442]:
+                        - img [ref=e2443]
+                        - generic [ref=e2446]: Admin User
+                      - generic [ref=e2447]: 5 дн назад
+                  - generic [ref=e2449] [cursor=pointer]:
+                    - generic [ref=e2451]:
+                      - generic [ref=e2452]: Stage6 Integration Smoke Site
+                      - generic [ref=e2453]: Stage6 LLC
+                    - generic [ref=e2455]:
+                      - img [ref=e2456]
+                      - generic [ref=e2459]: Сайт
+                    - generic [ref=e2461]:
+                      - img [ref=e2462]
+                      - text: "Не хватает: адреса, техники"
+                    - generic [ref=e2464]:
+                      - generic [ref=e2465]:
+                        - img [ref=e2466]
+                        - link "+7 (495) 800-11-22" [ref=e2468]:
+                          - /url: tel:+74958001122
+                      - generic [ref=e2469]: —
+                      - generic [ref=e2470]:
+                        - img [ref=e2471]
+                        - generic [ref=e2473]: 30.04.2026
+                    - generic [ref=e2474]:
+                      - generic [ref=e2475]:
+                        - img [ref=e2476]
+                        - generic [ref=e2479]: Admin User
+                      - generic [ref=e2480]: 5 дн назад
+                  - generic [ref=e2482] [cursor=pointer]:
+                    - generic [ref=e2483]:
+                      - generic [ref=e2484]:
+                        - generic [ref=e2485]: Ivan Test 2
+                        - generic [ref=e2486]: OOO Romashka
+                      - generic [ref=e2487]: Дубль
+                    - generic [ref=e2489]:
+                      - img [ref=e2490]
+                      - generic [ref=e2493]: Сайт
+                    - generic [ref=e2495]:
+                      - img [ref=e2496]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2498]:
+                      - generic [ref=e2499]:
+                        - img [ref=e2500]
+                        - link "8 495 111 22 33" [ref=e2502]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2503]: —
+                    - generic [ref=e2504]:
+                      - generic [ref=e2505]:
+                        - img [ref=e2506]
+                        - generic [ref=e2509]: Admin User
+                      - generic [ref=e2510]: 5 дн назад
+                  - generic [ref=e2512] [cursor=pointer]:
+                    - generic [ref=e2514]:
+                      - generic [ref=e2515]: Stage7 Valid daff6579
+                      - generic [ref=e2516]: Stage7 Invalid LLC daff6579
+                    - generic [ref=e2518]:
+                      - img [ref=e2519]
+                      - generic [ref=e2522]: Ручной
+                    - generic [ref=e2524]:
+                      - img [ref=e2525]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2527]:
+                      - generic [ref=e2528]:
+                        - img [ref=e2529]
+                        - link "+7 (495) 417-07-47" [ref=e2531]:
+                          - /url: tel:+74954170747
+                      - generic [ref=e2532]: —
+                    - generic [ref=e2533]:
+                      - generic [ref=e2534]:
+                        - img [ref=e2535]
+                        - generic [ref=e2538]: Admin User
+                      - generic [ref=e2539]: 5 дн назад
+                  - generic [ref=e2541] [cursor=pointer]:
+                    - generic [ref=e2543]:
+                      - generic [ref=e2544]: Stage7 Import A daff6579
+                      - generic [ref=e2545]: Stage7 LLC daff6579
+                    - generic [ref=e2547]:
+                      - img [ref=e2548]
+                      - generic [ref=e2551]: Ручной
+                    - generic [ref=e2553]:
+                      - img [ref=e2554]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2556]:
+                      - generic [ref=e2557]:
+                        - img [ref=e2558]
+                        - link "+7 (495) 417-07-45" [ref=e2560]:
+                          - /url: tel:+74954170745
+                      - generic [ref=e2561]: —
+                    - generic [ref=e2562]:
+                      - generic [ref=e2563]:
+                        - img [ref=e2564]
+                        - generic [ref=e2567]: Admin User
+                      - generic [ref=e2568]: 5 дн назад
+                  - generic [ref=e2570] [cursor=pointer]:
+                    - generic [ref=e2571]:
+                      - generic [ref=e2572]:
+                        - generic [ref=e2573]: Ivan Test 2
+                        - generic [ref=e2574]: OOO Romashka
+                      - generic [ref=e2575]: Дубль
+                    - generic [ref=e2577]:
+                      - img [ref=e2578]
+                      - generic [ref=e2581]: Сайт
+                    - generic [ref=e2583]:
+                      - img [ref=e2584]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2586]:
+                      - generic [ref=e2587]:
+                        - img [ref=e2588]
+                        - link "8 495 111 22 33" [ref=e2590]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2591]: —
+                    - generic [ref=e2592]:
+                      - generic [ref=e2593]:
+                        - img [ref=e2594]
+                        - generic [ref=e2597]: Admin User
+                      - generic [ref=e2598]: 5 дн назад
+                  - generic [ref=e2600] [cursor=pointer]:
+                    - generic [ref=e2602]:
+                      - generic [ref=e2603]: Stage7 Valid 553a79a8
+                      - generic [ref=e2604]: Stage7 Invalid LLC 553a79a8
+                    - generic [ref=e2606]:
+                      - img [ref=e2607]
+                      - generic [ref=e2610]: Ручной
+                    - generic [ref=e2612]:
+                      - img [ref=e2613]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2615]:
+                      - generic [ref=e2616]:
+                        - img [ref=e2617]
+                        - link "+7 (495) 989-55-94" [ref=e2619]:
+                          - /url: tel:+74959895594
+                      - generic [ref=e2620]: —
+                    - generic [ref=e2621]:
+                      - generic [ref=e2622]:
+                        - img [ref=e2623]
+                        - generic [ref=e2626]: Admin User
+                      - generic [ref=e2627]: 5 дн назад
+                  - generic [ref=e2629] [cursor=pointer]:
+                    - generic [ref=e2631]:
+                      - generic [ref=e2632]: Stage7 Import A 553a79a8
+                      - generic [ref=e2633]: Stage7 LLC 553a79a8
+                    - generic [ref=e2635]:
+                      - img [ref=e2636]
+                      - generic [ref=e2639]: Ручной
+                    - generic [ref=e2641]:
+                      - img [ref=e2642]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2644]:
+                      - generic [ref=e2645]:
+                        - img [ref=e2646]
+                        - link "+7 (495) 989-55-92" [ref=e2648]:
+                          - /url: tel:+74959895592
+                      - generic [ref=e2649]: —
+                    - generic [ref=e2650]:
+                      - generic [ref=e2651]:
+                        - img [ref=e2652]
+                        - generic [ref=e2655]: Admin User
+                      - generic [ref=e2656]: 5 дн назад
+                  - generic [ref=e2658] [cursor=pointer]:
+                    - generic [ref=e2659]:
+                      - generic [ref=e2660]:
+                        - generic [ref=e2661]: Ivan Test 2
+                        - generic [ref=e2662]: OOO Romashka
+                      - generic [ref=e2663]: Дубль
+                    - generic [ref=e2665]:
+                      - img [ref=e2666]
+                      - generic [ref=e2669]: Сайт
+                    - generic [ref=e2671]:
+                      - img [ref=e2672]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2674]:
+                      - generic [ref=e2675]:
+                        - img [ref=e2676]
+                        - link "8 495 111 22 33" [ref=e2678]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2679]: —
+                    - generic [ref=e2680]:
+                      - generic [ref=e2681]:
+                        - img [ref=e2682]
+                        - generic [ref=e2685]: Admin User
+                      - generic [ref=e2686]: 5 дн назад
+                  - generic [ref=e2688] [cursor=pointer]:
+                    - generic [ref=e2690]:
+                      - generic [ref=e2691]: Stage7 Valid 65a35f11
+                      - generic [ref=e2692]: Stage7 Invalid LLC 65a35f11
+                    - generic [ref=e2694]:
+                      - img [ref=e2695]
+                      - generic [ref=e2698]: Ручной
+                    - generic [ref=e2700]:
+                      - img [ref=e2701]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2703]:
+                      - generic [ref=e2704]:
+                        - img [ref=e2705]
+                        - link "+7 (495) 520-55-23" [ref=e2707]:
+                          - /url: tel:+74955205523
+                      - generic [ref=e2708]: —
+                    - generic [ref=e2709]:
+                      - generic [ref=e2710]:
+                        - img [ref=e2711]
+                        - generic [ref=e2714]: Admin User
+                      - generic [ref=e2715]: 5 дн назад
+                  - generic [ref=e2717] [cursor=pointer]:
+                    - generic [ref=e2719]:
+                      - generic [ref=e2720]: Stage7 Import A 65a35f11
+                      - generic [ref=e2721]: Stage7 LLC 65a35f11
+                    - generic [ref=e2723]:
+                      - img [ref=e2724]
+                      - generic [ref=e2727]: Ручной
+                    - generic [ref=e2729]:
+                      - img [ref=e2730]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2732]:
+                      - generic [ref=e2733]:
+                        - img [ref=e2734]
+                        - link "+7 (495) 520-55-21" [ref=e2736]:
+                          - /url: tel:+74955205521
+                      - generic [ref=e2737]: —
+                    - generic [ref=e2738]:
+                      - generic [ref=e2739]:
+                        - img [ref=e2740]
+                        - generic [ref=e2743]: Admin User
+                      - generic [ref=e2744]: 5 дн назад
+                  - generic [ref=e2746] [cursor=pointer]:
+                    - generic [ref=e2747]:
+                      - generic [ref=e2748]:
+                        - generic [ref=e2749]: Ivan Test 2
+                        - generic [ref=e2750]: OOO Romashka
+                      - generic [ref=e2751]: Дубль
+                    - generic [ref=e2753]:
+                      - img [ref=e2754]
+                      - generic [ref=e2757]: Сайт
+                    - generic [ref=e2759]:
+                      - img [ref=e2760]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2762]:
+                      - generic [ref=e2763]:
+                        - img [ref=e2764]
+                        - link "8 495 111 22 33" [ref=e2766]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2767]: —
+                    - generic [ref=e2768]:
+                      - generic [ref=e2769]:
+                        - img [ref=e2770]
+                        - generic [ref=e2773]: Admin User
+                      - generic [ref=e2774]: 5 дн назад
+                  - generic [ref=e2776] [cursor=pointer]:
+                    - generic [ref=e2778]:
+                      - generic [ref=e2779]: Stage7 Import A 6392ecf6
+                      - generic [ref=e2780]: Stage7 LLC 6392ecf6
+                    - generic [ref=e2782]:
+                      - img [ref=e2783]
+                      - generic [ref=e2786]: Ручной
+                    - generic [ref=e2788]:
+                      - img [ref=e2789]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2791]:
+                      - generic [ref=e2792]:
+                        - img [ref=e2793]
+                        - link "+7 (495) 057-33-02" [ref=e2795]:
+                          - /url: tel:+74950573302
+                      - generic [ref=e2796]: —
+                    - generic [ref=e2797]:
+                      - generic [ref=e2798]:
+                        - img [ref=e2799]
+                        - generic [ref=e2802]: Admin User
+                      - generic [ref=e2803]: 6 дн назад
+                  - generic [ref=e2805] [cursor=pointer]:
+                    - generic [ref=e2806]:
+                      - generic [ref=e2807]:
+                        - generic [ref=e2808]: Ivan Test 2
+                        - generic [ref=e2809]: OOO Romashka
+                      - generic [ref=e2810]: Дубль
+                    - generic [ref=e2812]:
+                      - img [ref=e2813]
+                      - generic [ref=e2816]: Сайт
+                    - generic [ref=e2818]:
+                      - img [ref=e2819]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2821]:
+                      - generic [ref=e2822]:
+                        - img [ref=e2823]
+                        - link "8 495 111 22 33" [ref=e2825]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2826]: —
+                    - generic [ref=e2827]:
+                      - generic [ref=e2828]:
+                        - img [ref=e2829]
+                        - generic [ref=e2832]: Admin User
+                      - generic [ref=e2833]: 6 дн назад
+                  - generic [ref=e2835] [cursor=pointer]:
+                    - generic [ref=e2837]:
+                      - generic [ref=e2838]: Stage7 Valid ab39719a
+                      - generic [ref=e2839]: Stage7 Invalid LLC ab39719a
+                    - generic [ref=e2841]:
+                      - img [ref=e2842]
+                      - generic [ref=e2845]: Ручной
+                    - generic [ref=e2847]:
+                      - img [ref=e2848]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2850]:
+                      - generic [ref=e2851]:
+                        - img [ref=e2852]
+                        - link "+7 (495) 266-85-72" [ref=e2854]:
+                          - /url: tel:+74952668572
+                      - generic [ref=e2855]: —
+                    - generic [ref=e2856]:
+                      - generic [ref=e2857]:
+                        - img [ref=e2858]
+                        - generic [ref=e2861]: Admin User
+                      - generic [ref=e2862]: 6 дн назад
+                  - generic [ref=e2864] [cursor=pointer]:
+                    - generic [ref=e2866]:
+                      - generic [ref=e2867]: Stage7 Import A ab39719a
+                      - generic [ref=e2868]: Stage7 LLC ab39719a
+                    - generic [ref=e2870]:
+                      - img [ref=e2871]
+                      - generic [ref=e2874]: Ручной
+                    - generic [ref=e2876]:
+                      - img [ref=e2877]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2879]:
+                      - generic [ref=e2880]:
+                        - img [ref=e2881]
+                        - link "+7 (495) 266-85-70" [ref=e2883]:
+                          - /url: tel:+74952668570
+                      - generic [ref=e2884]: —
+                    - generic [ref=e2885]:
+                      - generic [ref=e2886]:
+                        - img [ref=e2887]
+                        - generic [ref=e2890]: Admin User
+                      - generic [ref=e2891]: 6 дн назад
+                  - generic [ref=e2893] [cursor=pointer]:
+                    - generic [ref=e2894]:
+                      - generic [ref=e2895]:
+                        - generic [ref=e2896]: Ivan Test 2
+                        - generic [ref=e2897]: OOO Romashka
+                      - generic [ref=e2898]: Дубль
+                    - generic [ref=e2900]:
+                      - img [ref=e2901]
+                      - generic [ref=e2904]: Сайт
+                    - generic [ref=e2906]:
+                      - img [ref=e2907]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2909]:
+                      - generic [ref=e2910]:
+                        - img [ref=e2911]
+                        - link "8 495 111 22 33" [ref=e2913]:
+                          - /url: tel:84951112233
+                      - generic [ref=e2914]: —
+                    - generic [ref=e2915]:
+                      - generic [ref=e2916]:
+                        - img [ref=e2917]
+                        - generic [ref=e2920]: Admin User
+                      - generic [ref=e2921]: 6 дн назад
+                  - generic [ref=e2923] [cursor=pointer]:
+                    - generic [ref=e2925]:
+                      - generic [ref=e2926]: Stage7 Valid b4ae657c
+                      - generic [ref=e2927]: Stage7 Invalid LLC b4ae657c
+                    - generic [ref=e2929]:
+                      - img [ref=e2930]
+                      - generic [ref=e2933]: Ручной
+                    - generic [ref=e2935]:
+                      - img [ref=e2936]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2938]:
+                      - generic [ref=e2939]:
+                        - img [ref=e2940]
+                        - link "+7 (495) 132-81-26" [ref=e2942]:
+                          - /url: tel:+74951328126
+                      - generic [ref=e2943]: —
+                    - generic [ref=e2944]:
+                      - generic [ref=e2945]:
+                        - img [ref=e2946]
+                        - generic [ref=e2949]: Admin User
+                      - generic [ref=e2950]: 6 дн назад
+                  - generic [ref=e2952] [cursor=pointer]:
+                    - generic [ref=e2954]:
+                      - generic [ref=e2955]: Stage7 Import A b4ae657c
+                      - generic [ref=e2956]: Stage7 LLC b4ae657c
+                    - generic [ref=e2958]:
+                      - img [ref=e2959]
+                      - generic [ref=e2962]: Ручной
+                    - generic [ref=e2964]:
+                      - img [ref=e2965]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2967]:
+                      - generic [ref=e2968]:
+                        - img [ref=e2969]
+                        - link "+7 (495) 132-81-24" [ref=e2971]:
+                          - /url: tel:+74951328124
+                      - generic [ref=e2972]: —
+                    - generic [ref=e2973]:
+                      - generic [ref=e2974]:
+                        - img [ref=e2975]
+                        - generic [ref=e2978]: Admin User
+                      - generic [ref=e2979]: 6 дн назад
+                  - generic [ref=e2981] [cursor=pointer]:
+                    - generic [ref=e2982]:
+                      - generic [ref=e2983]:
+                        - generic [ref=e2984]: Ivan Test 2
+                        - generic [ref=e2985]: OOO Romashka
+                      - generic [ref=e2986]: Дубль
+                    - generic [ref=e2988]:
+                      - img [ref=e2989]
+                      - generic [ref=e2992]: Сайт
+                    - generic [ref=e2994]:
+                      - img [ref=e2995]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2997]:
+                      - generic [ref=e2998]:
+                        - img [ref=e2999]
+                        - link "8 495 111 22 33" [ref=e3001]:
+                          - /url: tel:84951112233
+                      - generic [ref=e3002]: —
+                    - generic [ref=e3003]:
+                      - generic [ref=e3004]:
+                        - img [ref=e3005]
+                        - generic [ref=e3008]: Admin User
+                      - generic [ref=e3009]: 6 дн назад
+                  - generic [ref=e3011] [cursor=pointer]:
+                    - generic [ref=e3013]:
+                      - generic [ref=e3014]: Stage7 Valid 5e7ee51b
+                      - generic [ref=e3015]: Stage7 Invalid LLC 5e7ee51b
+                    - generic [ref=e3017]:
+                      - img [ref=e3018]
+                      - generic [ref=e3021]: Ручной
+                    - generic [ref=e3023]:
+                      - img [ref=e3024]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e3026]:
+                      - generic [ref=e3027]:
+                        - img [ref=e3028]
+                        - link "+7 (495) 537-44-93" [ref=e3030]:
+                          - /url: tel:+74955374493
+                      - generic [ref=e3031]: —
+                    - generic [ref=e3032]:
+                      - generic [ref=e3033]:
+                        - img [ref=e3034]
+                        - generic [ref=e3037]: Admin User
+                      - generic [ref=e3038]: 6 дн назад
+                  - generic [ref=e3040] [cursor=pointer]:
+                    - generic [ref=e3042]:
+                      - generic [ref=e3043]: Stage7 Import A 5e7ee51b
+                      - generic [ref=e3044]: Stage7 LLC 5e7ee51b
+                    - generic [ref=e3046]:
+                      - img [ref=e3047]
+                      - generic [ref=e3050]: Ручной
+                    - generic [ref=e3052]:
+                      - img [ref=e3053]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e3055]:
+                      - generic [ref=e3056]:
+                        - img [ref=e3057]
+                        - link "+7 (495) 537-44-91" [ref=e3059]:
+                          - /url: tel:+74955374491
+                      - generic [ref=e3060]: —
+                    - generic [ref=e3061]:
+                      - generic [ref=e3062]:
+                        - img [ref=e3063]
+                        - generic [ref=e3066]: Admin User
+                      - generic [ref=e3067]: 6 дн назад
+                  - generic [ref=e3069] [cursor=pointer]:
+                    - generic [ref=e3070]:
+                      - generic [ref=e3071]:
+                        - generic [ref=e3072]: Ivan Test 2
+                        - generic [ref=e3073]: OOO Romashka
+                      - generic [ref=e3074]: Дубль
+                    - generic [ref=e3076]:
+                      - img [ref=e3077]
+                      - generic [ref=e3080]: Сайт
+                    - generic [ref=e3082]:
+                      - img [ref=e3083]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e3085]:
+                      - generic [ref=e3086]:
+                        - img [ref=e3087]
+                        - link "8 495 111 22 33" [ref=e3089]:
+                          - /url: tel:84951112233
+                      - generic [ref=e3090]: —
+                    - generic [ref=e3091]:
+                      - generic [ref=e3092]:
+                        - img [ref=e3093]
+                        - generic [ref=e3096]: Admin User
+                      - generic [ref=e3097]: 6 дн назад
+                  - generic [ref=e3099] [cursor=pointer]:
+                    - generic [ref=e3101]:
+                      - generic [ref=e3102]: Ольга Романова
+                      - generic [ref=e3103]: ООО АльфаСтрой
+                    - generic [ref=e3105]:
+                      - img [ref=e3106]
+                      - generic [ref=e3109]: Сайт
+                    - generic [ref=e3111]:
+                      - img [ref=e3112]
+                      - text: Готов к заявке
+                    - generic [ref=e3115]:
+                      - generic [ref=e3116]:
+                        - img [ref=e3117]
+                        - link "+7 (999) 700-10-01" [ref=e3119]:
+                          - /url: tel:+79997001001
+                      - generic [ref=e3120]: Экскаватор
+                      - generic [ref=e3121]:
+                        - img [ref=e3122]
+                        - generic [ref=e3124]: 30.04.2026
+                    - generic [ref=e3125]:
+                      - generic [ref=e3126]:
+                        - img [ref=e3127]
+                        - generic [ref=e3130]: Manager User
+                      - generic [ref=e3131]: 8 дн назад
+                  - generic [ref=e3133] [cursor=pointer]:
+                    - generic [ref=e3134]:
+                      - generic [ref=e3135]:
+                        - generic [ref=e3136]: Павел Макаров
+                        - generic [ref=e3137]: ООО БетонИнвест
+                      - generic [ref=e3138]: Дубль
+                    - generic [ref=e3140]:
+                      - img [ref=e3141]
+                      - generic [ref=e3143]: Mango
+                    - generic [ref=e3145]:
+                      - img [ref=e3146]
+                      - text: Готов к заявке
+                    - generic [ref=e3149]:
+                      - generic [ref=e3150]:
+                        - img [ref=e3151]
+                        - link "+7 (999) 700-10-02" [ref=e3153]:
+                          - /url: tel:+79997001002
+                      - generic [ref=e3154]: Кран
+                      - generic [ref=e3155]:
+                        - img [ref=e3156]
+                        - generic [ref=e3158]: 01.05.2026
+                    - generic [ref=e3159]:
+                      - generic [ref=e3160]:
+                        - img [ref=e3161]
+                        - generic [ref=e3164]: Manager User
+                      - generic [ref=e3165]: 8 дн назад
+                  - generic [ref=e3167] [cursor=pointer]:
+                    - generic [ref=e3169]:
+                      - generic [ref=e3170]: Ольга Романова
+                      - generic [ref=e3171]: ООО АльфаСтрой
+                    - generic [ref=e3173]:
+                      - img [ref=e3174]
+                      - generic [ref=e3177]: seed_other
+                    - generic [ref=e3179]:
+                      - img [ref=e3180]
+                      - text: "Не хватает: адреса, даты"
+                    - generic [ref=e3182]:
+                      - generic [ref=e3183]:
+                        - img [ref=e3184]
+                        - link "+7 (999) 700-10-12" [ref=e3186]:
+                          - /url: tel:+79997001012
+                      - generic [ref=e3187]: Экскаватор
+                    - generic [ref=e3188]:
+                      - generic [ref=e3189]:
+                        - img [ref=e3190]
+                        - generic [ref=e3193]: Manager User
+                      - generic [ref=e3194]: 8 дн назад
+                  - generic [ref=e3196] [cursor=pointer]:
+                    - generic [ref=e3197]:
+                      - generic [ref=e3198]:
+                        - generic [ref=e3199]: Контакт не подтвержден
+                        - generic [ref=e3200]: ООО Потенциал
+                      - generic [ref=e3201]: Без контакта
+                    - generic [ref=e3203]:
+                      - img [ref=e3204]
+                      - generic [ref=e3207]: Ручной
+                    - generic [ref=e3209]:
+                      - img [ref=e3210]
+                      - text: "Не хватает: адреса, контакта"
+                    - generic [ref=e3212]:
+                      - generic [ref=e3213]:
+                        - img [ref=e3214]
+                        - link "+7 (999) 700-10-10" [ref=e3216]:
+                          - /url: tel:+79997001010
+                      - generic [ref=e3217]: Самосвал
+                      - generic [ref=e3218]:
+                        - img [ref=e3219]
+                        - generic [ref=e3221]: 03.05.2026
+                    - generic [ref=e3222]:
+                      - generic [ref=e3223]:
+                        - img [ref=e3224]
+                        - generic [ref=e3227]: Manager User
+                      - generic [ref=e3228]: 9 дн назад
+                  - button "Добавить карточку" [ref=e3229]:
+                    - img [ref=e3230]
+                    - generic [ref=e3231]: Добавить карточку
+              - generic [ref=e3232]:
+                - generic [ref=e3234]:
+                  - heading "Заявка" [level=3] [ref=e3236]
+                  - generic [ref=e3237]: "97"
+                - generic [ref=e3238]:
+                  - generic [ref=e3240] [cursor=pointer]:
+                    - generic [ref=e3241]:
+                      - generic [ref=e3243]: E2E 005 005-1778080258987-948
+                      - generic [ref=e3244]:
+                        - img [ref=e3245]
+                        - generic [ref=e3248]: Ручной
+                    - generic [ref=e3250]:
+                      - img [ref=e3251]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3254]: Экскаватор
+                    - generic [ref=e3255]:
+                      - generic [ref=e3256]:
+                        - img [ref=e3257]
+                        - link "+79005898773" [ref=e3259]:
+                          - /url: tel:+79005898773
+                      - generic [ref=e3260]:
+                        - img [ref=e3261]
+                        - generic [ref=e3263]: 07.05.2026
+                    - generic [ref=e3264]:
+                      - generic [ref=e3265]:
+                        - img [ref=e3266]
+                        - generic [ref=e3269]: Manager User
+                      - generic [ref=e3270]: только что
+                  - generic [ref=e3272] [cursor=pointer]:
+                    - generic [ref=e3273]:
+                      - generic [ref=e3275]: E2E App 003-1778080234292-591
+                      - generic [ref=e3276]:
+                        - img [ref=e3277]
+                        - generic [ref=e3280]: Ручной
+                    - generic [ref=e3282]:
+                      - img [ref=e3283]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3286]: Экскаватор
+                    - generic [ref=e3287]:
+                      - generic [ref=e3288]:
+                        - img [ref=e3289]
+                        - link "+79003429250" [ref=e3291]:
+                          - /url: tel:+79003429250
+                      - generic [ref=e3292]:
+                        - img [ref=e3293]
+                        - generic [ref=e3295]: 07.05.2026
+                    - generic [ref=e3296]:
+                      - generic [ref=e3297]:
+                        - img [ref=e3298]
+                        - generic [ref=e3301]: Manager User
+                      - generic [ref=e3302]: 1 мин назад
+                  - generic [ref=e3304] [cursor=pointer]:
+                    - generic [ref=e3305]:
+                      - generic [ref=e3307]: E2E 015 015-1778080188534-336
+                      - generic [ref=e3308]:
+                        - img [ref=e3309]
+                        - generic [ref=e3312]: Ручной
+                    - generic [ref=e3314]:
+                      - img [ref=e3315]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3318]: Экскаватор
+                    - generic [ref=e3319]:
+                      - generic [ref=e3320]:
+                        - img [ref=e3321]
+                        - link "+79008853464" [ref=e3323]:
+                          - /url: tel:+79008853464
+                      - generic [ref=e3324]:
+                        - img [ref=e3325]
+                        - generic [ref=e3327]: 07.05.2026
+                    - generic [ref=e3328]:
+                      - generic [ref=e3329]:
+                        - img [ref=e3330]
+                        - generic [ref=e3333]: Manager User
+                      - generic [ref=e3334]: 1 мин назад
+                  - generic [ref=e3336] [cursor=pointer]:
+                    - generic [ref=e3337]:
+                      - generic [ref=e3339]: E2E 014 014-1778080182365-503
+                      - generic [ref=e3340]:
+                        - img [ref=e3341]
+                        - generic [ref=e3344]: Ручной
+                    - generic [ref=e3346]:
+                      - img [ref=e3347]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3350]: Экскаватор
+                    - generic [ref=e3351]:
+                      - generic [ref=e3352]:
+                        - img [ref=e3353]
+                        - link "+79008236599" [ref=e3355]:
+                          - /url: tel:+79008236599
+                      - generic [ref=e3356]:
+                        - img [ref=e3357]
+                        - generic [ref=e3359]: 07.05.2026
+                    - generic [ref=e3360]:
+                      - generic [ref=e3361]:
+                        - img [ref=e3362]
+                        - generic [ref=e3365]: Manager User
+                      - generic [ref=e3366]: 2 мин назад
+                  - generic [ref=e3368] [cursor=pointer]:
+                    - generic [ref=e3369]:
+                      - generic [ref=e3371]: E2E 013 Lead 013-1778080174696-931
+                      - generic [ref=e3372]:
+                        - img [ref=e3373]
+                        - generic [ref=e3376]: Ручной
+                    - generic [ref=e3378]:
+                      - img [ref=e3379]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3382]: Экскаватор
+                    - generic [ref=e3383]:
+                      - generic [ref=e3384]:
+                        - img [ref=e3385]
+                        - link "+79007469673" [ref=e3387]:
+                          - /url: tel:+79007469673
+                      - generic [ref=e3388]:
+                        - img [ref=e3389]
+                        - generic [ref=e3391]: 07.05.2026
+                    - generic [ref=e3392]:
+                      - generic [ref=e3393]:
+                        - img [ref=e3394]
+                        - generic [ref=e3397]: Manager User
+                      - generic [ref=e3398]: 2 мин назад
+                  - generic [ref=e3400] [cursor=pointer]:
+                    - generic [ref=e3401]:
+                      - generic [ref=e3403]: QA INT005-1778080095267-9319 Lead
+                      - generic [ref=e3404]:
+                        - img [ref=e3405]
+                        - generic [ref=e3408]: Ручной
+                    - generic [ref=e3410]:
+                      - img [ref=e3411]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3414]: —
+                    - generic [ref=e3416]:
+                      - img [ref=e3417]
+                      - link "+79990051771778080" [ref=e3419]:
+                        - /url: tel:+79990051771778080
+                    - generic [ref=e3420]:
+                      - generic [ref=e3421]:
+                        - img [ref=e3422]
+                        - generic [ref=e3425]: Manager User
+                      - generic [ref=e3426]: 3 мин назад
+                  - generic [ref=e3428] [cursor=pointer]:
+                    - generic [ref=e3429]:
+                      - generic [ref=e3431]: QA INT004-1778080094977-992 Lead
+                      - generic [ref=e3432]:
+                        - img [ref=e3433]
+                        - generic [ref=e3436]: Ручной
+                    - generic [ref=e3438]:
+                      - img [ref=e3439]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3442]: —
+                    - generic [ref=e3444]:
+                      - img [ref=e3445]
+                      - link "+79990041771778080" [ref=e3447]:
+                        - /url: tel:+79990041771778080
+                    - generic [ref=e3448]:
+                      - generic [ref=e3449]:
+                        - img [ref=e3450]
+                        - generic [ref=e3453]: Manager User
+                      - generic [ref=e3454]: 3 мин назад
+                  - generic [ref=e3456] [cursor=pointer]:
+                    - generic [ref=e3457]:
+                      - generic [ref=e3459]: QA INT003-1778080094695-7674 Lead
+                      - generic [ref=e3460]:
+                        - img [ref=e3461]
+                        - generic [ref=e3464]: Ручной
+                    - generic [ref=e3466]:
+                      - img [ref=e3467]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3470]: —
+                    - generic [ref=e3472]:
+                      - img [ref=e3473]
+                      - link "+79990031771778080" [ref=e3475]:
+                        - /url: tel:+79990031771778080
+                    - generic [ref=e3476]:
+                      - generic [ref=e3477]:
+                        - img [ref=e3478]
+                        - generic [ref=e3481]: Manager User
+                      - generic [ref=e3482]: 3 мин назад
+                  - generic [ref=e3484] [cursor=pointer]:
+                    - generic [ref=e3485]:
+                      - generic [ref=e3487]: QA INT002-1778080094440-8387 Lead
+                      - generic [ref=e3488]:
+                        - img [ref=e3489]
+                        - generic [ref=e3492]: Ручной
+                    - generic [ref=e3494]:
+                      - img [ref=e3495]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3498]: —
+                    - generic [ref=e3500]:
+                      - img [ref=e3501]
+                      - link "+79990021771778080" [ref=e3503]:
+                        - /url: tel:+79990021771778080
+                    - generic [ref=e3504]:
+                      - generic [ref=e3505]:
+                        - img [ref=e3506]
+                        - generic [ref=e3509]: Manager User
+                      - generic [ref=e3510]: 3 мин назад
+                  - generic [ref=e3512] [cursor=pointer]:
+                    - generic [ref=e3513]:
+                      - generic [ref=e3515]: QA INT001-1778080094186-1333 Lead
+                      - generic [ref=e3516]:
+                        - img [ref=e3517]
+                        - generic [ref=e3520]: Ручной
+                    - generic [ref=e3522]:
+                      - img [ref=e3523]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3526]: —
+                    - generic [ref=e3528]:
+                      - img [ref=e3529]
+                      - link "+79990011771778080" [ref=e3531]:
+                        - /url: tel:+79990011771778080
+                    - generic [ref=e3532]:
+                      - generic [ref=e3533]:
+                        - img [ref=e3534]
+                        - generic [ref=e3537]: Manager User
+                      - generic [ref=e3538]: 3 мин назад
+                  - generic [ref=e3540] [cursor=pointer]:
+                    - generic [ref=e3541]:
+                      - generic [ref=e3543]: QA APIC012-1778080089172-9913 Lead
+                      - generic [ref=e3544]:
+                        - img [ref=e3545]
+                        - generic [ref=e3548]: Ручной
+                    - generic [ref=e3550]:
+                      - img [ref=e3551]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3554]: —
+                    - generic [ref=e3556]:
+                      - img [ref=e3557]
+                      - link "+79990121771778080" [ref=e3559]:
+                        - /url: tel:+79990121771778080
+                    - generic [ref=e3560]:
+                      - generic [ref=e3561]:
+                        - img [ref=e3562]
+                        - generic [ref=e3565]: Manager User
+                      - generic [ref=e3566]: 3 мин назад
+                  - generic [ref=e3568] [cursor=pointer]:
+                    - generic [ref=e3569]:
+                      - generic [ref=e3571]: QA APIC008CANCEL-1778080088035-5005 Lead
+                      - generic [ref=e3572]:
+                        - img [ref=e3573]
+                        - generic [ref=e3576]: Ручной
+                    - generic [ref=e3578]:
+                      - img [ref=e3579]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3582]: —
+                    - generic [ref=e3584]:
+                      - img [ref=e3585]
+                      - link "+79990081771778080" [ref=e3587]:
+                        - /url: tel:+79990081771778080
+                    - generic [ref=e3588]:
+                      - generic [ref=e3589]:
+                        - img [ref=e3590]
+                        - generic [ref=e3593]: Manager User
+                      - generic [ref=e3594]: 3 мин назад
+                  - generic [ref=e3596] [cursor=pointer]:
+                    - generic [ref=e3597]:
+                      - generic [ref=e3599]: QA APIC007-1778080087448-4144 Lead
+                      - generic [ref=e3600]:
+                        - img [ref=e3601]
+                        - generic [ref=e3604]: Ручной
+                    - generic [ref=e3606]:
+                      - img [ref=e3607]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3610]: —
+                    - generic [ref=e3612]:
+                      - img [ref=e3613]
+                      - link "+79990071771778080" [ref=e3615]:
+                        - /url: tel:+79990071771778080
+                    - generic [ref=e3616]:
+                      - generic [ref=e3617]:
+                        - img [ref=e3618]
+                        - generic [ref=e3621]: Manager User
+                      - generic [ref=e3622]: 3 мин назад
+                  - generic [ref=e3624] [cursor=pointer]:
+                    - generic [ref=e3625]:
+                      - generic [ref=e3627]: QA APIC006-1778080087117-3343 Lead
+                      - generic [ref=e3628]:
+                        - img [ref=e3629]
+                        - generic [ref=e3632]: Ручной
+                    - generic [ref=e3634]:
+                      - img [ref=e3635]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3638]: —
+                    - generic [ref=e3640]:
+                      - img [ref=e3641]
+                      - link "+79990061771778080" [ref=e3643]:
+                        - /url: tel:+79990061771778080
+                    - generic [ref=e3644]:
+                      - generic [ref=e3645]:
+                        - img [ref=e3646]
+                        - generic [ref=e3649]: Manager User
+                      - generic [ref=e3650]: 3 мин назад
+                  - generic [ref=e3652] [cursor=pointer]:
+                    - generic [ref=e3653]:
+                      - generic [ref=e3655]: QA APIC005-1778080086873-3247 Lead
+                      - generic [ref=e3656]:
+                        - img [ref=e3657]
+                        - generic [ref=e3660]: Ручной
+                    - generic [ref=e3662]:
+                      - img [ref=e3663]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3666]: —
+                    - generic [ref=e3668]:
+                      - img [ref=e3669]
+                      - link "+79990051771778080" [ref=e3671]:
+                        - /url: tel:+79990051771778080
+                    - generic [ref=e3672]:
+                      - generic [ref=e3673]:
+                        - img [ref=e3674]
+                        - generic [ref=e3677]: Manager User
+                      - generic [ref=e3678]: 3 мин назад
+                  - generic [ref=e3680] [cursor=pointer]:
+                    - generic [ref=e3681]:
+                      - generic [ref=e3683]: QA APIC004-1778080086576-73 Lead
+                      - generic [ref=e3684]:
+                        - img [ref=e3685]
+                        - generic [ref=e3688]: Ручной
+                    - generic [ref=e3690]:
+                      - img [ref=e3691]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3694]: —
+                    - generic [ref=e3696]:
+                      - img [ref=e3697]
+                      - link "+79990041771778080" [ref=e3699]:
+                        - /url: tel:+79990041771778080
+                    - generic [ref=e3700]:
+                      - generic [ref=e3701]:
+                        - img [ref=e3702]
+                        - generic [ref=e3705]: Manager User
+                      - generic [ref=e3706]: 3 мин назад
+                  - generic [ref=e3708] [cursor=pointer]:
+                    - generic [ref=e3709]:
+                      - generic [ref=e3711]: QA INT005-1778080071419-8697 Lead
+                      - generic [ref=e3712]:
+                        - img [ref=e3713]
+                        - generic [ref=e3716]: Ручной
+                    - generic [ref=e3718]:
+                      - img [ref=e3719]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3722]: —
+                    - generic [ref=e3724]:
+                      - img [ref=e3725]
+                      - link "+79990051771778080" [ref=e3727]:
+                        - /url: tel:+79990051771778080
+                    - generic [ref=e3728]:
+                      - generic [ref=e3729]:
+                        - img [ref=e3730]
+                        - generic [ref=e3733]: Manager User
+                      - generic [ref=e3734]: 3 мин назад
+                  - generic [ref=e3736] [cursor=pointer]:
+                    - generic [ref=e3737]:
+                      - generic [ref=e3739]: QA INT004-1778080071070-5069 Lead
+                      - generic [ref=e3740]:
+                        - img [ref=e3741]
+                        - generic [ref=e3744]: Ручной
+                    - generic [ref=e3746]:
+                      - img [ref=e3747]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3750]: —
+                    - generic [ref=e3752]:
+                      - img [ref=e3753]
+                      - link "+79990041771778080" [ref=e3755]:
+                        - /url: tel:+79990041771778080
+                    - generic [ref=e3756]:
+                      - generic [ref=e3757]:
+                        - img [ref=e3758]
+                        - generic [ref=e3761]: Manager User
+                      - generic [ref=e3762]: 3 мин назад
+                  - generic [ref=e3764] [cursor=pointer]:
+                    - generic [ref=e3765]:
+                      - generic [ref=e3767]: QA INT003-1778080070841-6362 Lead
+                      - generic [ref=e3768]:
+                        - img [ref=e3769]
+                        - generic [ref=e3772]: Ручной
+                    - generic [ref=e3774]:
+                      - img [ref=e3775]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3778]: —
+                    - generic [ref=e3780]:
+                      - img [ref=e3781]
+                      - link "+79990031771778080" [ref=e3783]:
+                        - /url: tel:+79990031771778080
+                    - generic [ref=e3784]:
+                      - generic [ref=e3785]:
+                        - img [ref=e3786]
+                        - generic [ref=e3789]: Manager User
+                      - generic [ref=e3790]: 3 мин назад
+                  - generic [ref=e3792] [cursor=pointer]:
+                    - generic [ref=e3793]:
+                      - generic [ref=e3795]: QA INT002-1778080070520-5105 Lead
+                      - generic [ref=e3796]:
+                        - img [ref=e3797]
+                        - generic [ref=e3800]: Ручной
+                    - generic [ref=e3802]:
+                      - img [ref=e3803]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3806]: —
+                    - generic [ref=e3808]:
+                      - img [ref=e3809]
+                      - link "+79990021771778080" [ref=e3811]:
+                        - /url: tel:+79990021771778080
+                    - generic [ref=e3812]:
+                      - generic [ref=e3813]:
+                        - img [ref=e3814]
+                        - generic [ref=e3817]: Manager User
+                      - generic [ref=e3818]: 3 мин назад
+                  - generic [ref=e3820] [cursor=pointer]:
+                    - generic [ref=e3821]:
+                      - generic [ref=e3823]: QA INT001-1778080070164-6692 Lead
+                      - generic [ref=e3824]:
+                        - img [ref=e3825]
+                        - generic [ref=e3828]: Ручной
+                    - generic [ref=e3830]:
+                      - img [ref=e3831]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3834]: —
+                    - generic [ref=e3836]:
+                      - img [ref=e3837]
+                      - link "+79990011771778080" [ref=e3839]:
+                        - /url: tel:+79990011771778080
+                    - generic [ref=e3840]:
+                      - generic [ref=e3841]:
+                        - img [ref=e3842]
+                        - generic [ref=e3845]: Manager User
+                      - generic [ref=e3846]: 3 мин назад
+                  - generic [ref=e3848] [cursor=pointer]:
+                    - generic [ref=e3849]:
+                      - generic [ref=e3851]: QA APIC012-1778080052829-2146 Lead
+                      - generic [ref=e3852]:
+                        - img [ref=e3853]
+                        - generic [ref=e3856]: Ручной
+                    - generic [ref=e3858]:
+                      - img [ref=e3859]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3862]: —
+                    - generic [ref=e3864]:
+                      - img [ref=e3865]
+                      - link "+79990121771778080" [ref=e3867]:
+                        - /url: tel:+79990121771778080
+                    - generic [ref=e3868]:
+                      - generic [ref=e3869]:
+                        - img [ref=e3870]
+                        - generic [ref=e3873]: Manager User
+                      - generic [ref=e3874]: 4 мин назад
+                  - generic [ref=e3876] [cursor=pointer]:
+                    - generic [ref=e3877]:
+                      - generic [ref=e3879]: QA APIC008CANCEL-1778080050358-9220 Lead
+                      - generic [ref=e3880]:
+                        - img [ref=e3881]
+                        - generic [ref=e3884]: Ручной
+                    - generic [ref=e3886]:
+                      - img [ref=e3887]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3890]: —
+                    - generic [ref=e3892]:
+                      - img [ref=e3893]
+                      - link "+79990081771778080" [ref=e3895]:
+                        - /url: tel:+79990081771778080
+                    - generic [ref=e3896]:
+                      - generic [ref=e3897]:
+                        - img [ref=e3898]
+                        - generic [ref=e3901]: Manager User
+                      - generic [ref=e3902]: 4 мин назад
+                  - generic [ref=e3904] [cursor=pointer]:
+                    - generic [ref=e3905]:
+                      - generic [ref=e3907]: QA APIC007-1778080049584-9066 Lead
+                      - generic [ref=e3908]:
+                        - img [ref=e3909]
+                        - generic [ref=e3912]: Ручной
+                    - generic [ref=e3914]:
+                      - img [ref=e3915]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3918]: —
+                    - generic [ref=e3920]:
+                      - img [ref=e3921]
+                      - link "+79990071771778080" [ref=e3923]:
+                        - /url: tel:+79990071771778080
+                    - generic [ref=e3924]:
+                      - generic [ref=e3925]:
+                        - img [ref=e3926]
+                        - generic [ref=e3929]: Manager User
+                      - generic [ref=e3930]: 4 мин назад
+                  - generic [ref=e3932] [cursor=pointer]:
+                    - generic [ref=e3933]:
+                      - generic [ref=e3935]: QA APIC006-1778080049138-3487 Lead
+                      - generic [ref=e3936]:
+                        - img [ref=e3937]
+                        - generic [ref=e3940]: Ручной
+                    - generic [ref=e3942]:
+                      - img [ref=e3943]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3946]: —
+                    - generic [ref=e3948]:
+                      - img [ref=e3949]
+                      - link "+79990061771778080" [ref=e3951]:
+                        - /url: tel:+79990061771778080
+                    - generic [ref=e3952]:
+                      - generic [ref=e3953]:
+                        - img [ref=e3954]
+                        - generic [ref=e3957]: Manager User
+                      - generic [ref=e3958]: 4 мин назад
+                  - generic [ref=e3960] [cursor=pointer]:
+                    - generic [ref=e3961]:
+                      - generic [ref=e3963]: QA APIC005-1778080048828-6321 Lead
+                      - generic [ref=e3964]:
+                        - img [ref=e3965]
+                        - generic [ref=e3968]: Ручной
+                    - generic [ref=e3970]:
+                      - img [ref=e3971]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3974]: —
+                    - generic [ref=e3976]:
+                      - img [ref=e3977]
+                      - link "+79990051771778080" [ref=e3979]:
+                        - /url: tel:+79990051771778080
+                    - generic [ref=e3980]:
+                      - generic [ref=e3981]:
+                        - img [ref=e3982]
+                        - generic [ref=e3985]: Manager User
+                      - generic [ref=e3986]: 4 мин назад
+                  - generic [ref=e3988] [cursor=pointer]:
+                    - generic [ref=e3989]:
+                      - generic [ref=e3991]: QA APIC004-1778080048452-1580 Lead
+                      - generic [ref=e3992]:
+                        - img [ref=e3993]
+                        - generic [ref=e3996]: Ручной
+                    - generic [ref=e3998]:
+                      - img [ref=e3999]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4002]: —
+                    - generic [ref=e4004]:
+                      - img [ref=e4005]
+                      - link "+79990041771778080" [ref=e4007]:
+                        - /url: tel:+79990041771778080
+                    - generic [ref=e4008]:
+                      - generic [ref=e4009]:
+                        - img [ref=e4010]
+                        - generic [ref=e4013]: Manager User
+                      - generic [ref=e4014]: 4 мин назад
+                  - generic [ref=e4016] [cursor=pointer]:
+                    - generic [ref=e4017]:
+                      - generic [ref=e4019]: E2E 005 005-1778012421144-870
+                      - generic [ref=e4020]:
+                        - img [ref=e4021]
+                        - generic [ref=e4024]: Ручной
+                    - generic [ref=e4026]:
+                      - img [ref=e4027]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4030]: Экскаватор
+                    - generic [ref=e4031]:
+                      - generic [ref=e4032]:
+                        - img [ref=e4033]
+                        - link "+79002114484" [ref=e4035]:
+                          - /url: tel:+79002114484
+                      - generic [ref=e4036]:
+                        - img [ref=e4037]
+                        - generic [ref=e4039]: 07.05.2026
+                    - generic [ref=e4040]:
+                      - generic [ref=e4041]:
+                        - img [ref=e4042]
+                        - generic [ref=e4045]: Manager User
+                      - generic [ref=e4046]: 18 ч назад
+                  - generic [ref=e4048] [cursor=pointer]:
+                    - generic [ref=e4049]:
+                      - generic [ref=e4051]: E2E App 003-1778012410768-816
+                      - generic [ref=e4052]:
+                        - img [ref=e4053]
+                        - generic [ref=e4056]: Ручной
+                    - generic [ref=e4058]:
+                      - img [ref=e4059]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4062]: Экскаватор
+                    - generic [ref=e4063]:
+                      - generic [ref=e4064]:
+                        - img [ref=e4065]
+                        - link "+79001076874" [ref=e4067]:
+                          - /url: tel:+79001076874
+                      - generic [ref=e4068]:
+                        - img [ref=e4069]
+                        - generic [ref=e4071]: 07.05.2026
+                    - generic [ref=e4072]:
+                      - generic [ref=e4073]:
+                        - img [ref=e4074]
+                        - generic [ref=e4077]: Manager User
+                      - generic [ref=e4078]: 18 ч назад
+                  - generic [ref=e4080] [cursor=pointer]:
+                    - generic [ref=e4081]:
+                      - generic [ref=e4083]: E2E App 003-1778012207919-27
+                      - generic [ref=e4084]:
+                        - img [ref=e4085]
+                        - generic [ref=e4088]: Ручной
+                    - generic [ref=e4090]:
+                      - img [ref=e4091]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4094]: Экскаватор
+                    - generic [ref=e4095]:
+                      - generic [ref=e4096]:
+                        - img [ref=e4097]
+                        - link "+79000791948" [ref=e4099]:
+                          - /url: tel:+79000791948
+                      - generic [ref=e4100]:
+                        - img [ref=e4101]
+                        - generic [ref=e4103]: 07.05.2026
+                    - generic [ref=e4104]:
+                      - generic [ref=e4105]:
+                        - img [ref=e4106]
+                        - generic [ref=e4109]: Manager User
+                      - generic [ref=e4110]: 18 ч назад
+                  - generic [ref=e4112] [cursor=pointer]:
+                    - generic [ref=e4113]:
+                      - generic [ref=e4115]: E2E 005 005-1778011717245-381
+                      - generic [ref=e4116]:
+                        - img [ref=e4117]
+                        - generic [ref=e4120]: Ручной
+                    - generic [ref=e4122]:
+                      - img [ref=e4123]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4126]: Экскаватор
+                    - generic [ref=e4127]:
+                      - generic [ref=e4128]:
+                        - img [ref=e4129]
+                        - link "+79001724521" [ref=e4131]:
+                          - /url: tel:+79001724521
+                      - generic [ref=e4132]:
+                        - img [ref=e4133]
+                        - generic [ref=e4135]: 07.05.2026
+                    - generic [ref=e4136]:
+                      - generic [ref=e4137]:
+                        - img [ref=e4138]
+                        - generic [ref=e4141]: Manager User
+                      - generic [ref=e4142]: 19 ч назад
+                  - generic [ref=e4144] [cursor=pointer]:
+                    - generic [ref=e4145]:
+                      - generic [ref=e4147]: E2E App 003-1778011710887-109
+                      - generic [ref=e4148]:
+                        - img [ref=e4149]
+                        - generic [ref=e4152]: Ручной
+                    - generic [ref=e4154]:
+                      - img [ref=e4155]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4158]: Экскаватор
+                    - generic [ref=e4159]:
+                      - generic [ref=e4160]:
+                        - img [ref=e4161]
+                        - link "+79001088751" [ref=e4163]:
+                          - /url: tel:+79001088751
+                      - generic [ref=e4164]:
+                        - img [ref=e4165]
+                        - generic [ref=e4167]: 07.05.2026
+                    - generic [ref=e4168]:
+                      - generic [ref=e4169]:
+                        - img [ref=e4170]
+                        - generic [ref=e4173]: Manager User
+                      - generic [ref=e4174]: 19 ч назад
+                  - generic [ref=e4176] [cursor=pointer]:
+                    - generic [ref=e4177]:
+                      - generic [ref=e4179]: E2E 005 005-1778011396373-137
+                      - generic [ref=e4180]:
+                        - img [ref=e4181]
+                        - generic [ref=e4184]: Ручной
+                    - generic [ref=e4186]:
+                      - img [ref=e4187]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4190]: Экскаватор
+                    - generic [ref=e4191]:
+                      - generic [ref=e4192]:
+                        - img [ref=e4193]
+                        - link "+79009637328" [ref=e4195]:
+                          - /url: tel:+79009637328
+                      - generic [ref=e4196]:
+                        - img [ref=e4197]
+                        - generic [ref=e4199]: 07.05.2026
+                    - generic [ref=e4200]:
+                      - generic [ref=e4201]:
+                        - img [ref=e4202]
+                        - generic [ref=e4205]: Manager User
+                      - generic [ref=e4206]: 19 ч назад
+                  - generic [ref=e4208] [cursor=pointer]:
+                    - generic [ref=e4209]:
+                      - generic [ref=e4211]: E2E App 003-1778011390094-659
+                      - generic [ref=e4212]:
+                        - img [ref=e4213]
+                        - generic [ref=e4216]: Ручной
+                    - generic [ref=e4218]:
+                      - img [ref=e4219]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4222]: Экскаватор
+                    - generic [ref=e4223]:
+                      - generic [ref=e4224]:
+                        - img [ref=e4225]
+                        - link "+79009009489" [ref=e4227]:
+                          - /url: tel:+79009009489
+                      - generic [ref=e4228]:
+                        - img [ref=e4229]
+                        - generic [ref=e4231]: 07.05.2026
+                    - generic [ref=e4232]:
+                      - generic [ref=e4233]:
+                        - img [ref=e4234]
+                        - generic [ref=e4237]: Manager User
+                      - generic [ref=e4238]: 19 ч назад
+                  - generic [ref=e4240] [cursor=pointer]:
+                    - generic [ref=e4241]:
+                      - generic [ref=e4243]: E2E 009 009-1778011285034-806
+                      - generic [ref=e4244]:
+                        - img [ref=e4245]
+                        - generic [ref=e4248]: Ручной
+                    - generic [ref=e4250]:
+                      - img [ref=e4251]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4254]: Экскаватор
+                    - generic [ref=e4255]:
+                      - generic [ref=e4256]:
+                        - img [ref=e4257]
+                        - link "+79008503494" [ref=e4259]:
+                          - /url: tel:+79008503494
+                      - generic [ref=e4260]:
+                        - img [ref=e4261]
+                        - generic [ref=e4263]: 07.05.2026
+                    - generic [ref=e4264]:
+                      - generic [ref=e4265]:
+                        - img [ref=e4266]
+                        - generic [ref=e4269]: Manager User
+                      - generic [ref=e4270]: 19 ч назад
+                  - generic [ref=e4272] [cursor=pointer]:
+                    - generic [ref=e4273]:
+                      - generic [ref=e4275]: E2E 005 005-1778011270265-774
+                      - generic [ref=e4276]:
+                        - img [ref=e4277]
+                        - generic [ref=e4280]: Ручной
+                    - generic [ref=e4282]:
+                      - img [ref=e4283]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4286]: Экскаватор
+                    - generic [ref=e4287]:
+                      - generic [ref=e4288]:
+                        - img [ref=e4289]
+                        - link "+79007026591" [ref=e4291]:
+                          - /url: tel:+79007026591
+                      - generic [ref=e4292]:
+                        - img [ref=e4293]
+                        - generic [ref=e4295]: 07.05.2026
+                    - generic [ref=e4296]:
+                      - generic [ref=e4297]:
+                        - img [ref=e4298]
+                        - generic [ref=e4301]: Manager User
+                      - generic [ref=e4302]: 19 ч назад
+                  - generic [ref=e4304] [cursor=pointer]:
+                    - generic [ref=e4305]:
+                      - generic [ref=e4307]: E2E App 003-1778011264216-47
+                      - generic [ref=e4308]:
+                        - img [ref=e4309]
+                        - generic [ref=e4312]: Ручной
+                    - generic [ref=e4314]:
+                      - img [ref=e4315]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4318]: Экскаватор
+                    - generic [ref=e4319]:
+                      - generic [ref=e4320]:
+                        - img [ref=e4321]
+                        - link "+79006421654" [ref=e4323]:
+                          - /url: tel:+79006421654
+                      - generic [ref=e4324]:
+                        - img [ref=e4325]
+                        - generic [ref=e4327]: 07.05.2026
+                    - generic [ref=e4328]:
+                      - generic [ref=e4329]:
+                        - img [ref=e4330]
+                        - generic [ref=e4333]: Manager User
+                      - generic [ref=e4334]: 19 ч назад
+                  - generic [ref=e4336] [cursor=pointer]:
+                    - generic [ref=e4337]:
+                      - generic [ref=e4339]: E2E 005 005-1778010720989-560
+                      - generic [ref=e4340]:
+                        - img [ref=e4341]
+                        - generic [ref=e4344]: Ручной
+                    - generic [ref=e4346]:
+                      - img [ref=e4347]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4350]: Экскаватор
+                    - generic [ref=e4351]:
+                      - generic [ref=e4352]:
+                        - img [ref=e4353]
+                        - link "+79002098981" [ref=e4355]:
+                          - /url: tel:+79002098981
+                      - generic [ref=e4356]:
+                        - img [ref=e4357]
+                        - generic [ref=e4359]: 07.05.2026
+                    - generic [ref=e4360]:
+                      - generic [ref=e4361]:
+                        - img [ref=e4362]
+                        - generic [ref=e4365]: Manager User
+                      - generic [ref=e4366]: 19 ч назад
+                  - generic [ref=e4368] [cursor=pointer]:
+                    - generic [ref=e4369]:
+                      - generic [ref=e4371]: E2E App 003-1778010714458-575
+                      - generic [ref=e4372]:
+                        - img [ref=e4373]
+                        - generic [ref=e4376]: Ручной
+                    - generic [ref=e4378]:
+                      - img [ref=e4379]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4382]: Экскаватор
+                    - generic [ref=e4383]:
+                      - generic [ref=e4384]:
+                        - img [ref=e4385]
+                        - link "+79001445885" [ref=e4387]:
+                          - /url: tel:+79001445885
+                      - generic [ref=e4388]:
+                        - img [ref=e4389]
+                        - generic [ref=e4391]: 07.05.2026
+                    - generic [ref=e4392]:
+                      - generic [ref=e4393]:
+                        - img [ref=e4394]
+                        - generic [ref=e4397]: Manager User
+                      - generic [ref=e4398]: 19 ч назад
+                  - generic [ref=e4400] [cursor=pointer]:
+                    - generic [ref=e4401]:
+                      - generic [ref=e4403]: E2E 005 005-1778010623572-102
+                      - generic [ref=e4404]:
+                        - img [ref=e4405]
+                        - generic [ref=e4408]: Ручной
+                    - generic [ref=e4410]:
+                      - img [ref=e4411]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4414]: Экскаватор
+                    - generic [ref=e4415]:
+                      - generic [ref=e4416]:
+                        - img [ref=e4417]
+                        - link "+79002357253" [ref=e4419]:
+                          - /url: tel:+79002357253
+                      - generic [ref=e4420]:
+                        - img [ref=e4421]
+                        - generic [ref=e4423]: 07.05.2026
+                    - generic [ref=e4424]:
+                      - generic [ref=e4425]:
+                        - img [ref=e4426]
+                        - generic [ref=e4429]: Manager User
+                      - generic [ref=e4430]: 19 ч назад
+                  - generic [ref=e4432] [cursor=pointer]:
+                    - generic [ref=e4433]:
+                      - generic [ref=e4435]: E2E App 003-1778010617940-628
+                      - generic [ref=e4436]:
+                        - img [ref=e4437]
+                        - generic [ref=e4440]: Ручной
+                    - generic [ref=e4442]:
+                      - img [ref=e4443]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4446]: Экскаватор
+                    - generic [ref=e4447]:
+                      - generic [ref=e4448]:
+                        - img [ref=e4449]
+                        - link "+79001794091" [ref=e4451]:
+                          - /url: tel:+79001794091
+                      - generic [ref=e4452]:
+                        - img [ref=e4453]
+                        - generic [ref=e4455]: 07.05.2026
+                    - generic [ref=e4456]:
+                      - generic [ref=e4457]:
+                        - img [ref=e4458]
+                        - generic [ref=e4461]: Manager User
+                      - generic [ref=e4462]: 19 ч назад
+                  - generic [ref=e4464] [cursor=pointer]:
+                    - generic [ref=e4465]:
+                      - generic [ref=e4467]: E2E App 003-1778009609260-944
+                      - generic [ref=e4468]:
+                        - img [ref=e4469]
+                        - generic [ref=e4472]: Ручной
+                    - generic [ref=e4474]:
+                      - img [ref=e4475]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4478]: Экскаватор
+                    - generic [ref=e4479]:
+                      - generic [ref=e4480]:
+                        - img [ref=e4481]
+                        - link "+79009609260" [ref=e4483]:
+                          - /url: tel:+79009609260
+                      - generic [ref=e4484]:
+                        - img [ref=e4485]
+                        - generic [ref=e4487]: 07.05.2026
+                    - generic [ref=e4488]:
+                      - generic [ref=e4489]:
+                        - img [ref=e4490]
+                        - generic [ref=e4493]: Manager User
+                      - generic [ref=e4494]: 19 ч назад
+                  - generic [ref=e4496] [cursor=pointer]:
+                    - generic [ref=e4497]:
+                      - generic [ref=e4499]: E2E App 003-1778009504481-140
+                      - generic [ref=e4500]:
+                        - img [ref=e4501]
+                        - generic [ref=e4504]: Ручной
+                    - generic [ref=e4506]:
+                      - img [ref=e4507]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4510]: Экскаватор
+                    - generic [ref=e4511]:
+                      - generic [ref=e4512]:
+                        - img [ref=e4513]
+                        - link "+79009504481" [ref=e4515]:
+                          - /url: tel:+79009504481
+                      - generic [ref=e4516]:
+                        - img [ref=e4517]
+                        - generic [ref=e4519]: 07.05.2026
+                    - generic [ref=e4520]:
+                      - generic [ref=e4521]:
+                        - img [ref=e4522]
+                        - generic [ref=e4525]: Manager User
+                      - generic [ref=e4526]: 19 ч назад
+                  - generic [ref=e4528] [cursor=pointer]:
+                    - generic [ref=e4529]:
+                      - generic [ref=e4531]: E2E App 003-1778009322874-205
+                      - generic [ref=e4532]:
+                        - img [ref=e4533]
+                        - generic [ref=e4536]: Ручной
+                    - generic [ref=e4538]:
+                      - img [ref=e4539]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4542]: Экскаватор
+                    - generic [ref=e4543]:
+                      - generic [ref=e4544]:
+                        - img [ref=e4545]
+                        - link "+79009322874" [ref=e4547]:
+                          - /url: tel:+79009322874
+                      - generic [ref=e4548]:
+                        - img [ref=e4549]
+                        - generic [ref=e4551]: 07.05.2026
+                    - generic [ref=e4552]:
+                      - generic [ref=e4553]:
+                        - img [ref=e4554]
+                        - generic [ref=e4557]: Manager User
+                      - generic [ref=e4558]: 19 ч назад
+                  - generic [ref=e4560] [cursor=pointer]:
+                    - generic [ref=e4561]:
+                      - generic [ref=e4563]: QA INT005-1778008668902-896 Lead
+                      - generic [ref=e4564]:
+                        - img [ref=e4565]
+                        - generic [ref=e4568]: Ручной
+                    - generic [ref=e4570]:
+                      - img [ref=e4571]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4574]: —
+                    - generic [ref=e4576]:
+                      - img [ref=e4577]
+                      - link "+79990051771778008" [ref=e4579]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e4580]:
+                      - generic [ref=e4581]:
+                        - img [ref=e4582]
+                        - generic [ref=e4585]: Manager User
+                      - generic [ref=e4586]: 19 ч назад
+                  - generic [ref=e4588] [cursor=pointer]:
+                    - generic [ref=e4589]:
+                      - generic [ref=e4591]: QA INT004-1778008668560-1720 Lead
+                      - generic [ref=e4592]:
+                        - img [ref=e4593]
+                        - generic [ref=e4596]: Ручной
+                    - generic [ref=e4598]:
+                      - img [ref=e4599]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4602]: —
+                    - generic [ref=e4604]:
+                      - img [ref=e4605]
+                      - link "+79990041771778008" [ref=e4607]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e4608]:
+                      - generic [ref=e4609]:
+                        - img [ref=e4610]
+                        - generic [ref=e4613]: Manager User
+                      - generic [ref=e4614]: 19 ч назад
+                  - generic [ref=e4616] [cursor=pointer]:
+                    - generic [ref=e4617]:
+                      - generic [ref=e4619]: QA INT003-1778008668313-3620 Lead
+                      - generic [ref=e4620]:
+                        - img [ref=e4621]
+                        - generic [ref=e4624]: Ручной
+                    - generic [ref=e4626]:
+                      - img [ref=e4627]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4630]: —
+                    - generic [ref=e4632]:
+                      - img [ref=e4633]
+                      - link "+79990031771778008" [ref=e4635]:
+                        - /url: tel:+79990031771778008
+                    - generic [ref=e4636]:
+                      - generic [ref=e4637]:
+                        - img [ref=e4638]
+                        - generic [ref=e4641]: Manager User
+                      - generic [ref=e4642]: 19 ч назад
+                  - generic [ref=e4644] [cursor=pointer]:
+                    - generic [ref=e4645]:
+                      - generic [ref=e4647]: QA INT002-1778008668028-8493 Lead
+                      - generic [ref=e4648]:
+                        - img [ref=e4649]
+                        - generic [ref=e4652]: Ручной
+                    - generic [ref=e4654]:
+                      - img [ref=e4655]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4658]: —
+                    - generic [ref=e4660]:
+                      - img [ref=e4661]
+                      - link "+79990021771778008" [ref=e4663]:
+                        - /url: tel:+79990021771778008
+                    - generic [ref=e4664]:
+                      - generic [ref=e4665]:
+                        - img [ref=e4666]
+                        - generic [ref=e4669]: Manager User
+                      - generic [ref=e4670]: 19 ч назад
+                  - generic [ref=e4672] [cursor=pointer]:
+                    - generic [ref=e4673]:
+                      - generic [ref=e4675]: QA INT001-1778008667750-879 Lead
+                      - generic [ref=e4676]:
+                        - img [ref=e4677]
+                        - generic [ref=e4680]: Ручной
+                    - generic [ref=e4682]:
+                      - img [ref=e4683]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4686]: —
+                    - generic [ref=e4688]:
+                      - img [ref=e4689]
+                      - link "+79990011771778008" [ref=e4691]:
+                        - /url: tel:+79990011771778008
+                    - generic [ref=e4692]:
+                      - generic [ref=e4693]:
+                        - img [ref=e4694]
+                        - generic [ref=e4697]: Manager User
+                      - generic [ref=e4698]: 19 ч назад
+                  - generic [ref=e4700] [cursor=pointer]:
+                    - generic [ref=e4701]:
+                      - generic [ref=e4703]: QA APIC012-1778008653583-2367 Lead
+                      - generic [ref=e4704]:
+                        - img [ref=e4705]
+                        - generic [ref=e4708]: Ручной
+                    - generic [ref=e4710]:
+                      - img [ref=e4711]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4714]: —
+                    - generic [ref=e4716]:
+                      - img [ref=e4717]
+                      - link "+79990121771778008" [ref=e4719]:
+                        - /url: tel:+79990121771778008
+                    - generic [ref=e4720]:
+                      - generic [ref=e4721]:
+                        - img [ref=e4722]
+                        - generic [ref=e4725]: Manager User
+                      - generic [ref=e4726]: 19 ч назад
+                  - generic [ref=e4728] [cursor=pointer]:
+                    - generic [ref=e4729]:
+                      - generic [ref=e4731]: QA APIC008CANCEL-1778008651326-4386 Lead
+                      - generic [ref=e4732]:
+                        - img [ref=e4733]
+                        - generic [ref=e4736]: Ручной
+                    - generic [ref=e4738]:
+                      - img [ref=e4739]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4742]: —
+                    - generic [ref=e4744]:
+                      - img [ref=e4745]
+                      - link "+79990081771778008" [ref=e4747]:
+                        - /url: tel:+79990081771778008
+                    - generic [ref=e4748]:
+                      - generic [ref=e4749]:
+                        - img [ref=e4750]
+                        - generic [ref=e4753]: Manager User
+                      - generic [ref=e4754]: 19 ч назад
+                  - generic [ref=e4756] [cursor=pointer]:
+                    - generic [ref=e4757]:
+                      - generic [ref=e4759]: QA APIC007-1778008650682-4099 Lead
+                      - generic [ref=e4760]:
+                        - img [ref=e4761]
+                        - generic [ref=e4764]: Ручной
+                    - generic [ref=e4766]:
+                      - img [ref=e4767]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4770]: —
+                    - generic [ref=e4772]:
+                      - img [ref=e4773]
+                      - link "+79990071771778008" [ref=e4775]:
+                        - /url: tel:+79990071771778008
+                    - generic [ref=e4776]:
+                      - generic [ref=e4777]:
+                        - img [ref=e4778]
+                        - generic [ref=e4781]: Manager User
+                      - generic [ref=e4782]: 19 ч назад
+                  - generic [ref=e4784] [cursor=pointer]:
+                    - generic [ref=e4785]:
+                      - generic [ref=e4787]: QA APIC006-1778008650337-1020 Lead
+                      - generic [ref=e4788]:
+                        - img [ref=e4789]
+                        - generic [ref=e4792]: Ручной
+                    - generic [ref=e4794]:
+                      - img [ref=e4795]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4798]: —
+                    - generic [ref=e4800]:
+                      - img [ref=e4801]
+                      - link "+79990061771778008" [ref=e4803]:
+                        - /url: tel:+79990061771778008
+                    - generic [ref=e4804]:
+                      - generic [ref=e4805]:
+                        - img [ref=e4806]
+                        - generic [ref=e4809]: Manager User
+                      - generic [ref=e4810]: 19 ч назад
+                  - generic [ref=e4812] [cursor=pointer]:
+                    - generic [ref=e4813]:
+                      - generic [ref=e4815]: QA APIC005-1778008650043-9771 Lead
+                      - generic [ref=e4816]:
+                        - img [ref=e4817]
+                        - generic [ref=e4820]: Ручной
+                    - generic [ref=e4822]:
+                      - img [ref=e4823]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4826]: —
+                    - generic [ref=e4828]:
+                      - img [ref=e4829]
+                      - link "+79990051771778008" [ref=e4831]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e4832]:
+                      - generic [ref=e4833]:
+                        - img [ref=e4834]
+                        - generic [ref=e4837]: Manager User
+                      - generic [ref=e4838]: 19 ч назад
+                  - generic [ref=e4840] [cursor=pointer]:
+                    - generic [ref=e4841]:
+                      - generic [ref=e4843]: QA APIC004-1778008649730-2 Lead
+                      - generic [ref=e4844]:
+                        - img [ref=e4845]
+                        - generic [ref=e4848]: Ручной
+                    - generic [ref=e4850]:
+                      - img [ref=e4851]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4854]: —
+                    - generic [ref=e4856]:
+                      - img [ref=e4857]
+                      - link "+79990041771778008" [ref=e4859]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e4860]:
+                      - generic [ref=e4861]:
+                        - img [ref=e4862]
+                        - generic [ref=e4865]: Manager User
+                      - generic [ref=e4866]: 19 ч назад
+                  - generic [ref=e4868] [cursor=pointer]:
+                    - generic [ref=e4869]:
+                      - generic [ref=e4871]: QA INT005-1778008436889-2557 Lead
+                      - generic [ref=e4872]:
+                        - img [ref=e4873]
+                        - generic [ref=e4876]: Ручной
+                    - generic [ref=e4878]:
+                      - img [ref=e4879]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4882]: —
+                    - generic [ref=e4884]:
+                      - img [ref=e4885]
+                      - link "+79990051771778008" [ref=e4887]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e4888]:
+                      - generic [ref=e4889]:
+                        - img [ref=e4890]
+                        - generic [ref=e4893]: Manager User
+                      - generic [ref=e4894]: 19 ч назад
+                  - generic [ref=e4896] [cursor=pointer]:
+                    - generic [ref=e4897]:
+                      - generic [ref=e4899]: QA INT004-1778008436526-8769 Lead
+                      - generic [ref=e4900]:
+                        - img [ref=e4901]
+                        - generic [ref=e4904]: Ручной
+                    - generic [ref=e4906]:
+                      - img [ref=e4907]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4910]: —
+                    - generic [ref=e4912]:
+                      - img [ref=e4913]
+                      - link "+79990041771778008" [ref=e4915]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e4916]:
+                      - generic [ref=e4917]:
+                        - img [ref=e4918]
+                        - generic [ref=e4921]: Manager User
+                      - generic [ref=e4922]: 19 ч назад
+                  - generic [ref=e4924] [cursor=pointer]:
+                    - generic [ref=e4925]:
+                      - generic [ref=e4927]: QA INT003-1778008436244-6617 Lead
+                      - generic [ref=e4928]:
+                        - img [ref=e4929]
+                        - generic [ref=e4932]: Ручной
+                    - generic [ref=e4934]:
+                      - img [ref=e4935]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4938]: —
+                    - generic [ref=e4940]:
+                      - img [ref=e4941]
+                      - link "+79990031771778008" [ref=e4943]:
+                        - /url: tel:+79990031771778008
+                    - generic [ref=e4944]:
+                      - generic [ref=e4945]:
+                        - img [ref=e4946]
+                        - generic [ref=e4949]: Manager User
+                      - generic [ref=e4950]: 19 ч назад
+                  - generic [ref=e4952] [cursor=pointer]:
+                    - generic [ref=e4953]:
+                      - generic [ref=e4955]: QA INT002-1778008435857-5748 Lead
+                      - generic [ref=e4956]:
+                        - img [ref=e4957]
+                        - generic [ref=e4960]: Ручной
+                    - generic [ref=e4962]:
+                      - img [ref=e4963]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4966]: —
+                    - generic [ref=e4968]:
+                      - img [ref=e4969]
+                      - link "+79990021771778008" [ref=e4971]:
+                        - /url: tel:+79990021771778008
+                    - generic [ref=e4972]:
+                      - generic [ref=e4973]:
+                        - img [ref=e4974]
+                        - generic [ref=e4977]: Manager User
+                      - generic [ref=e4978]: 19 ч назад
+                  - generic [ref=e4980] [cursor=pointer]:
+                    - generic [ref=e4981]:
+                      - generic [ref=e4983]: QA INT001-1778008435552-9570 Lead
+                      - generic [ref=e4984]:
+                        - img [ref=e4985]
+                        - generic [ref=e4988]: Ручной
+                    - generic [ref=e4990]:
+                      - img [ref=e4991]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4994]: —
+                    - generic [ref=e4996]:
+                      - img [ref=e4997]
+                      - link "+79990011771778008" [ref=e4999]:
+                        - /url: tel:+79990011771778008
+                    - generic [ref=e5000]:
+                      - generic [ref=e5001]:
+                        - img [ref=e5002]
+                        - generic [ref=e5005]: Manager User
+                      - generic [ref=e5006]: 19 ч назад
+                  - generic [ref=e5008] [cursor=pointer]:
+                    - generic [ref=e5009]:
+                      - generic [ref=e5011]: QA APIC012-1778008418500-7155 Lead
+                      - generic [ref=e5012]:
+                        - img [ref=e5013]
+                        - generic [ref=e5016]: Ручной
+                    - generic [ref=e5018]:
+                      - img [ref=e5019]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5022]: —
+                    - generic [ref=e5024]:
+                      - img [ref=e5025]
+                      - link "+79990121771778008" [ref=e5027]:
+                        - /url: tel:+79990121771778008
+                    - generic [ref=e5028]:
+                      - generic [ref=e5029]:
+                        - img [ref=e5030]
+                        - generic [ref=e5033]: Manager User
+                      - generic [ref=e5034]: 19 ч назад
+                  - generic [ref=e5036] [cursor=pointer]:
+                    - generic [ref=e5037]:
+                      - generic [ref=e5039]: QA APIC008CANCEL-1778008417588-9816 Lead
+                      - generic [ref=e5040]:
+                        - img [ref=e5041]
+                        - generic [ref=e5044]: Ручной
+                    - generic [ref=e5046]:
+                      - img [ref=e5047]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5050]: —
+                    - generic [ref=e5052]:
+                      - img [ref=e5053]
+                      - link "+79990081771778008" [ref=e5055]:
+                        - /url: tel:+79990081771778008
+                    - generic [ref=e5056]:
+                      - generic [ref=e5057]:
+                        - img [ref=e5058]
+                        - generic [ref=e5061]: Manager User
+                      - generic [ref=e5062]: 19 ч назад
+                  - generic [ref=e5064] [cursor=pointer]:
+                    - generic [ref=e5065]:
+                      - generic [ref=e5067]: QA APIC007-1778008416880-7627 Lead
+                      - generic [ref=e5068]:
+                        - img [ref=e5069]
+                        - generic [ref=e5072]: Ручной
+                    - generic [ref=e5074]:
+                      - img [ref=e5075]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5078]: —
+                    - generic [ref=e5080]:
+                      - img [ref=e5081]
+                      - link "+79990071771778008" [ref=e5083]:
+                        - /url: tel:+79990071771778008
+                    - generic [ref=e5084]:
+                      - generic [ref=e5085]:
+                        - img [ref=e5086]
+                        - generic [ref=e5089]: Manager User
+                      - generic [ref=e5090]: 19 ч назад
+                  - generic [ref=e5092] [cursor=pointer]:
+                    - generic [ref=e5093]:
+                      - generic [ref=e5095]: QA APIC006-1778008416503-3726 Lead
+                      - generic [ref=e5096]:
+                        - img [ref=e5097]
+                        - generic [ref=e5100]: Ручной
+                    - generic [ref=e5102]:
+                      - img [ref=e5103]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5106]: —
+                    - generic [ref=e5108]:
+                      - img [ref=e5109]
+                      - link "+79990061771778008" [ref=e5111]:
+                        - /url: tel:+79990061771778008
+                    - generic [ref=e5112]:
+                      - generic [ref=e5113]:
+                        - img [ref=e5114]
+                        - generic [ref=e5117]: Manager User
+                      - generic [ref=e5118]: 19 ч назад
+                  - generic [ref=e5120] [cursor=pointer]:
+                    - generic [ref=e5121]:
+                      - generic [ref=e5123]: QA APIC005-1778008416188-180 Lead
+                      - generic [ref=e5124]:
+                        - img [ref=e5125]
+                        - generic [ref=e5128]: Ручной
+                    - generic [ref=e5130]:
+                      - img [ref=e5131]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5134]: —
+                    - generic [ref=e5136]:
+                      - img [ref=e5137]
+                      - link "+79990051771778008" [ref=e5139]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e5140]:
+                      - generic [ref=e5141]:
+                        - img [ref=e5142]
+                        - generic [ref=e5145]: Manager User
+                      - generic [ref=e5146]: 19 ч назад
+                  - generic [ref=e5148] [cursor=pointer]:
+                    - generic [ref=e5149]:
+                      - generic [ref=e5151]: QA APIC004-1778008415839-8613 Lead
+                      - generic [ref=e5152]:
+                        - img [ref=e5153]
+                        - generic [ref=e5156]: Ручной
+                    - generic [ref=e5158]:
+                      - img [ref=e5159]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5162]: —
+                    - generic [ref=e5164]:
+                      - img [ref=e5165]
+                      - link "+79990041771778008" [ref=e5167]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e5168]:
+                      - generic [ref=e5169]:
+                        - img [ref=e5170]
+                        - generic [ref=e5173]: Manager User
+                      - generic [ref=e5174]: 19 ч назад
+                  - generic [ref=e5176] [cursor=pointer]:
+                    - generic [ref=e5177]:
+                      - generic [ref=e5179]: QA INT005-1778008377739-9308 Lead
+                      - generic [ref=e5180]:
+                        - img [ref=e5181]
+                        - generic [ref=e5184]: Ручной
+                    - generic [ref=e5186]:
+                      - img [ref=e5187]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5190]: —
+                    - generic [ref=e5192]:
+                      - img [ref=e5193]
+                      - link "+79990051771778008" [ref=e5195]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e5196]:
+                      - generic [ref=e5197]:
+                        - img [ref=e5198]
+                        - generic [ref=e5201]: Manager User
+                      - generic [ref=e5202]: 19 ч назад
+                  - generic [ref=e5204] [cursor=pointer]:
+                    - generic [ref=e5205]:
+                      - generic [ref=e5207]: QA INT004-1778008377433-555 Lead
+                      - generic [ref=e5208]:
+                        - img [ref=e5209]
+                        - generic [ref=e5212]: Ручной
+                    - generic [ref=e5214]:
+                      - img [ref=e5215]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5218]: —
+                    - generic [ref=e5220]:
+                      - img [ref=e5221]
+                      - link "+79990041771778008" [ref=e5223]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e5224]:
+                      - generic [ref=e5225]:
+                        - img [ref=e5226]
+                        - generic [ref=e5229]: Manager User
+                      - generic [ref=e5230]: 19 ч назад
+                  - generic [ref=e5232] [cursor=pointer]:
+                    - generic [ref=e5233]:
+                      - generic [ref=e5235]: QA INT003-1778008377164-6759 Lead
+                      - generic [ref=e5236]:
+                        - img [ref=e5237]
+                        - generic [ref=e5240]: Ручной
+                    - generic [ref=e5242]:
+                      - img [ref=e5243]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5246]: —
+                    - generic [ref=e5248]:
+                      - img [ref=e5249]
+                      - link "+79990031771778008" [ref=e5251]:
+                        - /url: tel:+79990031771778008
+                    - generic [ref=e5252]:
+                      - generic [ref=e5253]:
+                        - img [ref=e5254]
+                        - generic [ref=e5257]: Manager User
+                      - generic [ref=e5258]: 19 ч назад
+                  - generic [ref=e5260] [cursor=pointer]:
+                    - generic [ref=e5261]:
+                      - generic [ref=e5263]: QA INT002-1778008376862-3926 Lead
+                      - generic [ref=e5264]:
+                        - img [ref=e5265]
+                        - generic [ref=e5268]: Ручной
+                    - generic [ref=e5270]:
+                      - img [ref=e5271]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5274]: —
+                    - generic [ref=e5276]:
+                      - img [ref=e5277]
+                      - link "+79990021771778008" [ref=e5279]:
+                        - /url: tel:+79990021771778008
+                    - generic [ref=e5280]:
+                      - generic [ref=e5281]:
+                        - img [ref=e5282]
+                        - generic [ref=e5285]: Manager User
+                      - generic [ref=e5286]: 19 ч назад
+                  - generic [ref=e5288] [cursor=pointer]:
+                    - generic [ref=e5289]:
+                      - generic [ref=e5291]: QA INT001-1778008376549-5202 Lead
+                      - generic [ref=e5292]:
+                        - img [ref=e5293]
+                        - generic [ref=e5296]: Ручной
+                    - generic [ref=e5298]:
+                      - img [ref=e5299]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5302]: —
+                    - generic [ref=e5304]:
+                      - img [ref=e5305]
+                      - link "+79990011771778008" [ref=e5307]:
+                        - /url: tel:+79990011771778008
+                    - generic [ref=e5308]:
+                      - generic [ref=e5309]:
+                        - img [ref=e5310]
+                        - generic [ref=e5313]: Manager User
+                      - generic [ref=e5314]: 19 ч назад
+                  - generic [ref=e5316] [cursor=pointer]:
+                    - generic [ref=e5317]:
+                      - generic [ref=e5319]: QA APIC012-1778008362757-4153 Lead
+                      - generic [ref=e5320]:
+                        - img [ref=e5321]
+                        - generic [ref=e5324]: Ручной
+                    - generic [ref=e5326]:
+                      - img [ref=e5327]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5330]: —
+                    - generic [ref=e5332]:
+                      - img [ref=e5333]
+                      - link "+79990121771778008" [ref=e5335]:
+                        - /url: tel:+79990121771778008
+                    - generic [ref=e5336]:
+                      - generic [ref=e5337]:
+                        - img [ref=e5338]
+                        - generic [ref=e5341]: Manager User
+                      - generic [ref=e5342]: 19 ч назад
+                  - generic [ref=e5344] [cursor=pointer]:
+                    - generic [ref=e5345]:
+                      - generic [ref=e5347]: QA APIC007-1778008361306-5789 Lead
+                      - generic [ref=e5348]:
+                        - img [ref=e5349]
+                        - generic [ref=e5352]: Ручной
+                    - generic [ref=e5354]:
+                      - img [ref=e5355]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5358]: —
+                    - generic [ref=e5360]:
+                      - img [ref=e5361]
+                      - link "+79990071771778008" [ref=e5363]:
+                        - /url: tel:+79990071771778008
+                    - generic [ref=e5364]:
+                      - generic [ref=e5365]:
+                        - img [ref=e5366]
+                        - generic [ref=e5369]: Manager User
+                      - generic [ref=e5370]: 19 ч назад
+                  - generic [ref=e5372] [cursor=pointer]:
+                    - generic [ref=e5373]:
+                      - generic [ref=e5375]: QA APIC006-1778008360913-5073 Lead
+                      - generic [ref=e5376]:
+                        - img [ref=e5377]
+                        - generic [ref=e5380]: Ручной
+                    - generic [ref=e5382]:
+                      - img [ref=e5383]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5386]: —
+                    - generic [ref=e5388]:
+                      - img [ref=e5389]
+                      - link "+79990061771778008" [ref=e5391]:
+                        - /url: tel:+79990061771778008
+                    - generic [ref=e5392]:
+                      - generic [ref=e5393]:
+                        - img [ref=e5394]
+                        - generic [ref=e5397]: Manager User
+                      - generic [ref=e5398]: 19 ч назад
+                  - generic [ref=e5400] [cursor=pointer]:
+                    - generic [ref=e5401]:
+                      - generic [ref=e5403]: QA APIC005-1778008360590-5234 Lead
+                      - generic [ref=e5404]:
+                        - img [ref=e5405]
+                        - generic [ref=e5408]: Ручной
+                    - generic [ref=e5410]:
+                      - img [ref=e5411]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5414]: —
+                    - generic [ref=e5416]:
+                      - img [ref=e5417]
+                      - link "+79990051771778008" [ref=e5419]:
+                        - /url: tel:+79990051771778008
+                    - generic [ref=e5420]:
+                      - generic [ref=e5421]:
+                        - img [ref=e5422]
+                        - generic [ref=e5425]: Manager User
+                      - generic [ref=e5426]: 19 ч назад
+                  - generic [ref=e5428] [cursor=pointer]:
+                    - generic [ref=e5429]:
+                      - generic [ref=e5431]: QA APIC004-1778008360231-6505 Lead
+                      - generic [ref=e5432]:
+                        - img [ref=e5433]
+                        - generic [ref=e5436]: Ручной
+                    - generic [ref=e5438]:
+                      - img [ref=e5439]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5442]: —
+                    - generic [ref=e5444]:
+                      - img [ref=e5445]
+                      - link "+79990041771778008" [ref=e5447]:
+                        - /url: tel:+79990041771778008
+                    - generic [ref=e5448]:
+                      - generic [ref=e5449]:
+                        - img [ref=e5450]
+                        - generic [ref=e5453]: Manager User
+                      - generic [ref=e5454]: 19 ч назад
+                  - generic [ref=e5456] [cursor=pointer]:
+                    - generic [ref=e5457]:
+                      - generic [ref=e5459]: QA INT-001 Lead
+                      - generic [ref=e5460]:
+                        - img [ref=e5461]
+                        - generic [ref=e5464]: Ручной
+                    - generic [ref=e5466]:
+                      - img [ref=e5467]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5470]: —
+                    - generic [ref=e5472]:
+                      - img [ref=e5473]
+                      - link "+78880011778007799" [ref=e5475]:
+                        - /url: tel:+78880011778007799
+                    - generic [ref=e5476]:
+                      - generic [ref=e5477]:
+                        - img [ref=e5478]
+                        - generic [ref=e5481]: Manager User
+                      - generic [ref=e5482]: 20 ч назад
+                  - generic [ref=e5484] [cursor=pointer]:
+                    - generic [ref=e5485]:
+                      - generic [ref=e5487]: QA APIC-004 Lead
+                      - generic [ref=e5488]:
+                        - img [ref=e5489]
+                        - generic [ref=e5492]: Ручной
+                    - generic [ref=e5494]:
+                      - img [ref=e5495]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5498]: —
+                    - generic [ref=e5500]:
+                      - img [ref=e5501]
+                      - link "+79990041778007779" [ref=e5503]:
+                        - /url: tel:+79990041778007779
+                    - generic [ref=e5504]:
+                      - generic [ref=e5505]:
+                        - img [ref=e5506]
+                        - generic [ref=e5509]: Manager User
+                      - generic [ref=e5510]: 20 ч назад
+                  - generic [ref=e5512] [cursor=pointer]:
+                    - generic [ref=e5513]:
+                      - generic [ref=e5515]: Del Test
+                      - generic [ref=e5516]:
+                        - img [ref=e5517]
+                        - generic [ref=e5520]: Ручной
+                    - generic [ref=e5522]:
+                      - img [ref=e5523]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5526]: —
+                    - generic [ref=e5528]:
+                      - img [ref=e5529]
+                      - link "+7 (495) 100-00-01" [ref=e5531]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5532]:
+                      - generic [ref=e5533]:
+                        - img [ref=e5534]
+                        - generic [ref=e5537]: Admin User
+                      - generic [ref=e5538]: 5 дн назад
+                  - generic [ref=e5540] [cursor=pointer]:
+                    - generic [ref=e5541]:
+                      - generic [ref=e5542]:
+                        - generic [ref=e5543]: Ivan Test
+                        - generic [ref=e5544]: OOO Romashka
+                      - generic [ref=e5545]:
+                        - img [ref=e5546]
+                        - generic [ref=e5549]: Ручной
+                    - generic [ref=e5551]:
+                      - img [ref=e5552]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5555]: Excavator
+                    - generic [ref=e5557]:
+                      - img [ref=e5558]
+                      - link "+7 (495) 111-22-33" [ref=e5560]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5561]:
+                      - generic [ref=e5562]:
+                        - img [ref=e5563]
+                        - generic [ref=e5566]: Admin User
+                      - generic [ref=e5567]: 5 дн назад
+                  - generic [ref=e5569] [cursor=pointer]:
+                    - generic [ref=e5570]:
+                      - generic [ref=e5572]: Del Test
+                      - generic [ref=e5573]:
+                        - img [ref=e5574]
+                        - generic [ref=e5577]: Ручной
+                    - generic [ref=e5579]:
+                      - img [ref=e5580]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5583]: —
+                    - generic [ref=e5585]:
+                      - img [ref=e5586]
+                      - link "+7 (495) 100-00-01" [ref=e5588]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5589]:
+                      - generic [ref=e5590]:
+                        - img [ref=e5591]
+                        - generic [ref=e5594]: Admin User
+                      - generic [ref=e5595]: 5 дн назад
+                  - generic [ref=e5597] [cursor=pointer]:
+                    - generic [ref=e5598]:
+                      - generic [ref=e5599]:
+                        - generic [ref=e5600]: Ivan Test
+                        - generic [ref=e5601]: OOO Romashka
+                      - generic [ref=e5602]:
+                        - img [ref=e5603]
+                        - generic [ref=e5606]: Ручной
+                    - generic [ref=e5608]:
+                      - img [ref=e5609]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5612]: Excavator
+                    - generic [ref=e5614]:
+                      - img [ref=e5615]
+                      - link "+7 (495) 111-22-33" [ref=e5617]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5618]:
+                      - generic [ref=e5619]:
+                        - img [ref=e5620]
+                        - generic [ref=e5623]: Admin User
+                      - generic [ref=e5624]: 5 дн назад
+                  - generic [ref=e5626] [cursor=pointer]:
+                    - generic [ref=e5627]:
+                      - generic [ref=e5629]: Del Test
+                      - generic [ref=e5630]:
+                        - img [ref=e5631]
+                        - generic [ref=e5634]: Ручной
+                    - generic [ref=e5636]:
+                      - img [ref=e5637]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5640]: —
+                    - generic [ref=e5642]:
+                      - img [ref=e5643]
+                      - link "+7 (495) 100-00-01" [ref=e5645]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5646]:
+                      - generic [ref=e5647]:
+                        - img [ref=e5648]
+                        - generic [ref=e5651]: Admin User
+                      - generic [ref=e5652]: 5 дн назад
+                  - generic [ref=e5654] [cursor=pointer]:
+                    - generic [ref=e5655]:
+                      - generic [ref=e5656]:
+                        - generic [ref=e5657]: Ivan Test
+                        - generic [ref=e5658]: OOO Romashka
+                      - generic [ref=e5659]:
+                        - img [ref=e5660]
+                        - generic [ref=e5663]: Ручной
+                    - generic [ref=e5665]:
+                      - img [ref=e5666]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5669]: Excavator
+                    - generic [ref=e5671]:
+                      - img [ref=e5672]
+                      - link "+7 (495) 111-22-33" [ref=e5674]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5675]:
+                      - generic [ref=e5676]:
+                        - img [ref=e5677]
+                        - generic [ref=e5680]: Admin User
+                      - generic [ref=e5681]: 5 дн назад
+                  - generic [ref=e5683] [cursor=pointer]:
+                    - generic [ref=e5684]:
+                      - generic [ref=e5686]: Del Test
+                      - generic [ref=e5687]:
+                        - img [ref=e5688]
+                        - generic [ref=e5691]: Ручной
+                    - generic [ref=e5693]:
+                      - img [ref=e5694]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5697]: —
+                    - generic [ref=e5699]:
+                      - img [ref=e5700]
+                      - link "+7 (495) 100-00-01" [ref=e5702]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5703]:
+                      - generic [ref=e5704]:
+                        - img [ref=e5705]
+                        - generic [ref=e5708]: Admin User
+                      - generic [ref=e5709]: 5 дн назад
+                  - generic [ref=e5711] [cursor=pointer]:
+                    - generic [ref=e5712]:
+                      - generic [ref=e5713]:
+                        - generic [ref=e5714]: Ivan Test
+                        - generic [ref=e5715]: OOO Romashka
+                      - generic [ref=e5716]:
+                        - img [ref=e5717]
+                        - generic [ref=e5720]: Ручной
+                    - generic [ref=e5722]:
+                      - img [ref=e5723]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5726]: Excavator
+                    - generic [ref=e5728]:
+                      - img [ref=e5729]
+                      - link "+7 (495) 111-22-33" [ref=e5731]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5732]:
+                      - generic [ref=e5733]:
+                        - img [ref=e5734]
+                        - generic [ref=e5737]: Admin User
+                      - generic [ref=e5738]: 5 дн назад
+                  - generic [ref=e5740] [cursor=pointer]:
+                    - generic [ref=e5741]:
+                      - generic [ref=e5743]: Del Test
+                      - generic [ref=e5744]:
+                        - img [ref=e5745]
+                        - generic [ref=e5748]: Ручной
+                    - generic [ref=e5750]:
+                      - img [ref=e5751]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5754]: —
+                    - generic [ref=e5756]:
+                      - img [ref=e5757]
+                      - link "+7 (495) 100-00-01" [ref=e5759]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5760]:
+                      - generic [ref=e5761]:
+                        - img [ref=e5762]
+                        - generic [ref=e5765]: Admin User
+                      - generic [ref=e5766]: 6 дн назад
+                  - generic [ref=e5768] [cursor=pointer]:
+                    - generic [ref=e5769]:
+                      - generic [ref=e5770]:
+                        - generic [ref=e5771]: Ivan Test
+                        - generic [ref=e5772]: OOO Romashka
+                      - generic [ref=e5773]:
+                        - img [ref=e5774]
+                        - generic [ref=e5777]: Ручной
+                    - generic [ref=e5779]:
+                      - img [ref=e5780]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5783]: Excavator
+                    - generic [ref=e5785]:
+                      - img [ref=e5786]
+                      - link "+7 (495) 111-22-33" [ref=e5788]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5789]:
+                      - generic [ref=e5790]:
+                        - img [ref=e5791]
+                        - generic [ref=e5794]: Admin User
+                      - generic [ref=e5795]: 6 дн назад
+                  - generic [ref=e5797] [cursor=pointer]:
+                    - generic [ref=e5798]:
+                      - generic [ref=e5800]: Del Test
+                      - generic [ref=e5801]:
+                        - img [ref=e5802]
+                        - generic [ref=e5805]: Ручной
+                    - generic [ref=e5807]:
+                      - img [ref=e5808]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5811]: —
+                    - generic [ref=e5813]:
+                      - img [ref=e5814]
+                      - link "+7 (495) 100-00-01" [ref=e5816]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5817]:
+                      - generic [ref=e5818]:
+                        - img [ref=e5819]
+                        - generic [ref=e5822]: Admin User
+                      - generic [ref=e5823]: 6 дн назад
+                  - generic [ref=e5825] [cursor=pointer]:
+                    - generic [ref=e5826]:
+                      - generic [ref=e5827]:
+                        - generic [ref=e5828]: Ivan Test
+                        - generic [ref=e5829]: OOO Romashka
+                      - generic [ref=e5830]:
+                        - img [ref=e5831]
+                        - generic [ref=e5834]: Ручной
+                    - generic [ref=e5836]:
+                      - img [ref=e5837]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5840]: Excavator
+                    - generic [ref=e5842]:
+                      - img [ref=e5843]
+                      - link "+7 (495) 111-22-33" [ref=e5845]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5846]:
+                      - generic [ref=e5847]:
+                        - img [ref=e5848]
+                        - generic [ref=e5851]: Admin User
+                      - generic [ref=e5852]: 6 дн назад
+                  - generic [ref=e5854] [cursor=pointer]:
+                    - generic [ref=e5855]:
+                      - generic [ref=e5857]: Del Test
+                      - generic [ref=e5858]:
+                        - img [ref=e5859]
+                        - generic [ref=e5862]: Ручной
+                    - generic [ref=e5864]:
+                      - img [ref=e5865]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5868]: —
+                    - generic [ref=e5870]:
+                      - img [ref=e5871]
+                      - link "+7 (495) 100-00-01" [ref=e5873]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5874]:
+                      - generic [ref=e5875]:
+                        - img [ref=e5876]
+                        - generic [ref=e5879]: Admin User
+                      - generic [ref=e5880]: 6 дн назад
+                  - generic [ref=e5882] [cursor=pointer]:
+                    - generic [ref=e5883]:
+                      - generic [ref=e5884]:
+                        - generic [ref=e5885]: Ivan Test
+                        - generic [ref=e5886]: OOO Romashka
+                      - generic [ref=e5887]:
+                        - img [ref=e5888]
+                        - generic [ref=e5891]: Ручной
+                    - generic [ref=e5893]:
+                      - img [ref=e5894]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5897]: Excavator
+                    - generic [ref=e5899]:
+                      - img [ref=e5900]
+                      - link "+7 (495) 111-22-33" [ref=e5902]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5903]:
+                      - generic [ref=e5904]:
+                        - img [ref=e5905]
+                        - generic [ref=e5908]: Admin User
+                      - generic [ref=e5909]: 6 дн назад
+                  - generic [ref=e5911] [cursor=pointer]:
+                    - generic [ref=e5912]:
+                      - generic [ref=e5914]: Del Test
+                      - generic [ref=e5915]:
+                        - img [ref=e5916]
+                        - generic [ref=e5919]: Ручной
+                    - generic [ref=e5921]:
+                      - img [ref=e5922]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5925]: —
+                    - generic [ref=e5927]:
+                      - img [ref=e5928]
+                      - link "+7 (495) 100-00-01" [ref=e5930]:
+                        - /url: tel:+74951000001
+                    - generic [ref=e5931]:
+                      - generic [ref=e5932]:
+                        - img [ref=e5933]
+                        - generic [ref=e5936]: Admin User
+                      - generic [ref=e5937]: 6 дн назад
+                  - generic [ref=e5939] [cursor=pointer]:
+                    - generic [ref=e5940]:
+                      - generic [ref=e5941]:
+                        - generic [ref=e5942]: Ivan Test
+                        - generic [ref=e5943]: OOO Romashka
+                      - generic [ref=e5944]:
+                        - img [ref=e5945]
+                        - generic [ref=e5948]: Ручной
+                    - generic [ref=e5950]:
+                      - img [ref=e5951]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5954]: Excavator
+                    - generic [ref=e5956]:
+                      - img [ref=e5957]
+                      - link "+7 (495) 111-22-33" [ref=e5959]:
+                        - /url: tel:+74951112233
+                    - generic [ref=e5960]:
+                      - generic [ref=e5961]:
+                        - img [ref=e5962]
+                        - generic [ref=e5965]: Admin User
+                      - generic [ref=e5966]: 6 дн назад
+                  - generic [ref=e5968] [cursor=pointer]:
+                    - generic [ref=e5969]:
+                      - generic [ref=e5970]:
+                        - generic [ref=e5971]: Писюня
+                        - generic [ref=e5972]: Писюня
+                      - generic [ref=e5973]:
+                        - img [ref=e5974]
+                        - generic [ref=e5977]: Ручной
+                    - generic [ref=e5979]:
+                      - img [ref=e5980]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5983]: Бетононасос
+                    - generic [ref=e5984]:
+                      - generic [ref=e5985]:
+                        - img [ref=e5986]
+                        - link "+79992145169" [ref=e5988]:
+                          - /url: tel:+79992145169
+                      - generic [ref=e5989]:
+                        - img [ref=e5990]
+                        - generic [ref=e5992]: 03.05.2026
+                    - generic [ref=e5993]:
+                      - generic [ref=e5994]:
+                        - img [ref=e5995]
+                        - generic [ref=e5998]: Admin User
+                      - generic [ref=e5999]: 6 дн назад
+                  - generic [ref=e6001] [cursor=pointer]:
+                    - generic [ref=e6002]:
+                      - generic [ref=e6003]:
+                        - generic [ref=e6004]: Марина Кузнецова
+                        - generic [ref=e6005]: ЗАО ТехМонтаж
+                      - generic [ref=e6006]:
+                        - img [ref=e6007]
+                        - generic [ref=e6010]: Ручной
+                    - generic [ref=e6012]:
+                      - img [ref=e6013]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6016]: Бульдозер
+                    - generic [ref=e6017]:
+                      - generic [ref=e6018]:
+                        - img [ref=e6019]
+                        - link "+7 (999) 700-10-15" [ref=e6021]:
+                          - /url: tel:+79997001015
+                      - generic [ref=e6022]:
+                        - img [ref=e6023]
+                        - generic [ref=e6025]: 01.05.2026
+                    - generic [ref=e6026]:
+                      - generic [ref=e6027]:
+                        - img [ref=e6028]
+                        - generic [ref=e6031]: Сергей Продажи
+                      - generic [ref=e6032]: 8 дн назад
+                  - generic [ref=e6034] [cursor=pointer]:
+                    - generic [ref=e6035]:
+                      - generic [ref=e6036]:
+                        - generic [ref=e6037]: Марина Кузнецова
+                        - generic [ref=e6038]: ЗАО ТехМонтаж
+                      - generic [ref=e6039]:
+                        - img [ref=e6040]
+                        - generic [ref=e6042]: MAX
+                    - generic [ref=e6044]:
+                      - img [ref=e6045]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6048]: Бульдозер
+                    - generic [ref=e6049]:
+                      - generic [ref=e6050]:
+                        - img [ref=e6051]
+                        - link "+7 (999) 700-10-04" [ref=e6053]:
+                          - /url: tel:+79997001004
+                      - generic [ref=e6054]:
+                        - img [ref=e6055]
+                        - generic [ref=e6057]: 02.05.2026
+                    - generic [ref=e6058]:
+                      - generic [ref=e6059]:
+                        - img [ref=e6060]
+                        - generic [ref=e6063]: Сергей Продажи
+                      - generic [ref=e6064]: 8 дн назад
+              - generic [ref=e6065]:
+                - generic [ref=e6067]:
+                  - heading "Бронь" [level=3] [ref=e6069]
+                  - generic [ref=e6070]: "9"
+                - generic [ref=e6071]:
+                  - generic [ref=e6073] [cursor=pointer]:
+                    - generic [ref=e6074]:
+                      - generic [ref=e6076]: E2E 004 004-1778080252720-796
+                      - generic [ref=e6077]:
+                        - img [ref=e6078]
+                        - generic [ref=e6081]: Ручной
+                    - generic [ref=e6082]: Экскаватор
+                    - generic [ref=e6083]:
+                      - generic [ref=e6084]:
+                        - img [ref=e6085]
+                        - link "+79005272036" [ref=e6087]:
+                          - /url: tel:+79005272036
+                      - generic [ref=e6088]:
+                        - img [ref=e6089]
+                        - generic [ref=e6091]: 07.05.2026
+                    - generic [ref=e6092]:
+                      - generic [ref=e6093]:
+                        - img [ref=e6094]
+                        - generic [ref=e6097]: Manager User
+                      - generic [ref=e6098]: только что
+                  - generic [ref=e6100] [cursor=pointer]:
+                    - generic [ref=e6101]:
+                      - generic [ref=e6103]: E2E 004 004-1778012414014-959
+                      - generic [ref=e6104]:
+                        - img [ref=e6105]
+                        - generic [ref=e6108]: Ручной
+                    - generic [ref=e6109]: Экскаватор
+                    - generic [ref=e6110]:
+                      - generic [ref=e6111]:
+                        - img [ref=e6112]
+                        - link "+79001401418" [ref=e6114]:
+                          - /url: tel:+79001401418
+                      - generic [ref=e6115]:
+                        - img [ref=e6116]
+                        - generic [ref=e6118]: 07.05.2026
+                    - generic [ref=e6119]:
+                      - generic [ref=e6120]:
+                        - img [ref=e6121]
+                        - generic [ref=e6124]: Manager User
+                      - generic [ref=e6125]: 18 ч назад
+                  - generic [ref=e6127] [cursor=pointer]:
+                    - generic [ref=e6128]:
+                      - generic [ref=e6130]: E2E 004 004-1778011713468-393
+                      - generic [ref=e6131]:
+                        - img [ref=e6132]
+                        - generic [ref=e6135]: Ручной
+                    - generic [ref=e6136]: Экскаватор
+                    - generic [ref=e6137]:
+                      - generic [ref=e6138]:
+                        - img [ref=e6139]
+                        - link "+79001346873" [ref=e6141]:
+                          - /url: tel:+79001346873
+                      - generic [ref=e6142]:
+                        - img [ref=e6143]
+                        - generic [ref=e6145]: 07.05.2026
+                    - generic [ref=e6146]:
+                      - generic [ref=e6147]:
+                        - img [ref=e6148]
+                        - generic [ref=e6151]: Manager User
+                      - generic [ref=e6152]: 19 ч назад
+                  - generic [ref=e6154] [cursor=pointer]:
+                    - generic [ref=e6155]:
+                      - generic [ref=e6157]: E2E 004 004-1778011392660-665
+                      - generic [ref=e6158]:
+                        - img [ref=e6159]
+                        - generic [ref=e6162]: Ручной
+                    - generic [ref=e6163]: Экскаватор
+                    - generic [ref=e6164]:
+                      - generic [ref=e6165]:
+                        - img [ref=e6166]
+                        - link "+79009266032" [ref=e6168]:
+                          - /url: tel:+79009266032
+                      - generic [ref=e6169]:
+                        - img [ref=e6170]
+                        - generic [ref=e6172]: 07.05.2026
+                    - generic [ref=e6173]:
+                      - generic [ref=e6174]:
+                        - img [ref=e6175]
+                        - generic [ref=e6178]: Manager User
+                      - generic [ref=e6179]: 19 ч назад
+                  - generic [ref=e6181] [cursor=pointer]:
+                    - generic [ref=e6182]:
+                      - generic [ref=e6184]: E2E 004 004-1778011266540-324
+                      - generic [ref=e6185]:
+                        - img [ref=e6186]
+                        - generic [ref=e6189]: Ручной
+                    - generic [ref=e6190]: Экскаватор
+                    - generic [ref=e6191]:
+                      - generic [ref=e6192]:
+                        - img [ref=e6193]
+                        - link "+79006654022" [ref=e6195]:
+                          - /url: tel:+79006654022
+                      - generic [ref=e6196]:
+                        - img [ref=e6197]
+                        - generic [ref=e6199]: 07.05.2026
+                    - generic [ref=e6200]:
+                      - generic [ref=e6201]:
+                        - img [ref=e6202]
+                        - generic [ref=e6205]: Manager User
+                      - generic [ref=e6206]: 19 ч назад
+                  - generic [ref=e6208] [cursor=pointer]:
+                    - generic [ref=e6209]:
+                      - generic [ref=e6211]: E2E 004 004-1778010717595-714
+                      - generic [ref=e6212]:
+                        - img [ref=e6213]
+                        - generic [ref=e6216]: Ручной
+                    - generic [ref=e6217]: Экскаватор
+                    - generic [ref=e6218]:
+                      - generic [ref=e6219]:
+                        - img [ref=e6220]
+                        - link "+79001759565" [ref=e6222]:
+                          - /url: tel:+79001759565
+                      - generic [ref=e6223]:
+                        - img [ref=e6224]
+                        - generic [ref=e6226]: 07.05.2026
+                    - generic [ref=e6227]:
+                      - generic [ref=e6228]:
+                        - img [ref=e6229]
+                        - generic [ref=e6232]: Manager User
+                      - generic [ref=e6233]: 19 ч назад
+                  - generic [ref=e6235] [cursor=pointer]:
+                    - generic [ref=e6236]:
+                      - generic [ref=e6238]: E2E 006 006-1778010627950-533
+                      - generic [ref=e6239]:
+                        - img [ref=e6240]
+                        - generic [ref=e6243]: Ручной
+                    - generic [ref=e6244]: Экскаватор
+                    - generic [ref=e6245]:
+                      - generic [ref=e6246]:
+                        - img [ref=e6247]
+                        - link "+79002795091" [ref=e6249]:
+                          - /url: tel:+79002795091
+                      - generic [ref=e6250]:
+                        - img [ref=e6251]
+                        - generic [ref=e6253]: 07.05.2026
+                    - generic [ref=e6254]:
+                      - generic [ref=e6255]:
+                        - img [ref=e6256]
+                        - generic [ref=e6259]: Manager User
+                      - generic [ref=e6260]: 19 ч назад
+                  - generic [ref=e6262] [cursor=pointer]:
+                    - generic [ref=e6263]:
+                      - generic [ref=e6265]: E2E 004 004-1778010620538-104
+                      - generic [ref=e6266]:
+                        - img [ref=e6267]
+                        - generic [ref=e6270]: Ручной
+                    - generic [ref=e6271]: Экскаватор
+                    - generic [ref=e6272]:
+                      - generic [ref=e6273]:
+                        - img [ref=e6274]
+                        - link "+79002053886" [ref=e6276]:
+                          - /url: tel:+79002053886
+                      - generic [ref=e6277]:
+                        - img [ref=e6278]
+                        - generic [ref=e6280]: 07.05.2026
+                    - generic [ref=e6281]:
+                      - generic [ref=e6282]:
+                        - img [ref=e6283]
+                        - generic [ref=e6286]: Manager User
+                      - generic [ref=e6287]: 19 ч назад
+                  - generic [ref=e6289] [cursor=pointer]:
+                    - generic [ref=e6290]:
+                      - generic [ref=e6291]:
+                        - generic [ref=e6292]: Алексей Томин
+                        - generic [ref=e6293]: ООО Дорожник
+                      - generic [ref=e6294]:
+                        - img [ref=e6295]
+                        - generic [ref=e6298]: Ручной
+                    - generic [ref=e6299]: Кран
+                    - generic [ref=e6300]:
+                      - generic [ref=e6301]:
+                        - img [ref=e6302]
+                        - link "+7 (999) 700-10-05" [ref=e6304]:
+                          - /url: tel:+79997001005
+                      - generic [ref=e6305]:
+                        - img [ref=e6306]
+                        - generic [ref=e6308]: 30.04.2026
+                        - generic [ref=e6309]: • 07:00-12:00
+                    - generic [ref=e6310]:
+                      - generic [ref=e6311]:
+                        - img [ref=e6312]
+                        - generic [ref=e6315]: Manager User
+                      - generic [ref=e6316]: 8 дн назад
+              - generic [ref=e6317]:
+                - generic [ref=e6319]:
+                  - heading "Выезд" [level=3] [ref=e6321]
+                  - generic [ref=e6322]: "21"
+                - generic [ref=e6323]:
+                  - generic [ref=e6325] [cursor=pointer]:
+                    - generic [ref=e6326]:
+                      - img [ref=e6327]
+                      - generic [ref=e6330]: 07.05.2026
+                    - generic [ref=e6331]:
+                      - generic [ref=e6333]: E2E 006 006-1778080263574-992
+                      - generic [ref=e6334]:
+                        - img [ref=e6335]
+                        - generic [ref=e6338]: Ручной
+                    - generic [ref=e6339]: Экскаватор
+                    - generic [ref=e6340]:
+                      - img [ref=e6341]
+                      - generic [ref=e6344]: Москва, Тестовая улица, 1
+                    - generic [ref=e6345]:
+                      - generic [ref=e6346]:
+                        - img [ref=e6347]
+                        - generic [ref=e6350]: Manager User
+                      - generic [ref=e6351]: только что
+                  - generic [ref=e6353] [cursor=pointer]:
+                    - generic [ref=e6354]:
+                      - img [ref=e6355]
+                      - generic [ref=e6358]: 07.05.2026
+                    - generic [ref=e6359]:
+                      - generic [ref=e6361]: E2E 006 006-1778012425233-183
+                      - generic [ref=e6362]:
+                        - img [ref=e6363]
+                        - generic [ref=e6366]: Ручной
+                    - generic [ref=e6367]: Экскаватор
+                    - generic [ref=e6368]:
+                      - img [ref=e6369]
+                      - generic [ref=e6372]: Москва, Тестовая улица, 1
+                    - generic [ref=e6373]:
+                      - generic [ref=e6374]:
+                        - img [ref=e6375]
+                        - generic [ref=e6378]: Manager User
+                      - generic [ref=e6379]: 18 ч назад
+                  - generic [ref=e6381] [cursor=pointer]:
+                    - generic [ref=e6382]:
+                      - img [ref=e6383]
+                      - generic [ref=e6386]: 07.05.2026
+                    - generic [ref=e6387]:
+                      - generic [ref=e6389]: E2E 006 006-1778011720058-402
+                      - generic [ref=e6390]:
+                        - img [ref=e6391]
+                        - generic [ref=e6394]: Ручной
+                    - generic [ref=e6395]: Экскаватор
+                    - generic [ref=e6396]:
+                      - img [ref=e6397]
+                      - generic [ref=e6400]: Москва, Тестовая улица, 1
+                    - generic [ref=e6401]:
+                      - generic [ref=e6402]:
+                        - img [ref=e6403]
+                        - generic [ref=e6406]: Manager User
+                      - generic [ref=e6407]: 19 ч назад
+                  - generic [ref=e6409] [cursor=pointer]:
+                    - generic [ref=e6410]:
+                      - img [ref=e6411]
+                      - generic [ref=e6414]: 07.05.2026
+                    - generic [ref=e6415]:
+                      - generic [ref=e6417]: E2E 006 006-1778011399225-85
+                      - generic [ref=e6418]:
+                        - img [ref=e6419]
+                        - generic [ref=e6422]: Ручной
+                    - generic [ref=e6423]: Экскаватор
+                    - generic [ref=e6424]:
+                      - img [ref=e6425]
+                      - generic [ref=e6428]: Москва, Тестовая улица, 1
+                    - generic [ref=e6429]:
+                      - generic [ref=e6430]:
+                        - img [ref=e6431]
+                        - generic [ref=e6434]: Manager User
+                      - generic [ref=e6435]: 19 ч назад
+                  - generic [ref=e6437] [cursor=pointer]:
+                    - generic [ref=e6438]:
+                      - img [ref=e6439]
+                      - generic [ref=e6442]: 07.05.2026
+                    - generic [ref=e6443]:
+                      - generic [ref=e6445]: E2E 006 006-1778011273043-743
+                      - generic [ref=e6446]:
+                        - img [ref=e6447]
+                        - generic [ref=e6450]: Ручной
+                    - generic [ref=e6451]: Экскаватор
+                    - generic [ref=e6452]:
+                      - img [ref=e6453]
+                      - generic [ref=e6456]: Москва, Тестовая улица, 1
+                    - generic [ref=e6457]:
+                      - generic [ref=e6458]:
+                        - img [ref=e6459]
+                        - generic [ref=e6462]: Manager User
+                      - generic [ref=e6463]: 19 ч назад
+                  - generic [ref=e6465] [cursor=pointer]:
+                    - generic [ref=e6466]:
+                      - img [ref=e6467]
+                      - generic [ref=e6470]: 07.05.2026
+                    - generic [ref=e6471]:
+                      - generic [ref=e6473]: E2E 006 006-1778010724306-803
+                      - generic [ref=e6474]:
+                        - img [ref=e6475]
+                        - generic [ref=e6478]: Ручной
+                    - generic [ref=e6479]: Экскаватор
+                    - generic [ref=e6480]:
+                      - img [ref=e6481]
+                      - generic [ref=e6484]: Москва, Тестовая улица, 1
+                    - generic [ref=e6485]:
+                      - generic [ref=e6486]:
+                        - img [ref=e6487]
+                        - generic [ref=e6490]: Manager User
+                      - generic [ref=e6491]: 19 ч назад
+                  - generic [ref=e6493] [cursor=pointer]:
+                    - generic [ref=e6494]:
+                      - generic [ref=e6495]:
+                        - generic [ref=e6496]: RBAC Ownership Test
+                        - generic [ref=e6497]: RBAC LLC
+                      - generic [ref=e6498]:
+                        - img [ref=e6499]
+                        - generic [ref=e6502]: Ручной
+                    - generic [ref=e6503]: —
+                    - generic [ref=e6504]:
+                      - generic [ref=e6505]:
+                        - img [ref=e6506]
+                        - generic [ref=e6509]: Admin User
+                      - generic [ref=e6510]: 5 дн назад
+                  - generic [ref=e6512] [cursor=pointer]:
+                    - generic [ref=e6513]:
+                      - generic [ref=e6514]:
+                        - generic [ref=e6515]: RBAC Ownership Test
+                        - generic [ref=e6516]: RBAC LLC
+                      - generic [ref=e6517]:
+                        - img [ref=e6518]
+                        - generic [ref=e6521]: Ручной
+                    - generic [ref=e6522]: —
+                    - generic [ref=e6523]:
+                      - generic [ref=e6524]:
+                        - img [ref=e6525]
+                        - generic [ref=e6528]: Admin User
+                      - generic [ref=e6529]: 5 дн назад
+                  - generic [ref=e6531] [cursor=pointer]:
+                    - generic [ref=e6532]:
+                      - generic [ref=e6533]:
+                        - generic [ref=e6534]: RBAC Ownership Test
+                        - generic [ref=e6535]: RBAC LLC
+                      - generic [ref=e6536]:
+                        - img [ref=e6537]
+                        - generic [ref=e6540]: Ручной
+                    - generic [ref=e6541]: —
+                    - generic [ref=e6542]:
+                      - generic [ref=e6543]:
+                        - img [ref=e6544]
+                        - generic [ref=e6547]: Admin User
+                      - generic [ref=e6548]: 5 дн назад
+                  - generic [ref=e6550] [cursor=pointer]:
+                    - generic [ref=e6551]:
+                      - generic [ref=e6552]:
+                        - generic [ref=e6553]: Flow Test
+                        - generic [ref=e6554]: Flow LLC
+                      - generic [ref=e6555]:
+                        - img [ref=e6556]
+                        - generic [ref=e6559]: Ручной
+                    - generic [ref=e6560]: —
+                    - generic [ref=e6561]:
+                      - generic [ref=e6562]:
+                        - img [ref=e6563]
+                        - generic [ref=e6566]: Admin User
+                      - generic [ref=e6567]: 5 дн назад
+                  - generic [ref=e6569] [cursor=pointer]:
+                    - generic [ref=e6570]:
+                      - generic [ref=e6571]:
+                        - generic [ref=e6572]: RBAC Ownership Test
+                        - generic [ref=e6573]: RBAC LLC
+                      - generic [ref=e6574]:
+                        - img [ref=e6575]
+                        - generic [ref=e6578]: Ручной
+                    - generic [ref=e6579]: —
+                    - generic [ref=e6580]:
+                      - generic [ref=e6581]:
+                        - img [ref=e6582]
+                        - generic [ref=e6585]: Admin User
+                      - generic [ref=e6586]: 5 дн назад
+                  - generic [ref=e6588] [cursor=pointer]:
+                    - generic [ref=e6589]:
+                      - img [ref=e6590]
+                      - generic [ref=e6593]: 10.05.2026
+                    - generic [ref=e6594]:
+                      - generic [ref=e6595]:
+                        - generic [ref=e6596]: Stage7 Valid 6392ecf6
+                        - generic [ref=e6597]: Stage7 Invalid LLC 6392ecf6
+                      - generic [ref=e6598]:
+                        - img [ref=e6599]
+                        - generic [ref=e6602]: Ручной
+                    - generic [ref=e6603]: —
+                    - generic [ref=e6604]:
+                      - img [ref=e6605]
+                      - generic [ref=e6608]: v
+                    - generic [ref=e6609]:
+                      - generic [ref=e6610]:
+                        - img [ref=e6611]
+                        - generic [ref=e6614]: Admin User
+                      - generic [ref=e6615]: 6 дн назад
+                  - generic [ref=e6617] [cursor=pointer]:
+                    - generic [ref=e6618]:
+                      - generic [ref=e6619]:
+                        - generic [ref=e6620]: RBAC Ownership Test
+                        - generic [ref=e6621]: RBAC LLC
+                      - generic [ref=e6622]:
+                        - img [ref=e6623]
+                        - generic [ref=e6626]: Ручной
+                    - generic [ref=e6627]: —
+                    - generic [ref=e6628]:
+                      - generic [ref=e6629]:
+                        - img [ref=e6630]
+                        - generic [ref=e6633]: Admin User
+                      - generic [ref=e6634]: 6 дн назад
+                  - generic [ref=e6636] [cursor=pointer]:
+                    - generic [ref=e6637]:
+                      - generic [ref=e6638]:
+                        - generic [ref=e6639]: RBAC Ownership Test
+                        - generic [ref=e6640]: RBAC LLC
+                      - generic [ref=e6641]:
+                        - img [ref=e6642]
+                        - generic [ref=e6645]: Ручной
+                    - generic [ref=e6646]: —
+                    - generic [ref=e6647]:
+                      - generic [ref=e6648]:
+                        - img [ref=e6649]
+                        - generic [ref=e6652]: Admin User
+                      - generic [ref=e6653]: 6 дн назад
+                  - generic [ref=e6655] [cursor=pointer]:
+                    - generic [ref=e6656]:
+                      - generic [ref=e6657]:
+                        - generic [ref=e6658]: RBAC Ownership Test
+                        - generic [ref=e6659]: RBAC LLC
+                      - generic [ref=e6660]:
+                        - img [ref=e6661]
+                        - generic [ref=e6664]: Ручной
+                    - generic [ref=e6665]: —
+                    - generic [ref=e6666]:
+                      - generic [ref=e6667]:
+                        - img [ref=e6668]
+                        - generic [ref=e6671]: Admin User
+                      - generic [ref=e6672]: 6 дн назад
+                  - generic [ref=e6674] [cursor=pointer]:
+                    - generic [ref=e6675]:
+                      - generic [ref=e6676]:
+                        - generic [ref=e6677]: RBAC Ownership Test
+                        - generic [ref=e6678]: RBAC LLC
+                      - generic [ref=e6679]:
+                        - img [ref=e6680]
+                        - generic [ref=e6683]: Ручной
+                    - generic [ref=e6684]: —
+                    - generic [ref=e6685]:
+                      - generic [ref=e6686]:
+                        - img [ref=e6687]
+                        - generic [ref=e6690]: Admin User
+                      - generic [ref=e6691]: 6 дн назад
+                  - generic [ref=e6693] [cursor=pointer]:
+                    - generic [ref=e6694]:
+                      - img [ref=e6695]
+                      - generic [ref=e6698]: 30.04.2026
+                      - generic [ref=e6699]: • 08:00-20:00
+                    - generic [ref=e6700]:
+                      - generic [ref=e6701]:
+                        - generic [ref=e6702]: Павел Макаров
+                        - generic [ref=e6703]: ООО БетонИнвест
+                      - generic [ref=e6704]:
+                        - img [ref=e6705]
+                        - generic [ref=e6708]: Сайт
+                    - generic [ref=e6709]: Кран
+                    - generic [ref=e6710]:
+                      - img [ref=e6711]
+                      - generic [ref=e6714]: Москва, 1-й Грайвороновский проезд, 9
+                    - generic [ref=e6715]:
+                      - generic [ref=e6716]:
+                        - img [ref=e6717]
+                        - generic [ref=e6720]: Ольга Операции
+                      - generic [ref=e6721]: 6 дн назад
+                  - generic [ref=e6723] [cursor=pointer]:
+                    - generic [ref=e6724]:
+                      - img [ref=e6725]
+                      - generic [ref=e6728]: 10.05.2026
+                    - generic [ref=e6729]:
+                      - generic [ref=e6730]:
+                        - generic [ref=e6731]: Кака
+                        - generic [ref=e6732]: кака
+                      - generic [ref=e6733]:
+                        - img [ref=e6734]
+                        - generic [ref=e6737]: Ручной
+                    - generic [ref=e6738]: —
+                    - generic [ref=e6739]:
+                      - img [ref=e6740]
+                      - generic [ref=e6743]: М
+                    - generic [ref=e6744]:
+                      - generic [ref=e6745]:
+                        - img [ref=e6746]
+                        - generic [ref=e6749]: Admin User
+                      - generic [ref=e6750]: 6 дн назад
+                  - generic [ref=e6752] [cursor=pointer]:
+                    - generic [ref=e6753]:
+                      - img [ref=e6754]
+                      - generic [ref=e6757]: 03.05.2026
+                      - generic [ref=e6758]: • 09:00–18:00
+                    - generic [ref=e6759]:
+                      - generic [ref=e6760]:
+                        - generic [ref=e6761]: Писюня
+                        - generic [ref=e6762]: Писюня
+                      - generic [ref=e6763]:
+                        - img [ref=e6764]
+                        - generic [ref=e6767]: Ручной
+                    - generic [ref=e6768]: Бетононасос
+                    - generic [ref=e6769]:
+                      - img [ref=e6770]
+                      - generic [ref=e6773]: Москва
+                    - generic [ref=e6774]:
+                      - generic [ref=e6775]:
+                        - img [ref=e6776]
+                        - generic [ref=e6779]: Admin User
+                      - generic [ref=e6780]: 6 дн назад
+                  - generic [ref=e6782] [cursor=pointer]:
+                    - generic [ref=e6783]:
+                      - img [ref=e6784]
+                      - generic [ref=e6787]: 29.04.2026
+                      - generic [ref=e6788]: • 06:00-14:00
+                    - generic [ref=e6789]:
+                      - generic [ref=e6791]: Смирнов Андрей
+                      - generic [ref=e6792]:
+                        - img [ref=e6793]
+                        - generic [ref=e6795]: Mango
+                    - generic [ref=e6796]: Экскаватор
+                    - generic [ref=e6797]:
+                      - img [ref=e6798]
+                      - generic [ref=e6801]: Красногорск, ул. Ленина, 31
+                    - generic [ref=e6802]:
+                      - generic [ref=e6803]:
+                        - img [ref=e6804]
+                        - generic [ref=e6807]: Ольга Операции
+                      - generic [ref=e6808]: 8 дн назад
+                  - generic [ref=e6810] [cursor=pointer]:
+                    - generic [ref=e6811]:
+                      - img [ref=e6812]
+                      - generic [ref=e6815]: 28.04.2026
+                      - generic [ref=e6816]: • 06:00-12:00
+                    - generic [ref=e6817]:
+                      - generic [ref=e6818]:
+                        - generic [ref=e6819]: Виктор Громов
+                        - generic [ref=e6820]: ООО ЛогистикТранс
+                      - generic [ref=e6821]:
+                        - img [ref=e6822]
+                        - generic [ref=e6825]: seed_other
+                    - generic [ref=e6826]: Бульдозер
+                    - generic [ref=e6827]:
+                      - img [ref=e6828]
+                      - generic [ref=e6831]: Москва, ул. Нижние Поля, 31
+                    - generic [ref=e6832]:
+                      - generic [ref=e6833]:
+                        - img [ref=e6834]
+                        - generic [ref=e6837]: Ольга Операции
+                      - generic [ref=e6838]: 8 дн назад
+              - generic [ref=e6839]:
+                - generic [ref=e6841]:
+                  - heading "Завершено" [level=3] [ref=e6843]
+                  - generic [ref=e6844]: "70"
+                - generic [ref=e6845]:
+                  - generic [ref=e6847] [cursor=pointer]:
+                    - img [ref=e6848]
+                    - generic [ref=e6851]:
+                      - generic [ref=e6852]:
+                        - generic [ref=e6853]: E2E 008 008-1778080275898-298
+                        - generic [ref=e6854]: • Экскаватор
+                      - generic [ref=e6855]:
+                        - generic [ref=e6856]:
+                          - img [ref=e6857]
+                          - text: Manager User
+                        - generic [ref=e6860]: только что
+                  - generic [ref=e6862] [cursor=pointer]:
+                    - img [ref=e6863]
+                    - generic [ref=e6866]:
+                      - generic [ref=e6867]:
+                        - generic [ref=e6868]: E2E 007 007-1778080270577-546
+                        - generic [ref=e6869]: • Экскаватор
+                      - generic [ref=e6870]:
+                        - generic [ref=e6871]:
+                          - img [ref=e6872]
+                          - text: Manager User
+                        - generic [ref=e6875]: только что
+                  - generic [ref=e6877] [cursor=pointer]:
+                    - img [ref=e6878]
+                    - generic [ref=e6881]:
+                      - generic [ref=e6882]:
+                        - generic [ref=e6883]: E2E 016 016-1778080198119-30
+                        - generic [ref=e6884]: • Экскаватор
+                      - generic [ref=e6885]:
+                        - generic [ref=e6886]:
+                          - img [ref=e6887]
+                          - text: Manager User
+                        - generic [ref=e6890]: 1 мин назад
+                  - generic [ref=e6892] [cursor=pointer]:
+                    - img [ref=e6893]
+                    - generic [ref=e6896]:
+                      - generic [ref=e6897]:
+                        - generic [ref=e6898]: QA INT008-1778080096402-1417 Lead
+                        - generic [ref=e6899]: • —
+                      - generic [ref=e6900]:
+                        - generic [ref=e6901]:
+                          - img [ref=e6902]
+                          - text: Manager User
+                        - generic [ref=e6905]: 3 мин назад
+                  - generic [ref=e6907] [cursor=pointer]:
+                    - img [ref=e6908]
+                    - generic [ref=e6911]:
+                      - generic [ref=e6912]:
+                        - generic [ref=e6913]: QA INT007-1778080095991-7623 Lead
+                        - generic [ref=e6914]: • —
+                      - generic [ref=e6915]:
+                        - generic [ref=e6916]:
+                          - img [ref=e6917]
+                          - text: Manager User
+                        - generic [ref=e6920]: 3 мин назад
+                  - generic [ref=e6922] [cursor=pointer]:
+                    - img [ref=e6923]
+                    - generic [ref=e6926]:
+                      - generic [ref=e6927]:
+                        - generic [ref=e6928]: QA INT006-1778080095585-1411 Lead
+                        - generic [ref=e6929]: • —
+                      - generic [ref=e6930]:
+                        - generic [ref=e6931]:
+                          - img [ref=e6932]
+                          - text: Manager User
+                        - generic [ref=e6935]: 3 мин назад
+                  - generic [ref=e6937] [cursor=pointer]:
+                    - img [ref=e6938]
+                    - generic [ref=e6941]:
+                      - generic [ref=e6942]:
+                        - generic [ref=e6943]: QA APIC009-1778080088284-501 Lead
+                        - generic [ref=e6944]: • —
+                      - generic [ref=e6945]:
+                        - generic [ref=e6946]:
+                          - img [ref=e6947]
+                          - text: Manager User
+                        - generic [ref=e6950]: 3 мин назад
+                  - generic [ref=e6952] [cursor=pointer]:
+                    - img [ref=e6953]
+                    - generic [ref=e6956]:
+                      - generic [ref=e6957]:
+                        - generic [ref=e6958]: QA APIC008-1778080087716-1091 Lead
+                        - generic [ref=e6959]: • —
+                      - generic [ref=e6960]:
+                        - generic [ref=e6961]:
+                          - img [ref=e6962]
+                          - text: Manager User
+                        - generic [ref=e6965]: 3 мин назад
+                  - generic [ref=e6967] [cursor=pointer]:
+                    - img [ref=e6968]
+                    - generic [ref=e6971]:
+                      - generic [ref=e6972]:
+                        - generic [ref=e6973]: QA INT008-1778080073062-8572 Lead
+                        - generic [ref=e6974]: • —
+                      - generic [ref=e6975]:
+                        - generic [ref=e6976]:
+                          - img [ref=e6977]
+                          - text: Manager User
+                        - generic [ref=e6980]: 3 мин назад
+                  - generic [ref=e6982] [cursor=pointer]:
+                    - img [ref=e6983]
+                    - generic [ref=e6986]:
+                      - generic [ref=e6987]:
+                        - generic [ref=e6988]: QA INT007-1778080072479-9196 Lead
+                        - generic [ref=e6989]: • —
+                      - generic [ref=e6990]:
+                        - generic [ref=e6991]:
+                          - img [ref=e6992]
+                          - text: Manager User
+                        - generic [ref=e6995]: 3 мин назад
+                  - generic [ref=e6997] [cursor=pointer]:
+                    - img [ref=e6998]
+                    - generic [ref=e7001]:
+                      - generic [ref=e7002]:
+                        - generic [ref=e7003]: QA INT006-1778080071820-3886 Lead
+                        - generic [ref=e7004]: • —
+                      - generic [ref=e7005]:
+                        - generic [ref=e7006]:
+                          - img [ref=e7007]
+                          - text: Manager User
+                        - generic [ref=e7010]: 3 мин назад
+                  - generic [ref=e7012] [cursor=pointer]:
+                    - img [ref=e7013]
+                    - generic [ref=e7016]:
+                      - generic [ref=e7017]:
+                        - generic [ref=e7018]: QA APIC009-1778080050823-9950 Lead
+                        - generic [ref=e7019]: • —
+                      - generic [ref=e7020]:
+                        - generic [ref=e7021]:
+                          - img [ref=e7022]
+                          - text: Manager User
+                        - generic [ref=e7025]: 4 мин назад
+                  - generic [ref=e7027] [cursor=pointer]:
+                    - img [ref=e7028]
+                    - generic [ref=e7031]:
+                      - generic [ref=e7032]:
+                        - generic [ref=e7033]: QA APIC008-1778080049982-7439 Lead
+                        - generic [ref=e7034]: • —
+                      - generic [ref=e7035]:
+                        - generic [ref=e7036]:
+                          - img [ref=e7037]
+                          - text: Manager User
+                        - generic [ref=e7040]: 4 мин назад
+                  - generic [ref=e7042] [cursor=pointer]:
+                    - img [ref=e7043]
+                    - generic [ref=e7046]:
+                      - generic [ref=e7047]:
+                        - generic [ref=e7048]: E2E 008 008-1778012435845-220
+                        - generic [ref=e7049]: • Экскаватор
+                      - generic [ref=e7050]:
+                        - generic [ref=e7051]:
+                          - img [ref=e7052]
+                          - text: Manager User
+                        - generic [ref=e7055]: 18 ч назад
+                  - generic [ref=e7057] [cursor=pointer]:
+                    - img [ref=e7058]
+                    - generic [ref=e7061]:
+                      - generic [ref=e7062]:
+                        - generic [ref=e7063]: E2E 007 007-1778012431203-974
+                        - generic [ref=e7064]: • Экскаватор
+                      - generic [ref=e7065]:
+                        - generic [ref=e7066]:
+                          - img [ref=e7067]
+                          - text: Manager User
+                        - generic [ref=e7070]: 18 ч назад
+                  - generic [ref=e7072] [cursor=pointer]:
+                    - img [ref=e7073]
+                    - generic [ref=e7076]:
+                      - generic [ref=e7077]:
+                        - generic [ref=e7078]: E2E 008 008-1778011728026-804
+                        - generic [ref=e7079]: • Экскаватор
+                      - generic [ref=e7080]:
+                        - generic [ref=e7081]:
+                          - img [ref=e7082]
+                          - text: Manager User
+                        - generic [ref=e7085]: 19 ч назад
+                  - generic [ref=e7087] [cursor=pointer]:
+                    - img [ref=e7088]
+                    - generic [ref=e7091]:
+                      - generic [ref=e7092]:
+                        - generic [ref=e7093]: E2E 007 007-1778011724187-87
+                        - generic [ref=e7094]: • Экскаватор
+                      - generic [ref=e7095]:
+                        - generic [ref=e7096]:
+                          - img [ref=e7097]
+                          - text: Manager User
+                        - generic [ref=e7100]: 19 ч назад
+                  - generic [ref=e7102] [cursor=pointer]:
+                    - img [ref=e7103]
+                    - generic [ref=e7106]:
+                      - generic [ref=e7107]:
+                        - generic [ref=e7108]: E2E 008 008-1778011407425-206
+                        - generic [ref=e7109]: • Экскаватор
+                      - generic [ref=e7110]:
+                        - generic [ref=e7111]:
+                          - img [ref=e7112]
+                          - text: Manager User
+                        - generic [ref=e7115]: 19 ч назад
+                  - generic [ref=e7117] [cursor=pointer]:
+                    - img [ref=e7118]
+                    - generic [ref=e7121]:
+                      - generic [ref=e7122]:
+                        - generic [ref=e7123]: E2E 007 007-1778011403421-635
+                        - generic [ref=e7124]: • Экскаватор
+                      - generic [ref=e7125]:
+                        - generic [ref=e7126]:
+                          - img [ref=e7127]
+                          - text: Manager User
+                        - generic [ref=e7130]: 19 ч назад
+                  - generic [ref=e7132] [cursor=pointer]:
+                    - img [ref=e7133]
+                    - generic [ref=e7136]:
+                      - generic [ref=e7137]:
+                        - generic [ref=e7138]: E2E 008 008-1778011281065-379
+                        - generic [ref=e7139]: • Экскаватор
+                      - generic [ref=e7140]:
+                        - generic [ref=e7141]:
+                          - img [ref=e7142]
+                          - text: Manager User
+                        - generic [ref=e7145]: 19 ч назад
+                  - generic [ref=e7147] [cursor=pointer]:
+                    - img [ref=e7148]
+                    - generic [ref=e7151]:
+                      - generic [ref=e7152]:
+                        - generic [ref=e7153]: E2E 007 007-1778011277143-630
+                        - generic [ref=e7154]: • Экскаватор
+                      - generic [ref=e7155]:
+                        - generic [ref=e7156]:
+                          - img [ref=e7157]
+                          - text: Manager User
+                        - generic [ref=e7160]: 19 ч назад
+                  - generic [ref=e7162] [cursor=pointer]:
+                    - img [ref=e7163]
+                    - generic [ref=e7166]:
+                      - generic [ref=e7167]:
+                        - generic [ref=e7168]: E2E 008 008-1778010733146-638
+                        - generic [ref=e7169]: • Экскаватор
+                      - generic [ref=e7170]:
+                        - generic [ref=e7171]:
+                          - img [ref=e7172]
+                          - text: Manager User
+                        - generic [ref=e7175]: 19 ч назад
+                  - generic [ref=e7177] [cursor=pointer]:
+                    - img [ref=e7178]
+                    - generic [ref=e7181]:
+                      - generic [ref=e7182]:
+                        - generic [ref=e7183]: E2E 007 007-1778010728857-431
+                        - generic [ref=e7184]: • Экскаватор
+                      - generic [ref=e7185]:
+                        - generic [ref=e7186]:
+                          - img [ref=e7187]
+                          - text: Manager User
+                        - generic [ref=e7190]: 19 ч назад
+                  - generic [ref=e7192] [cursor=pointer]:
+                    - img [ref=e7193]
+                    - generic [ref=e7196]:
+                      - generic [ref=e7197]:
+                        - generic [ref=e7198]: E2E 008 008-1778010637614-688
+                        - generic [ref=e7199]: • Экскаватор
+                      - generic [ref=e7200]:
+                        - generic [ref=e7201]:
+                          - img [ref=e7202]
+                          - text: Manager User
+                        - generic [ref=e7205]: 19 ч назад
+                  - generic [ref=e7207] [cursor=pointer]:
+                    - img [ref=e7208]
+                    - generic [ref=e7211]:
+                      - generic [ref=e7212]:
+                        - generic [ref=e7213]: E2E 007 007-1778010633005-288
+                        - generic [ref=e7214]: • Экскаватор
+                      - generic [ref=e7215]:
+                        - generic [ref=e7216]:
+                          - img [ref=e7217]
+                          - text: Manager User
+                        - generic [ref=e7220]: 19 ч назад
+                  - generic [ref=e7222] [cursor=pointer]:
+                    - img [ref=e7223]
+                    - generic [ref=e7226]:
+                      - generic [ref=e7227]:
+                        - generic [ref=e7228]: QA INT008-1778008670137-350 Lead
+                        - generic [ref=e7229]: • —
+                      - generic [ref=e7230]:
+                        - generic [ref=e7231]:
+                          - img [ref=e7232]
+                          - text: Manager User
+                        - generic [ref=e7235]: 19 ч назад
+                  - generic [ref=e7237] [cursor=pointer]:
+                    - img [ref=e7238]
+                    - generic [ref=e7241]:
+                      - generic [ref=e7242]:
+                        - generic [ref=e7243]: QA INT007-1778008669671-6516 Lead
+                        - generic [ref=e7244]: • —
+                      - generic [ref=e7245]:
+                        - generic [ref=e7246]:
+                          - img [ref=e7247]
+                          - text: Manager User
+                        - generic [ref=e7250]: 19 ч назад
+                  - generic [ref=e7252] [cursor=pointer]:
+                    - img [ref=e7253]
+                    - generic [ref=e7256]:
+                      - generic [ref=e7257]:
+                        - generic [ref=e7258]: QA INT006-1778008669242-9931 Lead
+                        - generic [ref=e7259]: • —
+                      - generic [ref=e7260]:
+                        - generic [ref=e7261]:
+                          - img [ref=e7262]
+                          - text: Manager User
+                        - generic [ref=e7265]: 19 ч назад
+                  - generic [ref=e7267] [cursor=pointer]:
+                    - img [ref=e7268]
+                    - generic [ref=e7271]:
+                      - generic [ref=e7272]:
+                        - generic [ref=e7273]: QA APIC009-1778008651649-9823 Lead
+                        - generic [ref=e7274]: • —
+                      - generic [ref=e7275]:
+                        - generic [ref=e7276]:
+                          - img [ref=e7277]
+                          - text: Manager User
+                        - generic [ref=e7280]: 19 ч назад
+                  - generic [ref=e7282] [cursor=pointer]:
+                    - img [ref=e7283]
+                    - generic [ref=e7286]:
+                      - generic [ref=e7287]:
+                        - generic [ref=e7288]: QA APIC008-1778008651020-5476 Lead
+                        - generic [ref=e7289]: • —
+                      - generic [ref=e7290]:
+                        - generic [ref=e7291]:
+                          - img [ref=e7292]
+                          - text: Manager User
+                        - generic [ref=e7295]: 19 ч назад
+                  - generic [ref=e7297] [cursor=pointer]:
+                    - img [ref=e7298]
+                    - generic [ref=e7301]:
+                      - generic [ref=e7302]:
+                        - generic [ref=e7303]: QA APIC009-1778008417949-4092 Lead
+                        - generic [ref=e7304]: • —
+                      - generic [ref=e7305]:
+                        - generic [ref=e7306]:
+                          - img [ref=e7307]
+                          - text: Manager User
+                        - generic [ref=e7310]: 19 ч назад
+                  - generic [ref=e7312] [cursor=pointer]:
+                    - img [ref=e7313]
+                    - generic [ref=e7316]:
+                      - generic [ref=e7317]:
+                        - generic [ref=e7318]: QA APIC008-1778008417234-8907 Lead
+                        - generic [ref=e7319]: • —
+                      - generic [ref=e7320]:
+                        - generic [ref=e7321]:
+                          - img [ref=e7322]
+                          - text: Manager User
+                        - generic [ref=e7325]: 19 ч назад
+                  - generic [ref=e7327] [cursor=pointer]:
+                    - img [ref=e7328]
+                    - generic [ref=e7331]:
+                      - generic [ref=e7332]:
+                        - generic [ref=e7333]: QA APIC009-1778008362170-529 Lead
+                        - generic [ref=e7334]: • —
+                      - generic [ref=e7335]:
+                        - generic [ref=e7336]:
+                          - img [ref=e7337]
+                          - text: Manager User
+                        - generic [ref=e7340]: 19 ч назад
+                  - generic [ref=e7342] [cursor=pointer]:
+                    - img [ref=e7343]
+                    - generic [ref=e7346]:
+                      - generic [ref=e7347]:
+                        - generic [ref=e7348]: QA APIC008-1778008361671-9738 Lead
+                        - generic [ref=e7349]: • —
+                      - generic [ref=e7350]:
+                        - generic [ref=e7351]:
+                          - img [ref=e7352]
+                          - text: Manager User
+                        - generic [ref=e7355]: 19 ч назад
+                  - generic [ref=e7357] [cursor=pointer]:
+                    - img [ref=e7358]
+                    - generic [ref=e7361]:
+                      - generic [ref=e7362]:
+                        - generic [ref=e7363]: Какашкин
+                        - generic [ref=e7364]: • —
+                      - generic [ref=e7365]:
+                        - generic [ref=e7366]:
+                          - img [ref=e7367]
+                          - text: Admin User
+                        - generic [ref=e7370]: 1 день назад
+                  - generic [ref=e7372] [cursor=pointer]:
+                    - img [ref=e7373]
+                    - generic [ref=e7376]:
+                      - generic [ref=e7377]:
+                        - generic [ref=e7378]: Stage5 Flow Test
+                        - generic [ref=e7379]: • —
+                      - generic [ref=e7380]:
+                        - generic [ref=e7381]:
+                          - img [ref=e7382]
+                          - text: Admin User
+                        - generic [ref=e7385]: 5 дн назад
+                  - generic [ref=e7387] [cursor=pointer]:
+                    - img [ref=e7388]
+                    - generic [ref=e7391]:
+                      - generic [ref=e7392]:
+                        - generic [ref=e7393]: Stage3 Test
+                        - generic [ref=e7394]: • —
+                      - generic [ref=e7395]:
+                        - generic [ref=e7396]:
+                          - img [ref=e7397]
+                          - text: Admin User
+                        - generic [ref=e7400]: 5 дн назад
+                  - generic [ref=e7402] [cursor=pointer]:
+                    - img [ref=e7403]
+                    - generic [ref=e7406]:
+                      - generic [ref=e7407]:
+                        - generic [ref=e7408]: Stage5 Flow Test
+                        - generic [ref=e7409]: • —
+                      - generic [ref=e7410]:
+                        - generic [ref=e7411]:
+                          - img [ref=e7412]
+                          - text: Admin User
+                        - generic [ref=e7415]: 5 дн назад
+                  - generic [ref=e7417] [cursor=pointer]:
+                    - img [ref=e7418]
+                    - generic [ref=e7421]:
+                      - generic [ref=e7422]:
+                        - generic [ref=e7423]: Stage3 Test
+                        - generic [ref=e7424]: • —
+                      - generic [ref=e7425]:
+                        - generic [ref=e7426]:
+                          - img [ref=e7427]
+                          - text: Admin User
+                        - generic [ref=e7430]: 5 дн назад
+                  - generic [ref=e7432] [cursor=pointer]:
+                    - img [ref=e7433]
+                    - generic [ref=e7436]:
+                      - generic [ref=e7437]:
+                        - generic [ref=e7438]: manager Lead
+                        - generic [ref=e7439]: • —
+                      - generic [ref=e7440]:
+                        - generic [ref=e7441]:
+                          - img [ref=e7442]
+                          - text: Manager User
+                        - generic [ref=e7445]: 5 дн назад
+                  - generic [ref=e7447] [cursor=pointer]:
+                    - img [ref=e7448]
+                    - generic [ref=e7451]:
+                      - generic [ref=e7452]:
+                        - generic [ref=e7453]: admin Lead
+                        - generic [ref=e7454]: • —
+                      - generic [ref=e7455]:
+                        - generic [ref=e7456]:
+                          - img [ref=e7457]
+                          - text: Admin User
+                        - generic [ref=e7460]: 5 дн назад
+                  - generic [ref=e7462] [cursor=pointer]:
+                    - img [ref=e7463]
+                    - generic [ref=e7466]:
+                      - generic [ref=e7467]:
+                        - generic [ref=e7468]: Stage5 Flow Test
+                        - generic [ref=e7469]: • —
+                      - generic [ref=e7470]:
+                        - generic [ref=e7471]:
+                          - img [ref=e7472]
+                          - text: Admin User
+                        - generic [ref=e7475]: 5 дн назад
+                  - generic [ref=e7477] [cursor=pointer]:
+                    - img [ref=e7478]
+                    - generic [ref=e7481]:
+                      - generic [ref=e7482]:
+                        - generic [ref=e7483]: Stage3 Test
+                        - generic [ref=e7484]: • —
+                      - generic [ref=e7485]:
+                        - generic [ref=e7486]:
+                          - img [ref=e7487]
+                          - text: Admin User
+                        - generic [ref=e7490]: 5 дн назад
+                  - generic [ref=e7492] [cursor=pointer]:
+                    - img [ref=e7493]
+                    - generic [ref=e7496]:
+                      - generic [ref=e7497]:
+                        - generic [ref=e7498]: Flow Test
+                        - generic [ref=e7499]: • —
+                      - generic [ref=e7500]:
+                        - generic [ref=e7501]:
+                          - img [ref=e7502]
+                          - text: Admin User
+                        - generic [ref=e7505]: 5 дн назад
+                  - generic [ref=e7507] [cursor=pointer]:
+                    - img [ref=e7508]
+                    - generic [ref=e7511]:
+                      - generic [ref=e7512]:
+                        - generic [ref=e7513]: Flow Test
+                        - generic [ref=e7514]: • —
+                      - generic [ref=e7515]:
+                        - generic [ref=e7516]:
+                          - img [ref=e7517]
+                          - text: Admin User
+                        - generic [ref=e7520]: 5 дн назад
+                  - generic [ref=e7522] [cursor=pointer]:
+                    - img [ref=e7523]
+                    - generic [ref=e7526]:
+                      - generic [ref=e7527]:
+                        - generic [ref=e7528]: Flow Test
+                        - generic [ref=e7529]: • —
+                      - generic [ref=e7530]:
+                        - generic [ref=e7531]:
+                          - img [ref=e7532]
+                          - text: Admin User
+                        - generic [ref=e7535]: 5 дн назад
+                  - generic [ref=e7537] [cursor=pointer]:
+                    - img [ref=e7538]
+                    - generic [ref=e7541]:
+                      - generic [ref=e7542]:
+                        - generic [ref=e7543]: manager Lead
+                        - generic [ref=e7544]: • —
+                      - generic [ref=e7545]:
+                        - generic [ref=e7546]:
+                          - img [ref=e7547]
+                          - text: Manager User
+                        - generic [ref=e7550]: 5 дн назад
+                  - generic [ref=e7552] [cursor=pointer]:
+                    - img [ref=e7553]
+                    - generic [ref=e7556]:
+                      - generic [ref=e7557]:
+                        - generic [ref=e7558]: admin Lead
+                        - generic [ref=e7559]: • —
+                      - generic [ref=e7560]:
+                        - generic [ref=e7561]:
+                          - img [ref=e7562]
+                          - text: Admin User
+                        - generic [ref=e7565]: 5 дн назад
+                  - generic [ref=e7567] [cursor=pointer]:
+                    - img [ref=e7568]
+                    - generic [ref=e7571]:
+                      - generic [ref=e7572]:
+                        - generic [ref=e7573]: Stage5 Flow Test
+                        - generic [ref=e7574]: • —
+                      - generic [ref=e7575]:
+                        - generic [ref=e7576]:
+                          - img [ref=e7577]
+                          - text: Admin User
+                        - generic [ref=e7580]: 5 дн назад
+                  - generic [ref=e7582] [cursor=pointer]:
+                    - img [ref=e7583]
+                    - generic [ref=e7586]:
+                      - generic [ref=e7587]:
+                        - generic [ref=e7588]: Stage3 Test
+                        - generic [ref=e7589]: • —
+                      - generic [ref=e7590]:
+                        - generic [ref=e7591]:
+                          - img [ref=e7592]
+                          - text: Admin User
+                        - generic [ref=e7595]: 5 дн назад
+                  - generic [ref=e7597] [cursor=pointer]:
+                    - img [ref=e7598]
+                    - generic [ref=e7601]:
+                      - generic [ref=e7602]:
+                        - generic [ref=e7603]: Станислав Левин
+                        - generic [ref=e7604]: • Кран
+                      - generic [ref=e7605]:
+                        - generic [ref=e7606]:
+                          - img [ref=e7607]
+                          - text: Сергей Продажи
+                        - generic [ref=e7610]: 6 дн назад
+                  - generic [ref=e7612] [cursor=pointer]:
+                    - img [ref=e7613]
+                    - generic [ref=e7616]:
+                      - generic [ref=e7617]:
+                        - generic [ref=e7618]: manager Lead
+                        - generic [ref=e7619]: • —
+                      - generic [ref=e7620]:
+                        - generic [ref=e7621]:
+                          - img [ref=e7622]
+                          - text: Manager User
+                        - generic [ref=e7625]: 6 дн назад
+                  - generic [ref=e7627] [cursor=pointer]:
+                    - img [ref=e7628]
+                    - generic [ref=e7631]:
+                      - generic [ref=e7632]:
+                        - generic [ref=e7633]: admin Lead
+                        - generic [ref=e7634]: • —
+                      - generic [ref=e7635]:
+                        - generic [ref=e7636]:
+                          - img [ref=e7637]
+                          - text: Admin User
+                        - generic [ref=e7640]: 6 дн назад
+                  - generic [ref=e7642] [cursor=pointer]:
+                    - img [ref=e7643]
+                    - generic [ref=e7646]:
+                      - generic [ref=e7647]:
+                        - generic [ref=e7648]: Stage5 Flow Test
+                        - generic [ref=e7649]: • —
+                      - generic [ref=e7650]:
+                        - generic [ref=e7651]:
+                          - img [ref=e7652]
+                          - text: Admin User
+                        - generic [ref=e7655]: 6 дн назад
+                  - generic [ref=e7657] [cursor=pointer]:
+                    - img [ref=e7658]
+                    - generic [ref=e7661]:
+                      - generic [ref=e7662]:
+                        - generic [ref=e7663]: Stage3 Test
+                        - generic [ref=e7664]: • —
+                      - generic [ref=e7665]:
+                        - generic [ref=e7666]:
+                          - img [ref=e7667]
+                          - text: Admin User
+                        - generic [ref=e7670]: 6 дн назад
+                  - generic [ref=e7672] [cursor=pointer]:
+                    - img [ref=e7673]
+                    - generic [ref=e7676]:
+                      - generic [ref=e7677]:
+                        - generic [ref=e7678]: manager Lead
+                        - generic [ref=e7679]: • —
+                      - generic [ref=e7680]:
+                        - generic [ref=e7681]:
+                          - img [ref=e7682]
+                          - text: Manager User
+                        - generic [ref=e7685]: 6 дн назад
+                  - generic [ref=e7687] [cursor=pointer]:
+                    - img [ref=e7688]
+                    - generic [ref=e7691]:
+                      - generic [ref=e7692]:
+                        - generic [ref=e7693]: admin Lead
+                        - generic [ref=e7694]: • —
+                      - generic [ref=e7695]:
+                        - generic [ref=e7696]:
+                          - img [ref=e7697]
+                          - text: Admin User
+                        - generic [ref=e7700]: 6 дн назад
+                  - generic [ref=e7702] [cursor=pointer]:
+                    - img [ref=e7703]
+                    - generic [ref=e7706]:
+                      - generic [ref=e7707]:
+                        - generic [ref=e7708]: Stage5 Flow Test
+                        - generic [ref=e7709]: • —
+                      - generic [ref=e7710]:
+                        - generic [ref=e7711]:
+                          - img [ref=e7712]
+                          - text: Admin User
+                        - generic [ref=e7715]: 6 дн назад
+                  - generic [ref=e7717] [cursor=pointer]:
+                    - img [ref=e7718]
+                    - generic [ref=e7721]:
+                      - generic [ref=e7722]:
+                        - generic [ref=e7723]: Stage3 Test
+                        - generic [ref=e7724]: • —
+                      - generic [ref=e7725]:
+                        - generic [ref=e7726]:
+                          - img [ref=e7727]
+                          - text: Admin User
+                        - generic [ref=e7730]: 6 дн назад
+                  - generic [ref=e7732] [cursor=pointer]:
+                    - img [ref=e7733]
+                    - generic [ref=e7736]:
+                      - generic [ref=e7737]:
+                        - generic [ref=e7738]: manager Lead
+                        - generic [ref=e7739]: • —
+                      - generic [ref=e7740]:
+                        - generic [ref=e7741]:
+                          - img [ref=e7742]
+                          - text: Manager User
+                        - generic [ref=e7745]: 6 дн назад
+                  - generic [ref=e7747] [cursor=pointer]:
+                    - img [ref=e7748]
+                    - generic [ref=e7751]:
+                      - generic [ref=e7752]:
+                        - generic [ref=e7753]: admin Lead
+                        - generic [ref=e7754]: • —
+                      - generic [ref=e7755]:
+                        - generic [ref=e7756]:
+                          - img [ref=e7757]
+                          - text: Admin User
+                        - generic [ref=e7760]: 6 дн назад
+                  - generic [ref=e7762] [cursor=pointer]:
+                    - img [ref=e7763]
+                    - generic [ref=e7766]:
+                      - generic [ref=e7767]:
+                        - generic [ref=e7768]: Stage5 Flow Test
+                        - generic [ref=e7769]: • —
+                      - generic [ref=e7770]:
+                        - generic [ref=e7771]:
+                          - img [ref=e7772]
+                          - text: Admin User
+                        - generic [ref=e7775]: 6 дн назад
+                  - generic [ref=e7777] [cursor=pointer]:
+                    - img [ref=e7778]
+                    - generic [ref=e7781]:
+                      - generic [ref=e7782]:
+                        - generic [ref=e7783]: Stage3 Test
+                        - generic [ref=e7784]: • —
+                      - generic [ref=e7785]:
+                        - generic [ref=e7786]:
+                          - img [ref=e7787]
+                          - text: Admin User
+                        - generic [ref=e7790]: 6 дн назад
+                  - generic [ref=e7792] [cursor=pointer]:
+                    - img [ref=e7793]
+                    - generic [ref=e7796]:
+                      - generic [ref=e7797]:
+                        - generic [ref=e7798]: manager Lead
+                        - generic [ref=e7799]: • —
+                      - generic [ref=e7800]:
+                        - generic [ref=e7801]:
+                          - img [ref=e7802]
+                          - text: Manager User
+                        - generic [ref=e7805]: 6 дн назад
+                  - generic [ref=e7807] [cursor=pointer]:
+                    - img [ref=e7808]
+                    - generic [ref=e7811]:
+                      - generic [ref=e7812]:
+                        - generic [ref=e7813]: admin Lead
+                        - generic [ref=e7814]: • —
+                      - generic [ref=e7815]:
+                        - generic [ref=e7816]:
+                          - img [ref=e7817]
+                          - text: Admin User
+                        - generic [ref=e7820]: 6 дн назад
+                  - generic [ref=e7822] [cursor=pointer]:
+                    - img [ref=e7823]
+                    - generic [ref=e7826]:
+                      - generic [ref=e7827]:
+                        - generic [ref=e7828]: Stage5 Flow Test
+                        - generic [ref=e7829]: • —
+                      - generic [ref=e7830]:
+                        - generic [ref=e7831]:
+                          - img [ref=e7832]
+                          - text: Admin User
+                        - generic [ref=e7835]: 6 дн назад
+                  - generic [ref=e7837] [cursor=pointer]:
+                    - img [ref=e7838]
+                    - generic [ref=e7841]:
+                      - generic [ref=e7842]:
+                        - generic [ref=e7843]: Stage3 Test
+                        - generic [ref=e7844]: • —
+                      - generic [ref=e7845]:
+                        - generic [ref=e7846]:
+                          - img [ref=e7847]
+                          - text: Admin User
+                        - generic [ref=e7850]: 6 дн назад
+                  - generic [ref=e7852] [cursor=pointer]:
+                    - img [ref=e7853]
+                    - generic [ref=e7856]:
+                      - generic [ref=e7857]:
+                        - generic [ref=e7858]: Писюня
+                        - generic [ref=e7859]: • Бетононасос
+                      - generic [ref=e7860]:
+                        - generic [ref=e7861]:
+                          - img [ref=e7862]
+                          - text: Admin User
+                        - generic [ref=e7865]: 6 дн назад
+                  - generic [ref=e7867] [cursor=pointer]:
+                    - img [ref=e7868]
+                    - generic [ref=e7871]:
+                      - generic [ref=e7872]:
+                        - generic [ref=e7873]: Мистер Писюнчик
+                        - generic [ref=e7874]: • —
+                      - generic [ref=e7875]:
+                        - generic [ref=e7876]:
+                          - img [ref=e7877]
+                          - text: Admin User
+                        - generic [ref=e7880]: 6 дн назад
+                  - generic [ref=e7882] [cursor=pointer]:
+                    - img [ref=e7883]
+                    - generic [ref=e7886]:
+                      - generic [ref=e7887]:
+                        - generic [ref=e7888]: Егор Климов
+                        - generic [ref=e7889]: • Кран
+                      - generic [ref=e7890]:
+                        - generic [ref=e7891]:
+                          - img [ref=e7892]
+                          - text: Ольга Операции
+                        - generic [ref=e7895]: 11 дн назад
+              - generic [ref=e7896]:
+                - generic [ref=e7898]:
+                  - heading "Некачественный" [level=3] [ref=e7900]
+                  - generic [ref=e7901]: "35"
+                - generic [ref=e7902]:
+                  - generic [ref=e7904] [cursor=pointer]:
+                    - img [ref=e7905]
+                    - generic [ref=e7909]:
+                      - generic [ref=e7910]:
+                        - generic [ref=e7911]: E2E 017 017-1778080205601-216
+                        - generic [ref=e7912]: • Экскаватор
+                      - generic [ref=e7913]:
+                        - img [ref=e7914]
+                        - generic [ref=e7916]: E2E-017 unqualified reason 017-unq-1778080209436-760
+                      - generic [ref=e7917]:
+                        - generic [ref=e7918]:
+                          - img [ref=e7919]
+                          - text: Manager User
+                        - generic [ref=e7922]: 1 мин назад
+                  - generic [ref=e7924] [cursor=pointer]:
+                    - img [ref=e7925]
+                    - generic [ref=e7929]:
+                      - generic [ref=e7930]:
+                        - generic [ref=e7931]: QA INT009-1778080096824-4996 Lead
+                        - generic [ref=e7932]: • —
+                      - generic [ref=e7933]:
+                        - img [ref=e7934]
+                        - generic [ref=e7936]: qa_int009_reason
+                      - generic [ref=e7937]:
+                        - generic [ref=e7938]:
+                          - img [ref=e7939]
+                          - text: Manager User
+                        - generic [ref=e7942]: 3 мин назад
+                  - generic [ref=e7944] [cursor=pointer]:
+                    - img [ref=e7945]
+                    - generic [ref=e7949]:
+                      - generic [ref=e7950]:
+                        - generic [ref=e7951]: QA APIC010-1778080088726-1443 Lead
+                        - generic [ref=e7952]: • —
+                      - generic [ref=e7953]:
+                        - img [ref=e7954]
+                        - generic [ref=e7956]: qa_unqualified_completion
+                      - generic [ref=e7957]:
+                        - generic [ref=e7958]:
+                          - img [ref=e7959]
+                          - text: Manager User
+                        - generic [ref=e7962]: 3 мин назад
+                  - generic [ref=e7964] [cursor=pointer]:
+                    - img [ref=e7965]
+                    - generic [ref=e7969]:
+                      - generic [ref=e7970]:
+                        - generic [ref=e7971]: QA APIC-010 Lead
+                        - generic [ref=e7972]: • —
+                      - generic [ref=e7973]:
+                        - img [ref=e7974]
+                        - generic [ref=e7976]: qa_unqualified_lead
+                      - generic [ref=e7977]:
+                        - generic [ref=e7978]:
+                          - img [ref=e7979]
+                          - text: Manager User
+                        - generic [ref=e7982]: 3 мин назад
+                  - generic [ref=e7984] [cursor=pointer]:
+                    - img [ref=e7985]
+                    - generic [ref=e7989]:
+                      - generic [ref=e7990]:
+                        - generic [ref=e7991]: QA INT009-1778080073529-7524 Lead
+                        - generic [ref=e7992]: • —
+                      - generic [ref=e7993]:
+                        - img [ref=e7994]
+                        - generic [ref=e7996]: qa_int009_reason
+                      - generic [ref=e7997]:
+                        - generic [ref=e7998]:
+                          - img [ref=e7999]
+                          - text: Manager User
+                        - generic [ref=e8002]: 3 мин назад
+                  - generic [ref=e8004] [cursor=pointer]:
+                    - img [ref=e8005]
+                    - generic [ref=e8009]:
+                      - generic [ref=e8010]:
+                        - generic [ref=e8011]: QA APIC010-1778080052176-5675 Lead
+                        - generic [ref=e8012]: • —
+                      - generic [ref=e8013]:
+                        - img [ref=e8014]
+                        - generic [ref=e8016]: qa_unqualified_completion
+                      - generic [ref=e8017]:
+                        - generic [ref=e8018]:
+                          - img [ref=e8019]
+                          - text: Manager User
+                        - generic [ref=e8022]: 4 мин назад
+                  - generic [ref=e8024] [cursor=pointer]:
+                    - img [ref=e8025]
+                    - generic [ref=e8029]:
+                      - generic [ref=e8030]:
+                        - generic [ref=e8031]: QA APIC-010 Lead
+                        - generic [ref=e8032]: • —
+                      - generic [ref=e8033]:
+                        - img [ref=e8034]
+                        - generic [ref=e8036]: qa_unqualified_lead
+                      - generic [ref=e8037]:
+                        - generic [ref=e8038]:
+                          - img [ref=e8039]
+                          - text: Manager User
+                        - generic [ref=e8042]: 4 мин назад
+                  - generic [ref=e8044] [cursor=pointer]:
+                    - img [ref=e8045]
+                    - generic [ref=e8049]:
+                      - generic [ref=e8050]:
+                        - generic [ref=e8051]: E2E 009 009-1778012468358-109
+                        - generic [ref=e8052]: • Экскаватор
+                      - generic [ref=e8053]:
+                        - img [ref=e8054]
+                        - generic [ref=e8056]: E2E-009 unqualified reason 009-1778012468476-220
+                      - generic [ref=e8057]:
+                        - generic [ref=e8058]:
+                          - img [ref=e8059]
+                          - text: Manager User
+                        - generic [ref=e8062]: 18 ч назад
+                  - generic [ref=e8064] [cursor=pointer]:
+                    - img [ref=e8065]
+                    - generic [ref=e8069]:
+                      - generic [ref=e8070]:
+                        - generic [ref=e8071]: E2E 009 009-1778012230575-867
+                        - generic [ref=e8072]: • Экскаватор
+                      - generic [ref=e8073]:
+                        - img [ref=e8074]
+                        - generic [ref=e8076]: E2E-009 unqualified reason 009-1778012230702-89
+                      - generic [ref=e8077]:
+                        - generic [ref=e8078]:
+                          - img [ref=e8079]
+                          - text: Manager User
+                        - generic [ref=e8082]: 18 ч назад
+                  - generic [ref=e8084] [cursor=pointer]:
+                    - img [ref=e8085]
+                    - generic [ref=e8089]:
+                      - generic [ref=e8090]:
+                        - generic [ref=e8091]: E2E 009 009-1778011760331-964
+                        - generic [ref=e8092]: • Экскаватор
+                      - generic [ref=e8093]:
+                        - img [ref=e8094]
+                        - generic [ref=e8096]: E2E-009 unqualified reason 009-1778011760433-820
+                      - generic [ref=e8097]:
+                        - generic [ref=e8098]:
+                          - img [ref=e8099]
+                          - text: Manager User
+                        - generic [ref=e8102]: 19 ч назад
+                  - generic [ref=e8104] [cursor=pointer]:
+                    - img [ref=e8105]
+                    - generic [ref=e8109]:
+                      - generic [ref=e8110]:
+                        - generic [ref=e8111]: E2E 009 009-1778011411284-878
+                        - generic [ref=e8112]: • Экскаватор
+                      - generic [ref=e8113]:
+                        - img [ref=e8114]
+                        - generic [ref=e8116]: E2E-009 unqualified reason 009-1778011411362-215
+                      - generic [ref=e8117]:
+                        - generic [ref=e8118]:
+                          - img [ref=e8119]
+                          - text: Manager User
+                        - generic [ref=e8122]: 19 ч назад
+                  - generic [ref=e8124] [cursor=pointer]:
+                    - img [ref=e8125]
+                    - generic [ref=e8129]:
+                      - generic [ref=e8130]:
+                        - generic [ref=e8131]: QA INT009-1778008670547-2432 Lead
+                        - generic [ref=e8132]: • —
+                      - generic [ref=e8133]:
+                        - img [ref=e8134]
+                        - generic [ref=e8136]: qa_int009_reason
+                      - generic [ref=e8137]:
+                        - generic [ref=e8138]:
+                          - img [ref=e8139]
+                          - text: Manager User
+                        - generic [ref=e8142]: 19 ч назад
+                  - generic [ref=e8144] [cursor=pointer]:
+                    - img [ref=e8145]
+                    - generic [ref=e8149]:
+                      - generic [ref=e8150]:
+                        - generic [ref=e8151]: QA APIC010-1778008652198-3321 Lead
+                        - generic [ref=e8152]: • —
+                      - generic [ref=e8153]:
+                        - img [ref=e8154]
+                        - generic [ref=e8156]: qa_unqualified_completion
+                      - generic [ref=e8157]:
+                        - generic [ref=e8158]:
+                          - img [ref=e8159]
+                          - text: Manager User
+                        - generic [ref=e8162]: 19 ч назад
+                  - generic [ref=e8164] [cursor=pointer]:
+                    - img [ref=e8165]
+                    - generic [ref=e8169]:
+                      - generic [ref=e8170]:
+                        - generic [ref=e8171]: QA APIC-010 Lead
+                        - generic [ref=e8172]: • —
+                      - generic [ref=e8173]:
+                        - img [ref=e8174]
+                        - generic [ref=e8176]: qa_unqualified_lead
+                      - generic [ref=e8177]:
+                        - generic [ref=e8178]:
+                          - img [ref=e8179]
+                          - text: Manager User
+                        - generic [ref=e8182]: 19 ч назад
+                  - generic [ref=e8184] [cursor=pointer]:
+                    - img [ref=e8185]
+                    - generic [ref=e8189]:
+                      - generic [ref=e8190]:
+                        - generic [ref=e8191]: Stage5 Unqualified Test
+                        - generic [ref=e8192]: • —
+                      - generic [ref=e8193]:
+                        - img [ref=e8194]
+                        - generic [ref=e8196]: smoke policy
+                      - generic [ref=e8197]:
+                        - generic [ref=e8198]:
+                          - img [ref=e8199]
+                          - text: Admin User
+                        - generic [ref=e8202]: 5 дн назад
+                  - generic [ref=e8204] [cursor=pointer]:
+                    - img [ref=e8205]
+                    - generic [ref=e8209]:
+                      - generic [ref=e8210]:
+                        - generic [ref=e8211]: Policy Stage3
+                        - generic [ref=e8212]: • —
+                      - generic [ref=e8213]:
+                        - img [ref=e8214]
+                        - generic [ref=e8216]: policy_smoke
+                      - generic [ref=e8217]:
+                        - generic [ref=e8218]:
+                          - img [ref=e8219]
+                          - text: Admin User
+                        - generic [ref=e8222]: 5 дн назад
+                  - generic [ref=e8224] [cursor=pointer]:
+                    - img [ref=e8225]
+                    - generic [ref=e8229]:
+                      - generic [ref=e8230]:
+                        - generic [ref=e8231]: Stage5 Unqualified Test
+                        - generic [ref=e8232]: • —
+                      - generic [ref=e8233]:
+                        - img [ref=e8234]
+                        - generic [ref=e8236]: smoke policy
+                      - generic [ref=e8237]:
+                        - generic [ref=e8238]:
+                          - img [ref=e8239]
+                          - text: Admin User
+                        - generic [ref=e8242]: 5 дн назад
+                  - generic [ref=e8244] [cursor=pointer]:
+                    - img [ref=e8245]
+                    - generic [ref=e8249]:
+                      - generic [ref=e8250]:
+                        - generic [ref=e8251]: Policy Stage3
+                        - generic [ref=e8252]: • —
+                      - generic [ref=e8253]:
+                        - img [ref=e8254]
+                        - generic [ref=e8256]: policy_smoke
+                      - generic [ref=e8257]:
+                        - generic [ref=e8258]:
+                          - img [ref=e8259]
+                          - text: Admin User
+                        - generic [ref=e8262]: 5 дн назад
+                  - generic [ref=e8264] [cursor=pointer]:
+                    - img [ref=e8265]
+                    - generic [ref=e8269]:
+                      - generic [ref=e8270]:
+                        - generic [ref=e8271]: Stage5 Unqualified Test
+                        - generic [ref=e8272]: • —
+                      - generic [ref=e8273]:
+                        - img [ref=e8274]
+                        - generic [ref=e8276]: smoke policy
+                      - generic [ref=e8277]:
+                        - generic [ref=e8278]:
+                          - img [ref=e8279]
+                          - text: Admin User
+                        - generic [ref=e8282]: 5 дн назад
+                  - generic [ref=e8284] [cursor=pointer]:
+                    - img [ref=e8285]
+                    - generic [ref=e8289]:
+                      - generic [ref=e8290]:
+                        - generic [ref=e8291]: Policy Stage3
+                        - generic [ref=e8292]: • —
+                      - generic [ref=e8293]:
+                        - img [ref=e8294]
+                        - generic [ref=e8296]: policy_smoke
+                      - generic [ref=e8297]:
+                        - generic [ref=e8298]:
+                          - img [ref=e8299]
+                          - text: Admin User
+                        - generic [ref=e8302]: 5 дн назад
+                  - generic [ref=e8304] [cursor=pointer]:
+                    - img [ref=e8305]
+                    - generic [ref=e8309]:
+                      - generic [ref=e8310]:
+                        - generic [ref=e8311]: Unqual Test
+                        - generic [ref=e8312]: • —
+                      - generic [ref=e8313]:
+                        - img [ref=e8314]
+                        - generic [ref=e8316]: test reason
+                      - generic [ref=e8317]:
+                        - generic [ref=e8318]:
+                          - img [ref=e8319]
+                          - text: Admin User
+                        - generic [ref=e8322]: 5 дн назад
+                  - generic [ref=e8324] [cursor=pointer]:
+                    - img [ref=e8325]
+                    - generic [ref=e8329]:
+                      - generic [ref=e8330]:
+                        - generic [ref=e8331]: Unqual Test
+                        - generic [ref=e8332]: • —
+                      - generic [ref=e8333]:
+                        - img [ref=e8334]
+                        - generic [ref=e8336]: test reason
+                      - generic [ref=e8337]:
+                        - generic [ref=e8338]:
+                          - img [ref=e8339]
+                          - text: Admin User
+                        - generic [ref=e8342]: 5 дн назад
+                  - generic [ref=e8344] [cursor=pointer]:
+                    - img [ref=e8345]
+                    - generic [ref=e8349]:
+                      - generic [ref=e8350]:
+                        - generic [ref=e8351]: Unqual Test
+                        - generic [ref=e8352]: • —
+                      - generic [ref=e8353]:
+                        - img [ref=e8354]
+                        - generic [ref=e8356]: test reason
+                      - generic [ref=e8357]:
+                        - generic [ref=e8358]:
+                          - img [ref=e8359]
+                          - text: Admin User
+                        - generic [ref=e8362]: 5 дн назад
+                  - generic [ref=e8364] [cursor=pointer]:
+                    - img [ref=e8365]
+                    - generic [ref=e8369]:
+                      - generic [ref=e8370]:
+                        - generic [ref=e8371]: Stage5 Unqualified Test
+                        - generic [ref=e8372]: • —
+                      - generic [ref=e8373]:
+                        - img [ref=e8374]
+                        - generic [ref=e8376]: smoke policy
+                      - generic [ref=e8377]:
+                        - generic [ref=e8378]:
+                          - img [ref=e8379]
+                          - text: Admin User
+                        - generic [ref=e8382]: 5 дн назад
+                  - generic [ref=e8384] [cursor=pointer]:
+                    - img [ref=e8385]
+                    - generic [ref=e8389]:
+                      - generic [ref=e8390]:
+                        - generic [ref=e8391]: Policy Stage3
+                        - generic [ref=e8392]: • —
+                      - generic [ref=e8393]:
+                        - img [ref=e8394]
+                        - generic [ref=e8396]: policy_smoke
+                      - generic [ref=e8397]:
+                        - generic [ref=e8398]:
+                          - img [ref=e8399]
+                          - text: Admin User
+                        - generic [ref=e8402]: 5 дн назад
+                  - generic [ref=e8404] [cursor=pointer]:
+                    - img [ref=e8405]
+                    - generic [ref=e8409]:
+                      - generic [ref=e8410]:
+                        - generic [ref=e8411]: Stage5 Unqualified Test
+                        - generic [ref=e8412]: • —
+                      - generic [ref=e8413]:
+                        - img [ref=e8414]
+                        - generic [ref=e8416]: smoke policy
+                      - generic [ref=e8417]:
+                        - generic [ref=e8418]:
+                          - img [ref=e8419]
+                          - text: Admin User
+                        - generic [ref=e8422]: 6 дн назад
+                  - generic [ref=e8424] [cursor=pointer]:
+                    - img [ref=e8425]
+                    - generic [ref=e8429]:
+                      - generic [ref=e8430]:
+                        - generic [ref=e8431]: Policy Stage3
+                        - generic [ref=e8432]: • —
+                      - generic [ref=e8433]:
+                        - img [ref=e8434]
+                        - generic [ref=e8436]: policy_smoke
+                      - generic [ref=e8437]:
+                        - generic [ref=e8438]:
+                          - img [ref=e8439]
+                          - text: Admin User
+                        - generic [ref=e8442]: 6 дн назад
+                  - generic [ref=e8444] [cursor=pointer]:
+                    - img [ref=e8445]
+                    - generic [ref=e8449]:
+                      - generic [ref=e8450]:
+                        - generic [ref=e8451]: Stage5 Unqualified Test
+                        - generic [ref=e8452]: • —
+                      - generic [ref=e8453]:
+                        - img [ref=e8454]
+                        - generic [ref=e8456]: smoke policy
+                      - generic [ref=e8457]:
+                        - generic [ref=e8458]:
+                          - img [ref=e8459]
+                          - text: Admin User
+                        - generic [ref=e8462]: 6 дн назад
+                  - generic [ref=e8464] [cursor=pointer]:
+                    - img [ref=e8465]
+                    - generic [ref=e8469]:
+                      - generic [ref=e8470]:
+                        - generic [ref=e8471]: Policy Stage3
+                        - generic [ref=e8472]: • —
+                      - generic [ref=e8473]:
+                        - img [ref=e8474]
+                        - generic [ref=e8476]: policy_smoke
+                      - generic [ref=e8477]:
+                        - generic [ref=e8478]:
+                          - img [ref=e8479]
+                          - text: Admin User
+                        - generic [ref=e8482]: 6 дн назад
+                  - generic [ref=e8484] [cursor=pointer]:
+                    - img [ref=e8485]
+                    - generic [ref=e8489]:
+                      - generic [ref=e8490]:
+                        - generic [ref=e8491]: Stage5 Unqualified Test
+                        - generic [ref=e8492]: • —
+                      - generic [ref=e8493]:
+                        - img [ref=e8494]
+                        - generic [ref=e8496]: smoke policy
+                      - generic [ref=e8497]:
+                        - generic [ref=e8498]:
+                          - img [ref=e8499]
+                          - text: Admin User
+                        - generic [ref=e8502]: 6 дн назад
+                  - generic [ref=e8504] [cursor=pointer]:
+                    - img [ref=e8505]
+                    - generic [ref=e8509]:
+                      - generic [ref=e8510]:
+                        - generic [ref=e8511]: Policy Stage3
+                        - generic [ref=e8512]: • —
+                      - generic [ref=e8513]:
+                        - img [ref=e8514]
+                        - generic [ref=e8516]: policy_smoke
+                      - generic [ref=e8517]:
+                        - generic [ref=e8518]:
+                          - img [ref=e8519]
+                          - text: Admin User
+                        - generic [ref=e8522]: 6 дн назад
+                  - generic [ref=e8524] [cursor=pointer]:
+                    - img [ref=e8525]
+                    - generic [ref=e8529]:
+                      - generic [ref=e8530]:
+                        - generic [ref=e8531]: Stage5 Unqualified Test
+                        - generic [ref=e8532]: • —
+                      - generic [ref=e8533]:
+                        - img [ref=e8534]
+                        - generic [ref=e8536]: smoke policy
+                      - generic [ref=e8537]:
+                        - generic [ref=e8538]:
+                          - img [ref=e8539]
+                          - text: Admin User
+                        - generic [ref=e8542]: 6 дн назад
+                  - generic [ref=e8544] [cursor=pointer]:
+                    - img [ref=e8545]
+                    - generic [ref=e8549]:
+                      - generic [ref=e8550]:
+                        - generic [ref=e8551]: Policy Stage3
+                        - generic [ref=e8552]: • —
+                      - generic [ref=e8553]:
+                        - img [ref=e8554]
+                        - generic [ref=e8556]: policy_smoke
+                      - generic [ref=e8557]:
+                        - generic [ref=e8558]:
+                          - img [ref=e8559]
+                          - text: Admin User
+                        - generic [ref=e8562]: 6 дн назад
+                  - generic [ref=e8564] [cursor=pointer]:
+                    - img [ref=e8565]
+                    - generic [ref=e8569]:
+                      - generic [ref=e8570]:
+                        - generic [ref=e8571]: Смирнов Андрей
+                        - generic [ref=e8572]: • Самосвал
+                      - generic [ref=e8573]:
+                        - img [ref=e8574]
+                        - generic [ref=e8576]: "123"
+                      - generic [ref=e8577]:
+                        - generic [ref=e8578]:
+                          - img [ref=e8579]
+                          - text: Сергей Продажи
+                        - generic [ref=e8582]: 6 дн назад
+                  - generic [ref=e8584] [cursor=pointer]:
+                    - img [ref=e8585]
+                    - generic [ref=e8589]:
+                      - generic [ref=e8590]:
+                        - generic [ref=e8591]: Пётр Лунёв
+                        - generic [ref=e8592]: • Бетононасос
+                      - generic [ref=e8593]:
+                        - img [ref=e8594]
+                        - generic [ref=e8596]: Недостаточно подтверждённых данных по объекту
+                      - generic [ref=e8597]:
+                        - generic [ref=e8598]:
+                          - img [ref=e8599]
+                          - text: Сергей Продажи
+                        - generic [ref=e8602]: 9 дн назад
+  - region "Notifications alt+T"
+```
+
+# Test source
+
+```ts
+  49  |   refreshToken: string
+  50  |   user: {
+  51  |     id: string
+  52  |     email: string
+  53  |     role: TestRole
+  54  |     fullName: string
+  55  |   }
+  56  | }
+  57  | 
+  58  | type LeadPayload = {
+  59  |   id: string
+  60  |   contactName: string
+  61  | }
+  62  | 
+  63  | type CreateLeadResult = {
+  64  |   lead: LeadPayload
+  65  | }
+  66  | 
+  67  | type ApplicationsListResult = {
+  68  |   items: Array<{ id: string }>
+  69  | }
+  70  | 
+  71  | function apiUrl(path: string): string {
+  72  |   const cleanBase = API_BASE_URL.replace(/\/+$/, '')
+  73  |   const cleanPath = path.replace(/^\/+/, '')
+  74  |   return `${cleanBase}/${cleanPath}`
+  75  | }
+  76  | 
+  77  | export function enableUiFailureGuards(page: Page): void {
+  78  |   if (uiFailureGuards.has(page)) {
+  79  |     return
+  80  |   }
+  81  | 
+  82  |   const consoleErrors: string[] = []
+  83  |   const failedApiRequests: string[] = []
+  84  |   const allowedConsoleErrorPatterns: RegExp[] = []
+  85  |   const apiBase = API_BASE_URL.replace(/\/+$/, '')
+  86  | 
+  87  |   const onConsole: UiFailureGuardState['onConsole'] = (message) => {
+  88  |     if (message.type() !== 'error') {
+  89  |       return
+  90  |     }
+  91  | 
+  92  |     const text = message.text()
+  93  |     if (isKnownConsoleBaselineError(text)) {
+  94  |       return
+  95  |     }
+  96  |     if (allowedConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+  97  |       return
+  98  |     }
+  99  | 
+  100 |     const location = message.location()
+  101 |     const source = location.url ? `${location.url}:${location.lineNumber ?? 0}:${location.columnNumber ?? 0}` : 'unknown'
+  102 |     consoleErrors.push(`${source} :: ${text}`)
+  103 |   }
+  104 | 
+  105 |   const onRequestFailed: UiFailureGuardState['onRequestFailed'] = (request) => {
+  106 |     const url = request.url()
+  107 |     if (!url.startsWith(apiBase)) {
+  108 |       return
+  109 |     }
+  110 | 
+  111 |     const errorText = request.failure()?.errorText ?? 'unknown-error'
+  112 |     if (errorText.includes('ERR_ABORTED')) {
+  113 |       return
+  114 |     }
+  115 | 
+  116 |     failedApiRequests.push(`${request.method()} ${url} :: ${errorText}`)
+  117 |   }
+  118 | 
+  119 |   page.on('console', onConsole)
+  120 |   page.on('requestfailed', onRequestFailed)
+  121 |   uiFailureGuards.set(page, {
+  122 |     consoleErrors,
+  123 |     failedApiRequests,
+  124 |     allowedConsoleErrorPatterns,
+  125 |     onConsole,
+  126 |     onRequestFailed,
+  127 |   })
+  128 | }
+  129 | 
+  130 | export async function assertUiFailureGuards(page: Page, options: { failOnIssues?: boolean } = {}): Promise<void> {
+  131 |   const state = uiFailureGuards.get(page)
+  132 |   if (!state) {
+  133 |     return
+  134 |   }
+  135 | 
+  136 |   page.off('console', state.onConsole)
+  137 |   page.off('requestfailed', state.onRequestFailed)
+  138 |   uiFailureGuards.delete(page)
+  139 | 
+  140 |   const issues = [
+  141 |     ...state.consoleErrors.map((entry) => `console.error ${entry}`),
+  142 |     ...state.failedApiRequests.map((entry) => `requestfailed ${entry}`),
+  143 |   ]
+  144 | 
+  145 |   if (issues.length === 0 || options.failOnIssues === false) {
+  146 |     return
+  147 |   }
+  148 | 
+> 149 |   expect(issues, `Unexpected UI runtime issues:\n${issues.join('\n')}`).toEqual([])
+      |                                                                         ^ Error: Unexpected UI runtime issues:
+  150 | }
+  151 | 
+  152 | export async function sendApiRequest<T>(
+  153 |   request: APIRequestContext,
+  154 |   path: string,
+  155 |   options: {
+  156 |     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  157 |     token?: string
+  158 |     body?: unknown
+  159 |     expectedStatus?: number
+  160 |   } = {},
+  161 | ): Promise<T> {
+  162 |   const headers: Record<string, string> = { Accept: 'application/json' }
+  163 |   if (options.token) {
+  164 |     headers.Authorization = `Bearer ${options.token}`
+  165 |   }
+  166 |   if (options.body !== undefined) {
+  167 |     headers['Content-Type'] = 'application/json'
+  168 |   }
+  169 | 
+  170 |   const response = await request.fetch(apiUrl(path), {
+  171 |     method: options.method ?? 'GET',
+  172 |     headers,
+  173 |     data: options.body,
+  174 |   })
+  175 |   const status = response.status()
+  176 | 
+  177 |   const raw = await response.text()
+  178 |   const payload = raw
+  179 |     ? (() => {
+  180 |         try {
+  181 |           return JSON.parse(raw)
+  182 |         } catch {
+  183 |           return raw
+  184 |         }
+  185 |       })()
+  186 |     : null
+  187 | 
+  188 |   if (options.expectedStatus !== undefined && status !== options.expectedStatus) {
+  189 |     throw new Error(
+  190 |       `API ${options.method ?? 'GET'} ${path} expected ${options.expectedStatus}, got ${status}: ${JSON.stringify(payload)}`,
+  191 |     )
+  192 |   }
+  193 | 
+  194 |   if (options.expectedStatus === undefined && !response.ok()) {
+  195 |     throw new Error(
+  196 |       `API ${options.method ?? 'GET'} ${path} failed with ${status}: ${JSON.stringify(payload)}`,
+  197 |     )
+  198 |   }
+  199 | 
+  200 |   return payload as T
+  201 | }
+  202 | 
+  203 | export function uniqueSeed(prefix: string): string {
+  204 |   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  205 | }
+  206 | 
+  207 | export function uniquePhone(): string {
+  208 |   const tail = `${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 90 + 10)}`
+  209 |   return `+7900${tail}`
+  210 | }
+  211 | 
+  212 | export async function apiLogin(request: APIRequestContext, role: TestRole): Promise<AuthPayload> {
+  213 |   const credentials = ROLE_CREDENTIALS[role]
+  214 |   return sendApiRequest<AuthPayload>(request, 'auth/login', {
+  215 |     method: 'POST',
+  216 |     body: credentials,
+  217 |   })
+  218 | }
+  219 | 
+  220 | export async function createLeadViaApi(
+  221 |   request: APIRequestContext,
+  222 |   token: string,
+  223 |   overrides: Partial<{
+  224 |     contactName: string
+  225 |     contactPhone: string
+  226 |     equipmentTypeHint: string
+  227 |     address: string
+  228 |     requestedDate: string
+  229 |   }> = {},
+  230 | ): Promise<LeadPayload> {
+  231 |   const oneDayAhead = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  232 | 
+  233 |   const response = await sendApiRequest<CreateLeadResult>(request, 'leads', {
+  234 |     method: 'POST',
+  235 |     token,
+  236 |     body: {
+  237 |       contactName: overrides.contactName ?? `E2E ${uniqueSeed('lead')}`,
+  238 |       contactPhone: overrides.contactPhone ?? uniquePhone(),
+  239 |       source: 'manual',
+  240 |       equipmentTypeHint: overrides.equipmentTypeHint ?? 'Экскаватор',
+  241 |       requestedDate: overrides.requestedDate ?? oneDayAhead.toISOString(),
+  242 |       address: overrides.address ?? 'Москва, Тестовая улица, 1',
+  243 |       comment: 'Created by Playwright e2e',
+  244 |     },
+  245 |   })
+  246 | 
+  247 |   return response.lead
+  248 | }
+  249 | 
+```

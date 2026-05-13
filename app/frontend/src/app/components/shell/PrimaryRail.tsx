@@ -4,6 +4,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useLayout } from './layoutStore';
 import { PRIMARY_DOMAINS, getDomainConfig } from './navConfig';
 
+const SIDEBAR_AUTO_EXPAND_BREAKPOINT = 768;
+
 export function PrimaryRail() {
   const {
     activePrimaryNav,
@@ -20,7 +22,9 @@ export function PrimaryRail() {
     setActivePrimaryNav(id);
     const cfg = getDomainConfig(id);
     if (cfg) setActiveSecondaryNav(cfg.defaultSecondary);
-    if (!sidebarExpanded) setSidebarExpanded(true);
+    const shouldAutoExpand =
+      typeof window !== 'undefined' && window.innerWidth >= SIDEBAR_AUTO_EXPAND_BREAKPOINT;
+    if (!sidebarExpanded && shouldAutoExpand) setSidebarExpanded(true);
   };
 
   return (

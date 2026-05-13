@@ -292,7 +292,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
         main={(
-          <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-muted-foreground">
+          <div className="max-w-[820px] mx-auto px-4 pb-10 pt-6 sm:px-6 lg:px-8 text-[12px] text-muted-foreground">
             Загружаем карточку клиента...
           </div>
         )}
@@ -307,7 +307,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         breadcrumb={<Breadcrumb items={breadcrumbItems} />}
         onClose={onClose}
         main={(
-          <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10 text-[12px] text-rose-700">
+          <div className="max-w-[820px] mx-auto px-4 pb-10 pt-6 sm:px-6 lg:px-8 text-[12px] text-rose-700">
             {clientQuery.error instanceof Error
               ? clientQuery.error.message
               : 'Не удалось загрузить карточку клиента.'}
@@ -361,25 +361,22 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
   const completedOrders = base.ordersHistory.filter((o) => o.status === 'completed');
   const lastCompleted = completedOrders[0] ?? null;
-  const historyEntries = useMemo(
-    () => [
-      ...base.activity.map((a) => ({
-        id: a.id,
-        actor: a.actor,
-        text: a.message,
-        time: a.at,
-      })),
-      ...(createdLeadId
-        ? [{
-            id: `repeat-order-${createdLeadId}`,
-            actor: base.manager ?? 'Менеджер',
-            text: `Повтор заказа → ${createdLeadId}`,
-            time: 'только что',
-          }]
-        : []),
-    ],
-    [base.activity, base.manager, createdLeadId],
-  );
+  const historyEntries = [
+    ...base.activity.map((a) => ({
+      id: a.id,
+      actor: a.actor,
+      text: a.message,
+      time: a.at,
+    })),
+    ...(createdLeadId
+      ? [{
+          id: `repeat-order-${createdLeadId}`,
+          actor: base.manager ?? 'Менеджер',
+          text: `Повтор заказа → ${createdLeadId}`,
+          time: 'только что',
+        }]
+      : []),
+  ];
   const shareClientEntityId = normalizeEntityRouteId(resolvedApiClientId ?? base.id);
   const shareUrl = shareClientEntityId
     ? buildAbsoluteEntityUrl('client', shareClientEntityId)
@@ -574,7 +571,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   };
 
   const main = (
-    <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
+    <div className="max-w-[820px] mx-auto px-4 pb-10 pt-6 sm:px-6 lg:px-8">
       {isContextPending && (
         <Alert className="mb-3 py-1.5 px-2.5">
           <Activity className="h-4 w-4" />

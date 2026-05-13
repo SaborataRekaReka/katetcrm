@@ -1,0 +1,2937 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: happy-path.gwt.spec.ts >> Happy Path GWT (QA-REQ: 001..031) >> E2E-005 reservation conflict behavior
+- Location: e2e\happy-path.gwt.spec.ts:342:3
+
+# Error details
+
+```
+Error: Unexpected UI runtime issues:
+console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 3
+
+- Array []
++ Array [
++   "console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+```
+
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - banner:
+        - generic:
+          - generic: К
+          - generic: Катет CRM
+        - generic:
+          - generic:
+            - img
+            - textbox:
+              - /placeholder: Поиск по бронированиям
+            - generic: Ctrl K
+        - generic:
+          - button: Менеджер
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - generic: MA
+            - img
+      - generic:
+        - complementary:
+          - generic:
+            - navigation:
+              - button:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+              - button [pressed]:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+        - generic:
+          - complementary:
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - heading [level=2]: Операции
+                - generic:
+                  - button:
+                    - img
+                  - button:
+                    - img
+              - generic:
+                - generic:
+                  - button:
+                    - img
+                    - generic: Брони
+                  - button:
+                    - img
+                    - generic: Выезды
+                  - button:
+                    - img
+                    - generic: Завершение
+                - generic:
+                  - button:
+                    - img
+                    - generic: Представления операций
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Конфликт брони
+                    - button:
+                      - img
+                      - generic: Требуют подтверждения
+                    - button:
+                      - img
+                      - generic: Unit не выбран
+                    - button:
+                      - img
+                      - generic: Подрядчик не выбран
+                    - button:
+                      - img
+                      - generic: Готовы к выезду
+                    - button:
+                      - img
+                      - generic: Снятые брони
+                    - button:
+                      - img
+                      - generic: Выезды сегодня
+                    - button:
+                      - img
+                      - generic: Просроченные выезды
+                    - button:
+                      - img
+                      - generic: Без завершения
+              - generic:
+                - button:
+                  - img
+                  - generic: Черновик
+          - main:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=1]: Брони
+                - generic:
+                  - button:
+                    - img
+                    - generic: Список
+                  - button:
+                    - img
+                    - generic: Таблица
+              - generic:
+                - generic:
+                  - img
+                  - textbox:
+                    - /placeholder: Поиск по бронированиям
+                - combobox:
+                  - generic: Все
+                  - img
+                - combobox:
+                  - generic: Любой статус
+                  - img
+                - combobox:
+                  - generic: Все стадии
+                  - img
+                - combobox:
+                  - generic: Любой источник
+                  - img
+                - combobox:
+                  - generic: Все типы
+                  - img
+                - combobox:
+                  - generic: "Единица: любая"
+                  - img
+                - combobox:
+                  - generic: Все менеджеры
+                  - img
+                - button: Конфликт
+                - button: Готовы к выезду
+                - generic:
+                  - button:
+                    - img
+                    - generic: Новая бронь
+                  - button:
+                    - img
+                    - generic: К заявкам
+                  - button:
+                    - img
+                    - generic: Сохранить вид
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Бронь · клиент
+                      - generic: Источник
+                      - generic: Единица / подрядчик
+                      - generic: Тип техники
+                      - generic: Дата / окно
+                      - generic: Адрес
+                      - generic: Менеджер
+                      - generic: Обновлено
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Нужен выбор источника
+                      - generic: "0"
+                    - generic: Нет броней в этой стадии
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Подбор своей техники
+                      - generic: "8"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1m8rr002wrcnusmh3xayx
+                              - generic: · E2E 004 004-1778010620538-104
+                              - generic: "· Заявка #APP-000138"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1obx0007qrcnuirjxh2pq
+                              - generic: · E2E 004 004-1778010717595-714
+                              - generic: "· Заявка #APP-000144"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot203mt0017kcyd132cqp4z
+                              - generic: · E2E 004 004-1778011266540-324
+                              - generic: "· Заявка #APP-000150"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot22sw60017fnob060ov5mx
+                              - generic: · E2E 004 004-1778011392660-665
+                              - generic: "· Заявка #APP-000157"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot29omw0017izc0eswk6gvy
+                              - generic: · E2E 004 004-1778011713468-393
+                              - generic: "· Заявка #APP-000164"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot2opu800172ux0lhctab86
+                              - generic: · E2E 004 004-1778012414014-959
+                              - generic: "· Заявка #APP-000173"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou72pk10058dd4b1rdlab28
+                              - generic: · E2E 004 004-1778080252720-796
+                              - generic: "· Заявка #APP-000221"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-own
+                          - generic:
+                            - img
+                            - generic: 07.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1mcy3004drcnuh5ls2k8l
+                              - generic: · E2E 006 006-1778010627950-533
+                              - generic: "· Заявка #APP-000140"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно назначить unit
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 006-item
+                          - generic:
+                            - img
+                            - generic: 09.05 · 19:50–23:50
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Подбор подрядчика
+                      - generic: "13"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmoitl6xi0047m637b2dzal8y
+                              - generic: · Алексей Томин
+                              - generic: (ООО Дорожник)
+                              - generic: "· Заявка #APP-2026-0002"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: Кран
+                          - generic:
+                            - img
+                            - generic: 30.04 · 16:00–21:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 7 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot09t2y0058588g1mvxfps1
+                              - generic: · QA APIC012-1778008362757-4153 Lead
+                              - generic: "· Заявка #APP-000097"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: QA APIC-012 Position
+                          - generic:
+                            - img
+                            - generic: 06.05 · 02:12–03:52
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0b0310060149l3kntjo4k
+                              - generic: · QA APIC012-1778008418500-7155 Lead
+                              - generic: "· Заявка #APP-000110"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: QA APIC-012 Position
+                          - generic:
+                            - img
+                            - generic: 06.05 · 02:13–03:53
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0g1gx0076p9pfqoqgyw4b
+                              - generic: · QA APIC012-1778008653583-2367 Lead
+                              - generic: "· Заявка #APP-000124"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: QA APIC-012 Position
+                          - generic:
+                            - img
+                            - generic: 06.05 · 02:17–03:57
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot2opxo001b2ux0am9llj30
+                              - generic: · E2E 004 004-1778012414014-959
+                              - generic: "· Заявка #APP-000173"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1m8uc0030rcnuci0nynns
+                              - generic: · E2E 004 004-1778010620538-104
+                              - generic: "· Заявка #APP-000138"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1obyj007urcnufrsq9mon
+                              - generic: · E2E 004 004-1778010717595-714
+                              - generic: "· Заявка #APP-000144"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot203pk001bkcydo4kicqqw
+                              - generic: · E2E 004 004-1778011266540-324
+                              - generic: "· Заявка #APP-000150"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot22sye001bfnobay136xhm
+                              - generic: · E2E 004 004-1778011392660-665
+                              - generic: "· Заявка #APP-000157"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot29opp001bizc0017fv6mo
+                              - generic: · E2E 004 004-1778011713468-393
+                              - generic: "· Заявка #APP-000164"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 06.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6ydht0076zg8anyl6jc1k
+                              - generic: · QA APIC012-1778080052829-2146 Lead
+                              - generic: "· Заявка #APP-000187"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: QA APIC-012 Position
+                          - generic:
+                            - img
+                            - generic: 06.05 · 22:07–23:47
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6z5iv0076yitk8ojbz842
+                              - generic: · QA APIC012-1778080089172-9913 Lead
+                              - generic: "· Заявка #APP-000205"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: QA APIC-012 Position
+                          - generic:
+                            - img
+                            - generic: 06.05 · 22:08–23:48
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou72pln005cdd4bs39s1rv7
+                              - generic: · E2E 004 004-1778080252720-796
+                              - generic: "· Заявка #APP-000221"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно выбрать подрядчика
+                          - generic:
+                            - generic:
+                              - img
+                              - text: подр.
+                          - generic:
+                            - generic: не выбран
+                          - generic: E2E 004-subcontractor
+                          - generic:
+                            - img
+                            - generic: 07.05 · 05:00–09:00
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Подрядчик подтверждён
+                      - generic: "0"
+                    - generic: Нет броней в этой стадии
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Тип забронирован
+                      - generic: "0"
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Unit уточнён
+                      - generic: "52"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot09rpm001v588g3ox89lt0
+                              - generic: · QA APIC006-1778008360913-5073 Lead
+                              - generic: "· Заявка #APP-000093"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008360913-5073 Unit
+                          - generic: QA APIC006-1778008360913-5073 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:12–00:12
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0ayli001v149l5yn1u3ty
+                              - generic: · QA APIC006-1778008416503-3726 Lead
+                              - generic: "· Заявка #APP-000105"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008416503-3726 Unit
+                          - generic: QA APIC006-1778008416503-3726 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:13–00:13
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0fz0k001vp9pfqalpjquf
+                              - generic: · QA APIC006-1778008650337-1020 Lead
+                              - generic: "· Заявка #APP-000118"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008650337-1020 Unit
+                          - generic: QA APIC006-1778008650337-1020 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:17–00:17
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot09rr8001z588gxh2uc78j
+                              - generic: · QA APIC006-1778008360913-5073 Lead
+                              - generic: "· Заявка #APP-000093"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008360913-5073 Unit
+                          - generic: QA APIC006-1778008360913-5073 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:42–00:42
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0aymu001z149lxa4knv8d
+                              - generic: · QA APIC006-1778008416503-3726 Lead
+                              - generic: "· Заявка #APP-000105"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008416503-3726 Unit
+                          - generic: QA APIC006-1778008416503-3726 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:43–00:43
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0fz1r001zp9pf1vxfzclk
+                              - generic: · QA APIC006-1778008650337-1020 Lead
+                              - generic: "· Заявка #APP-000118"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778008650337-1020 Unit
+                          - generic: QA APIC006-1778008650337-1020 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 22:47–00:47
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot09ryi002i588ggf9lob8i
+                              - generic: · QA APIC007-1778008361306-5789 Lead
+                              - generic: "· Заявка #APP-000094"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC007-1778008361306-5789 Unit
+                          - generic: QA APIC007-1778008361306-5789 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:12–01:12
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0a4fh0023ntp02nt0v3m8
+                              - generic: · QA INT004-1778008377433-555 Lead
+                              - generic: "· Заявка #APP-000101"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008377433-555 Unit
+                          - generic: QA INT004-1778008377433-555 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:12–01:12
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0aytw002i149lh847y6d1
+                              - generic: · QA APIC007-1778008416880-7627 Lead
+                              - generic: "· Заявка #APP-000106"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC007-1778008416880-7627 Unit
+                          - generic: QA APIC007-1778008416880-7627 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:13–01:13
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0be1d002310n1gzo79knc
+                              - generic: · QA INT004-1778008436526-8769 Lead
+                              - generic: "· Заявка #APP-000114"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008436526-8769 Unit
+                          - generic: QA INT004-1778008436526-8769 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:13–01:13
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0fz8b002ip9pfsqprsno4
+                              - generic: · QA APIC007-1778008650682-4099 Lead
+                              - generic: "· Заявка #APP-000119"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC007-1778008650682-4099 Unit
+                          - generic: QA APIC007-1778008650682-4099 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:17–01:17
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0gd280023la1cdetn3d73
+                              - generic: · QA INT004-1778008668560-1720 Lead
+                              - generic: "· Заявка #APP-000128"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008668560-1720 Unit
+                          - generic: QA INT004-1778008668560-1720 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:17–01:17
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0a4gk0027ntp0ne6ax43w
+                              - generic: · QA INT004-1778008377433-555 Lead
+                              - generic: "· Заявка #APP-000101"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008377433-555 Unit
+                          - generic: QA INT004-1778008377433-555 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:32–01:32
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0be2l002710n1bvljomjm
+                              - generic: · QA INT004-1778008436526-8769 Lead
+                              - generic: "· Заявка #APP-000114"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008436526-8769 Unit
+                          - generic: QA INT004-1778008436526-8769 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:33–01:33
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0gd3g0027la1cdrzi40z4
+                              - generic: · QA INT004-1778008668560-1720 Lead
+                              - generic: "· Заявка #APP-000128"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778008668560-1720 Unit
+                          - generic: QA INT004-1778008668560-1720 Type
+                          - generic:
+                            - img
+                            - generic: 05.05 · 23:37–01:37
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0a4m4002qntp0yg4wk2gp
+                              - generic: · QA INT005-1778008377739-9308 Lead
+                              - generic: "· Заявка #APP-000102"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT005-1778008377739-9308 Unit
+                          - generic: QA INT005-1778008377739-9308 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 00:12–02:12
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0bea1002q10n1su53dglv
+                              - generic: · QA INT005-1778008436889-2557 Lead
+                              - generic: "· Заявка #APP-000115"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT005-1778008436889-2557 Unit
+                          - generic: QA INT005-1778008436889-2557 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 00:13–02:13
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0gdap002qla1c1rp9ytn6
+                              - generic: · QA INT005-1778008668902-896 Lead
+                              - generic: "· Заявка #APP-000129"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT005-1778008668902-896 Unit
+                          - generic: QA INT005-1778008668902-896 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 00:17–02:17
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0azes004c149l5vc934fq
+                              - generic: · QA APIC008CANCEL-1778008417588-9816 Lead
+                              - generic: "· Заявка #APP-000108"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC008CANCEL-1778008417588-9816 Unit
+                          - generic: QA APIC008CANCEL-1778008417588-9816 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 03:33–05:33
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot0fzqm004cp9pfe59otz6g
+                              - generic: · QA APIC008CANCEL-1778008651326-4386 Lead
+                              - generic: "· Заявка #APP-000121"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC008CANCEL-1778008651326-4386 Unit
+                          - generic: QA APIC008CANCEL-1778008651326-4386 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 03:37–05:37
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yaqb001vzg8a0y41g0bx
+                              - generic: · QA APIC006-1778080049138-3487 Lead
+                              - generic: "· Заявка #APP-000181"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778080049138-3487 Unit
+                          - generic: QA APIC006-1778080049138-3487 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 18:07–20:07
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6z3z5001vyitkhkfvjice
+                              - generic: · QA APIC006-1778080087117-3343 Lead
+                              - generic: "· Заявка #APP-000199"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778080087117-3343 Unit
+                          - generic: QA APIC006-1778080087117-3343 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 18:08–20:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yas4001zzg8aqhbohqx5
+                              - generic: · QA APIC006-1778080049138-3487 Lead
+                              - generic: "· Заявка #APP-000181"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778080049138-3487 Unit
+                          - generic: QA APIC006-1778080049138-3487 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 18:37–20:37
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6z40c001zyitk1ddu52qw
+                              - generic: · QA APIC006-1778080087117-3343 Lead
+                              - generic: "· Заявка #APP-000199"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC006-1778080087117-3343 Unit
+                          - generic: QA APIC006-1778080087117-3343 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 18:38–20:38
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yb08002izg8a0zijb8qy
+                              - generic: · QA APIC007-1778080049584-9066 Lead
+                              - generic: "· Заявка #APP-000182"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC007-1778080049584-9066 Unit
+                          - generic: QA APIC007-1778080049584-9066 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:07–21:07
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yrlt0023tkwtdnw2ngqm
+                              - generic: · QA INT004-1778080071070-5069 Lead
+                              - generic: "· Заявка #APP-000191"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778080071070-5069 Unit
+                          - generic: QA INT004-1778080071070-5069 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:07–21:07
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6z46s002iyitk329ic3wn
+                              - generic: · QA APIC007-1778080087448-4144 Lead
+                              - generic: "· Заявка #APP-000200"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC007-1778080087448-4144 Unit
+                          - generic: QA APIC007-1778080087448-4144 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:08–21:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6za18009eyitkcxqfo6nt
+                              - generic: · QA INT004-1778080094977-992 Lead
+                              - generic: "· Заявка #APP-000209"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778080094977-992 Unit
+                          - generic: QA INT004-1778080094977-992 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:08–21:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yrn20027tkwtj1ztzx2m
+                              - generic: · QA INT004-1778080071070-5069 Lead
+                              - generic: "· Заявка #APP-000191"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778080071070-5069 Unit
+                          - generic: QA INT004-1778080071070-5069 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:27–21:27
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6za2a009iyitkca8hws2w
+                              - generic: · QA INT004-1778080094977-992 Lead
+                              - generic: "· Заявка #APP-000209"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT004-1778080094977-992 Unit
+                          - generic: QA INT004-1778080094977-992 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 19:28–21:28
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6yruf002qtkwtgwviwgbe
+                              - generic: · QA INT005-1778080071419-8697 Lead
+                              - generic: "· Заявка #APP-000192"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT005-1778080071419-8697 Unit
+                          - generic: QA INT005-1778080071419-8697 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 20:07–22:07
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6za7x00a1yitkby7ua0th
+                              - generic: · QA INT005-1778080095267-9319 Lead
+                              - generic: "· Заявка #APP-000210"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA INT005-1778080095267-9319 Unit
+                          - generic: QA INT005-1778080095267-9319 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 20:08–22:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6ybm3004czg8abaifpsp5
+                              - generic: · QA APIC008CANCEL-1778080050358-9220 Lead
+                              - generic: "· Заявка #APP-000184"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC008CANCEL-1778080050358-9220 Unit
+                          - generic: QA APIC008CANCEL-1778080050358-9220 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 23:27–01:27
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou6z4mq004cyitkmpg0lzjw
+                              - generic: · QA APIC008CANCEL-1778080088035-5005 Lead
+                              - generic: "· Заявка #APP-000202"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: QA APIC008CANCEL-1778080088035-5005 Unit
+                          - generic: QA APIC008CANCEL-1778080088035-5005 Type
+                          - generic:
+                            - img
+                            - generic: 06.05 · 23:28–01:28
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1m9l0003urcnupyc7b7hd
+                              - generic: · E2E 005 005-1778010623572-102
+                              - generic: "· Заявка #APP-000139"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 19:50–23:50
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1m9k5003qrcnub3gvdshc
+                              - generic: · E2E 005 005-1778010623572-102
+                              - generic: "· Заявка #APP-000139"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно подтвердить бронь
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 19:50–23:50
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1ocrc008krcnuexo4rvmr
+                              - generic: · E2E 005 005-1778010720989-560
+                              - generic: "· Заявка #APP-000145"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 19:52–23:52
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1ocsa008orcnutcjumtk2
+                              - generic: · E2E 005 005-1778010720989-560
+                              - generic: "· Заявка #APP-000145"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 19:52–23:52
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot204lg0025kcyd73v9vhu3
+                              - generic: · E2E 005 005-1778011270265-774
+                              - generic: "· Заявка #APP-000151"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:01–00:01
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot204ka0021kcyd15lhnbh5
+                              - generic: · E2E 005 005-1778011270265-774
+                              - generic: "· Заявка #APP-000151"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:01–00:01
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot22twx0025fnob1a7rhqb1
+                              - generic: · E2E 005 005-1778011396373-137
+                              - generic: "· Заявка #APP-000158"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:03–00:03
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot22tvi0021fnobx9ytxh4z
+                              - generic: · E2E 005 005-1778011396373-137
+                              - generic: "· Заявка #APP-000158"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:03–00:03
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot29pg80021izc0cm585nzo
+                              - generic: · E2E 005 005-1778011717245-381
+                              - generic: "· Заявка #APP-000165"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:08–00:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot29phc0025izc013einzb6
+                              - generic: · E2E 005 005-1778011717245-381
+                              - generic: "· Заявка #APP-000165"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:08–00:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot2osp200252ux0amn96x43
+                              - generic: · E2E 005 005-1778012421144-870
+                              - generic: "· Заявка #APP-000174"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:20–00:20
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot2osn900212ux0lxjp1th0
+                              - generic: · E2E 005 005-1778012421144-870
+                              - generic: "· Заявка #APP-000174"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 08.05 · 20:20–00:20
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou72sna0066dd4bznbmfbrj
+                              - generic: · E2E 005 005-1778080258987-948
+                              - generic: "· Заявка #APP-000222"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 15:10–19:10
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou72sm80062dd4b030pduun
+                              - generic: · E2E 005 005-1778080258987-948
+                              - generic: "· Заявка #APP-000222"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 15:10–19:10
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot206pi002okcydiy5vujji
+                              - generic: · E2E 006 006-1778011273043-743
+                              - generic: "· Заявка #APP-000152"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 20:01–00:01
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot22w2b002ofnob552xucve
+                              - generic: · E2E 006 006-1778011399225-85
+                              - generic: "· Заявка #APP-000159"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 20:03–00:03
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot29rm5002oizc0fjv3oko7
+                              - generic: · E2E 006 006-1778011720058-402
+                              - generic: "· Заявка #APP-000166"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 20:08–00:08
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot2ovsf002o2ux0r0kdw91a
+                              - generic: · E2E 006 006-1778012425233-183
+                              - generic: "· Заявка #APP-000175"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Нужно разрешить конфликт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 20:20–00:20
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Готово к выезду
+                      - generic: "2"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmou71acv001udd4b8l1ys7a4
+                              - generic: · E2E 015 015-1778080188534-336
+                              - generic: "· Заявка #APP-000217"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Готово к выезду
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 15:09–19:09
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: cmot1ofbi0097rcnulhkozdij
+                              - generic: · E2E 006 006-1778010724306-803
+                              - generic: "· Заявка #APP-000146"
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Готово к выезду
+                          - generic:
+                            - generic:
+                              - img
+                              - text: парк
+                          - generic:
+                            - img
+                            - generic: "123"
+                          - generic: Бетононасос
+                          - generic:
+                            - img
+                            - generic: 09.05 · 19:52–23:52
+                          - generic:
+                            - img
+                            - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Снятые
+                      - generic: "0"
+    - region "Notifications alt+T"
+  - dialog [ref=e2]:
+    - generic [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e6]:
+          - button "CRM" [active] [ref=e7]:
+            - img [ref=e8]
+            - generic [ref=e9]: CRM
+          - generic [ref=e10]:
+            - img [ref=e11]
+            - button "Операции" [ref=e13]:
+              - generic [ref=e14]: Операции
+          - generic [ref=e15]:
+            - img [ref=e16]
+            - generic [ref=e19]: Бронь
+        - generic [ref=e20]:
+          - button "Поделиться" [ref=e21]:
+            - img [ref=e22]
+          - button "Следить за карточкой" [ref=e28]:
+            - img [ref=e29]
+          - button "Ещё действия" [ref=e32]:
+            - img [ref=e33]
+          - button [ref=e38]:
+            - img [ref=e39]
+      - generic [ref=e42]:
+        - generic [ref=e45]:
+          - banner [ref=e46]:
+            - button "Бронь" [ref=e47]:
+              - img [ref=e48]
+              - generic [ref=e51]: Бронь
+              - img [ref=e52]
+            - generic [ref=e54]:
+              - heading "cmou72sna0066dd4bznbmfbrj" [level=1] [ref=e55]
+              - button "Закрыть как некачественный" [ref=e58]
+            - generic [ref=e59]:
+              - 'button "Заявка #APP-000222" [ref=e60]'
+              - text: ·
+              - button "E2E 005 005-1778080258987-948" [ref=e61]
+              - text: · Бетононасос
+            - generic [ref=e62]:
+              - generic [ref=e65]: Единица уточнена
+              - generic [ref=e67]:
+                - img [ref=e68]
+                - generic [ref=e71]: Manager User
+              - generic [ref=e73]:
+                - img [ref=e74]
+                - generic [ref=e76]: 2026-05-09
+              - generic [ref=e78]:
+                - img [ref=e79]
+                - generic [ref=e84]: Своя техника
+              - generic [ref=e86]:
+                - img [ref=e87]
+                - generic [ref=e89]: "Единица: 123"
+              - generic [ref=e91]:
+                - img [ref=e92]
+                - text: Конфликт
+          - alert [ref=e94]:
+            - img [ref=e95]
+            - generic [ref=e97]: Обнаружен конфликт
+            - generic [ref=e98]:
+              - text: Обнаружено пересечение по интервалу брони. Подробные данные конфликта будут доступны после расширения backend-проекции.
+              - generic [ref=e99]:
+                - button "Открыть конфликт" [ref=e100]
+                - button "Выбрать альтернативу" [ref=e101]
+          - generic [ref=e102]:
+            - heading "Основные данные" [level=3] [ref=e104]
+            - generic [ref=e106]:
+              - generic [ref=e107]:
+                - generic [ref=e108]:
+                  - img [ref=e110]
+                  - generic [ref=e113]: ID
+                - generic [ref=e115]: cmou72sna0066dd4bznbmfbrj
+              - generic [ref=e116]:
+                - generic [ref=e117]:
+                  - img [ref=e119]
+                  - generic [ref=e121]: Статус
+                - generic [ref=e123]: Активна
+              - generic [ref=e124]:
+                - generic [ref=e125]:
+                  - img [ref=e127]
+                  - generic [ref=e131]: Клиент
+                - button "E2E 005 005-1778080258987-948" [ref=e133]
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - img [ref=e137]
+                  - generic [ref=e142]: Тип техники
+                - generic [ref=e144]: Бетононасос
+              - generic [ref=e145]:
+                - generic [ref=e146]:
+                  - img [ref=e148]
+                  - generic [ref=e150]: Единица
+                - generic [ref=e152]: "123"
+              - generic [ref=e153]:
+                - generic [ref=e154]:
+                  - img [ref=e156]
+                  - generic [ref=e159]: Создал
+                - generic [ref=e161]: Manager User
+              - generic [ref=e162]:
+                - generic [ref=e163]:
+                  - img [ref=e165]
+                  - generic [ref=e167]: Создано
+                - generic [ref=e169]: 2026-05-06 20:10
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - generic [ref=e172]: Позиция заявки · E2E 005-item-2
+              - button "Открыть заявку" [ref=e173]:
+                - img [ref=e174]
+                - text: Открыть заявку
+            - generic [ref=e178]:
+              - generic [ref=e179]:
+                - generic [ref=e180]:
+                  - img [ref=e182]
+                  - generic [ref=e187]: Техника
+                - generic [ref=e189]: Бетононасос × 1
+              - generic [ref=e190]:
+                - generic [ref=e191]:
+                  - img [ref=e193]
+                  - generic [ref=e195]: Дата
+                - button "Плановая дата" [ref=e197]: 09.05.2026
+              - generic [ref=e198]:
+                - generic [ref=e199]:
+                  - img [ref=e201]
+                  - generic [ref=e203]: Время
+                - button "Время (HH:MM–HH:MM)" [ref=e205]:
+                  - generic [ref=e206]: 15:10–19:10
+              - generic [ref=e207]:
+                - generic [ref=e208]:
+                  - img [ref=e210]
+                  - generic [ref=e213]: Адрес
+                - generic [ref=e214]: Empty
+          - generic [ref=e216]:
+            - generic [ref=e217]:
+              - img [ref=e218]
+              - generic [ref=e223]: Источник
+            - generic [ref=e224]:
+              - generic [ref=e225]:
+                - img [ref=e226]
+                - text: Своя техника
+              - button "Сменить на подрядчика" [ref=e231]:
+                - img [ref=e232]
+                - generic [ref=e236]: Сменить на подрядчика
+          - generic [ref=e238]:
+            - img [ref=e239]
+            - generic [ref=e241]: "Следующий шаг: Перевести в выезд"
+          - generic [ref=e242]:
+            - generic [ref=e243]: Здесь показывается только своя техника из справочника «Единицы техники». Партнерская техника выбирается через источник «Подрядчик».
+            - generic [ref=e244]:
+              - img [ref=e245]
+              - generic [ref=e247]:
+                - text: "Выбрана единица: 123"
+                - generic [ref=e248]:
+                  - img [ref=e249]
+                  - text: Конфликт
+              - group [ref=e251]:
+                - generic "Сменить единицу" [ref=e252] [cursor=pointer]:
+                  - img [ref=e253]
+                  - text: Сменить единицу
+          - generic [ref=e255]:
+            - generic [ref=e256]: Комментарий
+            - button "Комментарий к брони" [ref=e258]:
+              - generic [ref=e259]: Добавить комментарий…
+          - generic [ref=e260]:
+            - button "Открыть заявку" [ref=e261]:
+              - img [ref=e263]
+              - text: Открыть заявку
+            - button "Открыть клиента" [ref=e267]:
+              - img [ref=e269]
+              - text: Открыть клиента
+          - generic [ref=e273]:
+            - generic [ref=e274]: Журнал изменений
+            - generic [ref=e275]: Событий пока нет
+        - complementary [ref=e276]:
+          - generic [ref=e277]:
+            - button "Статус" [ref=e279]:
+              - img [ref=e280]
+              - generic [ref=e282]: Статус
+            - generic [ref=e283]:
+              - generic [ref=e284]:
+                - generic [ref=e285]: Статус
+                - generic [ref=e287]: Активна
+              - generic [ref=e288]:
+                - generic [ref=e289]: Внутренняя стадия
+                - generic [ref=e290]: Единица уточнена
+              - generic [ref=e291]:
+                - generic [ref=e292]: Источник
+                - generic [ref=e294]: Своя техника
+              - generic [ref=e295]:
+                - generic [ref=e296]: Создано
+                - generic [ref=e297]: 2026-05-06 20:10
+              - generic [ref=e298]:
+                - generic [ref=e299]: Создал
+                - generic [ref=e300]: Manager User
+          - generic [ref=e301]:
+            - button "Готовность к выезду" [ref=e303]:
+              - img [ref=e304]
+              - generic [ref=e306]: Готовность к выезду
+            - generic [ref=e307]:
+              - generic [ref=e308]:
+                - generic [ref=e309]:
+                  - img [ref=e310]
+                  - generic [ref=e313]: Бронь активна
+                - generic [ref=e314]:
+                  - img [ref=e315]
+                  - generic [ref=e318]: Источник выбран
+                - generic [ref=e319]:
+                  - img [ref=e320]
+                  - generic [ref=e323]: Единица выбрана
+              - button "Перевести в выезд" [ref=e325]
+          - generic [ref=e326]:
+            - button "Процесс брони" [ref=e328]:
+              - img [ref=e329]
+              - generic [ref=e331]: Процесс брони
+            - generic [ref=e333]:
+              - generic [ref=e334]:
+                - img [ref=e335]
+                - generic [ref=e337]: Нужен выбор источника
+              - generic [ref=e338]:
+                - img [ref=e339]
+                - generic [ref=e341]: Подбор своей техники
+              - generic [ref=e342]:
+                - img [ref=e343]
+                - generic [ref=e345]: Подбор подрядчика
+              - generic [ref=e346]:
+                - img [ref=e347]
+                - generic [ref=e349]: Подрядчик подтверждён
+              - generic [ref=e350]:
+                - img [ref=e351]
+                - generic [ref=e353]: Тип забронирован
+              - generic [ref=e354]:
+                - img [ref=e355]
+                - generic [ref=e358]: Единица уточнена
+              - generic [ref=e359]:
+                - img [ref=e360]
+                - generic [ref=e362]: Готово к выезду
+          - generic [ref=e363]:
+            - button "Связанные записи" [ref=e365]:
+              - img [ref=e366]
+              - generic [ref=e368]: Связанные записи
+            - generic [ref=e369]:
+              - generic [ref=e370]:
+                - generic [ref=e371]: Лид
+                - button "LEAD-CMOU72SH" [ref=e373] [cursor=pointer]
+              - generic [ref=e374]:
+                - generic [ref=e375]: Заявка
+                - 'button "Заявка #APP-000222" [ref=e377] [cursor=pointer]'
+              - generic [ref=e378]:
+                - generic [ref=e379]: Бронь
+                - button "RSV-CMOU72SN" [ref=e381] [cursor=pointer]
+              - generic [ref=e382]:
+                - generic [ref=e383]: Выезд
+                - button "—" [disabled] [ref=e385]
+              - generic [ref=e386]:
+                - generic [ref=e387]: Завершение
+                - button "—" [disabled] [ref=e389]
+              - generic [ref=e390]:
+                - generic [ref=e391]: Позиция
+                - generic [ref=e392]: E2E 005-item-2
+              - generic [ref=e393]:
+                - generic [ref=e394]: Клиент
+                - button "E2E 005 005-1778080258987-948" [ref=e396] [cursor=pointer]
+          - button "Быстрые действия" [ref=e399]:
+            - img [ref=e400]
+            - generic [ref=e402]: Быстрые действия
+```
+
+# Test source
+
+```ts
+  49  |   refreshToken: string
+  50  |   user: {
+  51  |     id: string
+  52  |     email: string
+  53  |     role: TestRole
+  54  |     fullName: string
+  55  |   }
+  56  | }
+  57  | 
+  58  | type LeadPayload = {
+  59  |   id: string
+  60  |   contactName: string
+  61  | }
+  62  | 
+  63  | type CreateLeadResult = {
+  64  |   lead: LeadPayload
+  65  | }
+  66  | 
+  67  | type ApplicationsListResult = {
+  68  |   items: Array<{ id: string }>
+  69  | }
+  70  | 
+  71  | function apiUrl(path: string): string {
+  72  |   const cleanBase = API_BASE_URL.replace(/\/+$/, '')
+  73  |   const cleanPath = path.replace(/^\/+/, '')
+  74  |   return `${cleanBase}/${cleanPath}`
+  75  | }
+  76  | 
+  77  | export function enableUiFailureGuards(page: Page): void {
+  78  |   if (uiFailureGuards.has(page)) {
+  79  |     return
+  80  |   }
+  81  | 
+  82  |   const consoleErrors: string[] = []
+  83  |   const failedApiRequests: string[] = []
+  84  |   const allowedConsoleErrorPatterns: RegExp[] = []
+  85  |   const apiBase = API_BASE_URL.replace(/\/+$/, '')
+  86  | 
+  87  |   const onConsole: UiFailureGuardState['onConsole'] = (message) => {
+  88  |     if (message.type() !== 'error') {
+  89  |       return
+  90  |     }
+  91  | 
+  92  |     const text = message.text()
+  93  |     if (isKnownConsoleBaselineError(text)) {
+  94  |       return
+  95  |     }
+  96  |     if (allowedConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+  97  |       return
+  98  |     }
+  99  | 
+  100 |     const location = message.location()
+  101 |     const source = location.url ? `${location.url}:${location.lineNumber ?? 0}:${location.columnNumber ?? 0}` : 'unknown'
+  102 |     consoleErrors.push(`${source} :: ${text}`)
+  103 |   }
+  104 | 
+  105 |   const onRequestFailed: UiFailureGuardState['onRequestFailed'] = (request) => {
+  106 |     const url = request.url()
+  107 |     if (!url.startsWith(apiBase)) {
+  108 |       return
+  109 |     }
+  110 | 
+  111 |     const errorText = request.failure()?.errorText ?? 'unknown-error'
+  112 |     if (errorText.includes('ERR_ABORTED')) {
+  113 |       return
+  114 |     }
+  115 | 
+  116 |     failedApiRequests.push(`${request.method()} ${url} :: ${errorText}`)
+  117 |   }
+  118 | 
+  119 |   page.on('console', onConsole)
+  120 |   page.on('requestfailed', onRequestFailed)
+  121 |   uiFailureGuards.set(page, {
+  122 |     consoleErrors,
+  123 |     failedApiRequests,
+  124 |     allowedConsoleErrorPatterns,
+  125 |     onConsole,
+  126 |     onRequestFailed,
+  127 |   })
+  128 | }
+  129 | 
+  130 | export async function assertUiFailureGuards(page: Page, options: { failOnIssues?: boolean } = {}): Promise<void> {
+  131 |   const state = uiFailureGuards.get(page)
+  132 |   if (!state) {
+  133 |     return
+  134 |   }
+  135 | 
+  136 |   page.off('console', state.onConsole)
+  137 |   page.off('requestfailed', state.onRequestFailed)
+  138 |   uiFailureGuards.delete(page)
+  139 | 
+  140 |   const issues = [
+  141 |     ...state.consoleErrors.map((entry) => `console.error ${entry}`),
+  142 |     ...state.failedApiRequests.map((entry) => `requestfailed ${entry}`),
+  143 |   ]
+  144 | 
+  145 |   if (issues.length === 0 || options.failOnIssues === false) {
+  146 |     return
+  147 |   }
+  148 | 
+> 149 |   expect(issues, `Unexpected UI runtime issues:\n${issues.join('\n')}`).toEqual([])
+      |                                                                         ^ Error: Unexpected UI runtime issues:
+  150 | }
+  151 | 
+  152 | export async function sendApiRequest<T>(
+  153 |   request: APIRequestContext,
+  154 |   path: string,
+  155 |   options: {
+  156 |     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  157 |     token?: string
+  158 |     body?: unknown
+  159 |     expectedStatus?: number
+  160 |   } = {},
+  161 | ): Promise<T> {
+  162 |   const headers: Record<string, string> = { Accept: 'application/json' }
+  163 |   if (options.token) {
+  164 |     headers.Authorization = `Bearer ${options.token}`
+  165 |   }
+  166 |   if (options.body !== undefined) {
+  167 |     headers['Content-Type'] = 'application/json'
+  168 |   }
+  169 | 
+  170 |   const response = await request.fetch(apiUrl(path), {
+  171 |     method: options.method ?? 'GET',
+  172 |     headers,
+  173 |     data: options.body,
+  174 |   })
+  175 |   const status = response.status()
+  176 | 
+  177 |   const raw = await response.text()
+  178 |   const payload = raw
+  179 |     ? (() => {
+  180 |         try {
+  181 |           return JSON.parse(raw)
+  182 |         } catch {
+  183 |           return raw
+  184 |         }
+  185 |       })()
+  186 |     : null
+  187 | 
+  188 |   if (options.expectedStatus !== undefined && status !== options.expectedStatus) {
+  189 |     throw new Error(
+  190 |       `API ${options.method ?? 'GET'} ${path} expected ${options.expectedStatus}, got ${status}: ${JSON.stringify(payload)}`,
+  191 |     )
+  192 |   }
+  193 | 
+  194 |   if (options.expectedStatus === undefined && !response.ok()) {
+  195 |     throw new Error(
+  196 |       `API ${options.method ?? 'GET'} ${path} failed with ${status}: ${JSON.stringify(payload)}`,
+  197 |     )
+  198 |   }
+  199 | 
+  200 |   return payload as T
+  201 | }
+  202 | 
+  203 | export function uniqueSeed(prefix: string): string {
+  204 |   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  205 | }
+  206 | 
+  207 | export function uniquePhone(): string {
+  208 |   const tail = `${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 90 + 10)}`
+  209 |   return `+7900${tail}`
+  210 | }
+  211 | 
+  212 | export async function apiLogin(request: APIRequestContext, role: TestRole): Promise<AuthPayload> {
+  213 |   const credentials = ROLE_CREDENTIALS[role]
+  214 |   return sendApiRequest<AuthPayload>(request, 'auth/login', {
+  215 |     method: 'POST',
+  216 |     body: credentials,
+  217 |   })
+  218 | }
+  219 | 
+  220 | export async function createLeadViaApi(
+  221 |   request: APIRequestContext,
+  222 |   token: string,
+  223 |   overrides: Partial<{
+  224 |     contactName: string
+  225 |     contactPhone: string
+  226 |     equipmentTypeHint: string
+  227 |     address: string
+  228 |     requestedDate: string
+  229 |   }> = {},
+  230 | ): Promise<LeadPayload> {
+  231 |   const oneDayAhead = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  232 | 
+  233 |   const response = await sendApiRequest<CreateLeadResult>(request, 'leads', {
+  234 |     method: 'POST',
+  235 |     token,
+  236 |     body: {
+  237 |       contactName: overrides.contactName ?? `E2E ${uniqueSeed('lead')}`,
+  238 |       contactPhone: overrides.contactPhone ?? uniquePhone(),
+  239 |       source: 'manual',
+  240 |       equipmentTypeHint: overrides.equipmentTypeHint ?? 'Экскаватор',
+  241 |       requestedDate: overrides.requestedDate ?? oneDayAhead.toISOString(),
+  242 |       address: overrides.address ?? 'Москва, Тестовая улица, 1',
+  243 |       comment: 'Created by Playwright e2e',
+  244 |     },
+  245 |   })
+  246 | 
+  247 |   return response.lead
+  248 | }
+  249 | 
+```

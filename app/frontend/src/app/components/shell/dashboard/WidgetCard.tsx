@@ -37,12 +37,12 @@ export function WidgetCard({
   return (
     <section className={cn('flex flex-col rounded-lg border border-border bg-white', className)}>
       {hasHeader ? (
-        <header className="flex items-center gap-3 border-b border-border/60 px-4 py-2.5">
+        <header className="flex items-center gap-3 border-b border-border/60 px-3 py-2 sm:px-4 sm:py-2.5">
           <div className="min-w-0 flex-1">
             {title != null ? (
               <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
                 {icon ? <span className="text-muted-foreground">{icon}</span> : null}
-                <span className="truncate">{title}</span>
+                <span className="break-words">{title}</span>
               </div>
             ) : null}
             {description != null ? (
@@ -52,7 +52,7 @@ export function WidgetCard({
           {action ? <div className="shrink-0">{action}</div> : null}
         </header>
       ) : null}
-      <div className={cn(bodyPadded ? 'p-4' : '', 'min-w-0 flex-1', bodyClassName)}>{children}</div>
+      <div className={cn(bodyPadded ? 'p-3 sm:p-4' : '', 'min-w-0 flex-1', bodyClassName)}>{children}</div>
     </section>
   );
 }

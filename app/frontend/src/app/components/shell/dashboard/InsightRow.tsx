@@ -33,20 +33,20 @@ export function InsightRow({
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       className={cn(
-        'flex w-full items-center gap-3 px-4 py-2 text-left text-[12px]',
+        'flex w-full min-w-0 flex-col items-start gap-1.5 px-3 py-2 text-left text-[12px] sm:flex-row sm:items-center sm:gap-3 sm:px-4',
         hoverable && 'cursor-pointer transition-colors hover:bg-muted/30',
         className,
       )}
     >
       {leading ? <span className="shrink-0 text-muted-foreground">{leading}</span> : null}
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 w-full flex-1 sm:w-auto">
         <div className="truncate text-foreground">{primary}</div>
         {secondary != null ? (
           <div className="mt-0.5 truncate text-[11px] text-muted-foreground">{secondary}</div>
         ) : null}
       </div>
       {trailing != null ? (
-        <div className="shrink-0 text-[11px] text-muted-foreground">{trailing}</div>
+        <div className="self-end text-[11px] text-muted-foreground sm:ml-2 sm:self-auto sm:shrink-0">{trailing}</div>
       ) : null}
     </Tag>
   );

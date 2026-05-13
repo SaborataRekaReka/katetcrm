@@ -19,7 +19,12 @@ export function DashboardPage({
 }) {
   return (
     <div className={cn('min-h-0 flex-1 overflow-auto bg-[#f7f8fa]', className)}>
-      <div className={cn('mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 py-5', contentClassName)}>
+      <div
+        className={cn(
+          'mx-auto flex w-full max-w-[1440px] flex-col gap-4 px-3 py-3 sm:gap-5 sm:px-5 sm:py-5',
+          contentClassName,
+        )}
+      >
         {children}
       </div>
     </div>

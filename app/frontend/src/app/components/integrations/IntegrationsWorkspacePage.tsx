@@ -275,8 +275,8 @@ export function IntegrationsWorkspacePage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
-      <div className="flex min-h-0 flex-1">
-        <div className="min-h-0 min-w-0 flex-1 overflow-auto border-r border-border/60">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="min-h-0 min-w-0 flex-1 overflow-auto border-b border-border/60 lg:border-b-0 lg:border-r">
           {eventsQuery.isPending && !eventsQuery.data ? (
             <div className="flex h-full min-h-[320px] items-center justify-center gap-2 text-[13px] text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Загрузка событий...
@@ -343,7 +343,7 @@ export function IntegrationsWorkspacePage() {
           ) : null}
         </div>
 
-        <aside className="w-[430px] min-h-0 overflow-auto bg-muted/10">
+        <aside className="w-full min-h-0 max-h-[45vh] overflow-auto border-t border-border/60 bg-muted/10 lg:w-[430px] lg:max-h-none lg:border-t-0">
           {!selectedId ? <EmptyDetails /> : null}
 
           {selectedId && detailQuery.isPending && !selected ? (

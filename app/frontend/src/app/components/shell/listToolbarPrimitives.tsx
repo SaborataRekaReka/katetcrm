@@ -11,9 +11,21 @@ import { cn } from '../ui/utils';
  *  - utility actions (save view, columns) visually lightest
  */
 
-/** Outer bar: compact height, subtle bottom border, overflow-x scroll when needed. */
+/**
+ * Outer bar: wraps controls on narrow screens, keeps single-row dense mode
+ * on desktop and preserves thin scrollbar behavior where horizontal overflow
+ * still appears.
+ */
 export const LIST_TOOLBAR_BAR =
-  'scroll-thin flex h-10 shrink-0 items-center gap-1 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-white px-3';
+  'scroll-thin flex shrink-0 flex-wrap items-center gap-1 border-b border-border/60 bg-white px-2 py-1 sm:px-3';
+
+/** Search zone: full-width on narrow screens, fixed compact width on desktop. */
+export const LIST_TOOLBAR_SEARCH_WRAP =
+  'relative min-w-0 grow basis-full sm:basis-auto sm:grow-0 sm:w-[220px] sm:shrink-0';
+
+/** Utility actions: move to a dedicated row on narrow screens. */
+export const LIST_TOOLBAR_UTILITY_GROUP =
+  'flex w-full items-center justify-end gap-0.5 pt-0.5 sm:ml-auto sm:w-auto sm:justify-start sm:pt-0';
 
 /** SelectTrigger class: borderless by default, hover reveals the frame. */
 export const LIST_TOOLBAR_TRIGGER =

@@ -204,7 +204,7 @@ export function PropertyRow({
 }) {
   return (
     <div className="flex items-center min-h-7 py-0.5">
-      <div className="flex items-center gap-1.5 w-[140px] flex-shrink-0 text-gray-500 text-[11px]">
+      <div className="flex w-[112px] flex-shrink-0 items-center gap-1.5 text-[11px] text-gray-500 sm:w-[140px]">
         {icon && <span className="text-gray-400">{icon}</span>}
         <span>{label}</span>
       </div>
@@ -294,7 +294,7 @@ export function SidebarSection({
 export function SidebarField({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="flex items-center min-h-6">
-      <div className={`w-[110px] flex-shrink-0 ${sidebarTokens.label}`}>{label}</div>
+      <div className={`w-[96px] flex-shrink-0 sm:w-[110px] ${sidebarTokens.label}`}>{label}</div>
       <div className={`flex-1 min-w-0 ${sidebarTokens.value} truncate`}>{value}</div>
     </div>
   );
@@ -438,9 +438,9 @@ export function DetailShell({
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-white text-gray-800">
       {/* Top bar */}
-      <div className="flex items-center justify-between h-10 px-3 border-b border-gray-200 flex-shrink-0">
-        {breadcrumb}
-        <div className="flex items-center gap-0.5">
+      <div className="flex min-h-10 flex-shrink-0 flex-wrap items-center justify-between gap-1 border-b border-gray-200 px-3 py-1">
+        <div className="min-w-0 flex-1">{breadcrumb}</div>
+        <div className="flex shrink-0 items-center gap-0.5">
           <IconBtn
             onClick={() => {
               void handleShare();
@@ -489,14 +489,14 @@ export function DetailShell({
       </div>
 
       {/* Body */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
         <div className="flex-1 min-h-0 min-w-0 flex flex-col">
           <div className="detail-shell-scroll flex-1 min-h-0 overflow-y-auto">{main}</div>
           {footer && (
             <div className="border-t border-gray-200 flex-shrink-0 bg-white">{footer}</div>
           )}
         </div>
-        <aside className="detail-shell-scroll w-[300px] min-h-0 flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-gray-50/40">
+        <aside className="detail-shell-scroll min-h-0 max-h-[42vh] w-full flex-shrink-0 overflow-y-auto border-t border-gray-200 bg-gray-50/40 lg:max-h-none lg:w-[300px] lg:border-l lg:border-t-0">
           {sidebar}
         </aside>
       </div>

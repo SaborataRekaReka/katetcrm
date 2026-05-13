@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import {
+  TEST_ADMIN,
   TEST_MANAGER,
   ensureBaseUsers,
   loginByPassword,
@@ -552,5 +553,45 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
 
     const usersCountAfter = await prisma.user.count();
     expect(usersCountAfter).toBe(usersCountBefore);
+  });
+
+  it('INT-010A (QA-REQ-033): admin capability toggle gates admin users API', async () => {
+    const admin = await loginByPassword(app, TEST_ADMIN);
+    const headers = { Authorization: authHeader(admin.accessToken) };
+
+    const matrixResponse = await request(app.getHttpServer())
+      .get('/api/v1/users/permissions-matrix')
+      .set(headers)
+      .expect(200);
+
+    const usersCapability = (matrixResponse.body.capabilities as Array<{
+      id: string;
+      matrix?: { admin?: boolean };
+    }>).find((item) => item.id === 'admin.users');
+
+    expect(usersCapability).toBeDefined();
+    const originalAdminEnabled = Boolean(usersCapability?.matrix?.admin);
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/users/permissions-matrix/admin.users')
+      .set(headers)
+      .send({ admin: false })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .get('/api/v1/users')
+      .set(headers)
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .patch('/api/v1/users/permissions-matrix/admin.users')
+      .set(headers)
+      .send({ admin: originalAdminEnabled })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .get('/api/v1/users')
+      .set(headers)
+      .expect(200);
   });
 });

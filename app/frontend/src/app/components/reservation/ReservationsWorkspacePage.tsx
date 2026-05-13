@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { Lead } from '../../types/kanban';
 import { mockReservations } from '../../data/mockReservations';
@@ -21,7 +20,6 @@ import { Dialog, DialogContent } from '../ui/dialog';
 import { ReservationWorkspace } from './ReservationWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
-import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
 import { useReservationQuery, useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
@@ -42,9 +40,9 @@ import {
  * experience matches what users see when clicking a reservation card in the
  * leads kanban.
  *
- * There is no "New reservation" CTA: in MVP брони всегда живут в контексте
- * позиции заявки. Вместо этого в шапке списка висит secondary-ссылка
- * «Создать из заявки», переводящая в раздел Заявок.
+ * В MVP брони всегда живут в контексте позиции заявки. Экран не показывает
+ * отдельный баннер: переход к заявкам и создание брони из позиции вынесены
+ * в utility-зону toolbar.
  */
 export function ReservationsWorkspacePage() {
   const {
@@ -270,33 +268,11 @@ export function ReservationsWorkspacePage() {
         query={query}
         onQueryChange={setQuery}
         onSaveView={handleSaveView}
+        onOpenApplications={() => setActiveSecondaryNav('applications')}
+        showCreateReservation={USE_API}
+        onOpenCreateReservation={() => setIsCreateOpen(true)}
+        canOpenCreateReservation={reservationCandidates.length > 0}
       />
-      <div className="flex h-8 shrink-0 items-center gap-2 border-b border-border/40 bg-muted/20 px-4 text-[11px] text-muted-foreground">
-        <span>
-          Новые брони можно создать прямо здесь из позиций заявки без активной брони.
-        </span>
-        {USE_API ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            className="h-6 gap-1 px-2 text-[11px] text-[#2a6af0] hover:bg-[#e7f1ff] hover:text-[#2a6af0]"
-            onClick={() => setIsCreateOpen(true)}
-            disabled={reservationCandidates.length === 0}
-          >
-            <FileText className="h-3 w-3" />
-            Новая бронь
-          </Button>
-        ) : null}
-        <Button
-          size="sm"
-          variant="ghost"
-          className="h-6 gap-1 px-2 text-[11px] text-[#2a6af0] hover:bg-[#e7f1ff] hover:text-[#2a6af0]"
-          onClick={() => setActiveSecondaryNav('applications')}
-        >
-          <FileText className="h-3 w-3" />
-          Перейти к заявкам
-        </Button>
-      </div>
 
       {effectiveView === 'list' ? (
         <ReservationsListView
@@ -327,7 +303,7 @@ export function ReservationsWorkspacePage() {
           setIsOpen(true);
         }}
       >
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
             <ReservationWorkspace
               lead={selected}
@@ -341,7 +317,7 @@ export function ReservationsWorkspacePage() {
       </Dialog>
 
       <Dialog open={isClientOpen} onOpenChange={setIsClientOpen}>
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {clientLead && (
             <ClientWorkspace
               lead={clientLead}
@@ -353,7 +329,7 @@ export function ReservationsWorkspacePage() {
       </Dialog>
 
       <Dialog open={isLeadOverlayOpen} onOpenChange={handleLeadOverlayOpenChange}>
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {overlayLead ? (
             <LeadDetailModal
               lead={overlayLead}

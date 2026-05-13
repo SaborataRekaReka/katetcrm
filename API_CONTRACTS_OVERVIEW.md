@@ -154,6 +154,7 @@ Contract expectations:
 2. Import run/report preserves accounting fields (`imported`, `skipped`, `failed`).
 3. Mixed valid/invalid import batches keep deterministic accounting and persist validation issues for report replay.
 4. `GET /imports/:id/report` provides error artifacts (`issues`, `errorReportCsv`) for failed-row diagnostics.
+5. Admin-only integration/import endpoints require both admin role and enabled capability toggle.
 
 ### 3.9 Users / Settings
 
@@ -174,6 +175,7 @@ Contract expectations:
 4. `users/permissions-matrix/:capabilityId` updates role toggles in Admin permissions workspace.
 5. `settings/workspace` provides canonical read model for Admin settings dashboard.
 6. `settings/workspace/sections/:sectionId` updates section rows in Admin settings workspace.
+7. Admin-only users/settings endpoints require both admin role and enabled capability toggle.
 
 ### 3.10 Navigation (deep-link resolver)
 

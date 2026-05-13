@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, X, Bookmark } from 'lucide-react';
+import { Search, X, Bookmark, FileText } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -18,7 +18,9 @@ import { RESERVATION_STAGE_ORDER, RESERVATION_STAGE_LABEL } from './reservationH
 import {
   LIST_TOOLBAR_BAR,
   LIST_TOOLBAR_SEARCH_INPUT,
+  LIST_TOOLBAR_SEARCH_WRAP,
   LIST_TOOLBAR_TRIGGER,
+  LIST_TOOLBAR_UTILITY_GROUP,
   ToolbarDivider,
   ToolbarToggle,
   ToolbarUtilityButton,
@@ -33,6 +35,10 @@ interface ReservationsToolbarProps {
   equipmentTypes?: string[];
   subcontractors?: string[];
   onSaveView?: () => void;
+  onOpenApplications?: () => void;
+  onOpenCreateReservation?: () => void;
+  canOpenCreateReservation?: boolean;
+  showCreateReservation?: boolean;
 }
 
 export function ReservationsToolbar({
@@ -44,6 +50,10 @@ export function ReservationsToolbar({
   equipmentTypes = ['Экскаватор', 'Бульдозер', 'Кран', 'Погрузчик', 'Автокран'],
   subcontractors = [],
   onSaveView,
+  onOpenApplications,
+  onOpenCreateReservation,
+  canOpenCreateReservation = true,
+  showCreateReservation = false,
 }: ReservationsToolbarProps) {
   const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta(activeSecondaryNav);
@@ -89,7 +99,7 @@ export function ReservationsToolbar({
 
   return (
     <div className={LIST_TOOLBAR_BAR}>
-      <div className="relative w-[220px] shrink-0">
+      <div className={LIST_TOOLBAR_SEARCH_WRAP}>
         <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
           data-crm-search-input="true"
@@ -183,7 +193,21 @@ export function ReservationsToolbar({
       <ToolbarToggle label="Конфликт" active={filters.conflict} onClick={() => setField('conflict', !filters.conflict)} />
       <ToolbarToggle label="Готовы к выезду" active={filters.readyForDeparture} onClick={() => setField('readyForDeparture', !filters.readyForDeparture)} />
 
-      <div className="ml-auto flex shrink-0 items-center gap-0.5">
+      <div className={LIST_TOOLBAR_UTILITY_GROUP}>
+        {showCreateReservation ? (
+          <ToolbarUtilityButton
+            label="Новая бронь"
+            icon={<FileText className="h-3.5 w-3.5" />}
+            onClick={canOpenCreateReservation ? onOpenCreateReservation : undefined}
+          />
+        ) : null}
+        {onOpenApplications ? (
+          <ToolbarUtilityButton
+            label="К заявкам"
+            icon={<FileText className="h-3.5 w-3.5" />}
+            onClick={onOpenApplications}
+          />
+        ) : null}
         {hasActive && (
           <ToolbarUtilityButton
             label="Сбросить"

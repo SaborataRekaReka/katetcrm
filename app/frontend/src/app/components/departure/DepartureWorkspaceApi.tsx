@@ -459,7 +459,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
   ];
 
   const main = (
-    <div className="mx-auto max-w-[820px] px-8 pb-10 pt-6">
+    <div className="mx-auto max-w-[820px] px-4 pb-10 pt-6 sm:px-6 lg:px-8">
       <EntityModalHeader
         entityIcon={<Truck className="h-3 w-3" />}
         entityLabel="Выезд"

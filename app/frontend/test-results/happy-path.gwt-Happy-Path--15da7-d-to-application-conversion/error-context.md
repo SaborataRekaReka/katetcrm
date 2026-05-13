@@ -1,0 +1,9214 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: happy-path.gwt.spec.ts >> Happy Path GWT (QA-REQ: 001..031) >> E2E-003 lead to application conversion
+- Location: e2e\happy-path.gwt.spec.ts:233:3
+
+# Error details
+
+```
+Error: Unexpected UI runtime issues:
+console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 3
+
+- Array []
++ Array [
++   "console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+```
+
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - generic:
+      - banner:
+        - generic:
+          - generic: К
+          - generic: Катет CRM
+        - generic:
+          - generic:
+            - img
+            - textbox:
+              - /placeholder: Поиск по лидам
+            - generic: Ctrl K
+        - generic:
+          - button: Менеджер
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - generic: MA
+            - img
+      - generic:
+        - complementary:
+          - generic:
+            - navigation:
+              - button:
+                - img
+              - button [pressed]:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+              - button:
+                - img
+        - generic:
+          - complementary:
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - heading [level=2]: Продажи
+                - generic:
+                  - button:
+                    - img
+                  - button:
+                    - img
+              - generic:
+                - generic:
+                  - button:
+                    - img
+                    - generic: Лиды
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Все лиды
+                    - button:
+                      - img
+                      - generic: Мои лиды
+                - generic:
+                  - button:
+                    - img
+                    - generic: Заявки
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Все заявки
+                    - button:
+                      - img
+                      - generic: Мои заявки
+                    - button:
+                      - img
+                      - generic: Активные заявки
+                - generic:
+                  - button:
+                    - img
+                    - generic: Представления продаж
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Срочные лиды
+                    - button:
+                      - img
+                      - generic: Без первого контакта
+                    - button:
+                      - img
+                      - generic: Ждут перевода в заявку
+                    - button:
+                      - img
+                      - generic: Требуют брони
+                    - button:
+                      - img
+                      - generic: Зависшие
+                    - button:
+                      - img
+                      - generic: Дубли
+              - generic:
+                - button:
+                  - img
+                  - generic: Черновик
+          - main:
+            - generic:
+              - generic:
+                - generic:
+                  - heading [level=1]: Лиды
+                  - button:
+                    - img
+                    - generic: Новый лид
+                - generic:
+                  - button:
+                    - img
+                    - generic: Доска
+                  - button:
+                    - img
+                    - generic: Список
+                  - button:
+                    - img
+                    - generic: Таблица
+              - generic:
+                - generic:
+                  - img
+                  - textbox:
+                    - /placeholder: Поиск по лидам
+                - combobox:
+                  - generic: Все
+                  - img
+                - combobox:
+                  - generic: Все менеджеры
+                  - img
+                - combobox:
+                  - generic: Все источники
+                  - img
+                - combobox:
+                  - generic: Все типы
+                  - img
+                - button: Срочные
+                - button: Дубли
+                - button: Зависшие
+                - generic:
+                  - button:
+                    - img
+                    - generic: Сохранить вид
+              - generic:
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic: Имя · Компания
+                      - generic: Телефон
+                      - generic: Тип техники
+                      - generic: Дата / время
+                      - generic: Адрес
+                      - generic: Менеджер
+                      - generic: Обновлено
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Лид
+                      - generic: "97"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778080225376-622
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002537610
+                                - text: "+79002537610"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778080225376-301
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002537610
+                                - text: "+79002537610"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778080212826-632
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001935965
+                                - text: "+79001935965"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 016 016-1778080198119-30
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009811978
+                                - text: "+79009811978"
+                              - button:
+                                - img
+                          - generic: Бетононасос
+                          - generic: 09.05 · 09:00–18:00
+                          - generic: Москва, Тестовая улица, 12
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 012 Lead 012-1778080147523-968
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79004752320
+                                - text: "+79004752320"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT-009 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+790980096802
+                                - text: "+790980096802"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778080086
+                                - text: "+79990031778080086"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778080086
+                                - text: "+79990031778080086"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778080086
+                                - text: "+79990021778080086"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT-009 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+790980073506
+                                - text: "+790980073506"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778080048
+                                - text: "+79990031778080048"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778080048
+                                - text: "+79990031778080048"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778080048
+                                - text: "+79990021778080048"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 Lead 009-1778012468339-797
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006833983
+                                - text: "+79006833983"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778012453068-814
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005621214
+                                - text: "+79005621214"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778012441070-151
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79004107019
+                                - text: "+79004107019"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778012404357-923
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000435742
+                                - text: "+79000435742"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778012404357-40
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000435742
+                                - text: "+79000435742"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778012396822-260
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000132490
+                                - text: "+79000132490"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 Lead 009-1778012230542-169
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003054276
+                                - text: "+79003054276"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778012216837-315
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002064461
+                                - text: "+79002064461"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778012198047-540
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000348227
+                                - text: "+79000348227"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 Lead 009-1778011760308-12
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006030830
+                                - text: "+79006030830"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778011748492-994
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005200843
+                                - text: "+79005200843"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778011734814-452
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003481457
+                                - text: "+79003481457"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778011705369-677
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000536932
+                                - text: "+79000536932"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778011705369-212
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000536932
+                                - text: "+79000536932"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778011697657-467
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000258946
+                                - text: "+79000258946"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778011425263-533
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002856696
+                                - text: "+79002856696"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778011416858-559
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001685822
+                                - text: "+79001685822"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 Lead 009-1778011411269-609
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001126974
+                                - text: "+79001126974"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778011382870-576
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008287093
+                                - text: "+79008287093"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778011382870-349
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008287093
+                                - text: "+79008287093"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778011376675-478
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79007980455
+                                - text: "+79007980455"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778011320724-89
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002298097
+                                - text: "+79002298097"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778011310181-777
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001018142
+                                - text: "+79001018142"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778011258108-350
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005810756
+                                - text: "+79005810756"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778011258108-724
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005810756
+                                - text: "+79005810756"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778011248662-798
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005527951
+                                - text: "+79005527951"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778010747502-224
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79005072760
+                                - text: "+79005072760"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778010737608-121
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003760892
+                                - text: "+79003760892"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778010708633-841
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000863376
+                                - text: "+79000863376"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778010708633-504
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000863376
+                                - text: "+79000863376"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778010703012-62
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000571476
+                                - text: "+79000571476"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778010656712-660
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006177257
+                                - text: "+79006177257"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778010643412-491
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79004341242
+                                - text: "+79004341242"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Duplicate 002-1778010609991-333
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000999167
+                                - text: "+79000999167"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Existing 002-1778010609991-266
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000999167
+                                - text: "+79000999167"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778010603471-259
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000721774
+                                - text: "+79000721774"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778009626364-189
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009629694
+                                - text: "+79009629694"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778009613408-823
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009613408
+                                - text: "+79009613408"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778009599299-779
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009605611
+                                - text: "+79009605611"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Manager 011-1778009556645-607
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009559489
+                                - text: "+79009559489"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778009507806-745
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009507806
+                                - text: "+79009507806"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Lead 001-1778009497392-197
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009501295
+                                - text: "+79009501295"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E Route 010-1778009347608-60
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009347608
+                                - text: "+79009347608"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT-009 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+790908670521
+                                - text: "+790908670521"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008649
+                                - text: "+79990031778008649"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008649
+                                - text: "+79990031778008649"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778008649
+                                - text: "+79990021778008649"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008415
+                                - text: "+79990031778008415"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008415
+                                - text: "+79990031778008415"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778008415
+                                - text: "+79990021778008415"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008360
+                                - text: "+79990031778008360"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778008360
+                                - text: "+79990031778008360"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778008359
+                                - text: "+79990021778008359"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead B
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778007779
+                                - text: "+79990031778007779"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-003 Lead A
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031778007779
+                                - text: "+79990031778007779"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-002 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021778007778
+                                - text: "+79990021778007778"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid 791b269e
+                              - generic: · Stage7 Invalid LLC 791b269e
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951822496
+                                - text: +7 (495) 182-24-96
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A 791b269e
+                              - generic: · Stage7 LLC 791b269e
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951822494
+                                - text: +7 (495) 182-24-94
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage6 Integration Smoke Site
+                              - generic: · Stage6 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74958001122
+                                - text: +7 (495) 800-11-22
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: "30.04"
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid daff6579
+                              - generic: · Stage7 Invalid LLC daff6579
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74954170747
+                                - text: +7 (495) 417-07-47
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A daff6579
+                              - generic: · Stage7 LLC daff6579
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74954170745
+                                - text: +7 (495) 417-07-45
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid 553a79a8
+                              - generic: · Stage7 Invalid LLC 553a79a8
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959895594
+                                - text: +7 (495) 989-55-94
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A 553a79a8
+                              - generic: · Stage7 LLC 553a79a8
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959895592
+                                - text: +7 (495) 989-55-92
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid 65a35f11
+                              - generic: · Stage7 Invalid LLC 65a35f11
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74955205523
+                                - text: +7 (495) 520-55-23
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A 65a35f11
+                              - generic: · Stage7 LLC 65a35f11
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74955205521
+                                - text: +7 (495) 520-55-21
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A 6392ecf6
+                              - generic: · Stage7 LLC 6392ecf6
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74950573302
+                                - text: +7 (495) 057-33-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid ab39719a
+                              - generic: · Stage7 Invalid LLC ab39719a
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74952668572
+                                - text: +7 (495) 266-85-72
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A ab39719a
+                              - generic: · Stage7 LLC ab39719a
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74952668570
+                                - text: +7 (495) 266-85-70
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid b4ae657c
+                              - generic: · Stage7 Invalid LLC b4ae657c
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951328126
+                                - text: +7 (495) 132-81-26
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A b4ae657c
+                              - generic: · Stage7 LLC b4ae657c
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951328124
+                                - text: +7 (495) 132-81-24
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid 5e7ee51b
+                              - generic: · Stage7 Invalid LLC 5e7ee51b
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74955374493
+                                - text: +7 (495) 537-44-93
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Import A 5e7ee51b
+                              - generic: · Stage7 LLC 5e7ee51b
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74955374491
+                                - text: +7 (495) 537-44-91
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test 2
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:84951112233
+                                - text: 8 495 111 22 33
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ольга Романова
+                              - generic: · ООО АльфаСтрой
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001001
+                                - text: +7 (999) 700-10-01
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: 30.04 · 09:00-13:00
+                          - generic: Москва, Варшавское ш., 11
+                          - generic: Manager User
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Павел Макаров
+                              - generic: · ООО БетонИнвест
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Mango
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001002
+                                - text: +7 (999) 700-10-02
+                              - button:
+                                - img
+                          - generic: Кран
+                          - generic: 01.05 · 10:00-14:00
+                          - generic: Москва, ул. Марксистская, 18
+                          - generic: Manager User
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ольга Романова
+                              - generic: · ООО АльфаСтрой
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: seed_other
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001012
+                                - text: +7 (999) 700-10-12
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Контакт не подтвержден
+                              - generic: · ООО Потенциал
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001010
+                                - text: +7 (999) 700-10-10
+                              - button:
+                                - img
+                          - generic: Самосвал
+                          - generic: 03.05 · 10:00-15:00
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 9 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Заявка
+                      - generic: "96"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778080234292-591
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003429250
+                                - text: "+79003429250"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 015 015-1778080188534-336
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008853464
+                                - text: "+79008853464"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 014 014-1778080182365-503
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008236599
+                                - text: "+79008236599"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 013 Lead 013-1778080174696-931
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79007469673
+                                - text: "+79007469673"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 1 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT005-1778080095267-9319 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778080
+                                - text: "+79990051771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT004-1778080094977-992 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778080
+                                - text: "+79990041771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT003-1778080094695-7674 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031771778080
+                                - text: "+79990031771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT002-1778080094440-8387 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021771778080
+                                - text: "+79990021771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT001-1778080094186-1333 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990011771778080
+                                - text: "+79990011771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC012-1778080089172-9913 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990121771778080
+                                - text: "+79990121771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008CANCEL-1778080088035-5005 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC007-1778080087448-4144 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778080
+                                - text: "+79990071771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC006-1778080087117-3343 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778080
+                                - text: "+79990061771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC005-1778080086873-3247 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778080
+                                - text: "+79990051771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC004-1778080086576-73 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778080
+                                - text: "+79990041771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT005-1778080071419-8697 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778080
+                                - text: "+79990051771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT004-1778080071070-5069 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778080
+                                - text: "+79990041771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT003-1778080070841-6362 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031771778080
+                                - text: "+79990031771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT002-1778080070520-5105 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021771778080
+                                - text: "+79990021771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT001-1778080070164-6692 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990011771778080
+                                - text: "+79990011771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC012-1778080052829-2146 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990121771778080
+                                - text: "+79990121771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008CANCEL-1778080050358-9220 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC007-1778080049584-9066 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778080
+                                - text: "+79990071771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC006-1778080049138-3487 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778080
+                                - text: "+79990061771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC005-1778080048828-6321 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778080
+                                - text: "+79990051771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC004-1778080048452-1580 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778080
+                                - text: "+79990041771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778012421144-870
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002114484
+                                - text: "+79002114484"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778012410768-816
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001076874
+                                - text: "+79001076874"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778012207919-27
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000791948
+                                - text: "+79000791948"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778011717245-381
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001724521
+                                - text: "+79001724521"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778011710887-109
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001088751
+                                - text: "+79001088751"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778011396373-137
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009637328
+                                - text: "+79009637328"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778011390094-659
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009009489
+                                - text: "+79009009489"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 009-1778011285034-806
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008503494
+                                - text: "+79008503494"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778011270265-774
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79007026591
+                                - text: "+79007026591"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778011264216-47
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006421654
+                                - text: "+79006421654"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778010720989-560
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002098981
+                                - text: "+79002098981"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778010714458-575
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001445885
+                                - text: "+79001445885"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 005 005-1778010623572-102
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002357253
+                                - text: "+79002357253"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778010617940-628
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001794091
+                                - text: "+79001794091"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778009609260-944
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009609260
+                                - text: "+79009609260"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778009504481-140
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009504481
+                                - text: "+79009504481"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E App 003-1778009322874-205
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009322874
+                                - text: "+79009322874"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT005-1778008668902-896 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT004-1778008668560-1720 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT003-1778008668313-3620 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031771778008
+                                - text: "+79990031771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT002-1778008668028-8493 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021771778008
+                                - text: "+79990021771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT001-1778008667750-879 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990011771778008
+                                - text: "+79990011771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC012-1778008653583-2367 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990121771778008
+                                - text: "+79990121771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008CANCEL-1778008651326-4386 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC007-1778008650682-4099 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778008
+                                - text: "+79990071771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC006-1778008650337-1020 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778008
+                                - text: "+79990061771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC005-1778008650043-9771 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC004-1778008649730-2 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT005-1778008436889-2557 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT004-1778008436526-8769 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT003-1778008436244-6617 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031771778008
+                                - text: "+79990031771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT002-1778008435857-5748 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021771778008
+                                - text: "+79990021771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT001-1778008435552-9570 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990011771778008
+                                - text: "+79990011771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC012-1778008418500-7155 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990121771778008
+                                - text: "+79990121771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008CANCEL-1778008417588-9816 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC007-1778008416880-7627 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778008
+                                - text: "+79990071771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC006-1778008416503-3726 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778008
+                                - text: "+79990061771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC005-1778008416188-180 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC004-1778008415839-8613 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT005-1778008377739-9308 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT004-1778008377433-555 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT003-1778008377164-6759 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990031771778008
+                                - text: "+79990031771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT002-1778008376862-3926 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990021771778008
+                                - text: "+79990021771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT001-1778008376549-5202 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990011771778008
+                                - text: "+79990011771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC012-1778008362757-4153 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990121771778008
+                                - text: "+79990121771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC007-1778008361306-5789 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778008
+                                - text: "+79990071771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC006-1778008360913-5073 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778008
+                                - text: "+79990061771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC005-1778008360590-5234 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990051771778008
+                                - text: "+79990051771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC004-1778008360231-6505 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041771778008
+                                - text: "+79990041771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT-001 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+78880011778007799
+                                - text: "+78880011778007799"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-004 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990041778007779
+                                - text: "+79990041778007779"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 20 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Del Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000001
+                                - text: +7 (495) 100-00-01
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Ivan Test
+                              - generic: · OOO Romashka
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951112233
+                                - text: +7 (495) 111-22-33
+                              - button:
+                                - img
+                          - generic: Excavator
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Писюня
+                              - generic: · Писюня
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79992145169
+                                - text: "+79992145169"
+                              - button:
+                                - img
+                          - generic: Бетононасос
+                          - generic: 03.05 · 09:00–18:00
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Марина Кузнецова
+                              - generic: · ЗАО ТехМонтаж
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001015
+                                - text: +7 (999) 700-10-15
+                              - button:
+                                - img
+                          - generic: Бульдозер
+                          - generic: 01.05 · 10:00-18:00
+                          - generic: Москва, ул. Ильинка, 4
+                          - generic: Сергей Продажи
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Марина Кузнецова
+                              - generic: · ЗАО ТехМонтаж
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: MAX
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001004
+                                - text: +7 (999) 700-10-04
+                              - button:
+                                - img
+                          - generic: Бульдозер
+                          - generic: 02.05 · 11:00-16:00
+                          - generic: Москва, ул. Лётчика Бабушкина, 20
+                          - generic: Сергей Продажи
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Бронь
+                      - generic: "8"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778012414014-959
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001401418
+                                - text: "+79001401418"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778011713468-393
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001346873
+                                - text: "+79001346873"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778011392660-665
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009266032
+                                - text: "+79009266032"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778011266540-324
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006654022
+                                - text: "+79006654022"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778010717595-714
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001759565
+                                - text: "+79001759565"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778010627950-533
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002795091
+                                - text: "+79002795091"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 004 004-1778010620538-104
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002053886
+                                - text: "+79002053886"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Алексей Томин
+                              - generic: · ООО Дорожник
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001005
+                                - text: +7 (999) 700-10-05
+                              - button:
+                                - img
+                          - generic: Кран
+                          - generic: 30.04 · 07:00-12:00
+                          - generic: Балашиха, ш. Энтузиастов, 2
+                          - generic: Manager User
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Выезд
+                      - generic: "20"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778012425233-183
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002523313
+                                - text: "+79002523313"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778011720058-402
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002005845
+                                - text: "+79002005845"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778011399225-85
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009922596
+                                - text: "+79009922596"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778011273043-743
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79007304341
+                                - text: "+79007304341"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 006 006-1778010724306-803
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002430665
+                                - text: "+79002430665"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Flow Test
+                              - generic: · Flow LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+78129998877
+                                - text: +7 (812) 999-88-77
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage7 Valid 6392ecf6
+                              - generic: · Stage7 Invalid LLC 6392ecf6
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74950573304
+                                - text: +7 (495) 057-33-04
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: "10.05"
+                          - generic: v
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: RBAC Ownership Test
+                              - generic: · RBAC LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959010002
+                                - text: +7 (495) 901-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Павел Макаров
+                              - generic: · ООО БетонИнвест
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001013
+                                - text: +7 (999) 700-10-13
+                              - button:
+                                - img
+                          - generic: Кран
+                          - generic: 30.04 · 08:00-20:00
+                          - generic: Москва, 1-й Грайвороновский проезд, 9
+                          - generic: Ольга Операции
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Кака
+                              - generic: · кака
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:1111
+                                - text: "1111"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: "10.05"
+                          - generic: М
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Писюня
+                              - generic: · Писюня
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79992145169
+                                - text: "+79992145169"
+                              - button:
+                                - img
+                          - generic: Бетононасос
+                          - generic: 03.05 · 09:00–18:00
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Смирнов Андрей
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Mango
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001014
+                                - text: +7 (999) 700-10-14
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: 29.04 · 06:00-14:00
+                          - generic: Красногорск, ул. Ленина, 31
+                          - generic: Ольга Операции
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Виктор Громов
+                              - generic: · ООО ЛогистикТранс
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: seed_other
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001006
+                                - text: +7 (999) 700-10-06
+                              - button:
+                                - img
+                          - generic: Бульдозер
+                          - generic: 28.04 · 06:00-12:00
+                          - generic: Москва, ул. Нижние Поля, 31
+                          - generic: Ольга Операции
+                          - generic: 8 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Завершено
+                      - generic: "68"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 016 016-1778080198119-30
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79009811978
+                                - text: "+79009811978"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT008-1778080096402-1417 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT007-1778080095991-7623 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778080
+                                - text: "+79990071771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT006-1778080095585-1411 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778080
+                                - text: "+79990061771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC009-1778080088284-501 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778080
+                                - text: "+79990091771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008-1778080087716-1091 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT008-1778080073062-8572 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT007-1778080072479-9196 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778080
+                                - text: "+79990071771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT006-1778080071820-3886 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778080
+                                - text: "+79990061771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC009-1778080050823-9950 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778080
+                                - text: "+79990091771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008-1778080049982-7439 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778080
+                                - text: "+79990081771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778012435845-220
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003584559
+                                - text: "+79003584559"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778012431203-974
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003120357
+                                - text: "+79003120357"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778011728026-804
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002802639
+                                - text: "+79002802639"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778011724187-87
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002418732
+                                - text: "+79002418732"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778011407425-206
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000742575
+                                - text: "+79000742575"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778011403421-635
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000342134
+                                - text: "+79000342134"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778011281065-379
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79008106559
+                                - text: "+79008106559"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778011277143-630
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79007714328
+                                - text: "+79007714328"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778010733146-638
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003314633
+                                - text: "+79003314633"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778010728857-431
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79002885730
+                                - text: "+79002885730"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 008 008-1778010637614-688
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003761454
+                                - text: "+79003761454"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 007 007-1778010633005-288
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003300520
+                                - text: "+79003300520"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT008-1778008670137-350 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT007-1778008669671-6516 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990071771778008
+                                - text: "+79990071771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT006-1778008669242-9931 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990061771778008
+                                - text: "+79990061771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC009-1778008651649-9823 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778008
+                                - text: "+79990091771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008-1778008651020-5476 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC009-1778008417949-4092 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778008
+                                - text: "+79990091771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008-1778008417234-8907 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC009-1778008362170-529 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778008
+                                - text: "+79990091771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC008-1778008361671-9738 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990081771778008
+                                - text: "+79990081771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Какашкин
+                              - generic: · Какашкин
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Telegram
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:012
+                                - text: "012"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: "01.05"
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 1 день назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959710
+                                - text: +7 (495) 971c-da-e0
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+749597384
+                                - text: +7 (495) 9738-fd-d4
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Flow Test
+                              - generic: · Flow LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+78129998877
+                                - text: +7 (812) 999-88-77
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Flow Test
+                              - generic: · Flow LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+78129998877
+                                - text: +7 (812) 999-88-77
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Flow Test
+                              - generic: · Flow LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+78129998877
+                                - text: +7 (812) 999-88-77
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+749597366255
+                                - text: +7 (495) 9736-62-55
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959777818
+                                - text: +7 (495) 9777-8b-18
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Станислав Левин
+                              - generic: · ООО ИнфраТрест
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: MAX
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001011
+                                - text: +7 (999) 700-10-11
+                              - button:
+                                - img
+                          - generic: Кран
+                          - generic: 25.04 · 09:00-15:00
+                          - generic: Подольск, ул. Кирова, 20
+                          - generic: Сергей Продажи
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959754
+                                - text: +7 (495) 975a-b4-fb
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+749597482
+                                - text: +7 (495) 97ca-48-b2
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+7495978754
+                                - text: +7 (495) 97e8-75-4b
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959714
+                                - text: +7 (495) 97d1-fa-e4
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+7495971195
+                                - text: +7 (495) 9711-95-ed
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74959762
+                                - text: +7 (495) 9762-cf-de
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: manager Lead
+                              - generic: · manager LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+7495970925
+                                - text: +7 (495) 9709-a2-e5
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: admin Lead
+                              - generic: · admin LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+7495979091
+                                - text: +7 (495) 979b-0a-91
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Flow Test
+                              - generic: · Stage5 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001010
+                                - text: +7 (495) 700-10-10
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage3 Test
+                              - generic: · Stage3 LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74953210099
+                                - text: +7 (495) 321-00-99
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Писюня
+                              - generic: · Писюня
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79992145169
+                                - text: "+79992145169"
+                              - button:
+                                - img
+                          - generic: Бетононасос
+                          - generic: 03.05 · 09:00–18:00
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Мистер Писюнчик
+                              - generic: · Писюня
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79992145169
+                                - text: "+79992145169"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: "01.05"
+                          - generic: Москва
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Егор Климов
+                              - generic: · ООО СеверПром
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Сайт
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001007
+                                - text: +7 (999) 700-10-07
+                              - button:
+                                - img
+                          - generic: Кран
+                          - generic: 22.04 · 09:00-18:00
+                          - generic: Мытищи, ул. Мира, 9
+                          - generic: Ольга Операции
+                          - generic: 11 дн назад
+                          - generic:
+                            - button:
+                              - img
+                  - generic:
+                    - button:
+                      - img
+                      - generic: Некачественный
+                      - generic: "35"
+                    - generic:
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 017 017-1778080205601-216
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79000560119
+                                - text: "+79000560119"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: только что
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT009-1778080096824-4996 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778080
+                                - text: "+79990091771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC010-1778080088726-1443 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101771778080
+                                - text: "+79990101771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-010 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101778080088
+                                - text: "+79990101778080088"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT009-1778080073529-7524 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778080
+                                - text: "+79990091771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 2 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC010-1778080052176-5675 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101771778080
+                                - text: "+79990101771778080"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-010 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101778080052
+                                - text: "+79990101778080052"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 3 мин назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 009-1778012468358-109
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006835881
+                                - text: "+79006835881"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 009-1778012230575-867
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79003057575
+                                - text: "+79003057575"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 18 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 009-1778011760331-964
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79006033128
+                                - text: "+79006033128"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: E2E 009 009-1778011411284-878
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79001128482
+                                - text: "+79001128482"
+                              - button:
+                                - img
+                          - generic: Экскаватор
+                          - generic: "07.05"
+                          - generic: Москва, Тестовая улица, 1
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA INT009-1778008670547-2432 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990091771778008
+                                - text: "+79990091771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC010-1778008652198-3321 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101771778008
+                                - text: "+79990101771778008"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: QA APIC-010 Lead
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990101778008652
+                                - text: "+79990101778008652"
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Manager User
+                          - generic: 19 ч назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Unqual Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990001122
+                                - text: +7 (999) 000-11-22
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Unqual Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990001122
+                                - text: +7 (999) 000-11-22
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Unqual Test
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79990001122
+                                - text: +7 (999) 000-11-22
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 5 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Stage5 Unqualified Test
+                              - generic: · Stage5 UQ LLC
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74957001011
+                                - text: +7 (495) 700-10-11
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Policy Stage3
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Ручной
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+74951000002
+                                - text: +7 (495) 100-00-02
+                              - button:
+                                - img
+                          - generic: —
+                          - generic: —
+                          - generic: —
+                          - generic: Admin User
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic: Смирнов Андрей
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Telegram
+                              - generic:
+                                - img
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001003
+                                - text: +7 (999) 700-10-03
+                              - button:
+                                - img
+                          - generic: Самосвал
+                          - generic: 09.05 · 08:00-11:00
+                          - generic: Химки, ул. Совхозная, 5
+                          - generic: Сергей Продажи
+                          - generic: 6 дн назад
+                          - generic:
+                            - button:
+                              - img
+                      - generic:
+                        - button:
+                          - generic:
+                            - generic:
+                              - text: Пётр Лунёв
+                              - generic: · ООО ГородПроект
+                            - generic:
+                              - generic:
+                                - img
+                                - generic: Telegram
+                          - generic:
+                            - generic:
+                              - link:
+                                - /url: tel:+79997001008
+                                - text: +7 (999) 700-10-08
+                              - button:
+                                - img
+                          - generic: Бетононасос
+                          - generic: 26.04 · 12:00-16:00
+                          - generic: Москва, ул. Двинцев, 3
+                          - generic: Сергей Продажи
+                          - generic: 9 дн назад
+                          - generic:
+                            - button:
+                              - img
+    - region "Notifications alt+T"
+  - dialog:
+    - generic:
+      - generic:
+        - generic:
+          - generic:
+            - button:
+              - img
+              - generic: CRM
+            - generic:
+              - img
+              - button:
+                - generic: Продажи
+            - generic:
+              - img
+              - generic:
+                - generic: Лиды
+        - generic:
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - img
+          - button:
+            - img
+      - generic:
+        - generic:
+          - generic:
+            - generic:
+              - banner:
+                - button:
+                  - generic: Лид
+                  - img
+                - generic:
+                  - heading [level=1]: E2E App 003-1778080234292-591
+                  - generic:
+                    - generic:
+                      - button:
+                        - text: Открыть заявку
+                        - img
+                - generic:
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: Manager User
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: 07.05.2026
+                  - generic:
+                    - generic:
+                      - img
+                      - generic: Ручной
+              - generic:
+                - generic:
+                  - heading [level=3]: Основные данные
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Клиент
+                      - generic:
+                        - button:
+                          - generic: E2E App 003-1778080234292-591
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Менеджер
+                      - generic:
+                        - generic: Manager User
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Компания
+                      - generic:
+                        - button:
+                          - generic: физ. лицо
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Телефон
+                      - generic:
+                        - button:
+                          - generic: "+79003429250"
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Тип техники
+                      - generic:
+                        - button:
+                          - generic: Экскаватор
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Адрес
+                      - generic:
+                        - button:
+                          - generic: Москва, Тестовая улица, 1
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Желаемая дата
+                      - generic:
+                        - button: 07.05.2026
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Время
+                      - generic:
+                        - button:
+                          - generic: Empty
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic: Источник
+                      - generic:
+                        - generic:
+                          - combobox:
+                            - generic:
+                              - generic:
+                                - generic: Ручной ввод
+              - generic:
+                - generic:
+                  - heading [level=3]: Комментарий
+                - generic:
+                  - button:
+                    - generic: Created by Playwright e2e
+              - generic:
+                - generic:
+                  - heading [level=3]: Связанные действия
+                - generic:
+                  - generic:
+                    - button:
+                      - generic:
+                        - img
+                      - text: Открыть клиента
+                    - button:
+                      - generic:
+                        - img
+                      - text: Редактировать лид
+              - generic:
+                - generic:
+                  - button:
+                    - img
+                    - generic: Комментарии
+                    - generic: "2"
+                  - button:
+                    - img
+                    - generic: Журнал изменений
+                - generic:
+                  - generic:
+                    - generic: А
+                    - generic:
+                      - generic:
+                        - generic: Анна Смирнова
+                        - generic: 2 часа назад
+                      - generic: Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.
+                  - generic:
+                    - generic: И
+                    - generic:
+                      - generic:
+                        - generic: Иван Петров
+                        - generic: вчера, 18:22
+                      - generic: Отправил КП, ждём подтверждение по позициям.
+        - complementary:
+          - generic:
+            - generic:
+              - button:
+                - img
+                - generic: Статус и мета
+            - generic:
+              - generic:
+                - generic: Этап
+                - generic:
+                  - generic: Лид
+              - generic:
+                - generic: Источник
+                - generic:
+                  - generic:
+                    - img
+                    - generic: Ручной
+              - generic:
+                - generic: Создан
+                - generic: 21.04.2026
+              - generic:
+                - generic: Активность
+                - generic: только что
+              - generic:
+                - generic: Менеджер
+                - generic: Manager User
+          - generic:
+            - generic:
+              - button:
+                - img
+                - generic: Готовность к заявке
+            - generic:
+              - generic:
+                - img
+                - text: Готов к заявке
+              - generic:
+                - button: Открыть заявку
+          - generic:
+            - generic:
+              - button:
+                - img
+                - generic: Связанные записи
+            - generic:
+              - generic:
+                - generic: Лид
+                - generic:
+                  - button: LEAD-CMOU729F
+              - generic:
+                - generic: Заявка
+                - generic:
+                  - button: APP-CMOU72D8
+              - generic:
+                - generic: Клиент
+                - generic:
+                  - button: E2E App 003-1778080234292-591
+          - generic:
+            - generic:
+              - button:
+                - img
+                - generic: История
+            - generic:
+              - generic:
+                - generic:
+                  - img
+                  - generic:
+                    - generic:
+                      - generic: Manager User
+                      - generic: только что
+                    - generic: "изменена стадия · Стадия: lead → application"
+                - generic:
+                  - img
+                  - generic:
+                    - generic:
+                      - generic: Manager User
+                      - generic: только что
+                    - generic: создано · Создан лид E2E App 003-1778080234292-591
+          - generic:
+            - generic:
+              - button:
+                - img
+                - generic: Быстрые действия
+  - dialog [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e7]:
+          - button "CRM" [active] [ref=e8]:
+            - img [ref=e9]
+            - generic [ref=e10]: CRM
+          - generic [ref=e11]:
+            - img [ref=e12]
+            - button "Продажи" [ref=e14]:
+              - generic [ref=e15]: Продажи
+          - generic [ref=e16]:
+            - img [ref=e17]
+            - generic [ref=e20]: Заявки
+        - generic [ref=e21]:
+          - button "Поделиться" [ref=e22]:
+            - img [ref=e23]
+          - button "Следить за карточкой" [ref=e29]:
+            - img [ref=e30]
+          - button "Ещё действия" [ref=e33]:
+            - img [ref=e34]
+          - button [ref=e39]:
+            - img [ref=e40]
+      - generic [ref=e43]:
+        - generic [ref=e46]:
+          - banner [ref=e47]:
+            - button "Заявка" [ref=e48]:
+              - generic [ref=e49]: Заявка
+              - img [ref=e50]
+            - generic [ref=e52]:
+              - heading "APP-000220" [level=1] [ref=e53]
+              - generic [ref=e54]:
+                - button "Закрыть как некачественный" [ref=e56]
+                - button "Отменить заявку" [ref=e58]
+            - generic [ref=e59]:
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - generic [ref=e65]: Manager User
+              - generic [ref=e67]:
+                - img [ref=e68]
+                - generic [ref=e70]: 07.05.2026
+              - generic [ref=e72]:
+                - img [ref=e73]
+                - generic [ref=e76]: "Позиций: 0"
+              - generic [ref=e78]:
+                - img [ref=e79]
+                - generic [ref=e81]: Нет данных
+          - generic [ref=e82]:
+            - heading "Основные данные" [level=3] [ref=e84]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - generic [ref=e88]:
+                  - img [ref=e90]
+                  - generic [ref=e93]: Клиент
+                - button "E2E App 003-1778080234292-591" [ref=e95]
+              - generic [ref=e96]:
+                - generic [ref=e97]:
+                  - img [ref=e99]
+                  - generic [ref=e102]: Менеджер
+                - combobox "Ответственный менеджер" [ref=e105]:
+                  - generic:
+                    - generic:
+                      - generic: Manager User
+              - generic [ref=e106]:
+                - generic [ref=e107]:
+                  - img [ref=e109]
+                  - generic [ref=e113]: Компания
+                - generic [ref=e114]: физ. лицо
+              - generic [ref=e115]:
+                - generic [ref=e116]:
+                  - img [ref=e118]
+                  - generic [ref=e121]: Позиций
+                - generic [ref=e123]: "0"
+              - generic [ref=e124]:
+                - generic [ref=e125]:
+                  - img [ref=e127]
+                  - generic [ref=e129]: Телефон
+                - generic [ref=e131]:
+                  - generic [ref=e132]: "+79003429250"
+                  - text: Редактируйте телефон в карточке клиента.
+              - generic [ref=e133]:
+                - generic [ref=e134]:
+                  - img [ref=e136]
+                  - generic [ref=e139]: Адрес
+                - button "Адрес" [ref=e141]:
+                  - generic [ref=e142]: Москва, Тестовая улица, 1
+              - generic [ref=e143]:
+                - generic [ref=e144]:
+                  - img [ref=e146]
+                  - generic [ref=e148]: Желаемая дата
+                - button "Желаемая дата" [ref=e150]: 07.05.2026
+              - generic [ref=e151]:
+                - generic [ref=e152]:
+                  - img [ref=e154]
+                  - generic [ref=e156]: Срочно
+                - combobox "Признак срочности" [ref=e159]:
+                  - generic:
+                    - generic:
+                      - generic: Нет
+              - generic [ref=e160]:
+                - generic [ref=e161]:
+                  - img [ref=e163]
+                  - generic [ref=e166]: Ночная работа
+                - combobox "Ночная работа" [ref=e169]:
+                  - generic:
+                    - generic:
+                      - generic: Нет
+          - generic [ref=e170]:
+            - generic [ref=e171]:
+              - heading "Позиции заявки" [level=3] [ref=e172]
+              - button "Добавить позицию" [ref=e174]:
+                - img [ref=e175]
+                - text: Добавить позицию
+            - generic [ref=e177]: В заявке пока нет позиций
+          - generic [ref=e178]:
+            - heading "Комментарий" [level=3] [ref=e180]
+            - button "Комментарий" [ref=e182]:
+              - generic [ref=e183]: Created by Playwright e2e
+          - generic [ref=e184]:
+            - heading "Связанные действия" [level=3] [ref=e186]
+            - generic [ref=e188]:
+              - button "Открыть клиента" [ref=e189]:
+                - img [ref=e191]
+                - text: Открыть клиента
+              - button "Открыть лид" [ref=e195]:
+                - img [ref=e197]
+                - text: Открыть лид
+              - button "Редактировать заявку" [ref=e200]:
+                - img [ref=e202]
+                - text: Редактировать заявку
+          - generic [ref=e204]:
+            - generic [ref=e205]:
+              - button "Комментарии 2" [ref=e206]:
+                - img [ref=e207]
+                - generic [ref=e209]: Комментарии
+                - generic [ref=e210]: "2"
+              - button "Журнал изменений" [ref=e211]:
+                - img [ref=e212]
+                - generic [ref=e214]: Журнал изменений
+            - generic [ref=e215]:
+              - generic [ref=e216]:
+                - generic [ref=e217]: А
+                - generic [ref=e218]:
+                  - generic [ref=e219]:
+                    - generic [ref=e220]: Анна Смирнова
+                    - generic [ref=e221]: 2 часа назад
+                  - generic [ref=e222]: Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.
+              - generic [ref=e223]:
+                - generic [ref=e224]: И
+                - generic [ref=e225]:
+                  - generic [ref=e226]:
+                    - generic [ref=e227]: Иван Петров
+                    - generic [ref=e228]: вчера, 18:22
+                  - generic [ref=e229]: Отправил КП, ждём подтверждение по позициям.
+        - complementary [ref=e230]:
+          - generic [ref=e231]:
+            - button "Статус и мета" [ref=e233]:
+              - img [ref=e234]
+              - generic [ref=e236]: Статус и мета
+            - generic [ref=e237]:
+              - generic [ref=e238]:
+                - generic [ref=e239]: Этап
+                - generic [ref=e241]: Заявка
+              - generic [ref=e242]:
+                - generic [ref=e243]: Номер
+                - generic [ref=e244]: APP-000220
+              - generic [ref=e245]:
+                - generic [ref=e246]: Обновлено
+                - generic [ref=e247]: только что
+              - generic [ref=e248]:
+                - generic [ref=e249]: Менеджер
+                - generic [ref=e250]: Manager User
+          - generic [ref=e251]:
+            - button "Готовность к брони" [ref=e253]:
+              - img [ref=e254]
+              - generic [ref=e256]: Готовность к брони
+            - generic [ref=e257]:
+              - generic [ref=e258]:
+                - img [ref=e259]
+                - text: Нет данных
+              - generic [ref=e261]: 0 из 0 позиций в бронировании
+              - button "Подготовить к брони" [ref=e263]
+          - generic [ref=e264]:
+            - button "Связанные записи" [ref=e266]:
+              - img [ref=e267]
+              - generic [ref=e269]: Связанные записи
+            - generic [ref=e270]:
+              - generic [ref=e271]:
+                - generic [ref=e272]: Лид
+                - button "LEAD-CMOU729F" [ref=e274] [cursor=pointer]
+              - generic [ref=e275]:
+                - generic [ref=e276]: Заявка
+                - button "APP-000220" [ref=e278] [cursor=pointer]
+              - generic [ref=e279]:
+                - generic [ref=e280]: Клиент
+                - button "E2E App 003-1778080234292-591" [ref=e282] [cursor=pointer]
+          - button "Позиции" [ref=e285]:
+            - img [ref=e286]
+            - generic [ref=e288]: Позиции
+          - generic [ref=e290]:
+            - button "История" [ref=e292]:
+              - img [ref=e293]
+              - generic [ref=e295]: История
+            - generic [ref=e297]: Событий пока нет
+          - button "Быстрые действия" [ref=e300]:
+            - img [ref=e301]
+            - generic [ref=e303]: Быстрые действия
+```
+
+# Test source
+
+```ts
+  49  |   refreshToken: string
+  50  |   user: {
+  51  |     id: string
+  52  |     email: string
+  53  |     role: TestRole
+  54  |     fullName: string
+  55  |   }
+  56  | }
+  57  | 
+  58  | type LeadPayload = {
+  59  |   id: string
+  60  |   contactName: string
+  61  | }
+  62  | 
+  63  | type CreateLeadResult = {
+  64  |   lead: LeadPayload
+  65  | }
+  66  | 
+  67  | type ApplicationsListResult = {
+  68  |   items: Array<{ id: string }>
+  69  | }
+  70  | 
+  71  | function apiUrl(path: string): string {
+  72  |   const cleanBase = API_BASE_URL.replace(/\/+$/, '')
+  73  |   const cleanPath = path.replace(/^\/+/, '')
+  74  |   return `${cleanBase}/${cleanPath}`
+  75  | }
+  76  | 
+  77  | export function enableUiFailureGuards(page: Page): void {
+  78  |   if (uiFailureGuards.has(page)) {
+  79  |     return
+  80  |   }
+  81  | 
+  82  |   const consoleErrors: string[] = []
+  83  |   const failedApiRequests: string[] = []
+  84  |   const allowedConsoleErrorPatterns: RegExp[] = []
+  85  |   const apiBase = API_BASE_URL.replace(/\/+$/, '')
+  86  | 
+  87  |   const onConsole: UiFailureGuardState['onConsole'] = (message) => {
+  88  |     if (message.type() !== 'error') {
+  89  |       return
+  90  |     }
+  91  | 
+  92  |     const text = message.text()
+  93  |     if (isKnownConsoleBaselineError(text)) {
+  94  |       return
+  95  |     }
+  96  |     if (allowedConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+  97  |       return
+  98  |     }
+  99  | 
+  100 |     const location = message.location()
+  101 |     const source = location.url ? `${location.url}:${location.lineNumber ?? 0}:${location.columnNumber ?? 0}` : 'unknown'
+  102 |     consoleErrors.push(`${source} :: ${text}`)
+  103 |   }
+  104 | 
+  105 |   const onRequestFailed: UiFailureGuardState['onRequestFailed'] = (request) => {
+  106 |     const url = request.url()
+  107 |     if (!url.startsWith(apiBase)) {
+  108 |       return
+  109 |     }
+  110 | 
+  111 |     const errorText = request.failure()?.errorText ?? 'unknown-error'
+  112 |     if (errorText.includes('ERR_ABORTED')) {
+  113 |       return
+  114 |     }
+  115 | 
+  116 |     failedApiRequests.push(`${request.method()} ${url} :: ${errorText}`)
+  117 |   }
+  118 | 
+  119 |   page.on('console', onConsole)
+  120 |   page.on('requestfailed', onRequestFailed)
+  121 |   uiFailureGuards.set(page, {
+  122 |     consoleErrors,
+  123 |     failedApiRequests,
+  124 |     allowedConsoleErrorPatterns,
+  125 |     onConsole,
+  126 |     onRequestFailed,
+  127 |   })
+  128 | }
+  129 | 
+  130 | export async function assertUiFailureGuards(page: Page, options: { failOnIssues?: boolean } = {}): Promise<void> {
+  131 |   const state = uiFailureGuards.get(page)
+  132 |   if (!state) {
+  133 |     return
+  134 |   }
+  135 | 
+  136 |   page.off('console', state.onConsole)
+  137 |   page.off('requestfailed', state.onRequestFailed)
+  138 |   uiFailureGuards.delete(page)
+  139 | 
+  140 |   const issues = [
+  141 |     ...state.consoleErrors.map((entry) => `console.error ${entry}`),
+  142 |     ...state.failedApiRequests.map((entry) => `requestfailed ${entry}`),
+  143 |   ]
+  144 | 
+  145 |   if (issues.length === 0 || options.failOnIssues === false) {
+  146 |     return
+  147 |   }
+  148 | 
+> 149 |   expect(issues, `Unexpected UI runtime issues:\n${issues.join('\n')}`).toEqual([])
+      |                                                                         ^ Error: Unexpected UI runtime issues:
+  150 | }
+  151 | 
+  152 | export async function sendApiRequest<T>(
+  153 |   request: APIRequestContext,
+  154 |   path: string,
+  155 |   options: {
+  156 |     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  157 |     token?: string
+  158 |     body?: unknown
+  159 |     expectedStatus?: number
+  160 |   } = {},
+  161 | ): Promise<T> {
+  162 |   const headers: Record<string, string> = { Accept: 'application/json' }
+  163 |   if (options.token) {
+  164 |     headers.Authorization = `Bearer ${options.token}`
+  165 |   }
+  166 |   if (options.body !== undefined) {
+  167 |     headers['Content-Type'] = 'application/json'
+  168 |   }
+  169 | 
+  170 |   const response = await request.fetch(apiUrl(path), {
+  171 |     method: options.method ?? 'GET',
+  172 |     headers,
+  173 |     data: options.body,
+  174 |   })
+  175 |   const status = response.status()
+  176 | 
+  177 |   const raw = await response.text()
+  178 |   const payload = raw
+  179 |     ? (() => {
+  180 |         try {
+  181 |           return JSON.parse(raw)
+  182 |         } catch {
+  183 |           return raw
+  184 |         }
+  185 |       })()
+  186 |     : null
+  187 | 
+  188 |   if (options.expectedStatus !== undefined && status !== options.expectedStatus) {
+  189 |     throw new Error(
+  190 |       `API ${options.method ?? 'GET'} ${path} expected ${options.expectedStatus}, got ${status}: ${JSON.stringify(payload)}`,
+  191 |     )
+  192 |   }
+  193 | 
+  194 |   if (options.expectedStatus === undefined && !response.ok()) {
+  195 |     throw new Error(
+  196 |       `API ${options.method ?? 'GET'} ${path} failed with ${status}: ${JSON.stringify(payload)}`,
+  197 |     )
+  198 |   }
+  199 | 
+  200 |   return payload as T
+  201 | }
+  202 | 
+  203 | export function uniqueSeed(prefix: string): string {
+  204 |   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  205 | }
+  206 | 
+  207 | export function uniquePhone(): string {
+  208 |   const tail = `${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 90 + 10)}`
+  209 |   return `+7900${tail}`
+  210 | }
+  211 | 
+  212 | export async function apiLogin(request: APIRequestContext, role: TestRole): Promise<AuthPayload> {
+  213 |   const credentials = ROLE_CREDENTIALS[role]
+  214 |   return sendApiRequest<AuthPayload>(request, 'auth/login', {
+  215 |     method: 'POST',
+  216 |     body: credentials,
+  217 |   })
+  218 | }
+  219 | 
+  220 | export async function createLeadViaApi(
+  221 |   request: APIRequestContext,
+  222 |   token: string,
+  223 |   overrides: Partial<{
+  224 |     contactName: string
+  225 |     contactPhone: string
+  226 |     equipmentTypeHint: string
+  227 |     address: string
+  228 |     requestedDate: string
+  229 |   }> = {},
+  230 | ): Promise<LeadPayload> {
+  231 |   const oneDayAhead = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  232 | 
+  233 |   const response = await sendApiRequest<CreateLeadResult>(request, 'leads', {
+  234 |     method: 'POST',
+  235 |     token,
+  236 |     body: {
+  237 |       contactName: overrides.contactName ?? `E2E ${uniqueSeed('lead')}`,
+  238 |       contactPhone: overrides.contactPhone ?? uniquePhone(),
+  239 |       source: 'manual',
+  240 |       equipmentTypeHint: overrides.equipmentTypeHint ?? 'Экскаватор',
+  241 |       requestedDate: overrides.requestedDate ?? oneDayAhead.toISOString(),
+  242 |       address: overrides.address ?? 'Москва, Тестовая улица, 1',
+  243 |       comment: 'Created by Playwright e2e',
+  244 |     },
+  245 |   })
+  246 | 
+  247 |   return response.lead
+  248 | }
+  249 | 
+```

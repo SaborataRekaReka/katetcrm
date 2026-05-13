@@ -15,7 +15,9 @@ import { DEFAULT_LEADS_FILTERS, LeadsFiltersState } from './filterTypes';
 import {
   LIST_TOOLBAR_BAR,
   LIST_TOOLBAR_SEARCH_INPUT,
+  LIST_TOOLBAR_SEARCH_WRAP,
   LIST_TOOLBAR_TRIGGER,
+  LIST_TOOLBAR_UTILITY_GROUP,
   ToolbarDivider,
   ToolbarToggle,
   ToolbarUtilityButton,
@@ -87,7 +89,7 @@ export function LeadsToolbar({
 
   return (
     <div className={LIST_TOOLBAR_BAR}>
-      <div className="relative w-[220px] shrink-0">
+      <div className={LIST_TOOLBAR_SEARCH_WRAP}>
         <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
           data-crm-search-input="true"
@@ -184,7 +186,7 @@ export function LeadsToolbar({
         onClick={() => setField('stale', !filters.stale)}
       />
 
-      <div className="ml-auto flex shrink-0 items-center gap-0.5">
+      <div className={LIST_TOOLBAR_UTILITY_GROUP}>
         {hasActive && (
           <ToolbarUtilityButton
             label="Сбросить"

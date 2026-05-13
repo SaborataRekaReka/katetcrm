@@ -1,7 +1,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Bell, HelpCircle, ChevronDown } from 'lucide-react';
+import { Search, Bell, HelpCircle, ChevronDown, LogOut, Settings, UserRound } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 import { useLayout } from './layoutStore';
 import { getDomainConfig, getModuleMeta, PRIMARY_DOMAINS } from './navConfig';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
@@ -10,10 +18,14 @@ import { useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
 import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
+import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
+import { useAuth } from '../../auth/AuthProvider';
 import type { RouteEntityType } from './routeSync';
 
 const WORKSPACE_SEARCH_SELECTOR = '[data-crm-search-input="true"]';
 const ENTITY_SUGGESTION_LIMIT = 3;
+const DEFAULT_WORKSPACE_TITLE = 'Катет CRM';
+const USE_API = import.meta.env.VITE_USE_API === 'true';
 
 type WorkspaceSuggestion = {
   kind: 'workspace';
@@ -46,6 +58,7 @@ type QuerySuggestion = {
 type QuickSuggestion = WorkspaceSuggestion | EntitySuggestion | QuerySuggestion;
 
 export function GlobalTopbar() {
+  const { user, logout } = useAuth();
   const {
     role,
     setRole,
@@ -61,7 +74,80 @@ export function GlobalTopbar() {
   const quickSearchRef = useRef<HTMLInputElement | null>(null);
   const [quickQuery, setQuickQuery] = useState('');
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const workspaceSettingsQuery = useWorkspaceSettingsQuery(USE_API && role === 'admin');
+
+  const workspaceTitle = useMemo(() => {
+    const sections = workspaceSettingsQuery.data?.sections;
+    const generalSection = sections?.find((section) => section.id === 'general');
+    if (!generalSection || generalSection.rows.length === 0) {
+      return DEFAULT_WORKSPACE_TITLE;
+    }
+
+    const titleRow = generalSection.rows.find((row) => {
+      const label = row.label.trim().toLowerCase();
+      return label === 'название пространства' || label === 'название';
+    }) ?? generalSection.rows[0];
+
+    const value = titleRow?.value?.trim();
+    return value || DEFAULT_WORKSPACE_TITLE;
+  }, [workspaceSettingsQuery.data?.sections]);
+
+  const profileDisplayName = useMemo(() => {
+    const fullName = user?.fullName?.trim();
+    if (fullName && !fullName.includes('@')) {
+      return fullName;
+    }
+
+    const email = user?.email?.trim() ?? fullName;
+    if (!email) {
+      return role === 'admin' ? 'Администратор' : 'Менеджер';
+    }
+
+    const localPart = email.split('@')[0] ?? '';
+    const normalized = localPart.replace(/[._-]+/g, ' ').trim();
+    if (!normalized) {
+      return email;
+    }
+
+    return normalized
+      .split(/\s+/)
+      .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+      .join(' ');
+  }, [role, user?.email, user?.fullName]);
+
+  const profileEmail = useMemo(() => {
+    const email = user?.email?.trim();
+    if (email) {
+      return email;
+    }
+    return role === 'admin' ? 'admin@katet.local' : 'manager@katet.local';
+  }, [role, user?.email]);
+
+  const profileInitials = useMemo(() => {
+    const source = (profileDisplayName || profileEmail).trim();
+    if (!source) {
+      return 'U';
+    }
+
+    const wordInitials = source
+      .split(/\s+/)
+      .map((word) => Array.from(word.replace(/[^0-9A-Za-zА-Яа-яЁё]/g, ''))[0] ?? '')
+      .filter(Boolean);
+
+    if (wordInitials.length >= 2) {
+      return `${wordInitials[0]}${wordInitials[wordInitials.length - 1]}`.toUpperCase();
+    }
+
+    const singleToken = source.includes('@') ? source.split('@')[0] ?? source : source;
+    const chars = Array.from(singleToken.replace(/[^0-9A-Za-zА-Яа-яЁё]/g, ''));
+    if (chars.length === 0) {
+      return 'U';
+    }
+
+    return chars.slice(0, 2).join('').toUpperCase();
+  }, [profileDisplayName, profileEmail]);
 
   const workspaceSuggestions = useMemo<WorkspaceSuggestion[]>(() => {
     const out: WorkspaceSuggestion[] = [];
@@ -458,16 +544,21 @@ export function GlobalTopbar() {
     setActiveSecondaryNav('my-tasks');
   };
 
+  const openAdminSettings = () => {
+    setActivePrimaryNav('admin');
+    setActiveSecondaryNav('settings');
+  };
+
   return (
-    <header className="flex h-10 w-full shrink-0 items-center justify-between gap-3 border-b border-border/60 bg-white px-3">
-      <div className="flex items-center gap-2">
+    <header className="flex h-10 w-full shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-white px-2 sm:gap-3 sm:px-3">
+      <div className="flex min-w-0 items-center gap-2">
         <span className="flex h-6 w-6 items-center justify-center rounded bg-rose-500 text-[11px] font-bold text-white">
           К
         </span>
-        <span className="text-[13px] font-semibold tracking-tight">Катет CRM</span>
+        <span className="hidden truncate text-[13px] font-semibold tracking-tight sm:inline">{workspaceTitle}</span>
       </div>
 
-      <div className="flex max-w-[480px] flex-1 items-center">
+      <div className="flex min-w-0 flex-1 items-center sm:max-w-[480px]">
         <div className="relative flex h-7 w-full items-center">
           <Search className="pointer-events-none absolute left-2 h-3.5 w-3.5 text-muted-foreground" />
           <input
@@ -515,9 +606,9 @@ export function GlobalTopbar() {
             }}
             placeholder={placeholder}
             aria-label="Быстрый поиск"
-            className="h-7 w-full rounded-md border border-border/60 bg-[#f7f8fa] pl-7 pr-14 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-blue-400 focus:bg-white"
+            className="h-7 w-full rounded-md border border-border/60 bg-[#f7f8fa] pl-7 pr-2 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-blue-400 focus:bg-white sm:pr-14"
           />
-          <kbd className="pointer-events-none absolute right-2 rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <kbd className="pointer-events-none absolute right-2 hidden rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground sm:block">
             Ctrl K
           </kbd>
 
@@ -548,29 +639,61 @@ export function GlobalTopbar() {
         </div>
       </div>
 
-      <div className="flex items-center gap-0.5">
+      <div className="flex shrink-0 items-center gap-0.5">
         {/* Role switcher - dev helper */}
         <button
           type="button"
           onClick={() => setRole(role === 'admin' ? 'manager' : 'admin')}
-          className="mr-1 flex h-6 items-center gap-1 rounded-md border border-border px-2 text-[11px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground"
+          className="mr-1 hidden h-6 items-center gap-1 rounded-md border border-border px-2 text-[11px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground lg:flex"
           title="Переключить роль"
         >
           {role === 'admin' ? 'Админ' : 'Менеджер'}
         </button>
         <TopbarIconButton icon={Bell} label="Уведомления" onClick={openAudit} />
         <TopbarIconButton icon={HelpCircle} label="Помощь" onClick={openHelp} />
-        <button
-          type="button"
-          onClick={openProfile}
-          className="ml-1 flex h-7 items-center gap-1 rounded-md px-1 text-xs transition-colors hover:bg-accent"
-          aria-label="Профиль"
-        >
-          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-[11px] font-semibold text-orange-700">
-            TK
-          </span>
-          <ChevronDown className="h-3 w-3 text-muted-foreground" />
-        </button>
+        <DropdownMenu onOpenChange={setIsProfileMenuOpen}>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="ml-1 flex h-7 items-center gap-1 rounded-md px-1 text-xs transition-colors hover:bg-accent"
+              aria-label="Профиль"
+            >
+              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[var(--shell-rail-bg)] text-[11px] font-semibold text-[var(--shell-rail-fg)] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)]">
+                {profileInitials}
+              </span>
+              <ChevronDown
+                className={cn(
+                  'h-3 w-3 text-muted-foreground transition-transform',
+                  isProfileMenuOpen ? 'rotate-180' : '',
+                )}
+              />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56 text-[12px]">
+            <DropdownMenuLabel className="py-1.5">
+              <div className="flex flex-col gap-0.5">
+                <span className="truncate text-[12px] font-medium text-foreground">{profileDisplayName}</span>
+                <span className="truncate text-[10px] text-muted-foreground">{profileEmail}</span>
+              </div>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={openProfile}>
+              <UserRound className="h-3.5 w-3.5" />
+              Профиль
+            </DropdownMenuItem>
+            {role === 'admin' ? (
+              <DropdownMenuItem onSelect={openAdminSettings}>
+                <Settings className="h-3.5 w-3.5" />
+                Настройки
+              </DropdownMenuItem>
+            ) : null}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={logout} variant="destructive">
+              <LogOut className="h-3.5 w-3.5" />
+              Выйти
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

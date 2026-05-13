@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Capabilities } from '../../common/capabilities.decorator';
+import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { Roles } from '../../common/roles.decorator';
@@ -7,8 +9,9 @@ import type { JwtPayload } from '../auth/jwt.strategy';
 import { ImportPreviewDto, RunImportDto } from './imports.dto';
 import { ImportsService } from './imports.service';
 @Controller('imports')
-@UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
 @Roles('admin')
+@Capabilities('admin.imports')
 export class ImportsController {
   constructor(private readonly imports: ImportsService) {}
 

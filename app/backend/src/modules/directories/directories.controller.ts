@@ -9,6 +9,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Capabilities } from '../../common/capabilities.decorator';
+import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { RolesGuard } from '../../common/roles.guard';
 import { Roles } from '../../common/roles.decorator';
@@ -37,15 +39,17 @@ export class DirectoriesController {
   }
 
   @Post('equipment-categories')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   createCategory(@Body() dto: UpsertEquipmentCategoryDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createCategory(dto, user.sub);
   }
 
   @Patch('equipment-categories/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   updateCategory(
     @Param('id') id: string,
     @Body() dto: UpsertEquipmentCategoryDto,
@@ -55,8 +59,9 @@ export class DirectoriesController {
   }
 
   @Delete('equipment-categories/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   deleteCategory(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.svc.deleteCategory(id, user.sub);
   }
@@ -73,15 +78,17 @@ export class DirectoriesController {
   }
 
   @Post('equipment-types')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   createType(@Body() dto: CreateEquipmentTypeDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createType(dto, user.sub);
   }
 
   @Patch('equipment-types/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   updateType(
     @Param('id') id: string,
     @Body() dto: UpdateEquipmentTypeDto,
@@ -91,8 +98,9 @@ export class DirectoriesController {
   }
 
   @Delete('equipment-types/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   deleteType(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.svc.deleteType(id, user.sub);
   }
@@ -121,15 +129,17 @@ export class DirectoriesController {
   }
 
   @Post('equipment-units')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   createUnit(@Body() dto: CreateEquipmentUnitDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createUnit(dto, user.sub);
   }
 
   @Patch('equipment-units/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   updateUnit(
     @Param('id') id: string,
     @Body() dto: UpdateEquipmentUnitDto,
@@ -139,8 +149,9 @@ export class DirectoriesController {
   }
 
   @Delete('equipment-units/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   deleteUnit(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.svc.deleteUnit(id, user.sub);
   }
@@ -169,15 +180,17 @@ export class DirectoriesController {
   }
 
   @Post('subcontractors')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   createSubcontractor(@Body() dto: CreateSubcontractorDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createSubcontractor(dto, user.sub);
   }
 
   @Patch('subcontractors/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   updateSubcontractor(
     @Param('id') id: string,
     @Body() dto: UpdateSubcontractorDto,
@@ -187,8 +200,9 @@ export class DirectoriesController {
   }
 
   @Delete('subcontractors/:id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('catalogs.write')
   deleteSubcontractor(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.svc.deleteSubcontractor(id, user.sub);
   }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import {
   type RouteEntityType,
   parseInitialRoute,
@@ -38,6 +38,7 @@ type LayoutState = {
 };
 
 const STORAGE_KEY = 'katet-crm.layout.v5';
+const MOBILE_SIDEBAR_BREAKPOINT = 768;
 
 const LayoutContext = createContext<LayoutState | null>(null);
 
@@ -81,7 +82,12 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   // URL takes precedence over localStorage on first mount so deep links and
   // reloads behave predictably.
   const initialRoute = parseInitialRoute();
-  const [sidebarExpanded, setSidebarExpanded] = useState(initial.sidebarExpanded);
+  const [sidebarExpanded, setSidebarExpanded] = useState(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
+      return false;
+    }
+    return initial.sidebarExpanded;
+  });
   const [activePrimaryNav, setActivePrimaryNav] = useState(initial.activePrimaryNav);
   const [activeSecondaryNavState, setActiveSecondaryNavState] = useState(
     initialRoute.secondaryId ?? initial.activeSecondaryNav,
@@ -99,6 +105,28 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
     initial.expandedSections,
   );
   const [role, setRole] = useState<UserRole>(initial.role);
+  const isMobileViewportRef = useRef<boolean>(
+    typeof window !== 'undefined' ? window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT : false,
+  );
+
+  // Keep sidebar closed by default on mobile and auto-close on desktop->mobile transition.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
+      setSidebarExpanded(false);
+    }
+
+    const onResize = () => {
+      const isMobile = window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT;
+      if (isMobile && !isMobileViewportRef.current) {
+        setSidebarExpanded(false);
+      }
+      isMobileViewportRef.current = isMobile;
+    };
+
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   const resolveWritableSecondary = (fallbackSecondaryId: string): string | null => {
     if (pathnameForSecondary(activeSecondaryNavState)) {

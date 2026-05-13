@@ -30,11 +30,11 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex h-screen w-full flex-col overflow-hidden bg-[var(--shell-app-bg)] text-foreground">
           <GlobalTopbar />
           <NotificationStrip />
-          <div className="flex min-h-0 flex-1 gap-1.5 p-1.5">
+          <div className="flex min-h-0 flex-1 gap-1 p-1 sm:gap-1.5 sm:p-1.5">
             <PrimaryRail />
-            <div className="flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border border-[var(--shell-frame-border)] bg-[var(--shell-sidebar-bg)]">
+            <div className="relative flex min-h-0 min-w-0 flex-1 overflow-hidden rounded-lg border border-[var(--shell-frame-border)] bg-[var(--shell-sidebar-bg)]">
               <SecondarySidebar />
-              <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-l border-[var(--shell-inner-divider)] bg-[var(--shell-main-bg)]">
+              <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden border-l-0 bg-[var(--shell-main-bg)] md:border-l md:border-[var(--shell-inner-divider)]">
                 {children}
               </main>
             </div>

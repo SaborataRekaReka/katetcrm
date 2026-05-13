@@ -131,7 +131,7 @@ function ControlDashboardPage() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 min-[280px]:grid-cols-2 sm:grid-cols-4 sm:gap-3">
               <StatCard label="Всего в воронке" value={total ?? '—'} icon={<TrendingUp className="h-3.5 w-3.5" />} />
               <StatCard label="Активные" value={active ?? '—'} tone="progress" icon={<Sparkles className="h-3.5 w-3.5" />} />
               <StatCard label="Завершено" value={closed ?? '—'} tone="success" icon={<CalendarCheck className="h-3.5 w-3.5" />} />
@@ -145,12 +145,12 @@ function ControlDashboardPage() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {counts.map((c) => (
-                      <div key={c.stage} className="flex items-center gap-3 text-[12px]">
-                        <div className="w-24 shrink-0 text-foreground/80">{STAGE_LABEL_SHORT[c.stage]}</div>
+                      <div key={c.stage} className="flex items-center gap-2 text-[12px] sm:gap-3">
+                        <div className="w-20 shrink-0 text-foreground/80 sm:w-24">{STAGE_LABEL_SHORT[c.stage]}</div>
                         <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
                           <div className={cn('h-4 rounded', STAGE_BAR[c.stage])} style={{ width: `${(c.count / max) * 100}%` }} />
                         </div>
-                        <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{c.count}</div>
+                        <div className="w-9 shrink-0 pr-0.5 text-right tabular-nums text-foreground sm:w-10 sm:pr-1">{c.count}</div>
                       </div>
                     ))}
                   </div>
@@ -163,12 +163,12 @@ function ControlDashboardPage() {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {byManager.map(([m, v]) => (
-                      <div key={m} className="flex items-center gap-3 text-[12px]">
-                        <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
+                      <div key={m} className="flex items-center gap-2 text-[12px] sm:gap-3">
+                        <div className="w-20 shrink-0 truncate text-foreground/80 sm:w-32">{m}</div>
                         <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
                           <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / managerMax) * 100}%` }} />
                         </div>
-                        <div className="w-10 shrink-0 text-right tabular-nums text-foreground">{v}</div>
+                        <div className="w-9 shrink-0 pr-0.5 text-right tabular-nums text-foreground sm:w-10 sm:pr-1">{v}</div>
                       </div>
                     ))}
                   </div>
@@ -882,7 +882,7 @@ function AnalyticsViewPage({ viewId }: { viewId: string }) {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <div className="grid grid-cols-1 gap-2 min-[280px]:grid-cols-2 sm:grid-cols-4 sm:gap-3">
               <StatCard label="Всего" value={total} tone={cfg.tone} icon={cfg.icon} />
               <StatCard label="Менеджеров" value={managersTotal} tone="default" icon={<User className="h-3.5 w-3.5" />} />
               <StatCard
@@ -910,12 +910,12 @@ function AnalyticsViewPage({ viewId }: { viewId: string }) {
                 ) : (
                   <div className="flex flex-col gap-2">
                     {managerRows.map(([m, v]) => (
-                      <div key={m} className="flex items-center gap-3 text-[12px]">
-                        <div className="w-32 shrink-0 truncate text-foreground/80">{m}</div>
+                      <div key={m} className="flex items-center gap-2 text-[12px] sm:gap-3">
+                        <div className="w-20 shrink-0 truncate text-foreground/80 sm:w-32">{m}</div>
                         <div className="relative flex-1 overflow-hidden rounded bg-muted/60">
                           <div className="h-4 rounded bg-[#2a6af0]" style={{ width: `${(v / max) * 100}%` }} />
                         </div>
-                        <div className="w-8 shrink-0 text-right tabular-nums text-foreground">{v}</div>
+                        <div className="w-7 shrink-0 pr-0.5 text-right tabular-nums text-foreground sm:w-8 sm:pr-1">{v}</div>
                       </div>
                     ))}
                   </div>

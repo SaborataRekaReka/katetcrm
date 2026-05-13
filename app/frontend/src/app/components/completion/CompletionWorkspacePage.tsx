@@ -316,7 +316,7 @@ export function CompletionWorkspacePage() {
       )}
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && handleCloseCompletion()}>
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selected ? (
             <CompletionWorkspace
               lead={selected}
@@ -335,7 +335,7 @@ export function CompletionWorkspacePage() {
         </DialogContent>
       </Dialog>
       <Dialog open={!!clientLead} onOpenChange={(o) => !o && setClientLead(null)}>
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {clientLead ? <ClientWorkspace lead={clientLead} onClose={() => setClientLead(null)} /> : null}
         </DialogContent>
       </Dialog>

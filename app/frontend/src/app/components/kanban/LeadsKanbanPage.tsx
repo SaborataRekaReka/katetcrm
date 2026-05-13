@@ -411,7 +411,7 @@ export function LeadsKanbanPage() {
           setIsDetailOpen(true);
         }}
       >
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {selectedLead ? (
             <LeadDetailModal
               lead={selectedLead}
@@ -437,7 +437,7 @@ export function LeadsKanbanPage() {
       />
 
       <Dialog open={isClientOpen} onOpenChange={setIsClientOpen}>
-        <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
           {clientLead && (
             <ClientWorkspace
               lead={clientLead}

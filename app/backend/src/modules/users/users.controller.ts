@@ -8,6 +8,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { Capabilities } from '../../common/capabilities.decorator';
+import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import { Roles } from '../../common/roles.decorator';
 import { RolesGuard } from '../../common/roles.guard';
@@ -27,8 +29,9 @@ export class UsersController {
   constructor(private readonly users: UsersService) {}
 
   @Get()
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.users')
   listUsers(@Query() query: ListUsersQueryDto) {
     return this.users.listUsers(query);
   }
@@ -39,22 +42,25 @@ export class UsersController {
   }
 
   @Get('permissions-matrix')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.permissions')
   permissionsMatrix() {
     return this.users.getPermissionsMatrix();
   }
 
   @Post()
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.users')
   createUser(@Body() dto: CreateUserDto) {
     return this.users.createUser(dto);
   }
 
   @Patch('permissions-matrix/:capabilityId')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.permissions')
   updatePermissionCapability(
     @Param('capabilityId') capabilityId: string,
     @Body() dto: UpdatePermissionCapabilityDto,
@@ -64,8 +70,9 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.users')
   updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
     return this.users.updateUser(id, dto);
   }

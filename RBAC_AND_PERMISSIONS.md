@@ -43,9 +43,16 @@ Manager cannot:
 Backend must validate regardless of frontend state:
 
 1. Role access for every protected endpoint.
-2. Record scope access (own vs all where applicable).
-3. Transition rights for critical workflow actions.
-4. Mutation rights for directories/admin modules.
+2. Capability access for admin-only endpoint groups (users, permissions, settings, imports, integrations, directory writes).
+3. Record scope access (own vs all where applicable).
+4. Transition rights for critical workflow actions.
+5. Mutation rights for directories/admin modules.
+
+Runtime policy details:
+
+1. Role guard remains mandatory and is still the primary boundary (`admin` vs `manager`).
+2. Capability matrix from `users/permissions-matrix` is enforced server-side on top of role checks.
+3. Capability toggles are persisted in `system_config` key `admin.permissions_matrix.v1`.
 
 ## 5. Critical actions requiring confirmation
 

@@ -41,7 +41,7 @@ export function StatCard({ label, value, icon, hint, tone = 'default', onClick, 
     >
       <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
         {icon ? <span className={TONE_ICON[tone]}>{icon}</span> : null}
-        <span className="truncate">{label}</span>
+        <span className="break-words leading-tight">{label}</span>
       </div>
       <div className="text-[18px] leading-6 tabular-nums text-gray-900">{value}</div>
       {hint != null ? <div className="text-[11px] text-gray-500">{hint}</div> : null}

@@ -255,7 +255,7 @@ export function GlobalEntityOverlayHost() {
         if (!open && shouldRenderOverlay) clearActiveEntityRoute();
       }}
     >
-      <DialogContent className="!max-w-none w-[96vw] h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+      <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
         {renderOverlayBody()}
       </DialogContent>
     </Dialog>

@@ -1056,7 +1056,7 @@ const SETTINGS_SECTION_DESCRIPTION_FALLBACK: Record<string, string> = {
 };
 
 const SETTINGS_ROW_LABEL_FALLBACK: Record<string, string[]> = {
-  general: ['Профиль seed', 'Часовой пояс'],
+  general: ['Название пространства', 'Часовой пояс', 'Язык интерфейса'],
   seed: ['Leads', 'Reservations', 'Departures', 'Completions', 'Tasks'],
 };
 
@@ -1836,7 +1836,9 @@ function PermissionsPage() {
     { id: 'catalogs.write', label: 'Управление справочниками', matrix: { admin: true, manager: false } },
     { id: 'admin.users', label: 'Управление пользователями', matrix: { admin: true, manager: false } },
     { id: 'admin.permissions', label: 'Управление правами', matrix: { admin: true, manager: false } },
+    { id: 'admin.settings', label: 'Глобальные настройки', matrix: { admin: true, manager: false } },
     { id: 'admin.imports', label: 'Импорты', matrix: { admin: true, manager: false } },
+    { id: 'admin.integrations', label: 'Журнал интеграций', matrix: { admin: true, manager: false } },
   ];
 
   const permissionsQuery = usePermissionsMatrixQuery(USE_API);

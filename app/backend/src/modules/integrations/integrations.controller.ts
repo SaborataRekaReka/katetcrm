@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Headers, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Capabilities } from '../../common/capabilities.decorator';
+import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { Roles } from '../../common/roles.decorator';
@@ -25,22 +27,25 @@ export class IntegrationsController {
   }
 
   @Get('events')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.integrations')
   list(@Query() query: IntegrationEventListQueryDto) {
     return this.integrations.list(query);
   }
 
   @Get('events/:id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.integrations')
   getById(@Param('id') id: string) {
     return this.integrations.getById(id);
   }
 
   @Post('events/:id/retry')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.integrations')
   retry(
     @Param('id') id: string,
     @Body() dto: RetryOrReplayIntegrationEventDto,
@@ -50,8 +55,9 @@ export class IntegrationsController {
   }
 
   @Post('events/:id/replay')
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.integrations')
   replay(
     @Param('id') id: string,
     @Body() dto: RetryOrReplayIntegrationEventDto,

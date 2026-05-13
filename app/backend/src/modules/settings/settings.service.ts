@@ -16,6 +16,7 @@ export interface WorkspaceSettingsState {
 }
 
 const WORKSPACE_SETTINGS_KEY = 'admin.workspace_settings.v1';
+const TECHNICAL_SECTION_IDS = new Set(['seed']);
 
 const DEFAULT_WORKSPACE_SETTINGS: WorkspaceSettingsState = {
   sections: [
@@ -65,7 +66,10 @@ export class SettingsService {
   ) {}
 
   async getWorkspaceSettings() {
-    return this.readWorkspaceSettings();
+    const state = await this.readWorkspaceSettings();
+    return {
+      sections: state.sections.filter((section) => !TECHNICAL_SECTION_IDS.has(section.id)),
+    };
   }
 
   async updateWorkspaceSection(

@@ -727,7 +727,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   }
 
   const main = (
-    <div className="max-w-[820px] mx-auto px-8 pt-6 pb-10">
+    <div className="max-w-[820px] mx-auto px-4 pb-10 pt-6 sm:px-6 lg:px-8">
       <EntityModalHeader
         entityIcon={<FileText className="w-3 h-3" />}
         entityLabel="Бронь"

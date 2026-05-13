@@ -1,4 +1,6 @@
 import { Body, Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
+import { Capabilities } from '../../common/capabilities.decorator';
+import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { Roles } from '../../common/roles.decorator';
@@ -13,15 +15,17 @@ export class SettingsController {
   constructor(private readonly settings: SettingsService) {}
 
   @Get('workspace')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.settings')
   workspaceSettings() {
     return this.settings.getWorkspaceSettings();
   }
 
   @Patch('workspace/sections/:sectionId')
-  @UseGuards(RolesGuard)
+  @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
+  @Capabilities('admin.settings')
   updateWorkspaceSection(
     @Param('sectionId') sectionId: string,
     @Body() dto: UpdateWorkspaceSectionDto,
