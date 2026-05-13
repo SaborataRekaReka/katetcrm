@@ -37,6 +37,11 @@ Create these repository secrets:
 
 At least one auth secret is required: `PROD_SSH_PRIVATE_KEY` or `PROD_SSH_PASSWORD`.
 
+IPv6 note:
+
+1. You can set `PROD_SSH_HOST` as bare IPv6 (`2a03:6f00:a::1:cd6d`) or bracketed (`[2a03:6f00:a::1:cd6d]`).
+2. Workflow normalizes both formats for SSH and rsync.
+
 ## 4. Backend env requirements
 
 `app/backend/.env` in production must include at minimum:

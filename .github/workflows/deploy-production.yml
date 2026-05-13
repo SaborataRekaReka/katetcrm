@@ -63,7 +63,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          ssh_host="${PROD_SSH_HOST}"
+          ssh_host_raw="${PROD_SSH_HOST}"
+          ssh_host_plain="${ssh_host_raw#[}"
+          ssh_host_plain="${ssh_host_plain%]}"
           ssh_port="${PROD_SSH_PORT:-22}"
 
           install -m 700 -d ~/.ssh
@@ -76,7 +78,7 @@ jobs:
           if [ -n "${PROD_SSH_KNOWN_HOSTS:-}" ]; then
             printf '%s\n' "$PROD_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
           else
-            ssh-keyscan -H -p "$ssh_port" "$ssh_host" > ~/.ssh/known_hosts
+            ssh-keyscan -H -p "$ssh_port" "$ssh_host_plain" > ~/.ssh/known_hosts
           fi
 
       - name: Install sshpass when password auth is used
@@ -106,9 +108,16 @@ jobs:
         run: |
           set -euo pipefail
 
-          ssh_host="${PROD_SSH_HOST}"
+          ssh_host_raw="${PROD_SSH_HOST}"
+          ssh_host_plain="${ssh_host_raw#[}"
+          ssh_host_plain="${ssh_host_plain%]}"
+          if [[ "$ssh_host_plain" == *:* ]]; then
+            ssh_host_target="[$ssh_host_plain]"
+          else
+            ssh_host_target="$ssh_host_plain"
+          fi
           ssh_port="${PROD_SSH_PORT:-22}"
-          target="${PROD_SSH_USER}@${ssh_host}"
+          target="${PROD_SSH_USER}@${ssh_host_target}"
 
           if [ -n "${PROD_SSH_PRIVATE_KEY:-}" ] && ssh -i ~/.ssh/id_ed25519 -p "$ssh_port" -o BatchMode=yes -o ConnectTimeout=10 "$target" "echo ok" >/dev/null 2>&1; then
             echo "auth_mode=key" >> "$GITHUB_OUTPUT"
