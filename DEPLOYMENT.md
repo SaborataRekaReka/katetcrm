@@ -9,8 +9,9 @@ Production stack is defined in [docker-compose.prod.yml](docker-compose.prod.yml
 1. `postgres` (PostgreSQL 16)
 2. `backend` (NestJS + Prisma)
 3. `frontend` (Vite static build served by Nginx)
+4. `caddy` (reverse proxy + automatic Let's Encrypt TLS)
 
-Frontend container proxies `/api/*` to backend (`backend:3001`).
+External traffic goes through Caddy on ports `80/443`. Caddy proxies all requests to `frontend`, and frontend proxies `/api/*` to backend (`backend:3001`).
 
 ## 2. Required server prerequisites
 
@@ -19,6 +20,7 @@ On VPS install:
 1. Docker Engine
 2. Docker Compose plugin (`docker compose` command)
 3. SSH access for deploy user
+4. DNS `A`/`AAAA` record for your public subdomain pointing to this VPS
 
 Recommended app path on server: `/opt/katet-crm-2`.
 
@@ -56,6 +58,11 @@ IPv6 note:
 
 If `DATABASE_URL` uses localhost, deploy script rewrites host to `postgres:5432`.
 
+TLS host note:
+
+1. Deploy script resolves `PUBLIC_HOST` automatically from the first value in `CORS_ORIGINS`.
+2. You can override explicitly by exporting `PUBLIC_HOST` before running `scripts/deploy-vps.sh`.
+
 ## 5. Auto deploy workflow
 
 Workflow file: [.github/workflows/deploy-production.yml](.github/workflows/deploy-production.yml)
@@ -72,12 +79,13 @@ Deploy flow:
 3. Optionally write `app/backend/.env` from `PROD_BACKEND_ENV`
 4. Run [scripts/deploy-vps.sh](scripts/deploy-vps.sh)
 5. Build and restart compose stack
-6. Check health endpoint `/api/v1/health`
+6. Check health endpoint on local frontend binding `http://127.0.0.1:8080/api/v1/health`
+7. Caddy obtains and renews TLS certificates for `PUBLIC_HOST` automatically
 
 ## 6. First manual smoke after deploy
 
-1. Open `http://<server-ip>/`
-2. Open `http://<server-ip>/api/v1/health`
+1. Open `https://<your-subdomain>/`
+2. Open `https://<your-subdomain>/api/v1/health`
 3. Check containers on server:
 
 ```bash
@@ -87,6 +95,6 @@ docker compose -f docker-compose.prod.yml logs --tail=100 backend frontend postg
 
 ## 7. Notes
 
-1. This setup is HTTP-first for initial bring-up; put a reverse proxy or TLS terminator in front for HTTPS.
+1. HTTPS is terminated by Caddy with automatic Let's Encrypt certificates.
 2. Rotate leaked secrets before production use.
 3. For stable deployments prefer SSH key auth over password auth.

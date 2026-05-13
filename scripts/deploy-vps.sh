@@ -31,6 +31,23 @@ if [ "$normalized_db_url" != "$db_url" ]; then
   echo "DATABASE_URL normalized: localhost -> postgres:5432"
 fi
 
+public_host="${PUBLIC_HOST:-}"
+if [ -z "$public_host" ]; then
+  cors_origins="$(grep '^CORS_ORIGINS=' app/backend/.env | head -n1 | cut -d= -f2- | tr -d '\r' || true)"
+  first_origin="$(echo "$cors_origins" | cut -d',' -f1 | tr -d '"' | xargs)"
+  if echo "$first_origin" | grep -Eq '^https?://'; then
+    public_host="$(echo "$first_origin" | sed -E 's#^https?://([^/:]+).*$#\1#')"
+  fi
+fi
+
+if [ -z "$public_host" ]; then
+  echo "::error::PUBLIC_HOST is not set and could not be inferred from CORS_ORIGINS in app/backend/.env"
+  exit 1
+fi
+
+export PUBLIC_HOST="$public_host"
+echo "PUBLIC_HOST resolved: $PUBLIC_HOST"
+
 echo "--- Building images"
 docker compose -f docker-compose.prod.yml build --no-cache backend frontend
 
@@ -41,12 +58,12 @@ echo "--- Waiting for health"
 healthy="false"
 for attempt in $(seq 1 36); do
   if command -v curl >/dev/null 2>&1; then
-    if curl -fsS http://localhost/api/v1/health >/dev/null 2>&1; then
+    if curl -fsS http://127.0.0.1:8080/api/v1/health >/dev/null 2>&1; then
       healthy="true"
       break
     fi
   elif command -v wget >/dev/null 2>&1; then
-    if wget -qO- http://localhost/api/v1/health >/dev/null 2>&1; then
+    if wget -qO- http://127.0.0.1:8080/api/v1/health >/dev/null 2>&1; then
       healthy="true"
       break
     fi
@@ -56,9 +73,9 @@ for attempt in $(seq 1 36); do
 done
 
 if [ "$healthy" != "true" ]; then
-  echo "::error::Health check failed: http://localhost/api/v1/health"
+  echo "::error::Health check failed: http://127.0.0.1:8080/api/v1/health"
   docker compose -f docker-compose.prod.yml ps || true
-  docker compose -f docker-compose.prod.yml logs --tail=200 backend frontend postgres || true
+  docker compose -f docker-compose.prod.yml logs --tail=200 backend frontend caddy postgres || true
   exit 1
 fi
 
