@@ -86,7 +86,16 @@ Rules:
 3. Protect sensitive fields according to security policy.
 4. Keep correlation ids for cross-system tracing.
 
-## 8. Dedup strategy
+## 8. Mango call context
+
+For `channel=mango` call events:
+
+1. Ingestion should normalize call metadata (`direction`, `from`, `to`, `duration`, `status`).
+2. If recording URL is provided, it should be preserved for operator timeline visibility.
+3. Lead upsert remains dedup-safe by phone/company rules.
+4. Successful ingest should add activity notes to linked Lead and active Application contexts.
+
+## 9. Dedup strategy
 
 Levels:
 
@@ -98,7 +107,7 @@ Behavior:
 - Mark duplicate as warning path.
 - Do not hard-block manager flow by default.
 
-## 9. Failure handling
+## 10. Failure handling
 
 Failure classes:
 

@@ -26,6 +26,20 @@ export class IntegrationsController {
     return this.integrations.ingest(dto, { signature, timestamp });
   }
 
+  @Post('events/mango')
+  ingestMangoConnectorEvent(
+    @Body() payload: Record<string, unknown>,
+    @Headers('x-integration-signature') signature?: string,
+    @Headers('x-integration-timestamp') timestamp?: string,
+    @Headers('x-signature') altSignature?: string,
+    @Headers('x-timestamp') altTimestamp?: string,
+  ) {
+    return this.integrations.ingestMangoConnectorEvent(payload, {
+      signature: signature ?? altSignature,
+      timestamp: timestamp ?? altTimestamp,
+    });
+  }
+
   @Get('events')
   @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')

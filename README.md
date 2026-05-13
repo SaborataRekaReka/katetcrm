@@ -53,6 +53,8 @@ npm --prefix app/backend run dev:backend
 npm --prefix app/frontend run dev:frontend
 ```
 
+Frontend доступен на `http://localhost:5174`, backend API — на `http://localhost:3001/api/v1`. Порт `5173` зарезервирован под соседний проект TASKA.
+
 Если локальный порт `5433` уже занят, см. fallback runbook в `app/backend/README.md`.
 
 ## Альтернативные команды внутри папок

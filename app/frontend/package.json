@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "vite build",
-    "dev": "vite --host localhost --port 5173",
-    "dev:frontend": "vite --host localhost --port 5173",
+    "dev": "vite --host localhost --port 5174 --strictPort",
+    "dev:frontend": "vite --host localhost --port 5174 --strictPort",
     "test:unit": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:guard:no-skips": "node ./scripts/check-no-skips.mjs ./e2e",

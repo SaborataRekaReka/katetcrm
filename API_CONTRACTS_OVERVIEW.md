@@ -155,6 +155,7 @@ Contract expectations:
 3. Mixed valid/invalid import batches keep deterministic accounting and persist validation issues for report replay.
 4. `GET /imports/:id/report` provides error artifacts (`issues`, `errorReportCsv`) for failed-row diagnostics.
 5. Admin-only integration/import endpoints require both admin role and enabled capability toggle.
+6. Mango ingest events with call metadata create/update lead context and write `note_added` activity records for linked Lead and active Application entities.
 
 ### 3.9 Users / Settings
 
@@ -224,6 +225,7 @@ Expectations:
 2. Raw payload and processed status logged in `IntegrationEvent`.
 3. Retry/replay endpoints for failed events.
 4. Clear lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
+5. Mango call payloads normalize telephony context (`direction`, `from`/`to`, `duration`, optional `recordingUrl`) for operator-visible activity timeline.
 
 ## 7. Contract stability rules
 

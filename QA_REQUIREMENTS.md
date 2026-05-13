@@ -350,8 +350,26 @@ UI surface: Forbidden calls map to explicit permission-denied UX.
 State/API/audit surface: API returns 403 consistently for forbidden manager operations.
 Test priority: P0
 
+QA-REQ-036:
+Question: QA-Q-036. What should Mango call ingest do for a new caller phone?
+Answer: Create a Lead with source channel `mango` through integration ingest.
+Route surface: /leads, /admin/integrations
+Domain surface: Integration ingestion -> Lead upsert
+UI surface: New lead appears in Leads workspace with Mango source marker.
+State/API/audit surface: `POST /api/v1/integrations/events/ingest` with `channel=mango` stores processed IntegrationEvent and relatedLeadId.
+Test priority: P1
+
+QA-REQ-037:
+Question: QA-Q-037. Where should Mango call recording metadata be visible?
+Answer: In activity timeline of linked Lead and active Application.
+Route surface: /leads detail, /applications detail
+Domain surface: Telephony context visibility across lead/application stages
+UI surface: Activity entry shows call details and recording link.
+State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`).
+Test priority: P1
+
 ## 5. Open Questions
 
-None for QA-Q-001..QA-Q-035 in this first interview pass.
+None for QA-Q-001..QA-Q-037 in this first interview pass.
 
 If behavior changes later, add a new QA-Q item and then add/update corresponding QA-REQ entries.

@@ -310,6 +310,11 @@ export interface EntityActivityEntry {
   text: string;
   entity?: string;
   time: string;
+  details?: string[];
+  links?: Array<{
+    label: string;
+    href: string;
+  }>;
 }
 
 export function EntityCommentList({
@@ -370,6 +375,30 @@ export function EntityActivityList({
               <span>{entry.text}</span>
               {entry.entity ? <span className="text-gray-700"> · {entry.entity}</span> : null}
             </div>
+            {entry.details && entry.details.length > 0 ? (
+              <div className="pt-0.5 space-y-0.5">
+                {entry.details.map((line, idx) => (
+                  <div key={`${entry.id}-detail-${idx}`} className="text-[10px] text-gray-500 break-words">
+                    {line}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {entry.links && entry.links.length > 0 ? (
+              <div className="flex flex-wrap gap-2 pt-0.5">
+                {entry.links.map((link, idx) => (
+                  <a
+                    key={`${entry.id}-link-${idx}`}
+                    href={link.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-[10px] text-blue-600 hover:text-blue-700 hover:underline"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
       ))}

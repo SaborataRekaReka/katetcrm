@@ -44,6 +44,21 @@ interface NormalizedLeadPayload {
   address?: string;
   comment?: string;
   isUrgent: boolean;
+  call?: NormalizedCallContext;
+}
+
+type CallDirection = 'inbound' | 'outbound' | 'unknown';
+
+interface NormalizedCallContext {
+  callId?: string;
+  direction: CallDirection;
+  from?: string;
+  to?: string;
+  status?: string;
+  durationSec?: number;
+  startedAt?: string;
+  endedAt?: string;
+  recordingUrl?: string;
 }
 
 interface LeadUpsertResult {
@@ -134,6 +149,21 @@ export class IntegrationsService {
       deduplicated: false,
       ...(await this.processEvent(created, 'ingest')),
     };
+  }
+
+  async ingestMangoConnectorEvent(
+    payload: Record<string, unknown>,
+    auth: IngestAuthHeaders = {},
+  ): Promise<IntegrationIngestResult> {
+    const externalId = this.extractMangoExternalId(payload);
+    return this.ingest(
+      {
+        channel: 'mango',
+        externalId,
+        payload,
+      },
+      auth,
+    );
   }
 
   async list(params: IntegrationEventListQueryDto) {
@@ -308,7 +338,11 @@ export class IntegrationsService {
     const actor = await this.resolveSystemActor();
 
     try {
-      const normalizedPayload = this.normalizeLeadPayload(event.payload);
+      const normalizedPayload = this.normalizeLeadPayload(
+        event.channel,
+        event.payload,
+        event.externalId,
+      );
       const leadResult = await this.upsertLeadFromEvent(event, normalizedPayload, actor);
       const status: IntegrationEventStatus = mode === 'replay' ? 'replayed' : 'processed';
 
@@ -324,6 +358,12 @@ export class IntegrationsService {
           errorMessage: null,
         },
       });
+
+      await this.logMangoCallActivity(
+        event,
+        leadResult.leadId,
+        normalizedPayload.call,
+      );
 
       if (mode === 'retry' || mode === 'replay') {
         await this.activity.log({
@@ -543,6 +583,7 @@ export class IntegrationsService {
       'phoneNumber',
       'senderPhone',
       'from',
+      'to',
     ]);
     if (!phone) {
       throw new BadRequestException(
@@ -624,6 +665,27 @@ export class IntegrationsService {
     return (this.config.get<string>(envKey) ?? '').trim();
   }
 
+  private extractMangoExternalId(payload: Record<string, unknown>): string | undefined {
+    const root = this.asRecord(payload);
+    const call = this.asRecord(root?.call);
+    const scopes = [root, call];
+    const externalId = this.pickString(scopes, [
+      'callId',
+      'call_id',
+      'sessionId',
+      'session_id',
+      'entryId',
+      'entry_id',
+      'eventId',
+      'event_id',
+      'recordId',
+      'record_id',
+      'sipCallId',
+      'sip_call_id',
+    ]);
+    return externalId ? this.limitText(externalId, 255) : undefined;
+  }
+
   private parseTimestampHeader(raw: string): number {
     if (!/^\d{10,13}$/.test(raw)) {
       throw new ForbiddenException('Invalid integration timestamp');
@@ -649,21 +711,47 @@ export class IntegrationsService {
     return timingSafeEqual(expected, provided);
   }
 
-  private normalizeLeadPayload(payload: Prisma.JsonValue): NormalizedLeadPayload {
+  private normalizeLeadPayload(
+    channel: IntegrationChannel,
+    payload: Prisma.JsonValue,
+    externalId: string | null,
+  ): NormalizedLeadPayload {
     const root = this.asRecord(payload);
     const lead = this.asRecord(root?.lead);
     const contact = this.asRecord(root?.contact);
     const sender = this.asRecord(root?.sender);
-    const scopes = [root, lead, contact, sender];
+    const call = this.asRecord(root?.call);
+    const scopes = [root, lead, contact, sender, call];
+    const callScopes = [call, root, lead, contact, sender];
+
+    const callContext =
+      channel === 'mango'
+        ? this.normalizeCallContext(callScopes, externalId)
+        : undefined;
 
     const nameRaw =
-      this.pickString(scopes, ['contactName', 'name', 'fullName', 'senderName']) ??
+      this.pickString(scopes, [
+        'contactName',
+        'name',
+        'fullName',
+        'senderName',
+        'callerName',
+        'fromDisplayName',
+        'calleeName',
+        'toDisplayName',
+      ]) ??
       'Интеграционный контакт';
     const contactName = this.limitText(nameRaw, 200);
 
+    const callCounterpartyPhone = callContext
+      ? this.pickCallCounterpartyPhone(callContext)
+      : undefined;
+
     const phoneRaw =
-      this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber', 'senderPhone', 'from']) ??
-      '';
+      callCounterpartyPhone
+      ?? this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber', 'senderPhone'])
+      ?? this.pickString(scopes, ['from', 'to'])
+      ?? '';
     const phoneNormalized = normalizePhone(phoneRaw);
     if (!phoneNormalized) {
       throw new BadRequestException('payload.contactPhone is required');
@@ -689,7 +777,8 @@ export class IntegrationsService {
     const address = addressRaw ? this.limitText(addressRaw, 500) : undefined;
 
     const commentRaw = this.pickString(scopes, ['comment', 'message', 'text', 'note']);
-    const comment = commentRaw ? this.limitText(commentRaw, 1500) : undefined;
+    const callComment = callContext ? this.buildCallComment(callContext) : undefined;
+    const comment = this.mergeComments(commentRaw, callComment);
 
     const requestedAt = this.pickDate(scopes, [
       'requestedDate',
@@ -709,6 +798,7 @@ export class IntegrationsService {
       address,
       comment,
       isUrgent: this.pickBoolean(scopes, ['isUrgent', 'urgent']) ?? false,
+      call: callContext,
     };
   }
 
@@ -734,10 +824,33 @@ export class IntegrationsService {
     const root = this.asRecord(payload);
     const lead = this.asRecord(root?.lead);
     const contact = this.asRecord(root?.contact);
-    const scopes = [root, lead, contact];
+    const call = this.asRecord(root?.call);
+    const scopes = [root, lead, contact, call];
+    const callScopes = [call, root, lead, contact];
 
     const phone = this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber']);
     const company = this.pickString(scopes, ['contactCompany', 'company']);
+    const recordingUrl = this.pickUrl(callScopes, [
+      'recordingUrl',
+      'recording_url',
+      'recordUrl',
+      'record_url',
+      'recording',
+      'record',
+      'recordingLink',
+      'recordLink',
+      'talkRecordUrl',
+    ]);
+    const duration = this.normalizeDurationSeconds(
+      this.pickNumber(callScopes, [
+        'durationSec',
+        'duration',
+        'durationSeconds',
+        'talkDuration',
+        'talkTime',
+        'billsec',
+      ]),
+    );
 
     return {
       contactName: this.pickString(scopes, ['contactName', 'name', 'fullName']) ?? null,
@@ -748,7 +861,281 @@ export class IntegrationsService {
         null,
       hasComment: Boolean(this.pickString(scopes, ['comment', 'message', 'text', 'note'])),
       isUrgent: this.pickBoolean(scopes, ['isUrgent', 'urgent']) ?? false,
+      callDirection:
+        this.normalizeCallDirection(
+          this.pickString(callScopes, ['direction', 'callDirection', 'call_direction']),
+        ) ?? null,
+      callDurationSec: duration ?? null,
+      hasRecording: Boolean(recordingUrl),
     };
+  }
+
+  private async logMangoCallActivity(
+    event: IntegrationEvent,
+    leadId: string,
+    call: NormalizedCallContext | undefined,
+  ): Promise<void> {
+    if (event.channel !== 'mango' || !call) return;
+
+    const summary = this.buildCallActivitySummary(call);
+    const payload: Prisma.InputJsonValue = {
+      integration: {
+        provider: 'mango',
+        eventId: event.id,
+        channel: event.channel,
+        externalId: event.externalId,
+        correlationId: event.correlationId,
+      },
+      telephony: {
+        callId: call.callId ?? null,
+        direction: call.direction,
+        from: call.from ?? null,
+        to: call.to ?? null,
+        status: call.status ?? null,
+        durationSec: call.durationSec ?? null,
+        startedAt: call.startedAt ?? null,
+        endedAt: call.endedAt ?? null,
+        recordingUrl: call.recordingUrl ?? null,
+      },
+    };
+
+    await this.activity.log({
+      action: 'note_added',
+      entityType: 'lead',
+      entityId: leadId,
+      summary,
+      actorId: null,
+      payload,
+    });
+
+    const activeApplications = await this.prisma.application.findMany({
+      where: {
+        leadId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    for (const app of activeApplications) {
+      await this.activity.log({
+        action: 'note_added',
+        entityType: 'application',
+        entityId: app.id,
+        summary,
+        actorId: null,
+        payload,
+      });
+    }
+  }
+
+  private normalizeCallContext(
+    scopes: Array<Record<string, unknown> | undefined>,
+    externalId: string | null,
+  ): NormalizedCallContext | undefined {
+    const callId = this.pickString(scopes, [
+      'callId',
+      'call_id',
+      'sessionId',
+      'session_id',
+      'eventId',
+      'entryId',
+    ]) ?? externalId ?? undefined;
+
+    const direction =
+      this.normalizeCallDirection(
+        this.pickString(scopes, ['direction', 'callDirection', 'call_direction', 'type']),
+      )
+      ?? this.normalizeCallDirectionFromFlags(scopes)
+      ?? 'unknown';
+
+    const from = this.pickString(scopes, [
+      'from',
+      'fromNumber',
+      'caller',
+      'callerPhone',
+      'callerNumber',
+      'ani',
+      'sourceNumber',
+    ]);
+    const to = this.pickString(scopes, [
+      'to',
+      'toNumber',
+      'callee',
+      'calleePhone',
+      'calleeNumber',
+      'dnis',
+      'destinationNumber',
+    ]);
+    const status = this.pickString(scopes, [
+      'status',
+      'result',
+      'disposition',
+      'hangupReason',
+      'hangup_reason',
+    ]);
+    const durationSec = this.normalizeDurationSeconds(
+      this.pickNumber(scopes, [
+        'durationSec',
+        'duration',
+        'durationSeconds',
+        'talkDuration',
+        'talkTime',
+        'billsec',
+      ]),
+    );
+    const startedAt = this.pickDate(scopes, [
+      'startedAt',
+      'started_at',
+      'startTime',
+      'start_time',
+      'timestamp',
+      'eventTime',
+    ])?.toISOString();
+    const endedAt = this.pickDate(scopes, [
+      'endedAt',
+      'ended_at',
+      'endTime',
+      'end_time',
+    ])?.toISOString();
+    const recordingUrl = this.pickUrl(scopes, [
+      'recordingUrl',
+      'recording_url',
+      'recordUrl',
+      'record_url',
+      'recording',
+      'record',
+      'recordingLink',
+      'recordLink',
+      'talkRecordUrl',
+    ]);
+
+    const hasCallContext =
+      Boolean(callId) ||
+      Boolean(from) ||
+      Boolean(to) ||
+      Boolean(status) ||
+      typeof durationSec === 'number' ||
+      Boolean(recordingUrl);
+
+    if (!hasCallContext) return undefined;
+
+    return {
+      callId,
+      direction,
+      from,
+      to,
+      status,
+      durationSec,
+      startedAt,
+      endedAt,
+      recordingUrl,
+    };
+  }
+
+  private normalizeCallDirection(raw: string | undefined): CallDirection | undefined {
+    if (!raw) return undefined;
+    const value = raw.trim().toLowerCase();
+
+    if (['in', 'incoming', 'inbound', 'entry', 'входящий', 'вход'].includes(value)) {
+      return 'inbound';
+    }
+    if (['out', 'outgoing', 'outbound', 'исходящий', 'исход'].includes(value)) {
+      return 'outbound';
+    }
+
+    return undefined;
+  }
+
+  private normalizeCallDirectionFromFlags(
+    scopes: Array<Record<string, unknown> | undefined>,
+  ): CallDirection | undefined {
+    const isIncoming = this.pickBoolean(scopes, ['isIncoming', 'incoming']);
+    if (isIncoming === true) return 'inbound';
+    if (isIncoming === false) return 'outbound';
+    return undefined;
+  }
+
+  private normalizeDurationSeconds(raw: number | undefined): number | undefined {
+    if (raw === undefined || !Number.isFinite(raw)) return undefined;
+    if (raw <= 0) return undefined;
+
+    // Some providers send milliseconds in duration-like fields.
+    const seconds = raw > 86_400 ? Math.round(raw / 1000) : Math.round(raw);
+    return seconds > 0 ? seconds : undefined;
+  }
+
+  private pickCallCounterpartyPhone(call: NormalizedCallContext): string | undefined {
+    if (call.direction === 'outbound') {
+      return call.to ?? call.from;
+    }
+    if (call.direction === 'inbound') {
+      return call.from ?? call.to;
+    }
+    return call.from ?? call.to;
+  }
+
+  private mergeComments(
+    primary: string | undefined,
+    secondary: string | undefined,
+  ): string | undefined {
+    const first = primary?.trim();
+    const second = secondary?.trim();
+    if (!first && !second) return undefined;
+    if (!first) return this.limitText(second!, 1500);
+    if (!second) return this.limitText(first, 1500);
+    if (first.includes(second)) return this.limitText(first, 1500);
+    return this.limitText(`${first}\n${second}`, 1500);
+  }
+
+  private describeCallDirection(direction: CallDirection): string {
+    if (direction === 'inbound') return 'Входящий';
+    if (direction === 'outbound') return 'Исходящий';
+    return 'Телефонный';
+  }
+
+  private formatCallDuration(seconds: number | undefined): string | undefined {
+    if (!seconds || seconds <= 0) return undefined;
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    if (h > 0) {
+      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  private buildCallComment(call: NormalizedCallContext): string {
+    const parts: string[] = [`${this.describeCallDirection(call.direction)} звонок`];
+    const counterparty = this.pickCallCounterpartyPhone(call);
+    if (counterparty) {
+      parts.push(`контакт: ${counterparty}`);
+    }
+    const duration = this.formatCallDuration(call.durationSec);
+    if (duration) {
+      parts.push(`длительность: ${duration}`);
+    }
+    if (call.recordingUrl) {
+      parts.push(`запись: ${call.recordingUrl}`);
+    }
+    return parts.join(' · ');
+  }
+
+  private buildCallActivitySummary(call: NormalizedCallContext): string {
+    const parts: string[] = [`${this.describeCallDirection(call.direction)} звонок Mango`];
+    const counterparty = this.pickCallCounterpartyPhone(call);
+    if (counterparty) {
+      parts.push(counterparty);
+    }
+    const duration = this.formatCallDuration(call.durationSec);
+    if (duration) {
+      parts.push(`длительность ${duration}`);
+    }
+    if (call.recordingUrl) {
+      parts.push('есть запись');
+    }
+    return parts.join(' · ');
   }
 
   private mergeIntegrationComment(
@@ -885,6 +1272,46 @@ export class IntegrationsService {
       }
     }
     return undefined;
+  }
+
+  private pickNumber(
+    scopes: Array<Record<string, unknown> | undefined>,
+    keys: string[],
+  ): number | undefined {
+    for (const scope of scopes) {
+      if (!scope) continue;
+      for (const key of keys) {
+        const value = scope[key];
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return value;
+        }
+        if (typeof value === 'string' && value.trim()) {
+          const normalized = value.trim().replace(',', '.');
+          const parsed = Number(normalized);
+          if (Number.isFinite(parsed)) {
+            return parsed;
+          }
+        }
+      }
+    }
+    return undefined;
+  }
+
+  private pickUrl(
+    scopes: Array<Record<string, unknown> | undefined>,
+    keys: string[],
+  ): string | undefined {
+    const raw = this.pickString(scopes, keys);
+    if (!raw) return undefined;
+    try {
+      const parsed = new URL(raw);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return raw;
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   private pickDate(
