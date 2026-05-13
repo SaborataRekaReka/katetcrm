@@ -51,7 +51,7 @@ services:
       - "127.0.0.1:8080:80"
 
   caddy:
-    image: caddy:2.8-alpine
+    image: public.ecr.aws/docker/library/caddy:2.8-alpine
     restart: unless-stopped
     depends_on:
       frontend:
