@@ -51,7 +51,7 @@ import { TaskDetailView, type TaskUpdatePatch } from '../detail/TaskDetailView';
 import { Button } from '../ui/button';
 import { USE_API } from '../../lib/featureFlags';
 import { useStatsQuery } from '../../hooks/useStatsQuery';
-import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
+import { useRecentActivityQuery } from '../../hooks/useActivityQuery';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
 import { useTasksQuery } from '../../hooks/useTasksQuery';
 import {
@@ -92,7 +92,7 @@ export function HomeWorkspacePage() {
 function OverviewPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const statsQuery = useStatsQuery(USE_API);
-  const recentActivityQuery = useActivitySearchQuery({ take: 6 }, USE_API);
+  const recentActivityQuery = useRecentActivityQuery(6, USE_API);
 
   const isStatsPending = USE_API && statsQuery.isPending && !statsQuery.data;
   const isStatsError = USE_API && statsQuery.isError && !statsQuery.data;
@@ -131,8 +131,8 @@ function OverviewPage() {
 
   const recentRows = useMemo(() => {
     if (USE_API) {
-      if (!recentActivityQuery.data?.items?.length) return [];
-      return recentActivityQuery.data.items.slice(0, 6).map((e) => ({
+      if (!recentActivityQuery.data?.length) return [];
+      return recentActivityQuery.data.slice(0, 6).map((e) => ({
         id: e.id,
         leading: <Activity className="h-3.5 w-3.5 text-violet-500" />,
         primary: e.summary,
@@ -1469,7 +1469,7 @@ function UrgentTodayPage() {
 
 function RecentActivityPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
-  const activityQuery = useActivitySearchQuery({ take: 40 }, USE_API);
+  const activityQuery = useRecentActivityQuery(40, USE_API);
   const [query, setQuery] = useState('');
 
   const formatRelative = (iso: string) => {
@@ -1510,7 +1510,7 @@ function RecentActivityPage() {
   const items = useMemo(
     () => {
       if (USE_API) {
-        return (activityQuery.data?.items ?? []).map((e) => {
+        return (activityQuery.data ?? []).map((e) => {
           const kind = mapEntityKind(e.entityType);
           return {
             id: e.id,

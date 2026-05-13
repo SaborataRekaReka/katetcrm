@@ -25,7 +25,7 @@ Canonical primary domains:
 3. `clients`
 4. `ops`
 5. `catalogs`
-6. `control`
+6. `control` (admin-only)
 7. `admin` (admin-only)
 
 Behavior:
@@ -100,7 +100,7 @@ Saved views (ops-local):
 - Subcontractors
 - Equipment categories
 
-### 3.6 Control
+### 3.6 Control (admin-only)
 
 - Dashboard
 - Reports
@@ -180,9 +180,10 @@ Examples:
 
 ### 8.2 Manager
 
-- Sees all non-admin domains.
+- Sees domains: `home`, `sales`, `clients`, `ops`, `catalogs`.
 - Must not see admin-only sections in navigation UI.
-- Must not see Admin primary domain, Imports, Integrations journal, Settings, Users, or Permissions.
+- Must not see Control or Admin primary domains.
+- Must not see Dashboard, Reports, Audit log, Imports, Integrations journal, Settings, Users, or Permissions.
 - Works on own/all scopes according to module filters and backend policy.
 
 Security note:

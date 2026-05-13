@@ -56,6 +56,11 @@ export async function listActivityForEntity(
   return apiRequest<ActivityLogEntryApi[]>(`/activity?${params.toString()}`);
 }
 
+export async function listRecentActivity(take = 100): Promise<ActivityLogEntryApi[]> {
+  const params = new URLSearchParams({ take: String(take) });
+  return apiRequest<ActivityLogEntryApi[]>(`/activity?${params.toString()}`);
+}
+
 export async function searchActivity(
   params: ActivitySearchParams = {},
 ): Promise<ActivitySearchResponse> {

@@ -205,6 +205,7 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
     id: 'control',
     label: 'Контроль',
     icon: BarChart3,
+    allowedRoles: ['admin'],
     defaultSecondary: 'dashboard',
     searchPlaceholder: 'Поиск по отчётам и событиям',
     groups: [

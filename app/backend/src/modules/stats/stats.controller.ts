@@ -1,6 +1,8 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
+import { Roles } from '../../common/roles.decorator';
+import { RolesGuard } from '../../common/roles.guard';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import { StatsService } from './stats.service';
 import { StatsAnalyticsQueryDto, StatsReportsQueryDto } from './stats.dto';
@@ -19,6 +21,8 @@ export class StatsController {
   }
 
   @Get('reports')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   getReports(@CurrentUser() user: JwtPayload, @Query() query: StatsReportsQueryDto) {
     return this.stats.getReportSlices(
       {
@@ -30,6 +34,8 @@ export class StatsController {
   }
 
   @Get('analytics')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   getAnalyticsView(
     @CurrentUser() user: JwtPayload,
     @Query() query: StatsAnalyticsQueryDto,

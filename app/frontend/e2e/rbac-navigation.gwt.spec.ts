@@ -42,11 +42,20 @@ test.describe('RBAC and Navigation GWT (QA-REQ: 032..035)', () => {
     await expect(page.getByRole('heading', { name: leadName })).toBeVisible({ timeout: 20_000 })
   })
 
-  test('E2E-011 manager does not see admin navigation modules', async ({ page }) => {
+  test('E2E-011 manager does not see admin or control navigation modules', async ({ page }) => {
     await loginViaUi(page, 'manager')
 
     await expect(page.getByRole('button', { name: 'Админ', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Контроль', exact: true })).toHaveCount(0)
     await expect(page.getByRole('button', { name: 'Менеджер', exact: true })).toHaveCount(0)
+  })
+
+  test('E2E-011 manager is redirected away from direct control routes', async ({ page }) => {
+    await loginViaUi(page, 'manager')
+
+    await page.goto('/dashboard')
+    await expect(page).toHaveURL(/\/home/)
+    await expect(page.getByRole('button', { name: 'Контроль', exact: true })).toHaveCount(0)
   })
 
   test('E2E-011 manager forbidden actions map to 403 policy', async ({ request }) => {
@@ -64,6 +73,18 @@ test.describe('RBAC and Navigation GWT (QA-REQ: 032..035)', () => {
       data: { fileUrl: 'https://qa.local/import.csv' },
     })
     expect(importPreviewResponse.status()).toBe(403)
+
+    const statsReportsResponse = await request.get(`${API_BASE_URL}/stats/reports?periodDays=7`, { headers })
+    expect(statsReportsResponse.status()).toBe(403)
+
+    const statsAnalyticsResponse = await request.get(
+      `${API_BASE_URL}/stats/analytics?viewId=view-stale-leads&sampleTake=6`,
+      { headers },
+    )
+    expect(statsAnalyticsResponse.status()).toBe(403)
+
+    const activitySearchResponse = await request.get(`${API_BASE_URL}/activity/search?take=20`, { headers })
+    expect(activitySearchResponse.status()).toBe(403)
   })
 
   test('E2E-011 manager sees explicit permission-denied UX on direct admin route', async ({ page }) => {

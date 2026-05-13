@@ -70,9 +70,9 @@ Canonical pathnames:
 - `/directory/units` -> `equipment-units`
 - `/directory/contractors` -> `subcontractors`
 - `/directory/categories` -> `equipment-categories`
-- `/dashboard` -> `dashboard`
-- `/reports` -> `reports`
-- `/audit` -> `audit`
+- `/dashboard` -> `dashboard` (admin-only)
+- `/reports` -> `reports` (admin-only)
+- `/audit` -> `audit` (admin-only)
 - `/admin/imports` -> `imports` (admin-only)
 - `/admin/integrations` -> `integrations` (admin-only)
 - `/admin/settings` -> `settings` (admin-only)
@@ -154,7 +154,8 @@ Mandatory current MVP pages:
 - Completion workspace.
 - Clients workspace.
 - Home workspace.
-- Catalogs, Control, and Admin workspaces with role-aware visibility.
+- Catalogs workspace for admin and manager.
+- Control and Admin workspaces for admin only.
 - Module placeholders only for explicitly unfinished secondary contexts, not as fake working features.
 
 ## 7. Tabs and toolbar rules by domain

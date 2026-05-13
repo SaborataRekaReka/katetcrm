@@ -30,6 +30,8 @@ function AuthRoleSync() {
 
 function RouteOutlet() {
   const { activeSecondaryNav } = useLayout();
+  const { user } = useAuth();
+  const userRole = user?.role;
   const LEADS_IDS = new Set([
     'leads',
     'my-leads',
@@ -94,6 +96,7 @@ function RouteOutlet() {
   if (COMPLETION_IDS.has(activeSecondaryNav)) return <CompletionWorkspacePage />;
   if (HOME_IDS.has(activeSecondaryNav)) return <HomeWorkspacePage />;
   if (CATALOGS_IDS.has(activeSecondaryNav)) return <CatalogsWorkspacePage />;
+  if (userRole === 'manager' && CONTROL_IDS.has(activeSecondaryNav)) return <HomeWorkspacePage />;
   if (CONTROL_IDS.has(activeSecondaryNav)) return <ControlWorkspacePage />;
   if (ADMIN_IDS.has(activeSecondaryNav)) return <AdminWorkspacePage />;
   return <ModulePlaceholder />;

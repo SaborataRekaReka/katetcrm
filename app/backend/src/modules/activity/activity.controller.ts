@@ -2,6 +2,8 @@ import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ActivityService } from './activity.service';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { ActivitySearchQueryDto } from './activity.dto';
+import { Roles } from '../../common/roles.decorator';
+import { RolesGuard } from '../../common/roles.guard';
 
 @Controller('activity')
 @UseGuards(JwtAuthGuard)
@@ -9,6 +11,8 @@ export class ActivityController {
   constructor(private readonly activity: ActivityService) {}
 
   @Get('search')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
   listFiltered(@Query() query: ActivitySearchQueryDto) {
     return this.activity.listFiltered({
       entityType: query.entityType,

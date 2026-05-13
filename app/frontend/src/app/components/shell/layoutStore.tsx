@@ -39,6 +39,16 @@ type LayoutState = {
 
 const STORAGE_KEY = 'katet-crm.layout.v5';
 const MOBILE_SIDEBAR_BREAKPOINT = 768;
+const MANAGER_FALLBACK_SECONDARY = 'overview';
+const CONTROL_SECONDARY_IDS = new Set<string>([
+  'dashboard',
+  'reports',
+  'audit',
+  'view-stale-leads',
+  'view-lost-leads',
+  'view-active-reservations',
+  'view-manager-load',
+]);
 
 const LayoutContext = createContext<LayoutState | null>(null);
 
@@ -175,11 +185,22 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   // Also: when switching modules, coerce currentView to a value valid for the
   // new module's tabs so stale values like `view=board` don't leak across.
   useEffect(() => {
+    if (
+      role === 'manager'
+      && CONTROL_SECONDARY_IDS.has(activeSecondaryNavState)
+      && activeSecondaryNavState !== MANAGER_FALLBACK_SECONDARY
+    ) {
+      setActiveEntityType(null);
+      setActiveEntityId(null);
+      setActiveSecondaryNavState(MANAGER_FALLBACK_SECONDARY);
+      return;
+    }
+
     const moduleDomain = getModuleMeta(activeSecondaryNavState).domain;
     if (moduleDomain !== activePrimaryNav) {
       setActivePrimaryNav(moduleDomain);
     }
-  }, [activePrimaryNav, activeSecondaryNavState]);
+  }, [activePrimaryNav, activeSecondaryNavState, role]);
 
   useEffect(() => {
     const valid = resolveViewForModule(activeSecondaryNavState, currentView);

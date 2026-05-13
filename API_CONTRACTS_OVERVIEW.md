@@ -107,18 +107,20 @@ Contract expectations:
 ### 3.6 Stats / Activity
 
 - `GET /api/v1/stats`
-- `GET /api/v1/stats/reports?periodDays=7|30`
-- `GET /api/v1/stats/analytics?viewId=view-stale-leads|view-lost-leads|view-active-reservations|view-manager-load&sampleTake=1..20`
-- `GET /api/v1/activity/search?entityType=&entityId=&scope=&actorId=&from=&to=&q=&limit=`
+- `GET /api/v1/stats/reports?periodDays=7|30` (admin-only)
+- `GET /api/v1/stats/analytics?viewId=view-stale-leads|view-lost-leads|view-active-reservations|view-manager-load&sampleTake=1..20` (admin-only)
+- `GET /api/v1/activity?entityType=&entityId=&take=`
+- `GET /api/v1/activity/search?entityType=&entityId=&scope=&actorId=&from=&to=&q=&limit=` (admin-only)
 
 Contract expectations:
 
 1. Stats payload is stable for Home dashboard cards.
-2. `stats/reports` provides canonical report slices for Control reports catalog.
-3. `stats/analytics` provides canonical aggregates and sample rows for Control analytics views.
-4. Activity search is usable for audit timeline and recent feed blocks.
-5. Manager scope is applied server-side for stats/report/analytics slices (no foreign manager leakage in manager context).
-6. `stats/analytics` rejects invalid query params with explicit `400` (`viewId`, `sampleTake`).
+2. `stats/reports` provides canonical report slices for Control reports catalog and is admin-only.
+3. `stats/analytics` provides canonical aggregates and sample rows for Control analytics views and is admin-only.
+4. Recent activity feed for Home is served via `GET /activity`.
+5. `activity/search` is admin-only and is used for Control audit/admin drill-down filters.
+6. Manager receives `403` for `stats/reports`, `stats/analytics`, and `activity/search`.
+7. `stats/analytics` rejects invalid query params with explicit `400` (`viewId`, `sampleTake`) for authorized callers.
 
 ### 3.7 Tasks
 

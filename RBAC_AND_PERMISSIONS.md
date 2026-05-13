@@ -30,7 +30,7 @@ Manager can:
 
 Manager cannot:
 
-1. Access admin-only modules (imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
+1. Access admin-only modules (control dashboard/reports/audit, imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
 
 ## 2.3 User Access Lifecycle
 
@@ -52,7 +52,7 @@ Manager cannot:
 Backend must validate regardless of frontend state:
 
 1. Role access for every protected endpoint.
-2. Capability access for admin-only endpoint groups (users, permissions, settings, imports, integrations, directory writes).
+2. Capability/role access for admin-only endpoint groups (control reports/analytics, activity search, users, permissions, settings, imports, integrations, directory writes).
 3. Record scope access (own vs all where applicable).
 4. Transition rights for critical workflow actions.
 5. Mutation rights for directories/admin modules.
@@ -76,11 +76,12 @@ At minimum require explicit confirmation for:
 
 Admin-only modules:
 
-1. Imports management.
-2. Integrations journal and retry/replay operations.
-3. Global settings.
-4. User management.
-5. Permission management.
+1. Control workspace (dashboard, reports, audit).
+2. Imports management.
+3. Integrations journal and retry/replay operations.
+4. Global settings.
+5. User management.
+6. Permission management.
 
 ## 7. Permission consistency checklist
 
