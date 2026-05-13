@@ -368,6 +368,15 @@ UI surface: Activity entry shows call details and recording link.
 State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`).
 Test priority: P1
 
+QA-REQ-038:
+Question: QA-Q-038. How should user creation, active status, role management, and password recovery work?
+Answer: Only Admin can manage users and permissions. User email is the login identity and is required on create/update. Active means login is allowed and the manager appears in assignment selectors; inactive blocks login and hides the manager from assignment selectors. Password recovery in MVP is Admin reset to a temporary password; automatic email reset is not enabled.
+Route surface: /admin/users, /admin/permissions, /auth/login
+Domain surface: User access lifecycle and RBAC boundaries
+UI surface: Admin Users form captures email, role, active status, and temporary password; Admin Permissions shows admin-only capabilities as locked for Manager.
+State/API/audit surface: `/users` mutations are admin-only, manager forbidden operations return 403, `isActive` is enforced by auth and manager selectors, password updates hash server-side, and user access mutations write audit/activity entries.
+Test priority: P0
+
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.

@@ -58,7 +58,7 @@ import type {
   ImportPreviewResponseApi,
   ImportRunResponseApi,
 } from '../../lib/importsApi';
-import type { UserRole } from '../../lib/usersApi';
+import type { CreateUserInput, UserRole } from '../../lib/usersApi';
 
 export function AdminWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
@@ -1349,6 +1349,41 @@ function SettingsPage() {
   );
 }
 
+type CreateUserFormState = Required<CreateUserInput>;
+
+const EMPTY_CREATE_USER_FORM: CreateUserFormState = {
+  fullName: '',
+  email: '',
+  password: '',
+  role: 'manager',
+  isActive: true,
+};
+
+function roleLabel(role: UserRole): string {
+  return role === 'admin' ? 'Админ' : 'Менеджер';
+}
+
+function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+function generateTemporaryPassword(): string {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789';
+  const length = 12;
+
+  if (typeof crypto !== 'undefined' && 'getRandomValues' in crypto) {
+    const values = new Uint32Array(length);
+    crypto.getRandomValues(values);
+    return Array.from(values, (value) => alphabet[value % alphabet.length]).join('');
+  }
+
+  return Array.from({ length }, () => alphabet[Math.floor(Math.random() * alphabet.length)]).join('');
+}
+
+function isAdminOnlyCapability(capabilityId: string): boolean {
+  return capabilityId === 'catalogs.write' || capabilityId.startsWith('admin.');
+}
+
 function UsersPage() {
   const { activeSecondaryNav } = useLayout();
   const meta = getModuleMeta('users');
@@ -1356,8 +1391,12 @@ function UsersPage() {
   const [role, setRole] = useState<'all' | UserRole>('all');
   const [active, setActive] = useState<'all' | 'active' | 'inactive'>('all');
   const [nameDraftById, setNameDraftById] = useState<Record<string, string>>({});
+  const [emailDraftById, setEmailDraftById] = useState<Record<string, string>>({});
   const [mutationError, setMutationError] = useState<string | null>(null);
   const [mutationSuccess, setMutationSuccess] = useState<string | null>(null);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<CreateUserFormState>(EMPTY_CREATE_USER_FORM);
+  const [createFormError, setCreateFormError] = useState<string | null>(null);
   const [resetPasswordUserId, setResetPasswordUserId] = useState<string | null>(null);
   const [resetPasswordDraft, setResetPasswordDraft] = useState('');
   const [resetPasswordError, setResetPasswordError] = useState<string | null>(null);
@@ -1368,15 +1407,15 @@ function UsersPage() {
     email: string;
     role: UserRole;
     active: boolean;
-    lastLogin: string;
+    updatedAtLabel: string;
   };
 
   const [localUsers, setLocalUsers] = useState<UsersRow[]>([
-    { id: 'U-001', name: 'Петров А.', email: 'petrov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 09:12' },
-    { id: 'U-002', name: 'Сидоров Б.', email: 'sidorov@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-22 08:40' },
-    { id: 'U-003', name: 'Иванова С.', email: 'ivanova@katet.ru', role: 'manager', active: true, lastLogin: '2026-04-21 17:05' },
-    { id: 'U-004', name: 'Админ', email: 'admin@katet.ru', role: 'admin', active: true, lastLogin: '2026-04-22 10:00' },
-    { id: 'U-005', name: 'Кузнецов Д.', email: 'kuznetsov@katet.ru', role: 'manager', active: false, lastLogin: '2025-12-02 14:20' },
+    { id: 'U-001', name: 'Петров А.', email: 'petrov@katet.ru', role: 'manager', active: true, updatedAtLabel: '2026-04-22 09:12' },
+    { id: 'U-002', name: 'Сидоров Б.', email: 'sidorov@katet.ru', role: 'manager', active: true, updatedAtLabel: '2026-04-22 08:40' },
+    { id: 'U-003', name: 'Иванова С.', email: 'ivanova@katet.ru', role: 'manager', active: true, updatedAtLabel: '2026-04-21 17:05' },
+    { id: 'U-004', name: 'Админ', email: 'admin@katet.ru', role: 'admin', active: true, updatedAtLabel: '2026-04-22 10:00' },
+    { id: 'U-005', name: 'Кузнецов Д.', email: 'kuznetsov@katet.ru', role: 'manager', active: false, updatedAtLabel: '2025-12-02 14:20' },
   ]);
 
   const usersQuery = useUsersQuery(
@@ -1398,7 +1437,7 @@ function UsersPage() {
         email: u.email,
         role: u.role,
         active: u.isActive,
-        lastLogin: formatDateTime(u.updatedAt),
+        updatedAtLabel: formatDateTime(u.updatedAt),
       }));
     }
     return localUsers;
@@ -1414,24 +1453,64 @@ function UsersPage() {
     });
   }, [active, query, role, sourceRows]);
 
-  const handleCreateUser = async () => {
+  const operationPending = createUserMutation.isPending || updateUserMutation.isPending;
+
+  const openCreateUserDialog = () => {
     setMutationError(null);
     setMutationSuccess(null);
+    setCreateFormError(null);
+    setCreateForm({
+      ...EMPTY_CREATE_USER_FORM,
+      role: role === 'all' ? 'manager' : role,
+      password: generateTemporaryPassword(),
+    });
+    setCreateDialogOpen(true);
+  };
+
+  const closeCreateUserDialog = () => {
+    setCreateDialogOpen(false);
+    setCreateFormError(null);
+  };
+
+  const handleCreateUserSubmit = async () => {
+    setMutationError(null);
+    setMutationSuccess(null);
+    setCreateFormError(null);
+
+    const fullName = createForm.fullName.trim();
+    const email = createForm.email.trim().toLowerCase();
+    const password = createForm.password.trim();
+
+    if (fullName.length < 2) {
+      setCreateFormError('Имя должно содержать минимум 2 символа.');
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      setCreateFormError('Введите корректную электронную почту.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setCreateFormError('Временный пароль должен содержать минимум 6 символов.');
+      return;
+    }
 
     if (USE_API) {
       try {
-        const seed = Date.now().toString().slice(-6);
-        const nextRole: UserRole = role === 'all' ? 'manager' : role;
         const created = await createUserMutation.mutateAsync({
-          fullName: `Новый ${nextRole === 'admin' ? 'администратор' : 'менеджер'} ${seed}`,
-          email: `new.user.${seed}@katet.local`,
-          password: 'manager123',
-          role: nextRole,
-          isActive: true,
+          fullName,
+          email,
+          password,
+          role: createForm.role,
+          isActive: createForm.isActive,
         });
-        setMutationSuccess(`Пользователь ${created.fullName} создан (временный пароль: manager123).`);
+        setMutationSuccess(
+          `Пользователь ${created.fullName} создан. Передайте выбранный временный пароль сотруднику вручную.`,
+        );
+        closeCreateUserDialog();
       } catch (error) {
-        setMutationError(error instanceof Error ? error.message : 'Не удалось создать пользователя.');
+        setCreateFormError(error instanceof Error ? error.message : 'Не удалось создать пользователя.');
       }
       return;
     }
@@ -1447,14 +1526,16 @@ function UsersPage() {
       const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
       const draft: UsersRow = {
         id: nextId,
-        name: `Новый пользователь ${max + 1}`,
-        email: `new.user.${max + 1}@katet.ru`,
-        role: role === 'all' ? 'manager' : role,
-        active: true,
-        lastLogin: stamp,
+        name: fullName,
+        email,
+        role: createForm.role,
+        active: createForm.isActive,
+        updatedAtLabel: stamp,
       };
       return [draft, ...prev];
     });
+    setMutationSuccess(`Пользователь ${fullName} создан. Передайте временный пароль сотруднику вручную.`);
+    closeCreateUserDialog();
   };
 
   const handleToggleActive = async (userId: string, isActiveNow: boolean) => {
@@ -1494,7 +1575,7 @@ function UsersPage() {
           id: userId,
           patch: { role: nextRole },
         });
-        setMutationSuccess(`Роль пользователя ${updated.fullName} изменена на ${updated.role}.`);
+        setMutationSuccess(`Роль пользователя ${updated.fullName} изменена на ${roleLabel(updated.role)}.`);
       } catch (error) {
         setMutationError(error instanceof Error ? error.message : 'Не удалось обновить роль пользователя.');
       }
@@ -1503,6 +1584,39 @@ function UsersPage() {
 
     setLocalUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, role: nextRole } : u)),
+    );
+  };
+
+  const handleEmailChange = async (userId: string, nextEmailRaw: string) => {
+    setMutationError(null);
+    setMutationSuccess(null);
+
+    const nextEmail = nextEmailRaw.trim().toLowerCase();
+    const current = sourceRows.find((u) => u.id === userId);
+
+    if (!isValidEmail(nextEmail)) {
+      setMutationError('Введите корректную электронную почту.');
+      setEmailDraftById((prev) => ({ ...prev, [userId]: current?.email ?? '' }));
+      return;
+    }
+
+    if (!current || current.email === nextEmail) return;
+
+    if (USE_API) {
+      try {
+        const updated = await updateUserMutation.mutateAsync({
+          id: userId,
+          patch: { email: nextEmail },
+        });
+        setMutationSuccess(`Email пользователя ${updated.fullName} обновлён: ${updated.email}.`);
+      } catch (error) {
+        setMutationError(error instanceof Error ? error.message : 'Не удалось обновить email пользователя.');
+      }
+      return;
+    }
+
+    setLocalUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, email: nextEmail } : u)),
     );
   };
 
@@ -1563,7 +1677,7 @@ function UsersPage() {
           id: resetPasswordUserId,
           patch: { password: trimmed },
         });
-        setMutationSuccess(`Пароль пользователя ${updated.fullName} обновлён.`);
+        setMutationSuccess(`Пароль пользователя ${updated.fullName} обновлён. Передайте временный пароль вручную.`);
         closeResetPasswordDialog();
       } catch (error) {
         setResetPasswordError(error instanceof Error ? error.message : 'Не удалось обновить пароль.');
@@ -1588,7 +1702,7 @@ function UsersPage() {
     createUserMutation.isPending
       ? null
       : () => {
-        void handleCreateUser();
+        openCreateUserDialog();
       },
   );
 
@@ -1662,15 +1776,15 @@ function UsersPage() {
         ) : null}
 
         {!USE_API || usersQuery.data || (!usersQuery.isPending && !usersQuery.isError) ? (
-          <table className="w-full min-w-[900px] border-collapse text-[12px]">
+          <table className="w-full min-w-[1080px] border-collapse text-[12px]">
             <thead className="sticky top-0 z-10 bg-white">
               <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-2 text-left font-medium">ID</th>
                 <th className="px-3 py-2 text-left font-medium">Имя</th>
                 <th className="px-3 py-2 text-left font-medium">Эл. почта</th>
                 <th className="px-3 py-2 text-left font-medium">Роль</th>
-                <th className="px-3 py-2 text-left font-medium">Активен</th>
-                <th className="px-3 py-2 text-left font-medium">Последний апдейт</th>
+                <th className="px-3 py-2 text-left font-medium">Доступ</th>
+                <th className="px-3 py-2 text-left font-medium">Обновлён</th>
                 <th className="px-3 py-2 text-left font-medium">Действия</th>
               </tr>
             </thead>
@@ -1697,19 +1811,32 @@ function UsersPage() {
                           onBlur={(event) => {
                             void handleNameChange(u.id, event.target.value);
                           }}
-                          disabled={updateUserMutation.isPending}
+                          disabled={operationPending}
                           className="h-7 min-w-[180px] rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
                         />
                       </div>
                     </td>
-                    <td className="px-3 py-2.5 text-foreground/80">{u.email}</td>
+                    <td className="px-3 py-2.5 text-foreground/80">
+                      <input
+                        value={emailDraftById[u.id] ?? u.email}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setEmailDraftById((prev) => ({ ...prev, [u.id]: value }));
+                        }}
+                        onBlur={(event) => {
+                          void handleEmailChange(u.id, event.target.value);
+                        }}
+                        disabled={operationPending}
+                        className="h-7 min-w-[220px] rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                      />
+                    </td>
                     <td className="px-3 py-2.5 text-foreground/80">
                       <select
                         value={u.role}
                         onChange={(event) => {
                           void handleRoleChange(u.id, event.target.value as UserRole);
                         }}
-                        disabled={updateUserMutation.isPending}
+                        disabled={operationPending}
                         className="h-7 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
                       >
                         <option value="admin">Админ</option>
@@ -1719,15 +1846,15 @@ function UsersPage() {
                     <td className="px-3 py-2.5">
                       {u.active ? (
                         <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">
-                          <Check className="h-3 w-3" /> Да
+                          <Check className="h-3 w-3" /> Вход разрешён
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
-                          <X className="h-3 w-3" /> Нет
+                          <X className="h-3 w-3" /> Вход закрыт
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{u.lastLogin}</td>
+                    <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{u.updatedAtLabel}</td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1.5">
                         <Button
@@ -1737,9 +1864,9 @@ function UsersPage() {
                           onClick={() => {
                             void handleToggleActive(u.id, u.active);
                           }}
-                          disabled={updateUserMutation.isPending}
+                          disabled={operationPending}
                         >
-                          {u.active ? 'Деактивировать' : 'Активировать'}
+                          {u.active ? 'Закрыть вход' : 'Открыть вход'}
                         </Button>
                         <Button
                           size="sm"
@@ -1747,10 +1874,10 @@ function UsersPage() {
                           className="h-6 px-2 text-[11px]"
                           onClick={() => {
                             setResetPasswordUserId(u.id);
-                            setResetPasswordDraft('');
+                            setResetPasswordDraft(generateTemporaryPassword());
                             setResetPasswordError(null);
                           }}
-                          disabled={updateUserMutation.isPending}
+                          disabled={operationPending}
                         >
                           Сброс пароля
                         </Button>
@@ -1765,6 +1892,141 @@ function UsersPage() {
       </div>
 
       <Dialog
+        open={createDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeCreateUserDialog();
+          else setCreateDialogOpen(true);
+        }}
+      >
+        <DialogContent className="sm:max-w-[520px]">
+          <DialogHeader>
+            <DialogTitle>Новый пользователь</DialogTitle>
+            <DialogDescription>
+              Email будет логином. Временный пароль не отправляется автоматически.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-3">
+            <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-name">
+              <span>Имя</span>
+              <Input
+                id="admin-create-user-name"
+                value={createForm.fullName}
+                placeholder="Иван Менеджер"
+                onChange={(event) => {
+                  setCreateForm((prev) => ({ ...prev, fullName: event.target.value }));
+                  setCreateFormError(null);
+                }}
+                disabled={createUserMutation.isPending}
+              />
+            </label>
+
+            <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-email">
+              <span>Эл. почта</span>
+              <Input
+                id="admin-create-user-email"
+                type="email"
+                value={createForm.email}
+                placeholder="manager@katet.tech"
+                onChange={(event) => {
+                  setCreateForm((prev) => ({ ...prev, email: event.target.value }));
+                  setCreateFormError(null);
+                }}
+                disabled={createUserMutation.isPending}
+              />
+            </label>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-role">
+                <span>Роль</span>
+                <select
+                  id="admin-create-user-role"
+                  value={createForm.role}
+                  onChange={(event) => {
+                    setCreateForm((prev) => ({ ...prev, role: event.target.value as UserRole }));
+                  }}
+                  disabled={createUserMutation.isPending}
+                  className="h-10 w-full rounded border border-input bg-background px-3 text-sm text-foreground outline-none ring-0"
+                >
+                  <option value="manager">Менеджер</option>
+                  <option value="admin">Админ</option>
+                </select>
+              </label>
+
+              <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-status">
+                <span>Доступ</span>
+                <select
+                  id="admin-create-user-status"
+                  value={createForm.isActive ? 'active' : 'inactive'}
+                  onChange={(event) => {
+                    setCreateForm((prev) => ({ ...prev, isActive: event.target.value === 'active' }));
+                  }}
+                  disabled={createUserMutation.isPending}
+                  className="h-10 w-full rounded border border-input bg-background px-3 text-sm text-foreground outline-none ring-0"
+                >
+                  <option value="active">Вход разрешён</option>
+                  <option value="inactive">Вход закрыт</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="space-y-1">
+              <label className="block text-[12px] text-muted-foreground" htmlFor="admin-create-user-password">
+                Временный пароль
+              </label>
+              <div className="flex gap-2">
+                <Input
+                  id="admin-create-user-password"
+                  type="text"
+                  value={createForm.password}
+                  placeholder="Минимум 6 символов"
+                  onChange={(event) => {
+                    setCreateForm((prev) => ({ ...prev, password: event.target.value }));
+                    setCreateFormError(null);
+                  }}
+                  disabled={createUserMutation.isPending}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setCreateForm((prev) => ({ ...prev, password: generateTemporaryPassword() }));
+                    setCreateFormError(null);
+                  }}
+                  disabled={createUserMutation.isPending}
+                >
+                  Сгенерировать
+                </Button>
+              </div>
+            </div>
+
+            {createFormError ? (
+              <div className="text-[12px] text-rose-700">{createFormError}</div>
+            ) : null}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={closeCreateUserDialog}
+              disabled={createUserMutation.isPending}
+            >
+              Отмена
+            </Button>
+            <Button
+              className="bg-[#2a6af0] text-white hover:bg-[#2358d1]"
+              onClick={() => {
+                void handleCreateUserSubmit();
+              }}
+              disabled={createUserMutation.isPending}
+            >
+              {createUserMutation.isPending ? 'Создаём...' : 'Создать пользователя'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
         open={!!resetPasswordUserId}
         onOpenChange={(open) => {
           if (!open) closeResetPasswordDialog();
@@ -1775,8 +2037,8 @@ function UsersPage() {
             <DialogTitle>Сброс пароля</DialogTitle>
             <DialogDescription>
               {resetPasswordUser
-                ? `Укажите новый пароль для пользователя ${resetPasswordUser.name}.`
-                : 'Укажите новый пароль для выбранного пользователя.'}
+                ? `Укажите временный пароль для пользователя ${resetPasswordUser.name}. Автоматическая отправка по email не выполняется.`
+                : 'Укажите временный пароль для выбранного пользователя.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -1784,17 +2046,30 @@ function UsersPage() {
             <label className="block text-[12px] text-muted-foreground" htmlFor="admin-reset-password-input">
               Новый пароль
             </label>
-            <Input
-              id="admin-reset-password-input"
-              type="password"
-              value={resetPasswordDraft}
-              placeholder="Минимум 6 символов"
-              onChange={(event) => {
-                setResetPasswordDraft(event.target.value);
-                setResetPasswordError(null);
-              }}
-              disabled={updateUserMutation.isPending}
-            />
+            <div className="flex gap-2">
+              <Input
+                id="admin-reset-password-input"
+                type="text"
+                value={resetPasswordDraft}
+                placeholder="Минимум 6 символов"
+                onChange={(event) => {
+                  setResetPasswordDraft(event.target.value);
+                  setResetPasswordError(null);
+                }}
+                disabled={updateUserMutation.isPending}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setResetPasswordDraft(generateTemporaryPassword());
+                  setResetPasswordError(null);
+                }}
+                disabled={updateUserMutation.isPending}
+              >
+                Сгенерировать
+              </Button>
+            </div>
             {resetPasswordError ? (
               <div className="text-[12px] text-rose-700">{resetPasswordError}</div>
             ) : null}
@@ -1815,7 +2090,7 @@ function UsersPage() {
               }}
               disabled={updateUserMutation.isPending || !resetPasswordUserId}
             >
-              {updateUserMutation.isPending ? 'Сохраняем...' : 'Сохранить пароль'}
+              {updateUserMutation.isPending ? 'Сохраняем...' : 'Сохранить временный пароль'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1860,6 +2135,11 @@ function PermissionsPage() {
   ) => {
     setMutationError(null);
     setMutationSuccess(null);
+
+    if (role === 'manager' && isAdminOnlyCapability(capabilityId)) {
+      setMutationError('Эта возможность закреплена только за ролью admin.');
+      return;
+    }
 
     if (!USE_API) return;
 
@@ -1928,9 +2208,18 @@ function PermissionsPage() {
                 {capabilities.map((c) => (
                   <tr key={c.id} className="border-b border-border/40 last:border-b-0 hover:bg-muted/30">
                     <td className="px-4 py-2.5 text-foreground">{c.label}</td>
-                    {roles.map((r) => (
+                    {roles.map((r) => {
+                      const locked = r === 'manager' && isAdminOnlyCapability(c.id);
+                      return (
                       <td key={r} className="px-3 py-2.5 text-center">
-                        {USE_API ? (
+                        {locked ? (
+                          <span
+                            className="mx-auto inline-flex h-6 items-center justify-center rounded border border-slate-200 bg-slate-50 px-2 text-[10px] text-slate-600"
+                            title="Admin-only возможность закреплена backend RBAC"
+                          >
+                            Только admin
+                          </span>
+                        ) : USE_API ? (
                           <button
                             type="button"
                             onClick={() => {
@@ -1951,7 +2240,8 @@ function PermissionsPage() {
                           <span className="text-muted-foreground/50">—</span>
                         )}
                       </td>
-                    ))}
+                    );
+                    })}
                   </tr>
                 ))}
               </tbody>

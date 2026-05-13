@@ -41,6 +41,7 @@ Contract expectations:
 
 1. JWT access token + refresh token flow is server-side enforced.
 2. `me` returns role fields used by frontend RBAC visibility.
+3. Inactive users cannot receive login or refresh tokens.
 
 ### 3.2 Leads
 
@@ -177,6 +178,10 @@ Contract expectations:
 5. `settings/workspace` provides canonical read model for Admin settings dashboard.
 6. `settings/workspace/sections/:sectionId` updates section rows in Admin settings workspace.
 7. Admin-only users/settings endpoints require both admin role and enabled capability toggle.
+8. `POST /users` requires explicit `email`, `fullName`, and `password`; email is normalized to lowercase and becomes the login identity.
+9. `PATCH /users/:id` can update `email`, `fullName`, `password`, `role`, and `isActive`; password updates hash server-side and are the MVP password recovery path.
+10. `isActive=false` blocks auth login/refresh and removes manager accounts from `GET /users/managers`.
+11. Admin-only capabilities (`catalogs.write`, `admin.*`) keep Manager locked out even if a client attempts to enable the matrix cell.
 
 ### 3.10 Navigation (deep-link resolver)
 

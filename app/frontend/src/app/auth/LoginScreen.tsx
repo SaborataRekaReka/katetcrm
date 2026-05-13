@@ -12,6 +12,7 @@ export function LoginScreen() {
   const [email, setEmail] = useState(showDemoAccounts ? 'admin@katet.local' : '');
   const [password, setPassword] = useState(showDemoAccounts ? 'admin123' : '');
   const [error, setError] = useState<string | null>(null);
+  const [showPasswordHelp, setShowPasswordHelp] = useState(false);
   const [pending, setPending] = useState(false);
 
   async function onSubmit(e: FormEvent) {
@@ -65,6 +66,18 @@ export function LoginScreen() {
         >
           {pending ? 'Вход…' : 'Войти'}
         </button>
+        <button
+          type="button"
+          onClick={() => setShowPasswordHelp((value) => !value)}
+          className="w-full text-center text-xs font-medium text-blue-700 hover:text-blue-800"
+        >
+          Забыли пароль?
+        </button>
+        {showPasswordHelp ? (
+          <div className="rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-xs text-gray-600">
+            Обратитесь к администратору CRM: он выдаст новый временный пароль. Автоматическая отправка писем сейчас не включена.
+          </div>
+        ) : null}
         {showDemoAccounts ? (
           <div className="text-xs text-gray-500">
             Тестовые аккаунты: <br />

@@ -202,8 +202,8 @@
 
 1. `GET /users`, `GET /users/managers`.
 2. `POST /users`, `PATCH /users/:id`.
-3. Admin Users UI использует backend list/create/toggle-active/role-update/name-update/password-reset flow в API-режиме.
-4. Admin Permissions UI использует `GET /users/permissions-matrix` и `PATCH /users/permissions-matrix/:capabilityId`.
+3. Admin Users UI использует backend list/create/toggle-active/role-update/email-update/name-update/password-reset flow в API-режиме; создание требует явные email и временный пароль.
+4. Admin Permissions UI использует `GET /users/permissions-matrix` и `PATCH /users/permissions-matrix/:capabilityId`; admin-only возможности отображаются как locked для Manager.
 5. Admin Settings UI использует `GET /settings/workspace` и `PATCH /settings/workspace/sections/:sectionId`.
 
 Остаточные задачи:

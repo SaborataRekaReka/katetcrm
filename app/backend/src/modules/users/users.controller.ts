@@ -53,8 +53,8 @@ export class UsersController {
   @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('admin.users')
-  createUser(@Body() dto: CreateUserDto) {
-    return this.users.createUser(dto);
+  createUser(@Body() dto: CreateUserDto, @CurrentUser() user: JwtPayload) {
+    return this.users.createUser(dto, user.sub);
   }
 
   @Patch('permissions-matrix/:capabilityId')
@@ -73,7 +73,11 @@ export class UsersController {
   @UseGuards(RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('admin.users')
-  updateUser(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-    return this.users.updateUser(id, dto);
+  updateUser(
+    @Param('id') id: string,
+    @Body() dto: UpdateUserDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.users.updateUser(id, dto, user.sub);
   }
 }

@@ -32,6 +32,15 @@ Manager cannot:
 
 1. Access admin-only modules (imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
 
+## 2.3 User Access Lifecycle
+
+1. `User.email` is the login identity. Admin must enter it when creating a user and may correct it later.
+2. `User.isActive=true` means the account can log in; `false` blocks login and removes managers from assignment selectors.
+3. MVP password recovery is admin reset: Admin sets a new temporary password in `/admin/users` and gives it to the employee manually.
+4. Automatic password reset email is not enabled in MVP.
+5. Admin-only capabilities (`catalogs.write`, `admin.*`) cannot be granted to Manager in the permissions matrix while the MVP role boundary remains admin-only.
+6. Admin cannot deactivate or demote the current admin account, and the system must keep at least one active admin.
+
 ## 3. UI visibility rules
 
 1. Admin-only sections must be hidden for manager in navigation.
