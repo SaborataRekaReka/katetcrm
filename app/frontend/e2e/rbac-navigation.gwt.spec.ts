@@ -46,7 +46,7 @@ test.describe('RBAC and Navigation GWT (QA-REQ: 032..035)', () => {
     await loginViaUi(page, 'manager')
 
     await expect(page.getByRole('button', { name: 'Админ', exact: true })).toHaveCount(0)
-    await expect(page.getByRole('button', { name: 'Менеджер', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Менеджер', exact: true })).toHaveCount(0)
   })
 
   test('E2E-011 manager forbidden actions map to 403 policy', async ({ request }) => {

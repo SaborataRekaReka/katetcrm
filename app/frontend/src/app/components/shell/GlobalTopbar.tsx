@@ -61,7 +61,6 @@ export function GlobalTopbar() {
   const { user, logout } = useAuth();
   const {
     role,
-    setRole,
     activePrimaryNav,
     activeSecondaryNav,
     setActivePrimaryNav,
@@ -640,15 +639,6 @@ export function GlobalTopbar() {
       </div>
 
       <div className="flex shrink-0 items-center gap-0.5">
-        {/* Role switcher - dev helper */}
-        <button
-          type="button"
-          onClick={() => setRole(role === 'admin' ? 'manager' : 'admin')}
-          className="mr-1 hidden h-6 items-center gap-1 rounded-md border border-border px-2 text-[11px] text-muted-foreground transition-colors hover:border-foreground/20 hover:text-foreground lg:flex"
-          title="Переключить роль"
-        >
-          {role === 'admin' ? 'Админ' : 'Менеджер'}
-        </button>
         <TopbarIconButton icon={Bell} label="Уведомления" onClick={openAudit} />
         <TopbarIconButton icon={HelpCircle} label="Помощь" onClick={openHelp} />
         <DropdownMenu onOpenChange={setIsProfileMenuOpen}>
