@@ -130,18 +130,45 @@ jobs:
           ssh_port="${PROD_SSH_PORT:-22}"
           target="${PROD_SSH_USER}@${ssh_host_target}"
 
-          if [ -n "${PROD_SSH_PRIVATE_KEY:-}" ] && ssh -i ~/.ssh/id_ed25519 -p "$ssh_port" -o BatchMode=yes -o ConnectTimeout=10 "$target" "echo ok" >/dev/null 2>&1; then
+          echo "Testing SSH target: $target on port $ssh_port"
+
+          key_log="$(mktemp)"
+          password_log="$(mktemp)"
+
+          if [ -n "${PROD_SSH_PRIVATE_KEY:-}" ]; then
+            echo "Trying SSH key auth from PROD_SSH_PRIVATE_KEY..."
+          else
+            echo "Skipping key auth: PROD_SSH_PRIVATE_KEY is empty."
+          fi
+
+          if [ -n "${PROD_SSH_PRIVATE_KEY:-}" ] && ssh -i ~/.ssh/id_ed25519 -p "$ssh_port" -o BatchMode=yes -o ConnectTimeout=10 "$target" "echo ok" > /dev/null 2>"$key_log"; then
             echo "auth_mode=key" >> "$GITHUB_OUTPUT"
             echo "target=$target" >> "$GITHUB_OUTPUT"
             echo "ssh_port=$ssh_port" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
-          if [ -n "${PROD_SSH_PASSWORD:-}" ] && sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$ssh_port" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no -o ConnectTimeout=10 "$target" "echo ok" >/dev/null 2>&1; then
+          if [ -s "$key_log" ]; then
+            echo "Key auth failed:"
+            sed -E 's/(password|passphrase|token|secret|key)[^[:space:]]*/[redacted]/Ig' "$key_log" || true
+          fi
+
+          if [ -n "${PROD_SSH_PASSWORD:-}" ]; then
+            echo "Trying SSH password auth from PROD_SSH_PASSWORD..."
+          else
+            echo "Skipping password auth: PROD_SSH_PASSWORD is empty."
+          fi
+
+          if [ -n "${PROD_SSH_PASSWORD:-}" ] && sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$ssh_port" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no -o ConnectTimeout=10 "$target" "echo ok" > /dev/null 2>"$password_log"; then
             echo "auth_mode=password" >> "$GITHUB_OUTPUT"
             echo "target=$target" >> "$GITHUB_OUTPUT"
             echo "ssh_port=$ssh_port" >> "$GITHUB_OUTPUT"
             exit 0
+          fi
+
+          if [ -s "$password_log" ]; then
+            echo "Password auth failed:"
+            sed -E 's/(password|passphrase|token|secret|key)[^[:space:]]*/[redacted]/Ig' "$password_log" || true
           fi
 
           echo "::error::Cannot establish SSH connection with provided credentials"
