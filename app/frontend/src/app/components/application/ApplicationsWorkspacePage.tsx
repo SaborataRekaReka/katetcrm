@@ -2,14 +2,12 @@ import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { Application } from '../../types/application';
 import { Lead, StageType } from '../../types/kanban';
-import { mockApplicationsList } from '../../data/mockApplicationsList';
 import { WorkspaceHeader } from '../shell/WorkspaceHeader';
 import { ApplicationsToolbar } from '../shell/ApplicationsToolbar';
 import {
   ApplicationsFiltersState,
   DEFAULT_APPLICATIONS_FILTERS,
 } from '../shell/filterTypes';
-import { applyApplicationsFilters, computeGroup } from '../shell/applicationHelpers';
 import { useLayout } from '../shell/layoutStore';
 import { ApplicationsListView } from '../views/ApplicationsListView';
 import { ApplicationsTableView } from '../views/ApplicationsTableView';
@@ -87,14 +85,6 @@ export function ApplicationsWorkspacePage() {
   const managersQuery = useManagersQuery(USE_API);
 
   const managerOptions = useMemo(() => {
-    if (!USE_API) {
-      return [
-        { value: 'Петров А.', label: 'Петров А.' },
-        { value: 'Сидоров Б.', label: 'Сидоров Б.' },
-        { value: 'Иванова С.', label: 'Иванова С.' },
-      ];
-    }
-
     return (managersQuery.data ?? []).map((manager) => ({
       value: manager.id,
       label: manager.fullName,
@@ -104,9 +94,9 @@ export function ApplicationsWorkspacePage() {
   const effectiveView: 'list' | 'table' =
     currentView === 'table' ? 'table' : 'list';
 
-  // Источник данных: API (если USE_API) либо mock. API-ответ уже спроецирован
-  // бэкендом (applicationGroup / positionsReady / status per position), FE
-  // adapter только презентационно маппит в UI-тип.
+  // Источник данных: API. Ответ уже спроецирован бэкендом
+  // (applicationGroup / positionsReady / status per position), FE adapter
+  // только презентационно маппит в UI-тип.
   const serverQueryParams = useMemo<ApplicationListParams>(() => {
     const params: ApplicationListParams = {
       scope: filters.scope === 'my' ? 'mine' : 'all',
@@ -152,10 +142,8 @@ export function ApplicationsWorkspacePage() {
     USE_API && activeEntityType === 'application' && !!activeEntityId,
   );
   const sourceApplications: Application[] = useMemo(() => {
-    if (USE_API && applicationsQuery.data) {
-      return applicationsQuery.data.items.map(toUiApplication);
-    }
-    return mockApplicationsList;
+    if (!applicationsQuery.data) return [];
+    return applicationsQuery.data.items.map(toUiApplication);
   }, [applicationsQuery.data]);
 
   const salesStageApplications = useMemo(
@@ -163,26 +151,12 @@ export function ApplicationsWorkspacePage() {
     [sourceApplications],
   );
 
-  // Saved-view aliases pre-apply a filter so the page content matches nav context.
+  // Saved-view aliases are encoded into API query params above (scope/readiness).
   const aliasFiltered = useMemo(() => {
-    if (USE_API) {
-      return salesStageApplications;
-    }
-
-    if (activeSecondaryNav === 'apps-no-reservation' || activeSecondaryNav === 'apps-ready') {
-      return salesStageApplications.filter((a) => computeGroup(a) === 'no_reservation');
-    }
-    if (activeSecondaryNav === 'my-applications') {
-      // В отсутствии реального currentUser считаем "мои" = Иванова С. (demo).
-      return salesStageApplications.filter((a) => a.responsibleManager === 'Иванова С.');
-    }
     return salesStageApplications;
-  }, [activeSecondaryNav, salesStageApplications]);
+  }, [salesStageApplications]);
 
-  const filtered = useMemo(() => {
-    if (USE_API) return aliasFiltered;
-    return applyApplicationsFilters(aliasFiltered, filters, query);
-  }, [aliasFiltered, filters, query]);
+  const filtered = aliasFiltered;
 
   const hasActiveFilter =
     filters.scope !== 'all' ||
@@ -273,22 +247,14 @@ export function ApplicationsWorkspacePage() {
 
   useEffect(() => {
     if (activeEntityType !== 'application' || !activeEntityId) return;
+    if (!USE_API) return;
 
-    if (USE_API) {
-      if (!routedApplicationQuery.data) return;
-      setSelected(toUiApplication(routedApplicationQuery.data));
-      setIsOpen(true);
-      return;
-    }
-
-    const localApplication = sourceApplications.find((item) => item.id === activeEntityId);
-    if (!localApplication) return;
-    setSelected(localApplication);
+    if (!routedApplicationQuery.data) return;
+    setSelected(toUiApplication(routedApplicationQuery.data));
     setIsOpen(true);
   }, [
     activeEntityType,
     activeEntityId,
-    sourceApplications,
     routedApplicationQuery.data,
   ]);
 

@@ -109,10 +109,10 @@ Test priority: P0
 
 QA-REQ-009:
 Question: QA-Q-009. Minimum fields for ready ApplicationItem?
-Answer: `equipmentType`, `quantity`, `shiftCount`, `plannedDate`, `plannedTimeFrom/plannedTimeTo`, and `address`.
+Answer: `equipmentType`, `quantity`, `plannedDate`, `plannedTimeFrom/plannedTimeTo`, `address`, and `sourcingType != undecided`.
 Route surface: /applications
 Domain surface: ApplicationItem readiness
-UI surface: Save for reservation preparation is enabled only when all listed fields are present.
+UI surface: Readiness indicator appears only when all listed fields are present.
 State/API/audit surface: Readiness derivation follows this exact required set.
 Test priority: P0
 
@@ -431,69 +431,6 @@ UI surface: Completion detail returns to the linked Departure context after roll
 State/API/audit surface: Completion deletion and state restoration are transactional and auditable.
 Test priority: P0
 
-QA-REQ-043:
-Question: QA-Q-043. What should the Leads Kanban inline add action do?
-Answer: The Kanban lead column action must be labeled "Добавить лид" and open the same Lead creation flow as the module primary CTA; after successful creation the created Lead detail context opens.
-Route surface: /leads?view=board
-Domain surface: Lead creation
-UI surface: Kanban add action is active, creates a Lead, and does not create a generic card/task.
-State/API/audit surface: Returned Lead id is used as entity route context and Lead queries are invalidated.
-Test priority: P0
-
-QA-REQ-044:
-Question: QA-Q-044. How should preferred workspace view mode persist?
-Answer: The preferred view mode is stored independently per secondary section/module; a user choosing Kanban for Leads must not force Kanban/invalid view into Applications, Reservations, Clients, or Catalogs. Explicit URL `?view=` still takes precedence on initial load and back/forward navigation.
-Route surface: all routed workspaces with `?view=`
-Domain surface: View representation consistency
-UI surface: Switching sections restores that section's last valid view.
-State/API/audit surface: Layout state persists per-section view preferences in localStorage and coerces invalid views to module-valid tabs.
-Test priority: P1
-
-QA-REQ-045:
-Question: QA-Q-045. When can an ApplicationItem be marked ready for Reservation from the position dialog?
-Answer: Only when type, quantity, shift count, planned date, both time boundaries, and address are filled. Source selection may remain `undecided` on Application stage and be chosen later in Reservation.
-Route surface: /applications detail position dialog
-Domain surface: ApplicationItem readiness
-UI surface: Required booking fields are visibly marked with `*`; save remains disabled until they are complete.
-State/API/audit surface: Create/update keeps `readyForReservation` tied to required booking fields; `sourcingType` is no longer a readiness blocker.
-Test priority: P0
-
-QA-REQ-046:
-Question: QA-Q-046. How should Reservation support adding missing resources from inside the stage?
-Answer: In Reservation resource selection, a user with directory write permission can create an EquipmentUnit for own equipment or a Subcontractor for contractor sourcing from the Reservation workspace; the created directory record is immediately assigned to the active Reservation.
-Route surface: /reservations detail workspace
-Domain surface: Reservation resource assignment and directory entities
-UI surface: Own equipment and subcontractor blocks expose inline create actions in the stage context.
-State/API/audit surface: Directory create endpoints persist the new record; Reservation update links the created id and advances internal stage (`unit_defined` or `subcontractor_selected`). Server RBAC remains authoritative.
-Test priority: P0
-
-QA-REQ-047:
-Question: QA-Q-047. What should the sidebar bug report action do?
-Answer: The old Draft action is removed. The Sidebar bug report action opens a form that stores a bug report in CRM with severity, route, description, steps, and expected result.
-Route surface: global shell sidebar, /control/bug-reports
-Domain surface: Support feedback registry for admin triage
-UI surface: Sidebar footer button is "Сообщить о баге" and opens the bug form.
-State/API/audit surface: `POST /api/v1/bug-reports` persists a bug report and writes activity log entry.
-Test priority: P2
-
-QA-REQ-049:
-Question: QA-Q-049. How should admin process bug reports in Control?
-Answer: In Control -> Bug reports, Admin can open the list, mark an open report as completed, and delete any report.
-Route surface: /control/bug-reports
-Domain surface: Admin support-triage operations on bug reports
-UI surface: Bug report table provides row actions "Выполнено" and "Удалить".
-State/API/audit surface: `GET /api/v1/bug-reports`, `POST /api/v1/bug-reports/:id/status`, and `DELETE /api/v1/bug-reports/:id` are admin-only and write activity entries.
-Test priority: P1
-
-QA-REQ-048:
-Question: QA-Q-048. What is the shell brand accent?
-Answer: Accent blue in primary shell/actions is replaced by the brand purple palette, and the header logo uses a black lowercase `к` on the Katet yellow background.
-Route surface: global shell
-Domain surface: None
-UI surface: Header logo and accent controls use the brand palette consistently.
-State/API/audit surface: No API state impact.
-Test priority: P2
-
 QA-REQ-050:
 Question: QA-Q-050. What should happen when a Mango callback reaches CRM but fails auth or schema validation?
 Answer: Do not create or update a Lead, but write a redacted failed IntegrationEvent for admin diagnostics.
@@ -510,6 +447,8 @@ Route surface: /api/v1/integrations/events/mango, /api/v1/integrations/events/ma
 Domain surface: Mango Office callback compatibility.
 UI surface: Successful call callbacks appear as processed Mango events in the integrations journal and create/update Leads.
 State/API/audit surface: Typed Mango event paths are normalized into `channel=mango` IntegrationEvent records using event identifiers for idempotency.
+Test priority: P1
+
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.
