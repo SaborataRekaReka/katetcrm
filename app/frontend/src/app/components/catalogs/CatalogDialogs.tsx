@@ -46,6 +46,7 @@ import {
   FieldTextarea,
   ShellDialog,
 } from '../detail/ShellFormPrimitives';
+import { useLayout } from '../shell/layoutStore';
 import {
   useCreateEquipmentCategory,
   useCreateEquipmentType,
@@ -90,6 +91,8 @@ type CategoryDialogProps = {
 };
 
 export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogProps) {
+  const { role } = useLayout();
+  const canDelete = role === 'admin';
   const [name, setName] = useState('');
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -205,7 +208,7 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
             </div>
           )}
 
-          {isEdit ? (
+          {isEdit && canDelete ? (
             <div className="flex justify-end">
               <Button
                 size="sm"
@@ -237,6 +240,8 @@ type TypeDialogProps = {
 };
 
 export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
+  const { role } = useLayout();
+  const canDelete = role === 'admin';
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [categoryId, setCategoryId] = useState<string>('');
@@ -394,7 +399,7 @@ export function TypeDialog({ open, onOpenChange, type }: TypeDialogProps) {
             </div>
           )}
 
-          {isEdit ? (
+          {isEdit && canDelete ? (
             <div className="flex justify-end">
               <Button
                 size="sm"
@@ -446,6 +451,8 @@ const EMPTY_UNIT: UnitForm = {
 };
 
 export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated }: UnitDialogProps) {
+  const { role } = useLayout();
+  const canDelete = role === 'admin';
   const [form, setForm] = useState<UnitForm>(EMPTY_UNIT);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -707,7 +714,7 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
           )}
 
           {isEdit ? (
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 size="sm"
                 variant="outline"
@@ -719,17 +726,19 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
               >
                 {form.status === 'archived' ? 'Активировать' : 'В архив'}
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
-                onClick={() => {
-                  void remove();
-                }}
-                disabled={deleteMut.isPending || updateMut.isPending}
-              >
-                {deleteMut.isPending ? 'Удаляем…' : 'Удалить единицу'}
-              </Button>
+              {canDelete ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                  onClick={() => {
+                    void remove();
+                  }}
+                  disabled={deleteMut.isPending || updateMut.isPending}
+                >
+                  {deleteMut.isPending ? 'Удаляем…' : 'Удалить единицу'}
+                </Button>
+              ) : null}
             </div>
           ) : null}
         </div>
@@ -786,6 +795,8 @@ export function SubcontractorDialog({
   initialValues,
   onCreated,
 }: SubcontractorDialogProps) {
+  const { role } = useLayout();
+  const canDelete = role === 'admin';
   const [form, setForm] = useState<SubForm>(EMPTY_SUB);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1048,7 +1059,7 @@ export function SubcontractorDialog({
           )}
 
           {isEdit ? (
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 size="sm"
                 variant="outline"
@@ -1060,17 +1071,19 @@ export function SubcontractorDialog({
               >
                 {form.status === 'archived' ? 'Активировать' : 'В архив'}
               </Button>
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
-                onClick={() => {
-                  void remove();
-                }}
-                disabled={deleteMut.isPending || updateMut.isPending}
-              >
-                {deleteMut.isPending ? 'Удаляем…' : 'Удалить подрядчика'}
-              </Button>
+              {canDelete ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 border-rose-300 text-rose-700 hover:bg-rose-50"
+                  onClick={() => {
+                    void remove();
+                  }}
+                  disabled={deleteMut.isPending || updateMut.isPending}
+                >
+                  {deleteMut.isPending ? 'Удаляем…' : 'Удалить подрядчика'}
+                </Button>
+              ) : null}
             </div>
           ) : null}
         </div>

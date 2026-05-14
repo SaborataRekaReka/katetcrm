@@ -40,7 +40,7 @@ export class DirectoriesController {
 
   @Post('equipment-categories')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createCategory(@Body() dto: UpsertEquipmentCategoryDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createCategory(dto, user.sub);
@@ -48,7 +48,7 @@ export class DirectoriesController {
 
   @Patch('equipment-categories/:id')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateCategory(
     @Param('id') id: string,
@@ -79,7 +79,7 @@ export class DirectoriesController {
 
   @Post('equipment-types')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createType(@Body() dto: CreateEquipmentTypeDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createType(dto, user.sub);
@@ -87,7 +87,7 @@ export class DirectoriesController {
 
   @Patch('equipment-types/:id')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateType(
     @Param('id') id: string,
@@ -130,7 +130,7 @@ export class DirectoriesController {
 
   @Post('equipment-units')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createUnit(@Body() dto: CreateEquipmentUnitDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createUnit(dto, user.sub);
@@ -138,7 +138,7 @@ export class DirectoriesController {
 
   @Patch('equipment-units/:id')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateUnit(
     @Param('id') id: string,
@@ -181,7 +181,7 @@ export class DirectoriesController {
 
   @Post('subcontractors')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createSubcontractor(@Body() dto: CreateSubcontractorDto, @CurrentUser() user: JwtPayload) {
     return this.svc.createSubcontractor(dto, user.sub);
@@ -189,7 +189,7 @@ export class DirectoriesController {
 
   @Patch('subcontractors/:id')
   @UseGuards(RolesGuard, CapabilitiesGuard)
-  @Roles('admin')
+  @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateSubcontractor(
     @Param('id') id: string,

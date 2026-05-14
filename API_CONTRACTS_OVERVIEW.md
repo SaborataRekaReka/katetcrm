@@ -192,7 +192,7 @@ Contract expectations:
 8. `POST /users` requires explicit `email`, `fullName`, and `password`; email is normalized to lowercase and becomes the login identity.
 9. `PATCH /users/:id` can update `email`, `fullName`, `password`, `role`, and `isActive`; password updates hash server-side and are the MVP password recovery path.
 10. `isActive=false` blocks auth login/refresh and removes manager accounts from `GET /users/managers`.
-11. Admin-only capabilities (`catalogs.write`, `admin.*`) keep Manager locked out even if a client attempts to enable the matrix cell.
+11. Admin-only capabilities (`admin.*`) keep Manager locked out even if a client attempts to enable the matrix cell; `catalogs.write` is manager-enabled for directory create/update flows.
 
 ### 3.10 Navigation (deep-link resolver)
 

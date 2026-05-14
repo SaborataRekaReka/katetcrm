@@ -14,7 +14,6 @@ export interface PermissionsMatrixState {
 export const PERMISSIONS_MATRIX_KEY = 'admin.permissions_matrix.v1';
 
 export const ADMIN_ONLY_CAPABILITY_IDS = new Set<string>([
-  'catalogs.write',
   'admin.users',
   'admin.permissions',
   'admin.settings',
@@ -22,8 +21,16 @@ export const ADMIN_ONLY_CAPABILITY_IDS = new Set<string>([
   'admin.integrations',
 ]);
 
+export const MANAGER_REQUIRED_CAPABILITY_IDS = new Set<string>([
+  'catalogs.write',
+]);
+
 export function isAdminOnlyCapability(capabilityId: string): boolean {
   return ADMIN_ONLY_CAPABILITY_IDS.has(capabilityId);
+}
+
+export function isManagerRequiredCapability(capabilityId: string): boolean {
+  return MANAGER_REQUIRED_CAPABILITY_IDS.has(capabilityId);
 }
 
 export const DEFAULT_PERMISSIONS_MATRIX: PermissionsMatrixState = {
@@ -62,7 +69,7 @@ export const DEFAULT_PERMISSIONS_MATRIX: PermissionsMatrixState = {
     {
       id: 'catalogs.write',
       label: 'Управление справочниками',
-      matrix: { admin: true, manager: false },
+      matrix: { admin: true, manager: true },
     },
     {
       id: 'admin.users',
@@ -135,6 +142,10 @@ function normalizeCapability(input: unknown): PermissionCapability | null {
     fallback.matrix.manager = false;
   }
 
+  if (isManagerRequiredCapability(fallback.id)) {
+    fallback.matrix.manager = true;
+  }
+
   return fallback;
 }
 
@@ -184,6 +195,9 @@ export function normalizePermissionsMatrix(payload: unknown): PermissionsMatrixS
   const capabilities = Array.from(byId.values()).map((capability) => {
     if (isAdminOnlyCapability(capability.id)) {
       capability.matrix.manager = false;
+    }
+    if (isManagerRequiredCapability(capability.id)) {
+      capability.matrix.manager = true;
     }
     return capability;
   });

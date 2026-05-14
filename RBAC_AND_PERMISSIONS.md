@@ -28,6 +28,7 @@ Manager can:
 2. Use board/list/table and detail workspaces.
 3. Create and process records within allowed visibility scope.
 4. Submit bug reports from the shell sidebar form.
+5. Create and update directory records (equipment categories/types/units, subcontractors).
 
 Manager cannot:
 
@@ -39,7 +40,7 @@ Manager cannot:
 2. `User.isActive=true` means the account can log in; `false` blocks login and removes managers from assignment selectors.
 3. MVP password recovery is admin reset: Admin sets a new temporary password in `/admin/users` and gives it to the employee manually.
 4. Automatic password reset email is not enabled in MVP.
-5. Admin-only capabilities (`catalogs.write`, `admin.*`) cannot be granted to Manager in the permissions matrix while the MVP role boundary remains admin-only.
+5. Admin-only capabilities (`admin.*`) cannot be granted to Manager in the permissions matrix while the MVP role boundary remains admin-only.
 6. Admin cannot deactivate or demote the current admin account, and the system must keep at least one active admin.
 
 ## 3. UI visibility rules
@@ -53,11 +54,11 @@ Manager cannot:
 Backend must validate regardless of frontend state:
 
 1. Role access for every protected endpoint.
-2. Capability/role access for admin-only endpoint groups (control reports/analytics, activity search, users, permissions, settings, imports, integrations, directory writes).
+2. Capability/role access for admin-only endpoint groups (control reports/analytics, activity search, users, permissions, settings, imports, integrations) and for directory delete endpoints.
 3. Bug report management endpoints (`GET/POST status/DELETE /bug-reports`) must remain admin-only; create endpoint may be available to authenticated users.
 4. Record scope access (own vs all where applicable).
 5. Transition rights for critical workflow actions.
-6. Mutation rights for directories/admin modules.
+6. Mutation rights for directories/admin modules, where directory create/update is allowed for manager and delete remains admin-only.
 
 Runtime policy details:
 

@@ -12,6 +12,7 @@ import {
   DEFAULT_PERMISSIONS_MATRIX,
   PERMISSIONS_MATRIX_KEY,
   isAdminOnlyCapability,
+  isManagerRequiredCapability,
   type PermissionsMatrixState,
   normalizePermissionsMatrix,
 } from './permissions-matrix.defaults';
@@ -278,10 +279,15 @@ export class UsersService {
       throw new BadRequestException('Эта возможность закреплена только за ролью admin.');
     }
 
+    if (dto.manager === false && isManagerRequiredCapability(capability.id)) {
+      throw new BadRequestException('Эта возможность обязательна для роли manager.');
+    }
+
     if (dto.label !== undefined) capability.label = dto.label.trim();
     if (dto.admin !== undefined) capability.matrix.admin = dto.admin;
     if (dto.manager !== undefined) capability.matrix.manager = dto.manager;
     if (isAdminOnlyCapability(capability.id)) capability.matrix.manager = false;
+    if (isManagerRequiredCapability(capability.id)) capability.matrix.manager = true;
 
     await this.persistPermissionsMatrix(matrix);
 

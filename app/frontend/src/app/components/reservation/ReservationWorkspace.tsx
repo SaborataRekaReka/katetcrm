@@ -134,7 +134,7 @@ const propertyLinkInlineClass =
   'inline-flex min-h-[20px] max-w-full items-center rounded px-1 text-[11px] text-blue-600 text-left truncate transition-colors hover:bg-gray-100 hover:underline disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline';
 
 export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, apiReservationId }: Props) {
-  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType, role } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const isApiDetail = USE_API && !!apiReservationId;
   const reservationQuery = useReservationQuery(apiReservationId, USE_API && !!apiReservationId);
   const mockReservation: Reservation = useMemo(() => buildMockReservation(lead), [lead]);
@@ -286,7 +286,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     !unitsQuery.isPending && !unitsQuery.isError && reservation.candidateUnits.length === 0;
   const subDirectoryEmpty =
     !subsQuery.isPending && !subsQuery.isError && reservation.subcontractorOptions.length === 0;
-  const createResourceDisabled = role !== 'admin' || !USE_API || !apiReservationId || updateResMutation.isPending;
+  const createResourceDisabled = !USE_API || !apiReservationId || updateResMutation.isPending;
 
   // Источник: если можно сохранять — берём актуальный с API (через reservation.source),
   // иначе управляем локально (для mock / kanban-контекста без apiReservationId).
