@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   FileText,
   Truck,
+  Package,
   Building2,
   HelpCircle,
   Wrench,
