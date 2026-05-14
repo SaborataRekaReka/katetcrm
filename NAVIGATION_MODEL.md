@@ -22,8 +22,8 @@ Canonical primary domains:
 
 1. `home`
 2. `sales`
-3. `clients`
-4. `ops`
+3. `ops`
+4. `clients`
 5. `catalogs`
 6. `control` (admin-only)
 7. `admin` (admin-only)
@@ -181,7 +181,7 @@ Examples:
 
 ### 8.2 Manager
 
-- Sees domains: `home`, `sales`, `clients`, `ops`, `catalogs`.
+- Sees domains: `home`, `sales`, `ops`, `clients`, `catalogs`.
 - Must not see admin-only sections in navigation UI.
 - Must not see Control or Admin primary domains.
 - Must not see Dashboard, Reports, Audit log, Bug reports, Imports, Integrations journal, Settings, Users, or Permissions.

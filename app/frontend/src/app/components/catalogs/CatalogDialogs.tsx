@@ -454,8 +454,11 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
   const { role } = useLayout();
   const canDelete = role === 'admin';
   const [form, setForm] = useState<UnitForm>(EMPTY_UNIT);
+  const [newTypeName, setNewTypeName] = useState('');
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [typeCreateError, setTypeCreateError] = useState<string | null>(null);
+  const createTypeMut = useCreateEquipmentType();
   const createMut = useCreateEquipmentUnit();
   const updateMut = useUpdateEquipmentUnit();
   const deleteMut = useDeleteEquipmentUnit();
@@ -477,8 +480,11 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
     } else {
       setForm({ ...EMPTY_UNIT, ...initialValues });
     }
+    setNewTypeName('');
     setTouched(false);
     setError(null);
+    setTypeCreateError(null);
+    createTypeMut.reset();
     createMut.reset();
     updateMut.reset();
     deleteMut.reset();
@@ -490,6 +496,8 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
 
   const nameValid = form.name.trim().length >= 1;
   const typeValid = form.equipmentTypeId.length > 0;
+  const inlineTypeName = newTypeName.trim();
+  const canCreateTypeInline = inlineTypeName.length >= 2 && !createTypeMut.isPending;
 
   const dirty = isEdit && unit
     ? form.name.trim() !== unit.name.trim()
@@ -524,6 +532,20 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
+    }
+  };
+
+  const createTypeInline = async () => {
+    if (!canCreateTypeInline) return;
+    setTypeCreateError(null);
+    try {
+      const createdType = await createTypeMut.mutateAsync({ name: inlineTypeName });
+      set('equipmentTypeId', createdType.id);
+      setTouched(true);
+      setNewTypeName('');
+      await typesQuery.refetch();
+    } catch (err) {
+      setTypeCreateError(err instanceof Error ? err.message : 'Не удалось создать тип техники');
     }
   };
 
@@ -633,13 +655,33 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
                       invalid={touched && !typeValid}
                       disabled={typesQuery.isLoading}
                     />
-                    {typesQuery.data && typesQuery.data.length === 0 ? (
-                      <div className="text-[10px] text-amber-700">
-                        Сначала добавьте тип техники в разделе «Типы техники», затем создайте единицу.
+                    <div className="rounded border border-gray-200 bg-gray-50/70 p-2 space-y-1.5">
+                      <div className="text-[10px] text-gray-600">Нет нужного типа? Добавьте его прямо здесь.</div>
+                      <div className="flex items-center gap-1.5">
+                        <FieldInput
+                          value={newTypeName}
+                          onChange={setNewTypeName}
+                          placeholder="Например: Мини-экскаватор"
+                          disabled={createTypeMut.isPending}
+                        />
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          className="h-7 px-2 text-[11px] shrink-0"
+                          onClick={() => {
+                            void createTypeInline();
+                          }}
+                          disabled={!canCreateTypeInline}
+                        >
+                          {createTypeMut.isPending ? 'Добавляем…' : 'Добавить'}
+                        </Button>
                       </div>
-                    ) : (
-                      <div className="text-[10px] text-gray-500">Поле обязательное для сохранения единицы техники.</div>
-                    )}
+                    </div>
+                    {typeCreateError ? (
+                      <div className="text-[10px] text-rose-700">{typeCreateError}</div>
+                    ) : null}
+                    <div className="text-[10px] text-gray-500">Поле обязательное для сохранения единицы техники.</div>
                   </div>
                 }
               />

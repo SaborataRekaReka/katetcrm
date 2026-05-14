@@ -136,26 +136,6 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
     ],
   },
   {
-    id: 'clients',
-    label: 'Клиенты',
-    icon: Users,
-    defaultSecondary: 'clients',
-    searchPlaceholder: 'Поиск по клиентам',
-    groups: [
-      {
-        id: 'clients-main',
-        title: 'Клиенты',
-        items: [
-          { id: 'clients', label: 'Все', icon: Users },
-          { id: 'clients-new', label: 'Новые', icon: Sparkles, iconClassName: 'text-sky-500' },
-          { id: 'clients-repeat', label: 'Повторные', icon: Copy, iconClassName: 'text-violet-500' },
-          { id: 'clients-vip', label: 'VIP', icon: Sparkles, iconClassName: 'text-amber-500' },
-          { id: 'clients-debt', label: 'С долгом', icon: AlertTriangle, iconClassName: 'text-rose-500' },
-        ],
-      },
-    ],
-  },
-  {
     id: 'ops',
     label: 'Операции',
     icon: Truck,
@@ -182,6 +162,26 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
       { id: 'view-departures-today', label: 'Выезды сегодня', icon: Truck, iconClassName: 'text-emerald-500' },
       { id: 'view-overdue-departures', label: 'Просроченные выезды', icon: Clock, iconClassName: 'text-orange-500' },
       { id: 'view-no-completion', label: 'Без завершения', icon: ClipboardList, iconClassName: 'text-slate-500' },
+    ],
+  },
+  {
+    id: 'clients',
+    label: 'Клиенты',
+    icon: Users,
+    defaultSecondary: 'clients',
+    searchPlaceholder: 'Поиск по клиентам',
+    groups: [
+      {
+        id: 'clients-main',
+        title: 'Клиенты',
+        items: [
+          { id: 'clients', label: 'Все', icon: Users },
+          { id: 'clients-new', label: 'Новые', icon: Sparkles, iconClassName: 'text-sky-500' },
+          { id: 'clients-repeat', label: 'Повторные', icon: Copy, iconClassName: 'text-violet-500' },
+          { id: 'clients-vip', label: 'VIP', icon: Sparkles, iconClassName: 'text-amber-500' },
+          { id: 'clients-debt', label: 'С долгом', icon: AlertTriangle, iconClassName: 'text-rose-500' },
+        ],
+      },
     ],
   },
   {
