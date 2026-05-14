@@ -794,9 +794,6 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
                     {typeCreateError ? (
                       <div className="text-[10px] text-rose-700">{typeCreateError}</div>
                     ) : null}
-                    <div className="text-[10px] text-gray-500">
-                      Если подсказок нет, введенный тип будет создан при сохранении.
-                    </div>
                   </div>
                 }
               />

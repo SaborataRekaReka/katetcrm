@@ -4,6 +4,7 @@ import request from 'supertest';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import {
   TEST_ADMIN,
+  TEST_MANAGER,
   ensureBaseUsers,
   loginByPassword,
 } from '../helpers/auth-fixtures';
@@ -56,7 +57,7 @@ function buildMangoConnectorBody(payload: Record<string, unknown>) {
   };
 }
 
-describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)', () => {
+describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 052)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
@@ -75,9 +76,15 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)'
     app = await createTestApp();
     prisma = app.get(PrismaService);
     await ensureBaseUsers(prisma);
+    await prisma.systemConfig.deleteMany({
+      where: { key: 'integrations.mango.call_routing.v1' },
+    });
   });
 
   afterAll(async () => {
+    await prisma.systemConfig.deleteMany({
+      where: { key: 'integrations.mango.call_routing.v1' },
+    });
     if (originalMangoSecret === undefined) {
       delete process.env.INTEGRATION_MANGO_SECRET;
     } else {
@@ -345,5 +352,156 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)'
     expect(lead).not.toBeNull();
     expect(lead?.source).toBe('mango');
     expect(lead?.contactPhone).toContain(phone.slice(-10));
+  });
+
+  it('APIC-040: protects and persists Mango call-routing settings (QA-REQ-052)', async () => {
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const managerLogin = await loginByPassword(app, TEST_MANAGER);
+    const manager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+
+    const settings = {
+      enabled: true,
+      updateResponsibleOnAnswered: true,
+      updateResponsibleOnTransfer: true,
+      assignMissedCalls: false,
+      fallbackManagerId: null,
+      rules: [
+        {
+          extension: '915',
+          userId: manager.id,
+          isActive: true,
+        },
+      ],
+    };
+
+    await request(app.getHttpServer())
+      .get('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .send(settings)
+      .expect(403);
+
+    const saved = await request(app.getHttpServer())
+      .post('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send(settings)
+      .expect(201);
+
+    expect(saved.body).toMatchObject(settings);
+
+    const fetched = await request(app.getHttpServer())
+      .get('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .expect(200);
+
+    expect(fetched.body).toMatchObject(settings);
+  });
+
+  it('APIC-041: routes inbound Mango calls to Lead and active Application manager (QA-REQ-052)', async () => {
+    const seed = uniqueSeed('041');
+    const phone = uniquePhone('041');
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const manager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({
+        enabled: true,
+        updateResponsibleOnAnswered: true,
+        updateResponsibleOnTransfer: true,
+        assignMissedCalls: false,
+        fallbackManagerId: null,
+        rules: [
+          {
+            extension: '115',
+            userId: manager.id,
+            isActive: true,
+          },
+        ],
+      })
+      .expect(201);
+
+    const leadResponse = await request(app.getHttpServer())
+      .post('/api/v1/leads')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({
+        contactName: 'QA Mango Routing Lead',
+        contactPhone: phone,
+      })
+      .expect(201);
+
+    const leadId = leadResponse.body.lead.id as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${leadId}/stage`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({ stage: 'application' })
+      .expect(201);
+
+    const activeApplication = await prisma.application.findFirstOrThrow({
+      where: { leadId, isActive: true },
+      select: { id: true, responsibleManagerId: true },
+    });
+    expect(activeApplication.responsibleManagerId).not.toBe(manager.id);
+
+    const payload = {
+      contactName: 'QA Mango Routing Lead',
+      call: {
+        callId: `mango-routing-apic-041-call-${seed}`,
+        direction: 'incoming',
+        from: phone,
+        to: '+74951234567',
+        operator_extension: '(115) QA Manager',
+        duration: 42,
+        status: 'answered',
+        eventTime: '2026-05-13T17:00:00.000Z',
+      },
+    } as Record<string, unknown>;
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildMangoIngestHeaders(payload))
+      .send({
+        channel: 'mango',
+        externalId: `MANGO-ROUTING-APIC-041-${seed}`,
+        payload,
+      })
+      .expect(201);
+
+    expect(response.body.processed).toBe(true);
+    expect(response.body.event.relatedLeadId).toBe(leadId);
+
+    const routedLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: leadId },
+      select: { managerId: true },
+    });
+    expect(routedLead.managerId).toBe(manager.id);
+
+    const routedApplication = await prisma.application.findUniqueOrThrow({
+      where: { id: activeApplication.id },
+      select: { responsibleManagerId: true },
+    });
+    expect(routedApplication.responsibleManagerId).toBe(manager.id);
+
+    const assignmentActivity = await prisma.activityLogEntry.findFirst({
+      where: {
+        entityType: 'application',
+        entityId: activeApplication.id,
+        action: 'updated',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(assignmentActivity?.summary).toContain('Mango');
   });
 });

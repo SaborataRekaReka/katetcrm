@@ -147,18 +147,6 @@ function extractTelephonyMetadata(payload: unknown): {
     'hangupReason',
     'hangup_reason',
   ]);
-  const recordingUrl = pickString(scopes, [
-    'recordingUrl',
-    'recording_url',
-    'recordUrl',
-    'record_url',
-    'recording',
-    'record',
-    'recordingLink',
-    'recordLink',
-    'talkRecordUrl',
-  ]);
-
   const details: string[] = [];
   if (direction) {
     details.push(`Направление: ${direction}`);
@@ -173,19 +161,102 @@ function extractTelephonyMetadata(payload: unknown): {
     details.push(`Статус: ${status}`);
   }
 
-  const links =
-    recordingUrl && isHttpUrl(recordingUrl)
-      ? [{ label: 'Запись разговора', href: recordingUrl }]
-      : undefined;
-
-  if (details.length === 0 && !links) {
+  if (details.length === 0) {
     return {};
   }
 
   return {
     details: details.length > 0 ? details : undefined,
-    links,
   };
+}
+
+const RECORDING_URL_KEYS = [
+  'recordingUrl',
+  'recording_url',
+  'recordUrl',
+  'record_url',
+  'recording',
+  'record',
+  'recordingLink',
+  'recordLink',
+  'talkRecordUrl',
+];
+
+export interface TelephonyRecording {
+  href: string;
+  summary: string;
+  time: string;
+  direction?: string;
+  from?: string;
+  to?: string;
+  duration?: string;
+  status?: string;
+}
+
+export function extractLatestTelephonyRecording(
+  entries: ActivityLogEntryApi[],
+): TelephonyRecording | undefined {
+  const sortedEntries = [...entries].sort(
+    (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
+  );
+
+  for (const entry of sortedEntries) {
+    const root = asRecord(entry.payload);
+    const telephony = asRecord(root?.telephony) ?? asRecord(root?.call);
+    if (!telephony) continue;
+
+    const scopes = [telephony, root];
+    const recordingUrl = pickString(scopes, RECORDING_URL_KEYS);
+    if (!recordingUrl || !isHttpUrl(recordingUrl)) continue;
+
+    const direction = formatCallDirection(
+      pickString(scopes, ['direction', 'callDirection', 'call_direction']),
+    );
+    const from = pickString(scopes, [
+      'from',
+      'fromNumber',
+      'caller',
+      'callerPhone',
+      'callerNumber',
+    ]);
+    const to = pickString(scopes, [
+      'to',
+      'toNumber',
+      'callee',
+      'calleePhone',
+      'calleeNumber',
+    ]);
+    const duration = formatCallDuration(
+      pickNumber(scopes, [
+        'durationSec',
+        'duration',
+        'durationSeconds',
+        'talkDuration',
+        'talkTime',
+        'billsec',
+      ]),
+    );
+    const status = pickString(scopes, [
+      'status',
+      'result',
+      'disposition',
+      'hangupReason',
+      'hangup_reason',
+    ]);
+
+    return {
+      href: recordingUrl,
+      summary: entry.summary?.trim() || 'Звонок Mango',
+      time: formatRelativeTime(entry.createdAt),
+      direction,
+      from,
+      to,
+      duration,
+      status,
+    };
+  }
+
+  return undefined;
 }
 
 export interface MappedActivityEntry {

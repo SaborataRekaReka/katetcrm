@@ -21,6 +21,7 @@ import { type ActorContext, LeadsService } from '../leads/leads.service';
 import {
   type IntegrationEventListQueryDto,
   type ReceiveIntegrationEventDto,
+  type UpdateMangoCallRoutingSettingsDto,
 } from './integrations.dto';
 
 type ProcessingMode = 'ingest' | 'retry' | 'replay';
@@ -45,6 +46,27 @@ interface NormalizedLeadPayload {
   comment?: string;
   isUrgent: boolean;
   call?: NormalizedCallContext;
+}
+
+export interface MangoCallRoutingRule {
+  extension: string;
+  userId: string;
+  isActive: boolean;
+}
+
+export interface MangoCallRoutingSettings {
+  enabled: boolean;
+  updateResponsibleOnAnswered: boolean;
+  updateResponsibleOnTransfer: boolean;
+  assignMissedCalls: boolean;
+  fallbackManagerId: string | null;
+  rules: MangoCallRoutingRule[];
+}
+
+interface MangoManagerAssignment {
+  managerId: string;
+  extension?: string;
+  reason: 'extension_match' | 'fallback';
 }
 
 type CallDirection = 'inbound' | 'outbound' | 'unknown';
@@ -98,6 +120,17 @@ const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
   max: 'max',
 };
 
+const MANGO_CALL_ROUTING_SETTINGS_KEY = 'integrations.mango.call_routing.v1';
+
+const DEFAULT_MANGO_CALL_ROUTING_SETTINGS: MangoCallRoutingSettings = {
+  enabled: true,
+  updateResponsibleOnAnswered: true,
+  updateResponsibleOnTransfer: true,
+  assignMissedCalls: false,
+  fallbackManagerId: null,
+  rules: [],
+};
+
 const TRANSIENT_PRISMA_CODES = new Set(['P1001', 'P1002', 'P1008', 'P1017']);
 
 const SENSITIVE_KEY_PARTS = [
@@ -133,6 +166,60 @@ export class IntegrationsService {
     private readonly activity: ActivityService,
     private readonly config: ConfigService,
   ) {}
+
+  async getMangoCallRoutingSettings(): Promise<MangoCallRoutingSettings> {
+    return this.readMangoCallRoutingSettings();
+  }
+
+  async updateMangoCallRoutingSettings(
+    dto: UpdateMangoCallRoutingSettingsDto,
+    actorId?: string,
+  ): Promise<MangoCallRoutingSettings> {
+    const previous = await this.readMangoCallRoutingSettings();
+    const next: MangoCallRoutingSettings = {
+      ...previous,
+      enabled: dto.enabled ?? previous.enabled,
+      updateResponsibleOnAnswered:
+        dto.updateResponsibleOnAnswered ?? previous.updateResponsibleOnAnswered,
+      updateResponsibleOnTransfer:
+        dto.updateResponsibleOnTransfer ?? previous.updateResponsibleOnTransfer,
+      assignMissedCalls: dto.assignMissedCalls ?? previous.assignMissedCalls,
+      fallbackManagerId:
+        dto.fallbackManagerId === undefined
+          ? previous.fallbackManagerId
+          : dto.fallbackManagerId?.trim() || null,
+      rules: dto.rules
+        ? this.normalizeMangoCallRoutingRules(dto.rules)
+        : previous.rules,
+    };
+
+    await this.assertMangoCallRoutingUsersExist(next);
+
+    await this.prisma.systemConfig.upsert({
+      where: { key: MANGO_CALL_ROUTING_SETTINGS_KEY },
+      create: {
+        key: MANGO_CALL_ROUTING_SETTINGS_KEY,
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+      update: {
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    await this.activity.log({
+      action: 'updated',
+      entityType: 'integration_settings',
+      entityId: MANGO_CALL_ROUTING_SETTINGS_KEY,
+      actorId: actorId ?? null,
+      summary: 'Обновлены правила распределения звонков Mango',
+      payload: {
+        before: previous,
+        after: next,
+      } as unknown as Prisma.InputJsonValue,
+    });
+
+    return next;
+  }
 
   async ingest(
     dto: ReceiveIntegrationEventDto,
@@ -368,7 +455,17 @@ export class IntegrationsService {
         event.payload,
         event.externalId,
       );
-      const leadResult = await this.upsertLeadFromEvent(event, normalizedPayload, actor);
+      const mangoManagerAssignment = await this.resolveMangoManagerAssignment(
+        event.channel,
+        event.payload,
+        normalizedPayload.call,
+      );
+      const leadResult = await this.upsertLeadFromEvent(
+        event,
+        normalizedPayload,
+        actor,
+        mangoManagerAssignment,
+      );
       const status: IntegrationEventStatus = mode === 'replay' ? 'replayed' : 'processed';
 
       const updated = await this.prisma.integrationEvent.update({
@@ -388,6 +485,13 @@ export class IntegrationsService {
         event,
         leadResult.leadId,
         normalizedPayload.call,
+        mangoManagerAssignment,
+      );
+
+      await this.applyMangoManagerAssignmentToActiveApplications(
+        event,
+        leadResult.leadId,
+        mangoManagerAssignment,
       );
 
       if (mode === 'retry' || mode === 'replay') {
@@ -462,6 +566,7 @@ export class IntegrationsService {
     event: IntegrationEvent,
     payload: NormalizedLeadPayload,
     actor: ActorContext,
+    managerAssignment?: MangoManagerAssignment,
   ): Promise<LeadUpsertResult> {
     const duplicates = await this.leads.findDuplicates(payload.contactPhone, payload.contactCompany);
     if (duplicates.length > 0) {
@@ -485,6 +590,7 @@ export class IntegrationsService {
           address: payload.address,
           comment,
           isUrgent: payload.isUrgent,
+          managerId: managerAssignment?.managerId,
         },
         actor,
       );
@@ -516,6 +622,7 @@ export class IntegrationsService {
         address: payload.address,
         comment,
         isUrgent: payload.isUrgent,
+        managerId: managerAssignment?.managerId,
       },
       actor,
     );
@@ -531,6 +638,118 @@ export class IntegrationsService {
     const event = await this.prisma.integrationEvent.findUnique({ where: { id } });
     if (!event) throw new NotFoundException('Интеграционное событие не найдено');
     return event;
+  }
+
+  private async readMangoCallRoutingSettings(): Promise<MangoCallRoutingSettings> {
+    const existing = await this.prisma.systemConfig.findUnique({
+      where: { key: MANGO_CALL_ROUTING_SETTINGS_KEY },
+      select: { payload: true },
+    });
+
+    if (!existing) {
+      return this.cloneMangoCallRoutingSettings(DEFAULT_MANGO_CALL_ROUTING_SETTINGS);
+    }
+
+    return this.normalizeMangoCallRoutingSettings(existing.payload);
+  }
+
+  private normalizeMangoCallRoutingSettings(payload: unknown): MangoCallRoutingSettings {
+    const root = this.asRecord(payload);
+    if (!root) {
+      return this.cloneMangoCallRoutingSettings(DEFAULT_MANGO_CALL_ROUTING_SETTINGS);
+    }
+
+    const fallback = DEFAULT_MANGO_CALL_ROUTING_SETTINGS;
+    return {
+      enabled: typeof root.enabled === 'boolean' ? root.enabled : fallback.enabled,
+      updateResponsibleOnAnswered:
+        typeof root.updateResponsibleOnAnswered === 'boolean'
+          ? root.updateResponsibleOnAnswered
+          : fallback.updateResponsibleOnAnswered,
+      updateResponsibleOnTransfer:
+        typeof root.updateResponsibleOnTransfer === 'boolean'
+          ? root.updateResponsibleOnTransfer
+          : fallback.updateResponsibleOnTransfer,
+      assignMissedCalls:
+        typeof root.assignMissedCalls === 'boolean'
+          ? root.assignMissedCalls
+          : fallback.assignMissedCalls,
+      fallbackManagerId:
+        typeof root.fallbackManagerId === 'string' && root.fallbackManagerId.trim()
+          ? root.fallbackManagerId.trim()
+          : null,
+      rules: this.normalizeMangoCallRoutingRules(
+        Array.isArray(root.rules) ? root.rules : fallback.rules,
+      ),
+    };
+  }
+
+  private normalizeMangoCallRoutingRules(
+    rules: Array<{ extension?: unknown; userId?: unknown; isActive?: unknown }>,
+  ): MangoCallRoutingRule[] {
+    const normalized: MangoCallRoutingRule[] = [];
+    const seen = new Set<string>();
+
+    for (const rule of rules) {
+      const extension = this.normalizeMangoExtension(rule.extension);
+      const userId = typeof rule.userId === 'string' ? rule.userId.trim() : '';
+      if (!extension || !userId) {
+        throw new BadRequestException('Укажите внутренний номер Mango и менеджера CRM.');
+      }
+      if (seen.has(extension)) {
+        throw new BadRequestException(`Внутренний номер Mango ${extension} указан несколько раз.`);
+      }
+      seen.add(extension);
+      normalized.push({
+        extension,
+        userId,
+        isActive: typeof rule.isActive === 'boolean' ? rule.isActive : true,
+      });
+    }
+
+    return normalized;
+  }
+
+  private normalizeMangoExtension(value: unknown): string | undefined {
+    if (value === null || value === undefined) return undefined;
+    const raw = String(value).trim();
+    if (!raw) return undefined;
+    const parenthesized = /\(([\d#*]{1,6})\)/.exec(raw);
+    if (parenthesized) return parenthesized[1];
+
+    const compact = raw.replace(/[^\d#*]/g, '');
+    if (/^[\d#*]{1,6}$/.test(compact)) return compact;
+
+    const firstShortNumber = /(?:^|\D)([\d#*]{1,6})(?:\D|$)/.exec(raw);
+    return firstShortNumber?.[1];
+  }
+
+  private cloneMangoCallRoutingSettings(
+    value: MangoCallRoutingSettings,
+  ): MangoCallRoutingSettings {
+    return JSON.parse(JSON.stringify(value)) as MangoCallRoutingSettings;
+  }
+
+  private async assertMangoCallRoutingUsersExist(settings: MangoCallRoutingSettings) {
+    const userIds = Array.from(new Set([
+      ...settings.rules.map((rule) => rule.userId),
+      ...(settings.fallbackManagerId ? [settings.fallbackManagerId] : []),
+    ]));
+    if (userIds.length === 0) return;
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+        role: 'manager',
+        isActive: true,
+      },
+      select: { id: true },
+    });
+    const existingIds = new Set(users.map((user) => user.id));
+    const missing = userIds.filter((userId) => !existingIds.has(userId));
+    if (missing.length > 0) {
+      throw new BadRequestException('В правилах Mango выбран неактивный или несуществующий менеджер.');
+    }
   }
 
   private async resolveSystemActor(): Promise<ActorContext> {
@@ -1103,10 +1322,130 @@ export class IntegrationsService {
     };
   }
 
+  private async resolveMangoManagerAssignment(
+    channel: IntegrationChannel,
+    payload: Prisma.JsonValue,
+    call: NormalizedCallContext | undefined,
+  ): Promise<MangoManagerAssignment | undefined> {
+    if (channel !== 'mango' || !call || call.direction !== 'inbound') return undefined;
+
+    const settings = await this.readMangoCallRoutingSettings();
+    if (!settings.enabled) return undefined;
+
+    const isTransfer = this.isMangoTransferPayload(payload);
+    const isMissed = this.isMangoMissedCall(payload, call);
+
+    if (isTransfer && !settings.updateResponsibleOnTransfer) return undefined;
+    if (isMissed && !settings.assignMissedCalls) return undefined;
+    if (!isTransfer && !isMissed && !settings.updateResponsibleOnAnswered) return undefined;
+
+    const activeRules = new Map(
+      settings.rules
+        .filter((rule) => rule.isActive)
+        .map((rule) => [rule.extension, rule]),
+    );
+    const extensions = this.collectMangoRoutingExtensions(payload);
+
+    for (const extension of extensions) {
+      const rule = activeRules.get(extension);
+      if (rule) {
+        return {
+          managerId: rule.userId,
+          extension,
+          reason: 'extension_match',
+        };
+      }
+    }
+
+    if (settings.fallbackManagerId) {
+      return {
+        managerId: settings.fallbackManagerId,
+        reason: 'fallback',
+      };
+    }
+
+    return undefined;
+  }
+
+  private collectMangoRoutingExtensions(payload: Prisma.JsonValue): string[] {
+    const root = this.asRecord(payload);
+    if (!root) return [];
+
+    const found = new Set<string>();
+    const visit = (value: unknown, key = '', depth = 0) => {
+      if (depth > 4) return;
+
+      const normalized = this.shouldTreatMangoKeyAsExtension(key)
+        ? this.normalizeMangoExtension(value)
+        : undefined;
+      if (normalized) {
+        found.add(normalized);
+      }
+
+      if (!value || typeof value !== 'object') return;
+      if (Array.isArray(value)) {
+        for (const item of value) visit(item, key, depth + 1);
+        return;
+      }
+
+      for (const [childKey, childValue] of Object.entries(value)) {
+        visit(childValue, childKey, depth + 1);
+      }
+    };
+
+    visit(root);
+    return Array.from(found);
+  }
+
+  private shouldTreatMangoKeyAsExtension(key: string): boolean {
+    const normalized = key.toLowerCase();
+    return (
+      normalized === 'ext' ||
+      normalized === 'number' ||
+      normalized.includes('extension') ||
+      normalized.includes('abonent') ||
+      normalized.includes('operator') ||
+      normalized.includes('employee') ||
+      normalized.includes('internal') ||
+      normalized.includes('manager') ||
+      normalized.includes('responsible')
+    );
+  }
+
+  private isMangoTransferPayload(payload: Prisma.JsonValue): boolean {
+    const root = this.asRecord(payload);
+    const connector = this.asRecord(root?._connector);
+    const value = this.pickString([connector, root], [
+      'eventType',
+      'event_type',
+      'type',
+      'call_state',
+      'callState',
+      'status',
+    ])?.toLowerCase();
+    return Boolean(value && /transfer|redirect|forward|перевод/.test(value));
+  }
+
+  private isMangoMissedCall(
+    payload: Prisma.JsonValue,
+    call: NormalizedCallContext,
+  ): boolean {
+    const root = this.asRecord(payload);
+    const value = [
+      call.status,
+      this.pickString([root], ['status', 'result', 'disposition', 'call_state', 'callState']),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+    return /miss|no[_\s-]?answer|unanswered|lost|пропущ|не\s*ответ/.test(value);
+  }
+
   private async logMangoCallActivity(
     event: IntegrationEvent,
     leadId: string,
     call: NormalizedCallContext | undefined,
+    managerAssignment?: MangoManagerAssignment,
   ): Promise<void> {
     if (event.channel !== 'mango' || !call) return;
 
@@ -1130,6 +1469,13 @@ export class IntegrationsService {
         endedAt: call.endedAt ?? null,
         recordingUrl: call.recordingUrl ?? null,
       },
+      managerAssignment: managerAssignment
+        ? {
+            managerId: managerAssignment.managerId,
+            extension: managerAssignment.extension ?? null,
+            reason: managerAssignment.reason,
+          }
+        : null,
     };
 
     await this.activity.log({
@@ -1159,6 +1505,62 @@ export class IntegrationsService {
         summary,
         actorId: null,
         payload,
+      });
+    }
+  }
+
+  private async applyMangoManagerAssignmentToActiveApplications(
+    event: IntegrationEvent,
+    leadId: string,
+    managerAssignment?: MangoManagerAssignment,
+  ): Promise<void> {
+    if (event.channel !== 'mango' || !managerAssignment) return;
+
+    const activeApplications = await this.prisma.application.findMany({
+      where: {
+        leadId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        responsibleManagerId: true,
+      },
+    });
+
+    for (const application of activeApplications) {
+      if (application.responsibleManagerId === managerAssignment.managerId) continue;
+
+      await this.prisma.application.update({
+        where: { id: application.id },
+        data: {
+          responsibleManagerId: managerAssignment.managerId,
+          lastActivityAt: new Date(),
+        },
+      });
+
+      await this.activity.log({
+        action: 'updated',
+        entityType: 'application',
+        entityId: application.id,
+        summary: 'Ответственный обновлен по звонку Mango',
+        actorId: null,
+        payload: {
+          integration: {
+            provider: 'mango',
+            eventId: event.id,
+            externalId: event.externalId,
+          },
+          before: {
+            responsibleManagerId: application.responsibleManagerId,
+          },
+          after: {
+            responsibleManagerId: managerAssignment.managerId,
+          },
+          managerAssignment: {
+            extension: managerAssignment.extension ?? null,
+            reason: managerAssignment.reason,
+          },
+        } as unknown as Prisma.InputJsonValue,
       });
     }
   }

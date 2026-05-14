@@ -379,10 +379,10 @@ Test priority: P0
 
 QA-REQ-037:
 Question: QA-Q-037. Where should Mango call recording metadata be visible?
-Answer: In activity timeline of linked Lead and active Application.
+Answer: In the right `Статус и мета` sidebar of linked Lead and active Application as a compact audio player when Mango sends a recording URL.
 Route surface: /leads detail, /applications detail
 Domain surface: Telephony context visibility across lead/application stages
-UI surface: Activity entry shows call details and recording link.
+UI surface: `Статус и мета` shows a mini player and external recording link; activity timeline keeps call details but does not render the recording link.
 State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`).
 Test priority: P1
 
@@ -447,6 +447,15 @@ Route surface: /api/v1/integrations/events/mango, /api/v1/integrations/events/ma
 Domain surface: Mango Office callback compatibility.
 UI surface: Successful call callbacks appear as processed Mango events in the integrations journal and create/update Leads.
 State/API/audit surface: Typed Mango event paths are normalized into `channel=mango` IntegrationEvent records using event identifiers for idempotency, and nested Mango call parties resolve to Lead phone and call context.
+Test priority: P1
+
+QA-REQ-052:
+Question: QA-Q-052. How should Mango Office call distribution assign CRM managers?
+Answer: Admin can configure Mango internal extension -> CRM manager rules in Admin -> Integrations. When an inbound Mango call payload contains a matching internal extension, CRM assigns that manager to the created/updated Lead and to the active Application for that Lead. Transfer and missed-call assignment obey the stored toggles.
+Route surface: /api/v1/integrations/mango/call-routing, /api/v1/integrations/events/mango, /admin/integrations
+Domain surface: Mango Office call routing -> Lead/Application responsible manager assignment
+UI surface: Admin integrations page shows a Mango call distribution block with extension-to-manager rows and toggles.
+State/API/audit surface: Rules are stored in SystemConfig, settings updates are audited, and successful Mango ingest applies matching `managerId`/`responsibleManagerId` without bypassing integration event idempotency.
 Test priority: P1
 
 ## 5. Open Questions

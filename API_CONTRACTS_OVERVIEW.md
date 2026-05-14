@@ -156,6 +156,8 @@ Contract expectations:
 - `GET /api/v1/integrations/events/:id`
 - `POST /api/v1/integrations/events/:id/retry`
 - `POST /api/v1/integrations/events/:id/replay`
+- `GET /api/v1/integrations/mango/call-routing`
+- `POST /api/v1/integrations/mango/call-routing`
 - `POST /api/v1/imports/preview`
 - `POST /api/v1/imports/run`
 - `GET /api/v1/imports/:id/report`
@@ -168,6 +170,7 @@ Contract expectations:
 4. `GET /imports/:id/report` provides error artifacts (`issues`, `errorReportCsv`) for failed-row diagnostics.
 5. Admin-only integration/import endpoints require both admin role and enabled capability toggle.
 6. Mango ingest events with call metadata create/update lead context and write `note_added` activity records for linked Lead and active Application entities.
+7. Mango call-routing settings are admin-only, stored in `SystemConfig`, and map internal Mango extensions to active CRM managers for inbound call assignment.
 
 ### 3.9 Users / Settings
 
@@ -247,6 +250,7 @@ Expectations:
 7. Mango connector callbacks rejected by auth or schema validation should still create a redacted `failed` IntegrationEvent when possible, so admins can diagnose missing leads from `/admin/integrations`.
 8. CRM accepts both the direct connector path `/api/v1/integrations/events/mango` and Mango-style typed event paths such as `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
 9. Mango call parties may be sent as flat phone fields or nested endpoint objects such as `from.number` and `to.number`; both forms must normalize to Lead phone and call activity context.
+10. Admin-only Mango call-routing endpoints store extension-to-manager rules used by ingest to assign `Lead.managerId` and active `Application.responsibleManagerId`.
 
 ## 7. Contract stability rules
 

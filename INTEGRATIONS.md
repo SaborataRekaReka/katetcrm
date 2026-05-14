@@ -97,6 +97,7 @@ For `channel=mango` call events:
 5. Mango Office API connector callbacks are accepted at `/api/v1/integrations/events/mango` as signed form fields `vpbx_api_key`, `sign`, and `json`.
 6. Auth or schema rejected Mango connector callbacks should be visible as redacted `failed` integration events when the request reaches the CRM endpoint.
 7. Mango Office typed event paths are accepted for call callbacks: `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
+8. Admin can configure internal Mango extension -> CRM manager routing rules from `/admin/integrations`; inbound call ingest applies matching rules to Lead and active Application responsibility while preserving IntegrationEvent idempotency.
 
 ## 9. Dedup strategy
 

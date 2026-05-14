@@ -8,6 +8,7 @@ import { RolesGuard } from '../../common/roles.guard';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import {
   IntegrationEventListQueryDto,
+  UpdateMangoCallRoutingSettingsDto,
   ReceiveIntegrationEventDto,
   RetryOrReplayIntegrationEventDto,
 } from './integrations.dto';
@@ -81,6 +82,25 @@ export class IntegrationsController {
   @Get('events/mango')
   checkMangoConnector() {
     return { ok: true, provider: 'mango' };
+  }
+
+  @Get('mango/call-routing')
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
+  @Roles('admin')
+  @Capabilities('admin.integrations')
+  getMangoCallRoutingSettings() {
+    return this.integrations.getMangoCallRoutingSettings();
+  }
+
+  @Post('mango/call-routing')
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
+  @Roles('admin')
+  @Capabilities('admin.integrations')
+  updateMangoCallRoutingSettings(
+    @Body() dto: UpdateMangoCallRoutingSettingsDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.integrations.updateMangoCallRoutingSettings(dto, user.sub);
   }
 
   @Get('events')

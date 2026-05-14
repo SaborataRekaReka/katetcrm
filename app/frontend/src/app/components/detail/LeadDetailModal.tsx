@@ -9,12 +9,14 @@ import {
   Clock,
   Copy,
   Edit3,
+  ExternalLink,
   FileText,
   HelpCircle,
   Link as LinkIcon,
   MapPin,
   Package,
   Phone,
+  PlayCircle,
   Truck,
   User as UserIcon,
   UserPlus,
@@ -57,7 +59,11 @@ import { useApplicationQuery, useApplicationsQuery } from '../../hooks/useApplic
 import { useReservationsQuery } from '../../hooks/useReservationsQuery';
 import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { useEntityActivity } from '../../hooks/useActivityQuery';
-import { mapActivityEntries } from '../../lib/activityMapper';
+import {
+  extractLatestTelephonyRecording,
+  mapActivityEntries,
+  type TelephonyRecording,
+} from '../../lib/activityMapper';
 import { toKanbanLead } from '../../lib/leadAdapter';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { USE_API } from '../../lib/featureFlags';
@@ -255,6 +261,46 @@ function resolveInitialReservationStage(sourcing: ApplicationPosition['sourcingT
     default:
       return 'needs_source_selection' as const;
   }
+}
+
+function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording }) {
+  if (!recording) return null;
+
+  const route = recording.from || recording.to
+    ? `${recording.from ?? '—'} -> ${recording.to ?? '—'}`
+    : undefined;
+  const metaParts = [recording.direction, recording.duration, recording.status].filter(Boolean);
+
+  return (
+    <div className="mt-2 min-w-0 overflow-hidden rounded-sm border border-blue-100 bg-blue-50/60 p-2">
+      <div className="flex min-w-0 items-center gap-1.5 text-[10px] font-medium uppercase tracking-wider text-blue-700">
+        <PlayCircle className="h-3 w-3 flex-shrink-0" />
+        <span className="truncate">Запись звонка</span>
+        <span className="ml-auto flex-shrink-0 text-blue-500 normal-case tracking-normal">{recording.time}</span>
+      </div>
+      <audio
+        controls
+        preload="none"
+        src={recording.href}
+        className="mt-2 block h-8 w-full min-w-0 max-w-full"
+        aria-label="Запись звонка"
+      />
+      <div className="mt-1 space-y-0.5 text-[10px] leading-snug text-gray-600">
+        <div className="truncate text-gray-700">{recording.summary}</div>
+        {route ? <div className="truncate">{route}</div> : null}
+        {metaParts.length > 0 ? <div className="truncate">{metaParts.join(' · ')}</div> : null}
+      </div>
+      <a
+        href={recording.href}
+        target="_blank"
+        rel="noreferrer noopener"
+        className="mt-1 inline-flex max-w-full items-center gap-1 text-[10px] text-blue-600 hover:text-blue-700 hover:underline"
+      >
+        <ExternalLink className="h-3 w-3 flex-shrink-0" />
+        <span className="truncate">Открыть запись</span>
+      </a>
+    </div>
+  );
 }
 
 function PositionCard({
@@ -1033,6 +1079,9 @@ export function LeadDetailModal({
         text: item.text,
         time: item.time,
       }));
+  const latestCallRecording = activityQuery.data
+    ? extractLatestTelephonyRecording(activityQuery.data)
+    : undefined;
 
   const main = (
     <EntityModalShell className="pb-10 space-y-6">
@@ -1529,6 +1578,7 @@ export function LeadDetailModal({
           <SidebarField label="Создан" value="21.04.2026" />
           <SidebarField label="Активность" value={lead!.lastActivity} />
           <SidebarField label="Менеджер" value={lead!.manager} />
+          <CallRecordingMiniPlayer recording={latestCallRecording} />
         </>
       ),
     },
@@ -1609,6 +1659,7 @@ export function LeadDetailModal({
           <SidebarField label="Номер" value={application!.number} />
           <SidebarField label="Обновлено" value={application!.lastActivity} />
           <SidebarField label="Менеджер" value={application!.responsibleManager} />
+          <CallRecordingMiniPlayer recording={latestCallRecording} />
         </>
       ),
     },

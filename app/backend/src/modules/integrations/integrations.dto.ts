@@ -1,6 +1,8 @@
 import { IntegrationChannel, IntegrationEventStatus } from '@prisma/client';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsBoolean,
   IsDateString,
   IsEnum,
   IsInt,
@@ -10,6 +12,7 @@ import {
   Max,
   MaxLength,
   Min,
+  ValidateNested,
 } from 'class-validator';
 
 export class ReceiveIntegrationEventDto {
@@ -71,4 +74,47 @@ export class RetryOrReplayIntegrationEventDto {
   @IsString()
   @MaxLength(500)
   reason?: string;
+}
+
+export class MangoCallRoutingRuleDto {
+  @IsString()
+  @MaxLength(32)
+  extension!: string;
+
+  @IsString()
+  @MaxLength(64)
+  userId!: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isActive?: boolean;
+}
+
+export class UpdateMangoCallRoutingSettingsDto {
+  @IsOptional()
+  @IsBoolean()
+  enabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  updateResponsibleOnAnswered?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  updateResponsibleOnTransfer?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  assignMissedCalls?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  fallbackManagerId?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => MangoCallRoutingRuleDto)
+  rules?: MangoCallRoutingRuleDto[];
 }

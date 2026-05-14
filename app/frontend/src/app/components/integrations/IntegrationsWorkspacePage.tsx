@@ -5,8 +5,12 @@ import {
   CheckCircle2,
   ExternalLink,
   Loader2,
+  PhoneCall,
+  Plus,
   RefreshCw,
   RotateCcw,
+  Save,
+  Trash2,
 } from 'lucide-react';
 import { ListScaffold } from '../shell/ListScaffold';
 import { SimpleToolbar } from '../shell/SimpleToolbar';
@@ -19,15 +23,19 @@ import { cn } from '../ui/utils';
 import {
   useIntegrationEventQuery,
   useIntegrationEventsQuery,
+  useMangoCallRoutingSettingsQuery,
 } from '../../hooks/useIntegrationsQuery';
 import {
+  useUpdateMangoCallRoutingSettings,
   useReplayIntegrationEvent,
   useRetryIntegrationEvent,
 } from '../../hooks/useIntegrationsMutations';
+import { useManagersQuery } from '../../hooks/useUsersQuery';
 import type {
   IntegrationChannel,
   IntegrationEventApi,
   IntegrationEventStatus,
+  MangoCallRoutingSettingsApi,
 } from '../../lib/integrationsApi';
 
 type PeriodFilter = 'all' | '24h' | '7d' | '30d';
@@ -120,6 +128,280 @@ function EmptyDetails() {
   return (
     <div className="flex h-full min-h-[320px] items-center justify-center px-4 text-center text-[12px] text-muted-foreground">
       Выберите событие из списка, чтобы посмотреть данные и выполнить повтор или повторную обработку.
+    </div>
+  );
+}
+
+const EMPTY_MANGO_CALL_ROUTING: MangoCallRoutingSettingsApi = {
+  enabled: true,
+  updateResponsibleOnAnswered: true,
+  updateResponsibleOnTransfer: true,
+  assignMissedCalls: false,
+  fallbackManagerId: null,
+  rules: [],
+};
+
+function MangoCallRoutingPanel() {
+  const managersQuery = useManagersQuery(true);
+  const settingsQuery = useMangoCallRoutingSettingsQuery(true);
+  const updateMutation = useUpdateMangoCallRoutingSettings();
+  const [draft, setDraft] = useState<MangoCallRoutingSettingsApi>(EMPTY_MANGO_CALL_ROUTING);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (settingsQuery.data) {
+      setDraft(settingsQuery.data);
+      setError(null);
+      setSuccess(null);
+    }
+  }, [settingsQuery.data]);
+
+  const managerOptions = managersQuery.data ?? [];
+  const serializedDraft = JSON.stringify(draft);
+  const serializedSource = JSON.stringify(settingsQuery.data ?? EMPTY_MANGO_CALL_ROUTING);
+  const dirty = serializedDraft !== serializedSource;
+  const busy = settingsQuery.isPending || managersQuery.isPending || updateMutation.isPending;
+
+  const updateRule = (
+    index: number,
+    patch: Partial<MangoCallRoutingSettingsApi['rules'][number]>,
+  ) => {
+    setDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.map((rule, ruleIndex) => (
+        ruleIndex === index ? { ...rule, ...patch } : rule
+      )),
+    }));
+  };
+
+  const addRule = () => {
+    setDraft((prev) => ({
+      ...prev,
+      rules: [
+        ...prev.rules,
+        {
+          extension: '',
+          userId: managerOptions[0]?.id ?? '',
+          isActive: true,
+        },
+      ],
+    }));
+  };
+
+  const removeRule = (index: number) => {
+    setDraft((prev) => ({
+      ...prev,
+      rules: prev.rules.filter((_, ruleIndex) => ruleIndex !== index),
+    }));
+  };
+
+  const save = async () => {
+    setError(null);
+    setSuccess(null);
+
+    const normalized: MangoCallRoutingSettingsApi = {
+      ...draft,
+      fallbackManagerId: draft.fallbackManagerId || null,
+      rules: draft.rules.map((rule) => ({
+        ...rule,
+        extension: rule.extension.trim(),
+        userId: rule.userId.trim(),
+      })),
+    };
+
+    if (normalized.rules.some((rule) => !rule.extension || !rule.userId)) {
+      setError('Укажите внутренний номер и менеджера во всех строках.');
+      return;
+    }
+
+    const duplicateExtension = normalized.rules.find((rule, index) => (
+      normalized.rules.findIndex((candidate) => candidate.extension === rule.extension) !== index
+    ));
+    if (duplicateExtension) {
+      setError(`Внутренний номер ${duplicateExtension.extension} указан несколько раз.`);
+      return;
+    }
+
+    try {
+      const saved = await updateMutation.mutateAsync(normalized);
+      setDraft(saved);
+      setSuccess('Правила распределения Mango сохранены.');
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Не удалось сохранить правила Mango.');
+    }
+  };
+
+  return (
+    <div className="border-b border-border/60 bg-white px-4 py-3">
+      <div className="mb-2 flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="inline-flex h-7 w-7 items-center justify-center rounded border border-emerald-200 bg-emerald-50 text-emerald-700">
+            <PhoneCall className="h-3.5 w-3.5" />
+          </span>
+          <div className="min-w-0">
+            <div className="text-[13px] font-medium text-foreground">Mango: распределение звонков</div>
+            <div className="text-[11px] text-muted-foreground">
+              Назначает ответственного по внутреннему номеру Mango при входящих звонках.
+            </div>
+          </div>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1 px-2 text-[11px]"
+            onClick={addRule}
+            disabled={busy || managerOptions.length === 0}
+          >
+            <Plus className="h-3.5 w-3.5" /> Добавить номер
+          </Button>
+          <Button
+            size="sm"
+            className="h-7 gap-1 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
+            onClick={() => { void save(); }}
+            disabled={busy || !dirty}
+          >
+            <Save className="h-3.5 w-3.5" /> {updateMutation.isPending ? 'Сохранение...' : 'Сохранить'}
+          </Button>
+        </div>
+      </div>
+
+      {settingsQuery.isError ? (
+        <div className="mb-2 rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+          {settingsQuery.error instanceof Error ? settingsQuery.error.message : 'Не удалось загрузить правила Mango.'}
+        </div>
+      ) : null}
+      {error ? (
+        <div className="mb-2 rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+          {error}
+        </div>
+      ) : null}
+      {success ? (
+        <div className="mb-2 rounded border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-700">
+          {success}
+        </div>
+      ) : null}
+
+      <div className="mb-2 grid gap-2 text-[11px] text-foreground sm:grid-cols-2 xl:grid-cols-4">
+        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
+          <input
+            type="checkbox"
+            checked={draft.enabled}
+            onChange={(event) => setDraft((prev) => ({ ...prev, enabled: event.target.checked }))}
+            disabled={busy}
+          />
+          <span>Правила включены</span>
+        </label>
+        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
+          <input
+            type="checkbox"
+            checked={draft.updateResponsibleOnAnswered}
+            onChange={(event) => setDraft((prev) => ({ ...prev, updateResponsibleOnAnswered: event.target.checked }))}
+            disabled={busy}
+          />
+          <span>Назначать при ответе</span>
+        </label>
+        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
+          <input
+            type="checkbox"
+            checked={draft.updateResponsibleOnTransfer}
+            onChange={(event) => setDraft((prev) => ({ ...prev, updateResponsibleOnTransfer: event.target.checked }))}
+            disabled={busy}
+          />
+          <span>Обновлять при переводе</span>
+        </label>
+        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
+          <input
+            type="checkbox"
+            checked={draft.assignMissedCalls}
+            onChange={(event) => setDraft((prev) => ({ ...prev, assignMissedCalls: event.target.checked }))}
+            disabled={busy}
+          />
+          <span>Назначать пропущенные</span>
+        </label>
+      </div>
+
+      <div className="mb-2 grid gap-2 text-[11px] md:grid-cols-[220px_1fr]">
+        <label className="flex items-center text-muted-foreground">Менеджер по умолчанию</label>
+        <select
+          value={draft.fallbackManagerId ?? ''}
+          onChange={(event) => setDraft((prev) => ({ ...prev, fallbackManagerId: event.target.value || null }))}
+          disabled={busy}
+          className="h-8 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none"
+        >
+          <option value="">Не назначать, если номер не найден</option>
+          {managerOptions.map((manager) => (
+            <option key={manager.id} value={manager.id}>{manager.fullName}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="overflow-x-auto rounded border border-border/60">
+        <table className="w-full min-w-[620px] border-collapse text-[11px]">
+          <thead className="bg-muted/30 text-muted-foreground">
+            <tr>
+              <th className="px-2 py-1.5 text-left font-medium">Внутренний номер Mango</th>
+              <th className="px-2 py-1.5 text-left font-medium">Менеджер CRM</th>
+              <th className="w-[96px] px-2 py-1.5 text-left font-medium">Активно</th>
+              <th className="w-10 px-2 py-1.5" />
+            </tr>
+          </thead>
+          <tbody>
+            {draft.rules.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="px-2 py-3 text-center text-muted-foreground">
+                  Добавьте внутренние номера Mango и сопоставьте их с менеджерами CRM.
+                </td>
+              </tr>
+            ) : draft.rules.map((rule, index) => (
+              <tr key={`${rule.extension}-${index}`} className="border-t border-border/50">
+                <td className="px-2 py-1.5">
+                  <input
+                    value={rule.extension}
+                    onChange={(event) => updateRule(index, { extension: event.target.value })}
+                    disabled={busy}
+                    placeholder="15"
+                    className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] outline-none"
+                  />
+                </td>
+                <td className="px-2 py-1.5">
+                  <select
+                    value={rule.userId}
+                    onChange={(event) => updateRule(index, { userId: event.target.value })}
+                    disabled={busy}
+                    className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] outline-none"
+                  >
+                    <option value="">Выберите менеджера</option>
+                    {managerOptions.map((manager) => (
+                      <option key={manager.id} value={manager.id}>{manager.fullName}</option>
+                    ))}
+                  </select>
+                </td>
+                <td className="px-2 py-1.5">
+                  <input
+                    type="checkbox"
+                    checked={rule.isActive}
+                    onChange={(event) => updateRule(index, { isActive: event.target.checked })}
+                    disabled={busy}
+                  />
+                </td>
+                <td className="px-2 py-1.5 text-right">
+                  <button
+                    type="button"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
+                    onClick={() => removeRule(index)}
+                    disabled={busy}
+                    aria-label="Удалить правило"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
@@ -275,8 +557,10 @@ export function IntegrationsWorkspacePage() {
 
   return (
     <ListScaffold toolbar={toolbar}>
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <div className="min-h-0 min-w-0 flex-1 overflow-auto border-b border-border/60 lg:border-b-0 lg:border-r">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <MangoCallRoutingPanel />
+        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+          <div className="min-h-0 min-w-0 flex-1 overflow-auto border-b border-border/60 lg:border-b-0 lg:border-r">
           {eventsQuery.isPending && !eventsQuery.data ? (
             <div className="flex h-full min-h-[320px] items-center justify-center gap-2 text-[13px] text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" /> Загрузка событий...
@@ -491,6 +775,7 @@ export function IntegrationsWorkspacePage() {
             </div>
           ) : null}
         </aside>
+      </div>
       </div>
     </ListScaffold>
   );

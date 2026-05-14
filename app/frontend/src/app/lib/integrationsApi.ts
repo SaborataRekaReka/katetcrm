@@ -51,6 +51,21 @@ export interface IntegrationActionResultApi {
   failure?: IntegrationFailureApi;
 }
 
+export interface MangoCallRoutingRuleApi {
+  extension: string;
+  userId: string;
+  isActive: boolean;
+}
+
+export interface MangoCallRoutingSettingsApi {
+  enabled: boolean;
+  updateResponsibleOnAnswered: boolean;
+  updateResponsibleOnTransfer: boolean;
+  assignMissedCalls: boolean;
+  fallbackManagerId: string | null;
+  rules: MangoCallRoutingRuleApi[];
+}
+
 export function listIntegrationEvents(params: IntegrationListParams = {}) {
   return apiRequest<{ items: IntegrationEventApi[]; total: number }>('integrations/events', {
     query: {
@@ -80,5 +95,16 @@ export function replayIntegrationEvent(id: string, reason?: string) {
   return apiRequest<IntegrationActionResultApi>(`integrations/events/${id}/replay`, {
     method: 'POST',
     body: reason ? { reason } : {},
+  });
+}
+
+export function getMangoCallRoutingSettings() {
+  return apiRequest<MangoCallRoutingSettingsApi>('integrations/mango/call-routing');
+}
+
+export function updateMangoCallRoutingSettings(body: MangoCallRoutingSettingsApi) {
+  return apiRequest<MangoCallRoutingSettingsApi>('integrations/mango/call-routing', {
+    method: 'POST',
+    body,
   });
 }
