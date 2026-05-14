@@ -494,6 +494,22 @@ UI surface: Header logo and accent controls use the brand palette consistently.
 State/API/audit surface: No API state impact.
 Test priority: P2
 
+QA-REQ-050:
+Question: QA-Q-050. What should happen when a Mango callback reaches CRM but fails auth or schema validation?
+Answer: Do not create or update a Lead, but write a redacted failed IntegrationEvent for admin diagnostics.
+Route surface: /api/v1/integrations/events/mango, /admin/integrations
+Domain surface: Integration observability without bypassing Mango webhook authentication.
+UI surface: Admin can see the failed Mango event and error reason in the integrations journal.
+State/API/audit surface: Rejected Mango connector callbacks persist status `failed`, error details, redacted payload metadata, and no `relatedLeadId` when possible.
+Test priority: P1
+
+QA-REQ-051:
+Question: QA-Q-051. Which Mango Office callback URL forms should CRM accept?
+Answer: CRM should accept the direct connector URL and Mango Office typed event URL forms for call callbacks.
+Route surface: /api/v1/integrations/events/mango, /api/v1/integrations/events/mango/events/call, /api/v1/integrations/events/call
+Domain surface: Mango Office callback compatibility.
+UI surface: Successful call callbacks appear as processed Mango events in the integrations journal and create/update Leads.
+State/API/audit surface: Typed Mango event paths are normalized into `channel=mango` IntegrationEvent records using event identifiers for idempotency.
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.

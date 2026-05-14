@@ -40,6 +40,44 @@ export class IntegrationsController {
     });
   }
 
+  @Post('events/mango/events/:eventType')
+  ingestMangoConnectorTypedEvent(
+    @Param('eventType') eventType: string,
+    @Body() payload: Record<string, unknown> = {},
+    @Headers('x-integration-signature') signature?: string,
+    @Headers('x-integration-timestamp') timestamp?: string,
+    @Headers('x-signature') altSignature?: string,
+    @Headers('x-timestamp') altTimestamp?: string,
+  ) {
+    return this.integrations.ingestMangoConnectorEvent(
+      payload,
+      {
+        signature: signature ?? altSignature,
+        timestamp: timestamp ?? altTimestamp,
+      },
+      eventType,
+    );
+  }
+
+  @Post('events/:eventType')
+  ingestMangoConnectorEventPath(
+    @Param('eventType') eventType: string,
+    @Body() payload: Record<string, unknown> = {},
+    @Headers('x-integration-signature') signature?: string,
+    @Headers('x-integration-timestamp') timestamp?: string,
+    @Headers('x-signature') altSignature?: string,
+    @Headers('x-timestamp') altTimestamp?: string,
+  ) {
+    return this.integrations.ingestMangoConnectorEvent(
+      payload,
+      {
+        signature: signature ?? altSignature,
+        timestamp: timestamp ?? altTimestamp,
+      },
+      eventType,
+    );
+  }
+
   @Get('events/mango')
   checkMangoConnector() {
     return { ok: true, provider: 'mango' };

@@ -100,7 +100,15 @@ const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
 
 const TRANSIENT_PRISMA_CODES = new Set(['P1001', 'P1002', 'P1008', 'P1017']);
 
-const SENSITIVE_KEY_PARTS = ['password', 'token', 'secret', 'authorization'];
+const SENSITIVE_KEY_PARTS = [
+  'password',
+  'token',
+  'secret',
+  'authorization',
+  'signature',
+  'sign',
+  'key',
+];
 
 const CHANNEL_SECRET_ENV_KEY: Record<
   IntegrationChannel,
@@ -161,20 +169,26 @@ export class IntegrationsService {
   async ingestMangoConnectorEvent(
     payload: Record<string, unknown>,
     auth: IngestAuthHeaders = {},
+    connectorEventType?: string,
   ): Promise<IntegrationIngestResult> {
-    const connector = this.unwrapMangoConnectorPayload(payload);
-    const externalId = this.extractMangoExternalId(connector.payload);
-    return this.ingest(
-      {
-        channel: 'mango',
-        externalId,
-        payload: connector.payload,
-      },
-      {
-        ...auth,
-        mangoConnector: connector.auth,
-      },
-    );
+    try {
+      const connector = this.unwrapMangoConnectorPayload(payload, connectorEventType);
+      const externalId = this.extractMangoExternalId(connector.payload);
+      return await this.ingest(
+        {
+          channel: 'mango',
+          externalId,
+          payload: connector.payload,
+        },
+        {
+          ...auth,
+          mangoConnector: connector.auth,
+        },
+      );
+    } catch (error) {
+      await this.recordFailedMangoConnectorAttempt(payload, error, connectorEventType);
+      throw error;
+    }
   }
 
   async list(params: IntegrationEventListQueryDto) {
@@ -696,13 +710,16 @@ export class IntegrationsService {
     return (this.config.get<string>(envKey) ?? '').trim();
   }
 
-  private unwrapMangoConnectorPayload(payload: Record<string, unknown>): {
+  private unwrapMangoConnectorPayload(
+    payload: Record<string, unknown>,
+    connectorEventType?: string,
+  ): {
     payload: Record<string, unknown>;
     auth?: MangoConnectorAuth;
   } {
     const rawJson = this.pickString([payload], ['json']);
     if (!rawJson) {
-      return { payload };
+      return { payload: this.withMangoConnectorMeta(payload, payload, connectorEventType) };
     }
 
     const parsed = this.parseMangoConnectorJson(rawJson);
@@ -710,11 +727,28 @@ export class IntegrationsService {
     const sign = this.pickString([payload], ['sign', 'signature']);
 
     return {
-      payload: parsed,
+      payload: this.withMangoConnectorMeta(parsed, payload, connectorEventType),
       auth: {
         apiKey,
         sign,
         rawJson,
+      },
+    };
+  }
+
+  private withMangoConnectorMeta(
+    parsedPayload: Record<string, unknown>,
+    formPayload: Record<string, unknown>,
+    connectorEventType?: string,
+  ): Record<string, unknown> {
+    const eventType = connectorEventType?.trim();
+    if (!eventType) return parsedPayload;
+
+    return {
+      ...parsedPayload,
+      _connector: {
+        eventType: this.limitText(eventType, 50),
+        formFields: Object.keys(formPayload).sort(),
       },
     };
   }
@@ -731,6 +765,100 @@ export class IntegrationsService {
       if (error instanceof BadRequestException) throw error;
       throw new BadRequestException('Invalid Mango connector json');
     }
+  }
+
+  private buildMangoConnectorDiagnosticPayload(
+    payload: Record<string, unknown>,
+    connectorEventType?: string,
+  ): Record<string, unknown> {
+    const rawJson = this.pickString([payload], ['json']);
+    const eventType = connectorEventType?.trim();
+    const connectorMeta = {
+      ...(eventType ? { eventType: this.limitText(eventType, 50) } : {}),
+      formFields: Object.keys(payload).sort(),
+      hasApiKey: Boolean(this.pickString([payload], ['vpbx_api_key', 'api_key', 'apiKey'])),
+      hasSign: Boolean(this.pickString([payload], ['sign', 'signature'])),
+      hasJson: Boolean(rawJson),
+      jsonParse: rawJson ? 'ok' : 'missing',
+    };
+
+    if (!rawJson) {
+      return {
+        _connector: connectorMeta,
+        raw: payload,
+      };
+    }
+
+    try {
+      return {
+        ...this.parseMangoConnectorJson(rawJson),
+        _connector: connectorMeta,
+      };
+    } catch {
+      return {
+        _connector: {
+          ...connectorMeta,
+          jsonParse: 'failed',
+        },
+        raw: payload,
+      };
+    }
+  }
+
+  private async recordFailedMangoConnectorAttempt(
+    payload: Record<string, unknown>,
+    error: unknown,
+    connectorEventType?: string,
+  ): Promise<void> {
+    const failure = this.classifyFailure(error);
+    const diagnosticPayload = this.buildMangoConnectorDiagnosticPayload(payload, connectorEventType);
+    const externalId = this.extractMangoExternalId(diagnosticPayload);
+    const idempotencyKey = this.computeIdempotencyKey('mango', externalId, diagnosticPayload);
+    const payloadSafe = this.redactPayload(diagnosticPayload);
+    const payloadSummary = this.buildPayloadSummary(payloadSafe);
+    const failedData = {
+      payload: payloadSafe as Prisma.InputJsonValue,
+      payloadSummary: payloadSummary as Prisma.InputJsonValue,
+      status: 'failed' as const,
+      errorCode: failure.errorCode,
+      errorClass: failure.errorClass,
+      errorMessage: failure.errorMessage,
+      processedAt: null,
+    };
+
+    try {
+      await this.prisma.integrationEvent.create({
+        data: {
+          channel: 'mango',
+          externalId: externalId ?? null,
+          correlationId: externalId ?? null,
+          idempotencyKey,
+          ...failedData,
+        },
+      });
+      return;
+    } catch (createError) {
+      if (!this.isIntegrationEventUniqueViolation(createError)) {
+        throw createError;
+      }
+    }
+
+    const existing = await this.prisma.integrationEvent.findFirst({
+      where: {
+        OR: [
+          { idempotencyKey },
+          ...(externalId ? [{ channel: 'mango' as const, externalId }] : []),
+        ],
+      },
+      select: { id: true },
+    });
+
+    if (!existing) return;
+
+    await this.prisma.integrationEvent.update({
+      where: { id: existing.id },
+      data: failedData,
+    });
   }
 
   private assertMangoConnectorAuth(auth: MangoConnectorAuth, secret: string) {
@@ -761,21 +889,21 @@ export class IntegrationsService {
     const call = this.asRecord(root?.call);
     const scopes = [root, call];
     const externalId = this.pickString(scopes, [
-      'callId',
-      'call_id',
-      'sessionId',
-      'session_id',
       'entryId',
       'entry_id',
       'eventId',
       'event_id',
       'recordId',
       'record_id',
-      'sipCallId',
-      'sip_call_id',
       'uuid',
       'requestId',
       'request_id',
+      'callId',
+      'call_id',
+      'sessionId',
+      'session_id',
+      'sipCallId',
+      'sip_call_id',
     ]);
     return externalId ? this.limitText(externalId, 255) : undefined;
   }
@@ -1372,6 +1500,20 @@ export class IntegrationsService {
     const target = (error.meta as Record<string, unknown> | undefined)?.target;
     const targetStr = Array.isArray(target) ? target.join(',') : String(target ?? '');
     return targetStr.includes('idempotency_key') || targetStr.includes('idempotencyKey');
+  }
+
+  private isIntegrationEventUniqueViolation(error: unknown): boolean {
+    if (!(error instanceof Prisma.PrismaClientKnownRequestError)) return false;
+    if (error.code !== 'P2002') return false;
+
+    const target = (error.meta as Record<string, unknown> | undefined)?.target;
+    const targetStr = Array.isArray(target) ? target.join(',') : String(target ?? '');
+    return (
+      targetStr.includes('idempotency_key') ||
+      targetStr.includes('idempotencyKey') ||
+      targetStr.includes('external_id') ||
+      targetStr.includes('externalId')
+    );
   }
 
   private pickString(

@@ -259,6 +259,8 @@ Expectations:
 4. Clear lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
 5. Mango call payloads normalize telephony context (`direction`, `from`/`to`, `duration`, optional `recordingUrl`) for operator-visible activity timeline.
 6. Mango Office API connector callbacks may arrive as signed form fields `vpbx_api_key`, `sign`, `json`; signature is `sha256(vpbx_api_key + json + INTEGRATION_MANGO_SECRET)`.
+7. Mango connector callbacks rejected by auth or schema validation should still create a redacted `failed` IntegrationEvent when possible, so admins can diagnose missing leads from `/admin/integrations`.
+8. CRM accepts both the direct connector path `/api/v1/integrations/events/mango` and Mango-style typed event paths such as `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
 
 ## 7. Contract stability rules
 

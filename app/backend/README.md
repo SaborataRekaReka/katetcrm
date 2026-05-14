@@ -180,7 +180,9 @@ npm run backfill:client-contacts
 - `INTEGRATION_MAX_SECRET`
 
 Для Mango Office API коннектора также поддерживается штатный form callback на
-`POST /api/v1/integrations/events/mango`:
+`POST /api/v1/integrations/events/mango`, а также typed event paths
+`POST /api/v1/integrations/events/mango/events/call` и
+`POST /api/v1/integrations/events/call`:
 
 - `vpbx_api_key`
 - `sign`

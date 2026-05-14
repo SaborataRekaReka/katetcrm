@@ -7,7 +7,7 @@ import {
   ensureBaseUsers,
   loginByPassword,
 } from '../helpers/auth-fixtures';
-import { authHeader, uniquePhone } from '../helpers/domain-fixtures';
+import { authHeader, uniquePhone, uniqueSeed } from '../helpers/domain-fixtures';
 import { closeTestApp, createTestApp } from '../helpers/test-app';
 
 function stableSerialize(value: unknown): string {
@@ -56,7 +56,7 @@ function buildMangoConnectorBody(payload: Record<string, unknown>) {
   };
 }
 
-describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
+describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
@@ -92,13 +92,15 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
   });
 
   it('APIC-036: ingest call creates/updates lead and logs recording activity for lead/application', async () => {
+    const seed = uniqueSeed('036');
     const phone = uniquePhone('036');
 
     const firstPayload = {
       contactName: 'QA Mango APIC 036',
-      contactCompany: 'QA APIC 036 LLC',
+      contactCompany: `QA APIC 036 ${seed} LLC`,
+      address: 'Moscow, APIC 036 test site',
       call: {
-        callId: 'mango-apic-036-call-1',
+        callId: `mango-apic-036-call-1-${seed}`,
         direction: 'incoming',
         from: phone,
         to: '+74951234567',
@@ -116,7 +118,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
       .set(firstHeaders)
       .send({
         channel: 'mango',
-        externalId: 'MANGO-APIC-036-1',
+        externalId: `MANGO-APIC-036-1-${seed}`,
         payload: firstPayload,
       })
       .expect(201);
@@ -125,7 +127,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     expect(firstIngest.body.processed).toBe(true);
     expect(firstIngest.body.event).toMatchObject({
       channel: 'mango',
-      externalId: 'MANGO-APIC-036-1',
+      externalId: `MANGO-APIC-036-1-${seed}`,
       status: 'processed',
       relatedLeadId: expect.any(String),
     });
@@ -135,7 +137,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     expect(lead).not.toBeNull();
     expect(lead?.source).toBe('mango');
     expect(lead?.contactPhone).toContain(phone.slice(-10));
-    expect(lead?.comment).toContain('[integration:mango#MANGO-APIC-036-1]');
+    expect(lead?.comment).toContain(`[integration:mango#MANGO-APIC-036-1-${seed}]`);
     expect(lead?.comment).toContain('https://records.mango.test/apic036-call-1.mp3');
 
     const leadCallActivity = await prisma.activityLogEntry.findFirst({
@@ -185,7 +187,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     const secondPayload = {
       contactName: 'QA Mango APIC 036',
       call: {
-        callId: 'mango-apic-036-call-2',
+        callId: `mango-apic-036-call-2-${seed}`,
         direction: 'outgoing',
         from: '+74951234567',
         to: phone,
@@ -202,7 +204,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
       .set(secondHeaders)
       .send({
         channel: 'mango',
-        externalId: 'MANGO-APIC-036-2',
+        externalId: `MANGO-APIC-036-2-${seed}`,
         payload: secondPayload,
       })
       .expect(201);
@@ -234,10 +236,11 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
   });
 
   it('APIC-037: accepts Mango Office API connector signed form callback', async () => {
+    const seed = uniqueSeed('037');
     const phone = uniquePhone('037');
     const payload = {
-      entry_id: 'mango-connector-apic-037-entry-1',
-      call_id: 'mango-connector-apic-037-call-1',
+      entry_id: `mango-connector-apic-037-entry-1-${seed}`,
+      call_id: `mango-connector-apic-037-call-1-${seed}`,
       call_direction: 'incoming',
       from_number: phone,
       to_number: '+74951234567',
@@ -255,7 +258,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     expect(response.body.processed).toBe(true);
     expect(response.body.event).toMatchObject({
       channel: 'mango',
-      externalId: 'mango-connector-apic-037-entry-1',
+      externalId: `mango-connector-apic-037-entry-1-${seed}`,
       status: 'processed',
       relatedLeadId: expect.any(String),
     });
@@ -267,5 +270,72 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     expect(lead).not.toBeNull();
     expect(lead?.source).toBe('mango');
     expect(lead?.contactPhone).toContain(phone.slice(-10));
+  });
+
+  it('APIC-038: records rejected Mango connector callbacks for admin diagnostics (QA-REQ-050)', async () => {
+    const seed = uniqueSeed('038');
+    const phone = uniquePhone('038');
+    const payload = {
+      entry_id: `mango-connector-apic-038-entry-1-${seed}`,
+      call_id: `mango-connector-apic-038-call-1-${seed}`,
+      call_direction: 'incoming',
+      from_number: phone,
+      to_number: '+74951234567',
+      duration: 18,
+      call_state: 'connected',
+      create_time: '2026-05-13T15:00:00.000Z',
+    } as Record<string, unknown>;
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango')
+      .type('form')
+      .send({
+        vpbx_api_key: process.env.INTEGRATION_MANGO_API_KEY ?? 'qa-test-mango-api-key',
+        sign: '0'.repeat(64),
+        json: JSON.stringify(payload),
+      })
+      .expect(403);
+
+    const event = await prisma.integrationEvent.findFirst({
+      where: {
+        channel: 'mango',
+        externalId: `mango-connector-apic-038-entry-1-${seed}`,
+      },
+      orderBy: { receivedAt: 'desc' },
+    });
+
+    expect(event).not.toBeNull();
+    expect(event?.status).toBe('failed');
+    expect(event?.relatedLeadId).toBeNull();
+    expect(event?.errorMessage).toBe('Invalid Mango connector signature');
+  });
+
+  it('APIC-039: accepts Mango Office typed call event path (QA-REQ-051)', async () => {
+    const seed = uniqueSeed('039');
+    const phone = uniquePhone('039');
+    const payload = {
+      entry_id: `mango-connector-apic-039-entry-1-${seed}`,
+      call_id: `mango-connector-apic-039-call-1-${seed}`,
+      call_direction: 'incoming',
+      from_number: phone,
+      to_number: '+74951234567',
+      duration: 25,
+      call_state: 'connected',
+      create_time: '2026-05-13T16:00:00.000Z',
+    } as Record<string, unknown>;
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango/events/call')
+      .type('form')
+      .send(buildMangoConnectorBody(payload))
+      .expect(201);
+
+    expect(response.body.processed).toBe(true);
+    expect(response.body.event).toMatchObject({
+      channel: 'mango',
+      externalId: `mango-connector-apic-039-entry-1-${seed}`,
+      status: 'processed',
+      relatedLeadId: expect.any(String),
+    });
   });
 });
