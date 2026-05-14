@@ -21,7 +21,9 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Check,
   Building2,
+  ChevronsUpDown,
   FileText,
   FolderTree,
   Info,
@@ -65,6 +67,7 @@ import {
   useEquipmentCategoriesQuery,
   useEquipmentTypesQuery,
 } from '../../hooks/useDirectoriesQuery';
+import { cn } from '../../lib/utils';
 import type {
   EquipmentCategoryApi,
   EquipmentTypeApi,
@@ -454,7 +457,8 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
   const { role } = useLayout();
   const canDelete = role === 'admin';
   const [form, setForm] = useState<UnitForm>(EMPTY_UNIT);
-  const [newTypeName, setNewTypeName] = useState('');
+  const [typeQuery, setTypeQuery] = useState('');
+  const [isTypeMenuOpen, setIsTypeMenuOpen] = useState(false);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [typeCreateError, setTypeCreateError] = useState<string | null>(null);
@@ -480,7 +484,8 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
     } else {
       setForm({ ...EMPTY_UNIT, ...initialValues });
     }
-    setNewTypeName('');
+    setTypeQuery(unit?.equipmentType?.name ?? '');
+    setIsTypeMenuOpen(false);
     setTouched(false);
     setError(null);
     setTypeCreateError(null);
@@ -491,13 +496,38 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, unit?.id, initialValues?.name, initialValues?.equipmentTypeId, initialValues?.notes]);
 
+  useEffect(() => {
+    if (!open) return;
+    if (!form.equipmentTypeId) return;
+    const selectedType = (typesQuery.data ?? []).find((t) => t.id === form.equipmentTypeId);
+    if (!selectedType) return;
+    const normalizedCurrent = typeQuery.trim().toLowerCase();
+    const normalizedSelected = selectedType.name.trim().toLowerCase();
+    if (!normalizedCurrent || normalizedCurrent === normalizedSelected) {
+      setTypeQuery(selectedType.name);
+    }
+  }, [open, form.equipmentTypeId, typeQuery, typesQuery.data]);
+
   const set = <K extends keyof UnitForm>(k: K, v: UnitForm[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
 
+  const normalizedTypeQuery = typeQuery.trim().toLowerCase();
+  const matchingTypes = useMemo(() => {
+    const rows = typesQuery.data ?? [];
+    if (!normalizedTypeQuery) return rows;
+    return rows.filter((type) =>
+      type.name.toLowerCase().includes(normalizedTypeQuery),
+    );
+  }, [normalizedTypeQuery, typesQuery.data]);
+  const visibleTypeOptions = useMemo(
+    () => matchingTypes.slice(0, 8),
+    [matchingTypes],
+  );
+  const canCreateTypeOnSubmit =
+    normalizedTypeQuery.length >= 2 && matchingTypes.length === 0;
+
   const nameValid = form.name.trim().length >= 1;
-  const typeValid = form.equipmentTypeId.length > 0;
-  const inlineTypeName = newTypeName.trim();
-  const canCreateTypeInline = inlineTypeName.length >= 2 && !createTypeMut.isPending;
+  const typeValid = form.equipmentTypeId.length > 0 || canCreateTypeOnSubmit;
 
   const dirty = isEdit && unit
     ? form.name.trim() !== unit.name.trim()
@@ -506,17 +536,77 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
       || form.plateNumber !== (unit.plateNumber ?? '')
       || form.notes !== (unit.notes ?? '')
       || form.status !== unit.status
-    : nameValid || typeValid || form.year !== '' || form.plateNumber !== ''
+    : nameValid || typeQuery.trim().length > 0 || form.year !== '' || form.plateNumber !== ''
       || form.notes !== '' || form.status !== 'active';
-  const canSave = nameValid && typeValid && dirty && !mut.isPending;
+  const canSave =
+    nameValid
+    && typeValid
+    && dirty
+    && !mut.isPending
+    && !createTypeMut.isPending;
+
+  const handleTypeQueryChange = (value: string) => {
+    setTypeQuery(value);
+    setTypeCreateError(null);
+    setTouched(true);
+    setIsTypeMenuOpen(true);
+
+    const normalized = value.trim().toLowerCase();
+    if (!normalized) {
+      set('equipmentTypeId', '');
+      return;
+    }
+
+    const exactMatch = (typesQuery.data ?? []).find(
+      (type) => type.name.trim().toLowerCase() === normalized,
+    );
+    set('equipmentTypeId', exactMatch?.id ?? '');
+  };
+
+  const selectTypeOption = (type: EquipmentTypeApi) => {
+    set('equipmentTypeId', type.id);
+    setTypeQuery(type.name);
+    setTouched(true);
+    setTypeCreateError(null);
+    setIsTypeMenuOpen(false);
+  };
 
   const submit = async () => {
     setTouched(true);
     if (!canSave) return;
     setError(null);
+    setTypeCreateError(null);
+
+    let equipmentTypeId = form.equipmentTypeId;
+    const typedTypeName = typeQuery.trim();
+
+    if (!equipmentTypeId) {
+      const exactMatch = (typesQuery.data ?? []).find(
+        (type) => type.name.trim().toLowerCase() === typedTypeName.toLowerCase(),
+      );
+
+      if (exactMatch) {
+        equipmentTypeId = exactMatch.id;
+      } else if (typedTypeName.length >= 2 && matchingTypes.length === 0) {
+        try {
+          const createdType = await createTypeMut.mutateAsync({ name: typedTypeName });
+          equipmentTypeId = createdType.id;
+          set('equipmentTypeId', createdType.id);
+          setTypeQuery(createdType.name);
+          await typesQuery.refetch();
+        } catch (err) {
+          setTypeCreateError(err instanceof Error ? err.message : 'Не удалось создать тип техники');
+          return;
+        }
+      } else {
+        setTypeCreateError('Выберите тип из подсказок или уточните название.');
+        return;
+      }
+    }
+
     const body: Record<string, unknown> = {
       name: form.name.trim(),
-      equipmentTypeId: form.equipmentTypeId,
+      equipmentTypeId,
       status: form.status,
     };
     if (form.year && Number.isFinite(Number(form.year))) body.year = Number(form.year);
@@ -532,20 +622,6 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
       onOpenChange(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Не удалось сохранить');
-    }
-  };
-
-  const createTypeInline = async () => {
-    if (!canCreateTypeInline) return;
-    setTypeCreateError(null);
-    try {
-      const createdType = await createTypeMut.mutateAsync({ name: inlineTypeName });
-      set('equipmentTypeId', createdType.id);
-      setTouched(true);
-      setNewTypeName('');
-      await typesQuery.refetch();
-    } catch (err) {
-      setTypeCreateError(err instanceof Error ? err.message : 'Не удалось создать тип техники');
     }
   };
 
@@ -575,15 +651,6 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
       setError(err instanceof Error ? err.message : 'Не удалось удалить единицу техники');
     }
   };
-
-  const typeOptions = useMemo(
-    () =>
-      (typesQuery.data ?? []).map((t) => ({
-        value: t.id,
-        label: t.category ? `${t.name} · ${t.category.name}` : t.name,
-      })),
-    [typesQuery.data],
-  );
 
   const currentType = typesQuery.data?.find((t) => t.id === form.equipmentTypeId);
   const categoryLabel =
@@ -644,44 +711,92 @@ export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated 
                 label="Тип техники *"
                 value={
                   <div className="space-y-1">
-                    <FieldSelect
-                      value={form.equipmentTypeId}
-                      onChange={(v) => {
-                        set('equipmentTypeId', v);
-                        setTouched(true);
-                      }}
-                      options={typeOptions}
-                      placeholder="Выберите тип"
-                      invalid={touched && !typeValid}
-                      disabled={typesQuery.isLoading}
-                    />
-                    <div className="rounded border border-gray-200 bg-gray-50/70 p-2 space-y-1.5">
-                      <div className="text-[10px] text-gray-600">Нет нужного типа? Добавьте его прямо здесь.</div>
-                      <div className="flex items-center gap-1.5">
-                        <FieldInput
-                          value={newTypeName}
-                          onChange={setNewTypeName}
-                          placeholder="Например: Мини-экскаватор"
-                          disabled={createTypeMut.isPending}
-                        />
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          className="h-7 px-2 text-[11px] shrink-0"
-                          onClick={() => {
-                            void createTypeInline();
-                          }}
-                          disabled={!canCreateTypeInline}
-                        >
-                          {createTypeMut.isPending ? 'Добавляем…' : 'Добавить'}
-                        </Button>
-                      </div>
+                    <div className="relative">
+                      <input
+                        value={typeQuery}
+                        onChange={(event) => {
+                          handleTypeQueryChange(event.target.value);
+                        }}
+                        onFocus={() => {
+                          setIsTypeMenuOpen(true);
+                        }}
+                        onBlur={() => {
+                          window.setTimeout(() => {
+                            setIsTypeMenuOpen(false);
+                          }, 120);
+                        }}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' && visibleTypeOptions.length > 0) {
+                            event.preventDefault();
+                            selectTypeOption(visibleTypeOptions[0]);
+                          }
+                        }}
+                        placeholder="Начните вводить тип техники"
+                        disabled={createTypeMut.isPending}
+                        className={cn(
+                          'w-full h-6 min-h-6 rounded px-1.5 pr-7 text-[11px] leading-5 bg-transparent outline-none transition-colors border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white',
+                          touched && !typeValid && 'border-rose-300 bg-rose-50/40',
+                          createTypeMut.isPending && 'opacity-60 cursor-not-allowed',
+                        )}
+                      />
+                      <button
+                        type="button"
+                        aria-label="Открыть список типов техники"
+                        className="absolute inset-y-0 right-0 inline-flex items-center pr-1 text-gray-400 hover:text-gray-600"
+                        onMouseDown={(event) => {
+                          event.preventDefault();
+                          setIsTypeMenuOpen((prev) => !prev);
+                        }}
+                      >
+                        <ChevronsUpDown className="h-3 w-3" />
+                      </button>
+
+                      {isTypeMenuOpen ? (
+                        <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-md border border-gray-200 bg-white shadow-md">
+                          {typesQuery.isLoading ? (
+                            <div className="px-2 py-1.5 text-[11px] text-gray-500">Загружаем типы...</div>
+                          ) : visibleTypeOptions.length > 0 ? (
+                            <div className="max-h-48 overflow-auto py-1">
+                              {visibleTypeOptions.map((type) => {
+                                const optionLabel = type.category
+                                  ? `${type.name} · ${type.category.name}`
+                                  : type.name;
+                                return (
+                                  <button
+                                    key={type.id}
+                                    type="button"
+                                    className="flex w-full items-center gap-2 px-2 py-1.5 text-left text-[11px] hover:bg-gray-50"
+                                    onMouseDown={(event) => {
+                                      event.preventDefault();
+                                      selectTypeOption(type);
+                                    }}
+                                  >
+                                    <span className="truncate">{optionLabel}</span>
+                                    {form.equipmentTypeId === type.id ? (
+                                      <Check className="ml-auto h-3 w-3 text-blue-600" />
+                                    ) : null}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          ) : typeQuery.trim().length >= 2 ? (
+                            <div className="px-2 py-1.5 text-[11px] text-gray-500">
+                              Новый тип «{typeQuery.trim()}» будет создан при сохранении.
+                            </div>
+                          ) : (
+                            <div className="px-2 py-1.5 text-[11px] text-gray-500">
+                              Начните вводить, чтобы увидеть подсказки.
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
                     </div>
                     {typeCreateError ? (
                       <div className="text-[10px] text-rose-700">{typeCreateError}</div>
                     ) : null}
-                    <div className="text-[10px] text-gray-500">Поле обязательное для сохранения единицы техники.</div>
+                    <div className="text-[10px] text-gray-500">
+                      Если подсказок нет, введенный тип будет создан при сохранении.
+                    </div>
                   </div>
                 }
               />
