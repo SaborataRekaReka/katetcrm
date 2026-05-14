@@ -1,0 +1,64 @@
+{
+  "summary": {
+    "loops": 7,
+    "attempted": 2105,
+    "deleted": 1857,
+    "failed": 248,
+    "remainingNow": 0,
+    "reason": "reset-clean-slate-2026-05-15"
+  },
+  "phases": [
+    {
+      "name": "node_api_initial_pass",
+      "loops": 2,
+      "attempted": 500,
+      "deleted": 252,
+      "failed": 248,
+      "sampleErrors": [
+        {
+          "id": "cmp5xnos30q60kbncwqjuvx3j",
+          "error": {
+            "message": "400 Bad Request"
+          }
+        },
+        {
+          "id": "cmp5xnos80q64kbncikyg50vw",
+          "error": {
+            "message": "400 Bad Request"
+          }
+        },
+        {
+          "id": "cmp5xnosd0q68kbncom18v1zl",
+          "error": {
+            "message": "400 Bad Request"
+          }
+        },
+        {
+          "id": "cmp5xnorw0q5wkbnc77vxtnpt",
+          "error": {
+            "message": "400 Bad Request"
+          }
+        },
+        {
+          "id": "cmp5xnnxe0prqkbncuorgeps7",
+          "error": {
+            "message": "400 Bad Request"
+          }
+        }
+      ]
+    },
+    {
+      "name": "browser_fetch_recovery_pass",
+      "loops": 5,
+      "attempted": 1605,
+      "deleted": 1605,
+      "failed": 0,
+      "sampleErrors": []
+    }
+  ],
+  "finalVerification": {
+    "endpoint": "GET /api/v1/leads?scope=all",
+    "status": 200,
+    "items": 0
+  }
+}

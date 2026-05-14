@@ -240,7 +240,7 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
         id: 'admin-main',
         items: [
           { id: 'imports', label: 'Импорт', icon: Upload },
-          { id: 'integrations', label: 'Журнал событий', icon: Activity },
+          { id: 'integrations', label: 'Интеграции', icon: Activity },
           { id: 'settings', label: 'Настройки', icon: Settings },
           { id: 'users', label: 'Пользователи', icon: UserCog },
           { id: 'permissions', label: 'Права доступа', icon: KeyRound },
@@ -506,8 +506,8 @@ export const MODULE_META: Record<string, ModuleMeta> = {
   },
   integrations: {
     domain: 'admin',
-    title: 'Журнал событий',
-    searchPlaceholder: 'Поиск по событиям интеграций',
+    title: 'Интеграции',
+    searchPlaceholder: 'Поиск по интеграциям',
   },
   settings: { domain: 'admin', title: 'Настройки', searchPlaceholder: 'Поиск настроек' },
   users: { domain: 'admin', title: 'Пользователи', searchPlaceholder: 'Поиск пользователей', ctaLabel: 'Новый пользователь' },

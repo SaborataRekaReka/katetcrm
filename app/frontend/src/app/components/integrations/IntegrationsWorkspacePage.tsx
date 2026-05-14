@@ -1,11 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ComponentType } from 'react';
 import {
   AlertCircle,
   ArrowRight,
+  Activity,
   CheckCircle2,
   ExternalLink,
+  Globe2,
   Loader2,
+  MessageCircle,
   PhoneCall,
+  Plug,
   Plus,
   RefreshCw,
   RotateCcw,
@@ -17,8 +21,18 @@ import { SimpleToolbar } from '../shell/SimpleToolbar';
 import { getModuleMeta } from '../shell/navConfig';
 import { useLayout } from '../shell/layoutStore';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
+import { Switch } from '../ui/switch';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
 import { cn } from '../ui/utils';
 import {
   useIntegrationEventQuery,
@@ -39,6 +53,31 @@ import type {
 } from '../../lib/integrationsApi';
 
 type PeriodFilter = 'all' | '24h' | '7d' | '30d';
+type IntegrationSectionId = 'mango-office' | 'events';
+
+interface IntegrationSectionItem {
+  id: IntegrationSectionId;
+  label: string;
+  description: string;
+  icon: ComponentType<{ className?: string }>;
+}
+
+const INTEGRATION_SECTIONS: IntegrationSectionItem[] = [
+  {
+    id: 'mango-office',
+    label: 'Mango Office',
+    description: 'Телефония, записи, ответственные',
+    icon: PhoneCall,
+  },
+  {
+    id: 'events',
+    label: 'Журнал событий',
+    description: 'Webhook, ошибки, replay',
+    icon: Activity,
+  },
+];
+
+const MANAGER_NONE_VALUE = '__none__';
 
 const CHANNEL_LABEL: Record<IntegrationChannel, string> = {
   site: 'Сайт',
@@ -141,7 +180,31 @@ const EMPTY_MANGO_CALL_ROUTING: MangoCallRoutingSettingsApi = {
   rules: [],
 };
 
-function MangoCallRoutingPanel() {
+function SettingsSwitchRow({
+  title,
+  description,
+  checked,
+  disabled,
+  onCheckedChange,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled: boolean;
+  onCheckedChange: (checked: boolean) => void;
+}) {
+  return (
+    <div className="flex min-h-[58px] items-center justify-between gap-4 px-4 py-3">
+      <div className="min-w-0">
+        <div className="text-[13px] font-medium text-foreground">{title}</div>
+        <div className="mt-0.5 text-[11px] text-muted-foreground">{description}</div>
+      </div>
+      <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} />
+    </div>
+  );
+}
+
+function MangoOfficeSettingsPanel() {
   const managersQuery = useManagersQuery(true);
   const settingsQuery = useMangoCallRoutingSettingsQuery(true);
   const updateMutation = useUpdateMangoCallRoutingSettings();
@@ -233,24 +296,32 @@ function MangoCallRoutingPanel() {
   };
 
   return (
-    <div className="border-b border-border/60 bg-white px-4 py-3">
-      <div className="mb-2 flex flex-wrap items-center gap-2">
-        <div className="flex min-w-0 items-center gap-2">
-          <span className="inline-flex h-7 w-7 items-center justify-center rounded border border-emerald-200 bg-emerald-50 text-emerald-700">
-            <PhoneCall className="h-3.5 w-3.5" />
-          </span>
-          <div className="min-w-0">
-            <div className="text-[13px] font-medium text-foreground">Mango: распределение звонков</div>
-            <div className="text-[11px] text-muted-foreground">
-              Назначает ответственного по внутреннему номеру Mango при входящих звонках.
-            </div>
+    <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 px-4 py-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h2 className="text-[14px] font-medium text-foreground">Распределение звонков</h2>
+            <Badge
+              variant="outline"
+              className={cn(
+                'h-5 rounded px-1.5 text-[10px]',
+                draft.enabled
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  : 'border-slate-200 bg-slate-50 text-slate-600',
+              )}
+            >
+              {draft.enabled ? 'Включено' : 'Выключено'}
+            </Badge>
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted-foreground">
+            Внутренние номера Mango сопоставляются с менеджерами CRM.
           </div>
         </div>
         <div className="ml-auto flex flex-wrap items-center gap-1.5">
           <Button
             size="sm"
             variant="outline"
-            className="h-7 gap-1 px-2 text-[11px]"
+            className="h-8 gap-1 px-2 text-[11px]"
             onClick={addRule}
             disabled={busy || managerOptions.length === 0}
           >
@@ -258,7 +329,16 @@ function MangoCallRoutingPanel() {
           </Button>
           <Button
             size="sm"
-            className="h-7 gap-1 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
+            variant="outline"
+            className="h-8 gap-1 px-2 text-[11px]"
+            onClick={() => settingsQuery.data && setDraft(settingsQuery.data)}
+            disabled={busy || !dirty || !settingsQuery.data}
+          >
+            <RotateCcw className="h-3.5 w-3.5" /> Сбросить
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 gap-1 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
             onClick={() => { void save(); }}
             disabled={busy || !dirty}
           >
@@ -267,129 +347,135 @@ function MangoCallRoutingPanel() {
         </div>
       </div>
 
+      <div className="space-y-2 px-4 py-3">
       {settingsQuery.isError ? (
-        <div className="mb-2 rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+        <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
           {settingsQuery.error instanceof Error ? settingsQuery.error.message : 'Не удалось загрузить правила Mango.'}
         </div>
       ) : null}
       {error ? (
-        <div className="mb-2 rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+        <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
           {error}
         </div>
       ) : null}
       {success ? (
-        <div className="mb-2 rounded border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-700">
+        <div className="rounded border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-700">
           {success}
         </div>
       ) : null}
-
-      <div className="mb-2 grid gap-2 text-[11px] text-foreground sm:grid-cols-2 xl:grid-cols-4">
-        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
-          <input
-            type="checkbox"
-            checked={draft.enabled}
-            onChange={(event) => setDraft((prev) => ({ ...prev, enabled: event.target.checked }))}
-            disabled={busy}
-          />
-          <span>Правила включены</span>
-        </label>
-        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
-          <input
-            type="checkbox"
-            checked={draft.updateResponsibleOnAnswered}
-            onChange={(event) => setDraft((prev) => ({ ...prev, updateResponsibleOnAnswered: event.target.checked }))}
-            disabled={busy}
-          />
-          <span>Назначать при ответе</span>
-        </label>
-        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
-          <input
-            type="checkbox"
-            checked={draft.updateResponsibleOnTransfer}
-            onChange={(event) => setDraft((prev) => ({ ...prev, updateResponsibleOnTransfer: event.target.checked }))}
-            disabled={busy}
-          />
-          <span>Обновлять при переводе</span>
-        </label>
-        <label className="flex min-h-7 items-center gap-2 rounded border border-border/60 px-2">
-          <input
-            type="checkbox"
-            checked={draft.assignMissedCalls}
-            onChange={(event) => setDraft((prev) => ({ ...prev, assignMissedCalls: event.target.checked }))}
-            disabled={busy}
-          />
-          <span>Назначать пропущенные</span>
-        </label>
       </div>
 
-      <div className="mb-2 grid gap-2 text-[11px] md:grid-cols-[220px_1fr]">
-        <label className="flex items-center text-muted-foreground">Менеджер по умолчанию</label>
-        <select
-          value={draft.fallbackManagerId ?? ''}
-          onChange={(event) => setDraft((prev) => ({ ...prev, fallbackManagerId: event.target.value || null }))}
+      <div className="divide-y divide-border/60 border-y border-border/60">
+        <SettingsSwitchRow
+          title="Маршрутизация включена"
+          description="CRM применяет правила Mango к входящим звонкам."
+          checked={draft.enabled}
           disabled={busy}
-          className="h-8 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none"
-        >
-          <option value="">Не назначать, если номер не найден</option>
-          {managerOptions.map((manager) => (
-            <option key={manager.id} value={manager.id}>{manager.fullName}</option>
-          ))}
-        </select>
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, enabled: checked }))}
+        />
+        <SettingsSwitchRow
+          title="Назначать при ответе"
+          description="Ответственный обновляется, когда звонок принят сотрудником."
+          checked={draft.updateResponsibleOnAnswered}
+          disabled={busy}
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, updateResponsibleOnAnswered: checked }))}
+        />
+        <SettingsSwitchRow
+          title="Обновлять при переводе"
+          description="Переведенный входящий звонок может сменить ответственного."
+          checked={draft.updateResponsibleOnTransfer}
+          disabled={busy}
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, updateResponsibleOnTransfer: checked }))}
+        />
+        <SettingsSwitchRow
+          title="Назначать пропущенные"
+          description="Пропущенные звонки распределяются по найденному внутреннему номеру."
+          checked={draft.assignMissedCalls}
+          disabled={busy}
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, assignMissedCalls: checked }))}
+        />
       </div>
 
-      <div className="overflow-x-auto rounded border border-border/60">
-        <table className="w-full min-w-[620px] border-collapse text-[11px]">
+      <div className="grid gap-2 px-4 py-3 text-[12px] md:grid-cols-[220px_1fr]">
+        <label className="flex items-center text-muted-foreground">Менеджер по умолчанию</label>
+        <Select
+          value={draft.fallbackManagerId ?? MANAGER_NONE_VALUE}
+          onValueChange={(value) => setDraft((prev) => ({
+            ...prev,
+            fallbackManagerId: value === MANAGER_NONE_VALUE ? null : value,
+          }))}
+          disabled={busy}
+        >
+          <SelectTrigger size="sm" className="text-[12px]">
+            <SelectValue placeholder="Не назначать" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={MANAGER_NONE_VALUE}>Не назначать, если номер не найден</SelectItem>
+            {managerOptions.map((manager) => (
+              <SelectItem key={manager.id} value={manager.id}>{manager.fullName}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="overflow-x-auto border-t border-border/60">
+        <table className="w-full min-w-[680px] border-collapse text-[12px]">
           <thead className="bg-muted/30 text-muted-foreground">
             <tr>
-              <th className="px-2 py-1.5 text-left font-medium">Внутренний номер Mango</th>
-              <th className="px-2 py-1.5 text-left font-medium">Менеджер CRM</th>
-              <th className="w-[96px] px-2 py-1.5 text-left font-medium">Активно</th>
-              <th className="w-10 px-2 py-1.5" />
+              <th className="px-4 py-2 text-left font-medium">Внутренний номер</th>
+              <th className="px-3 py-2 text-left font-medium">Менеджер CRM</th>
+              <th className="w-[96px] px-3 py-2 text-left font-medium">Активно</th>
+              <th className="w-12 px-3 py-2" />
             </tr>
           </thead>
           <tbody>
             {draft.rules.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-2 py-3 text-center text-muted-foreground">
-                  Добавьте внутренние номера Mango и сопоставьте их с менеджерами CRM.
+                <td colSpan={4} className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+                  Номера еще не добавлены.
                 </td>
               </tr>
             ) : draft.rules.map((rule, index) => (
               <tr key={`${rule.extension}-${index}`} className="border-t border-border/50">
-                <td className="px-2 py-1.5">
-                  <input
+                <td className="px-4 py-2">
+                  <Input
                     value={rule.extension}
                     onChange={(event) => updateRule(index, { extension: event.target.value })}
                     disabled={busy}
                     placeholder="15"
-                    className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] outline-none"
+                    className="h-8 text-[12px]"
                   />
                 </td>
-                <td className="px-2 py-1.5">
-                  <select
-                    value={rule.userId}
-                    onChange={(event) => updateRule(index, { userId: event.target.value })}
+                <td className="px-3 py-2">
+                  <Select
+                    value={rule.userId || MANAGER_NONE_VALUE}
+                    onValueChange={(value) => updateRule(index, {
+                      userId: value === MANAGER_NONE_VALUE ? '' : value,
+                    })}
                     disabled={busy}
-                    className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] outline-none"
                   >
-                    <option value="">Выберите менеджера</option>
-                    {managerOptions.map((manager) => (
-                      <option key={manager.id} value={manager.id}>{manager.fullName}</option>
-                    ))}
-                  </select>
+                    <SelectTrigger size="sm" className="text-[12px]">
+                      <SelectValue placeholder="Выберите менеджера" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={MANAGER_NONE_VALUE}>Выберите менеджера</SelectItem>
+                      {managerOptions.map((manager) => (
+                        <SelectItem key={manager.id} value={manager.id}>{manager.fullName}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </td>
-                <td className="px-2 py-1.5">
-                  <input
-                    type="checkbox"
+                <td className="px-3 py-2">
+                  <Switch
                     checked={rule.isActive}
-                    onChange={(event) => updateRule(index, { isActive: event.target.checked })}
+                    onCheckedChange={(checked) => updateRule(index, { isActive: checked })}
                     disabled={busy}
                   />
                 </td>
-                <td className="px-2 py-1.5 text-right">
+                <td className="px-3 py-2 text-right">
                   <button
                     type="button"
-                    className="inline-flex h-7 w-7 items-center justify-center rounded text-muted-foreground hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
                     onClick={() => removeRule(index)}
                     disabled={busy}
                     aria-label="Удалить правило"
@@ -402,7 +488,166 @@ function MangoCallRoutingPanel() {
           </tbody>
         </table>
       </div>
+    </section>
+  );
+}
+
+function MangoOfficePage() {
+  const recentQuery = useIntegrationEventsQuery(
+    { channel: 'mango', take: 6, skip: 0 },
+    true,
+  );
+  const recentRows = recentQuery.data?.items ?? [];
+
+  return (
+    <div className="min-h-0 min-w-0 flex-1 overflow-auto bg-muted/10">
+      <div className="mx-auto flex w-full max-w-[980px] flex-col gap-4 p-4">
+        <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+          <div className="flex flex-wrap items-start gap-3 px-4 py-4">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-700">
+              <PhoneCall className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-[18px] font-semibold tracking-tight text-foreground">Mango Office</h1>
+                <Badge variant="outline" className="border-emerald-200 bg-emerald-50 text-[10px] text-emerald-700">
+                  Webhook активен
+                </Badge>
+              </div>
+              <p className="mt-1 max-w-2xl text-[12px] leading-5 text-muted-foreground">
+                Звонки Mango создают лиды, сохраняют записи и распределяют ответственных по внутренним номерам.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <MangoOfficeSettingsPanel />
+
+        <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-2 border-b border-border/60 px-4 py-3">
+            <div>
+              <h2 className="text-[14px] font-medium text-foreground">Последние события Mango</h2>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">Свежие входящие callback-и и ошибки обработки.</div>
+            </div>
+            {recentQuery.isFetching ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : null}
+          </div>
+
+          {recentQuery.isError ? (
+            <div className="px-4 py-4 text-[12px] text-rose-700">
+              {recentQuery.error instanceof Error ? recentQuery.error.message : 'Не удалось загрузить события Mango.'}
+            </div>
+          ) : null}
+
+          {!recentQuery.isError && recentRows.length === 0 ? (
+            <div className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+              Событий Mango пока нет.
+            </div>
+          ) : null}
+
+          {recentRows.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] border-collapse text-[12px]">
+                <thead className="bg-muted/30 text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-medium">ID</th>
+                    <th className="px-3 py-2 text-left font-medium">Статус</th>
+                    <th className="px-3 py-2 text-left font-medium">Внешний ID</th>
+                    <th className="px-3 py-2 text-left font-medium">Получено</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRows.map((event) => (
+                    <tr key={event.id} className="border-t border-border/50">
+                      <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{shortId(event.id)}</td>
+                      <td className="px-3 py-2.5"><EventStatusPill status={event.status} /></td>
+                      <td className="px-3 py-2.5 text-foreground/80">{event.externalId ?? '—'}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground">{formatDateTime(event.receivedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+        </section>
+      </div>
     </div>
+  );
+}
+
+function IntegrationSectionNav({
+  activeSection,
+  query,
+  onSelect,
+}: {
+  activeSection: IntegrationSectionId;
+  query: string;
+  onSelect: (section: IntegrationSectionId) => void;
+}) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const sections = normalizedQuery
+    ? INTEGRATION_SECTIONS.filter((section) => (
+        section.label.toLowerCase().includes(normalizedQuery) ||
+        section.description.toLowerCase().includes(normalizedQuery)
+      ))
+    : INTEGRATION_SECTIONS;
+
+  return (
+    <aside className="shrink-0 border-b border-border/60 bg-white lg:w-[264px] lg:border-b-0 lg:border-r">
+      <div className="space-y-4 p-3">
+        <div>
+          <div className="px-2 pb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Интеграции
+          </div>
+          <div className="space-y-1">
+            {sections.map((section) => {
+              const Icon = section.icon;
+              const active = section.id === activeSection;
+              return (
+                <button
+                  key={section.id}
+                  type="button"
+                  onClick={() => onSelect(section.id)}
+                  className={cn(
+                    'flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left transition-colors',
+                    active ? 'bg-[#e7f1ff] text-[#1f57d6]' : 'text-foreground hover:bg-muted/50',
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-medium">{section.label}</span>
+                    <span className={cn('block truncate text-[11px]', active ? 'text-[#1f57d6]/75' : 'text-muted-foreground')}>
+                      {section.description}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="border-t border-border/60 pt-3">
+          <div className="px-2 pb-1.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+            Провайдеры
+          </div>
+          <div className="space-y-1">
+            {[
+              { label: 'Сайт', icon: Globe2 },
+              { label: 'Telegram', icon: MessageCircle },
+              { label: 'MAX', icon: Plug },
+            ].map((provider) => {
+              const Icon = provider.icon;
+              return (
+                <div key={provider.label} className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-muted-foreground">
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span className="min-w-0 flex-1 truncate text-[13px]">{provider.label}</span>
+                  <Badge variant="outline" className="rounded px-1.5 text-[10px] text-muted-foreground">Скоро</Badge>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </aside>
   );
 }
 
@@ -410,6 +655,8 @@ export function IntegrationsWorkspacePage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const meta = getModuleMeta('integrations');
 
+  const [activeSection, setActiveSection] = useState<IntegrationSectionId>('mango-office');
+  const [integrationQuery, setIntegrationQuery] = useState('');
   const [query, setQuery] = useState('');
   const [channel, setChannel] = useState<'all' | IntegrationChannel>('all');
   const [status, setStatus] = useState<'all' | IntegrationEventStatus>('all');
@@ -431,13 +678,14 @@ export function IntegrationsWorkspacePage() {
     [channel, status, query, period],
   );
 
-  const eventsQuery = useIntegrationEventsQuery(listParams, true);
+  const eventsQuery = useIntegrationEventsQuery(listParams, activeSection === 'events');
   const retryMutation = useRetryIntegrationEvent();
   const replayMutation = useReplayIntegrationEvent();
 
   const rows = eventsQuery.data?.items ?? [];
 
   useEffect(() => {
+    if (activeSection !== 'events') return;
     if (rows.length === 0) {
       setSelectedId(null);
       return;
@@ -449,9 +697,12 @@ export function IntegrationsWorkspacePage() {
     if (!rows.some((row) => row.id === selectedId)) {
       setSelectedId(rows[0].id);
     }
-  }, [rows, selectedId]);
+  }, [activeSection, rows, selectedId]);
 
-  const detailQuery = useIntegrationEventQuery(selectedId, !!selectedId);
+  const detailQuery = useIntegrationEventQuery(
+    selectedId,
+    activeSection === 'events' && !!selectedId,
+  );
   const selected = detailQuery.data ?? rows.find((row) => row.id === selectedId) ?? null;
 
   const busy = retryMutation.isPending || replayMutation.isPending;
@@ -501,9 +752,9 @@ export function IntegrationsWorkspacePage() {
     }
   };
 
-  const toolbar = (
+  const toolbar = activeSection === 'events' ? (
     <SimpleToolbar
-      searchPlaceholder={meta.searchPlaceholder}
+      searchPlaceholder="Поиск по событиям интеграций"
       query={query}
       onQueryChange={setQuery}
       filters={[
@@ -553,13 +804,29 @@ export function IntegrationsWorkspacePage() {
       hasActive={hasActive}
       onReset={resetFilters}
     />
+  ) : (
+    <SimpleToolbar
+      searchPlaceholder={meta.searchPlaceholder}
+      query={integrationQuery}
+      onQueryChange={setIntegrationQuery}
+      filters={[]}
+      hasActive={integrationQuery.length > 0}
+      onReset={() => setIntegrationQuery('')}
+    />
   );
 
   return (
     <ListScaffold toolbar={toolbar}>
-      <div className="flex min-h-0 flex-1 flex-col">
-        <MangoCallRoutingPanel />
-        <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <IntegrationSectionNav
+          activeSection={activeSection}
+          query={integrationQuery}
+          onSelect={setActiveSection}
+        />
+        {activeSection === 'mango-office' ? (
+          <MangoOfficePage />
+        ) : (
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row">
           <div className="min-h-0 min-w-0 flex-1 overflow-auto border-b border-border/60 lg:border-b-0 lg:border-r">
           {eventsQuery.isPending && !eventsQuery.data ? (
             <div className="flex h-full min-h-[320px] items-center justify-center gap-2 text-[13px] text-muted-foreground">
@@ -776,6 +1043,7 @@ export function IntegrationsWorkspacePage() {
           ) : null}
         </aside>
       </div>
+        )}
       </div>
     </ListScaffold>
   );

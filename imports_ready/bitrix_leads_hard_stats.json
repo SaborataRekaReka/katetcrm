@@ -1,0 +1,13 @@
+{
+  "totalInput": 11267,
+  "rejectedNoPhone": 68,
+  "rejectedInvalidPhone": 22,
+  "rejectedStage": 1554,
+  "rejectedSpam": 20,
+  "rejectedJob": 0,
+  "afterHardFilters": 9603,
+  "afterDedup": 9300,
+  "rejected": 1664,
+  "dedupDropped": 303,
+  "batches": 2
+}

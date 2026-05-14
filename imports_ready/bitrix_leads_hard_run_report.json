@@ -1,0 +1,1676 @@
+[
+  {
+    "file": "bitrix_leads_hard_batch_001.json",
+    "timestamp": "2026-05-14T20:17:09.131Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_002.json",
+    "timestamp": "2026-05-14T20:17:09.337Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_003.json",
+    "timestamp": "2026-05-14T20:17:09.539Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_004.json",
+    "timestamp": "2026-05-14T20:17:09.747Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_005.json",
+    "timestamp": "2026-05-14T20:17:09.943Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_006.json",
+    "timestamp": "2026-05-14T20:17:10.148Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_007.json",
+    "timestamp": "2026-05-14T20:17:10.348Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_008.json",
+    "timestamp": "2026-05-14T20:17:10.543Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_009.json",
+    "timestamp": "2026-05-14T20:17:10.739Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_010.json",
+    "timestamp": "2026-05-14T20:17:10.933Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_011.json",
+    "timestamp": "2026-05-14T20:17:11.125Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_012.json",
+    "timestamp": "2026-05-14T20:17:11.317Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_013.json",
+    "timestamp": "2026-05-14T20:17:11.510Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_014.json",
+    "timestamp": "2026-05-14T20:17:11.708Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_015.json",
+    "timestamp": "2026-05-14T20:17:11.903Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_016.json",
+    "timestamp": "2026-05-14T20:17:12.100Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_017.json",
+    "timestamp": "2026-05-14T20:17:12.296Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_018.json",
+    "timestamp": "2026-05-14T20:17:12.490Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_019.json",
+    "timestamp": "2026-05-14T20:17:12.682Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_020.json",
+    "timestamp": "2026-05-14T20:17:12.879Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_021.json",
+    "timestamp": "2026-05-14T20:17:13.075Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_022.json",
+    "timestamp": "2026-05-14T20:17:13.268Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_023.json",
+    "timestamp": "2026-05-14T20:17:13.461Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_024.json",
+    "timestamp": "2026-05-14T20:17:13.654Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_025.json",
+    "timestamp": "2026-05-14T20:17:13.848Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_026.json",
+    "timestamp": "2026-05-14T20:17:14.040Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_027.json",
+    "timestamp": "2026-05-14T20:17:14.233Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_028.json",
+    "timestamp": "2026-05-14T20:17:14.426Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_029.json",
+    "timestamp": "2026-05-14T20:17:14.620Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_030.json",
+    "timestamp": "2026-05-14T20:17:14.813Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_031.json",
+    "timestamp": "2026-05-14T20:17:15.006Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_032.json",
+    "timestamp": "2026-05-14T20:17:15.200Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_033.json",
+    "timestamp": "2026-05-14T20:17:15.392Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_034.json",
+    "timestamp": "2026-05-14T20:17:15.584Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_035.json",
+    "timestamp": "2026-05-14T20:17:15.778Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_036.json",
+    "timestamp": "2026-05-14T20:17:15.971Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_037.json",
+    "timestamp": "2026-05-14T20:17:16.166Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_038.json",
+    "timestamp": "2026-05-14T20:17:16.361Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_039.json",
+    "timestamp": "2026-05-14T20:17:16.554Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_040.json",
+    "timestamp": "2026-05-14T20:17:16.749Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_041.json",
+    "timestamp": "2026-05-14T20:17:16.945Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_042.json",
+    "timestamp": "2026-05-14T20:17:17.150Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_043.json",
+    "timestamp": "2026-05-14T20:17:17.357Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_044.json",
+    "timestamp": "2026-05-14T20:17:17.559Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_045.json",
+    "timestamp": "2026-05-14T20:17:17.762Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_046.json",
+    "timestamp": "2026-05-14T20:17:17.966Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_047.json",
+    "timestamp": "2026-05-14T20:17:18.171Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_048.json",
+    "timestamp": "2026-05-14T20:17:18.374Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_049.json",
+    "timestamp": "2026-05-14T20:17:18.579Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_050.json",
+    "timestamp": "2026-05-14T20:17:18.779Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_051.json",
+    "timestamp": "2026-05-14T20:17:18.984Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_052.json",
+    "timestamp": "2026-05-14T20:17:19.188Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_053.json",
+    "timestamp": "2026-05-14T20:17:19.388Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_054.json",
+    "timestamp": "2026-05-14T20:17:19.588Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_055.json",
+    "timestamp": "2026-05-14T20:17:19.792Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_056.json",
+    "timestamp": "2026-05-14T20:17:19.999Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_057.json",
+    "timestamp": "2026-05-14T20:17:20.205Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_058.json",
+    "timestamp": "2026-05-14T20:17:20.404Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_059.json",
+    "timestamp": "2026-05-14T20:17:20.603Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_060.json",
+    "timestamp": "2026-05-14T20:17:20.803Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_061.json",
+    "timestamp": "2026-05-14T20:17:21.004Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_062.json",
+    "timestamp": "2026-05-14T20:17:21.203Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_063.json",
+    "timestamp": "2026-05-14T20:17:21.405Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_064.json",
+    "timestamp": "2026-05-14T20:17:21.598Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_065.json",
+    "timestamp": "2026-05-14T20:17:21.792Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_066.json",
+    "timestamp": "2026-05-14T20:17:21.993Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_067.json",
+    "timestamp": "2026-05-14T20:17:22.196Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_068.json",
+    "timestamp": "2026-05-14T20:17:22.397Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_069.json",
+    "timestamp": "2026-05-14T20:17:22.590Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_070.json",
+    "timestamp": "2026-05-14T20:17:22.785Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_071.json",
+    "timestamp": "2026-05-14T20:17:22.979Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_072.json",
+    "timestamp": "2026-05-14T20:17:23.179Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_073.json",
+    "timestamp": "2026-05-14T20:17:23.379Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_074.json",
+    "timestamp": "2026-05-14T20:17:23.572Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_075.json",
+    "timestamp": "2026-05-14T20:17:23.765Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_076.json",
+    "timestamp": "2026-05-14T20:17:23.958Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_077.json",
+    "timestamp": "2026-05-14T20:17:24.152Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_078.json",
+    "timestamp": "2026-05-14T20:17:24.346Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_079.json",
+    "timestamp": "2026-05-14T20:17:24.550Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_080.json",
+    "timestamp": "2026-05-14T20:17:24.748Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_081.json",
+    "timestamp": "2026-05-14T20:17:24.944Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_082.json",
+    "timestamp": "2026-05-14T20:17:25.137Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_083.json",
+    "timestamp": "2026-05-14T20:17:25.330Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_084.json",
+    "timestamp": "2026-05-14T20:17:25.524Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_085.json",
+    "timestamp": "2026-05-14T20:17:25.717Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_086.json",
+    "timestamp": "2026-05-14T20:17:25.911Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_087.json",
+    "timestamp": "2026-05-14T20:17:26.104Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_088.json",
+    "timestamp": "2026-05-14T20:17:26.297Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_089.json",
+    "timestamp": "2026-05-14T20:17:26.492Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_090.json",
+    "timestamp": "2026-05-14T20:17:26.685Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_091.json",
+    "timestamp": "2026-05-14T20:17:26.879Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_092.json",
+    "timestamp": "2026-05-14T20:17:27.073Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_093.json",
+    "timestamp": "2026-05-14T20:17:27.266Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_001.json",
+    "timestamp": "2026-05-14T20:17:39.063Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_002.json",
+    "timestamp": "2026-05-14T20:17:39.260Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_003.json",
+    "timestamp": "2026-05-14T20:17:39.455Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_004.json",
+    "timestamp": "2026-05-14T20:17:39.649Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_005.json",
+    "timestamp": "2026-05-14T20:17:39.842Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_006.json",
+    "timestamp": "2026-05-14T20:17:40.038Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_007.json",
+    "timestamp": "2026-05-14T20:17:40.230Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_008.json",
+    "timestamp": "2026-05-14T20:17:40.422Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_009.json",
+    "timestamp": "2026-05-14T20:17:40.615Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_010.json",
+    "timestamp": "2026-05-14T20:17:40.811Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_011.json",
+    "timestamp": "2026-05-14T20:17:41.004Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_012.json",
+    "timestamp": "2026-05-14T20:17:41.196Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_013.json",
+    "timestamp": "2026-05-14T20:17:41.392Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_014.json",
+    "timestamp": "2026-05-14T20:17:41.589Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_015.json",
+    "timestamp": "2026-05-14T20:17:41.785Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_016.json",
+    "timestamp": "2026-05-14T20:17:41.985Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_017.json",
+    "timestamp": "2026-05-14T20:17:42.179Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_018.json",
+    "timestamp": "2026-05-14T20:17:42.372Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_019.json",
+    "timestamp": "2026-05-14T20:17:42.566Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_020.json",
+    "timestamp": "2026-05-14T20:17:42.759Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_021.json",
+    "timestamp": "2026-05-14T20:17:42.953Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_022.json",
+    "timestamp": "2026-05-14T20:17:43.147Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_023.json",
+    "timestamp": "2026-05-14T20:17:43.340Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_024.json",
+    "timestamp": "2026-05-14T20:17:43.536Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_025.json",
+    "timestamp": "2026-05-14T20:17:43.732Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_026.json",
+    "timestamp": "2026-05-14T20:17:43.926Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_027.json",
+    "timestamp": "2026-05-14T20:17:44.122Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_028.json",
+    "timestamp": "2026-05-14T20:17:44.316Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_029.json",
+    "timestamp": "2026-05-14T20:17:44.510Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_030.json",
+    "timestamp": "2026-05-14T20:17:44.707Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_031.json",
+    "timestamp": "2026-05-14T20:17:44.904Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_032.json",
+    "timestamp": "2026-05-14T20:17:45.102Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_033.json",
+    "timestamp": "2026-05-14T20:17:45.298Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_034.json",
+    "timestamp": "2026-05-14T20:17:45.760Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_035.json",
+    "timestamp": "2026-05-14T20:17:45.956Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_036.json",
+    "timestamp": "2026-05-14T20:17:46.149Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_037.json",
+    "timestamp": "2026-05-14T20:17:46.347Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_038.json",
+    "timestamp": "2026-05-14T20:17:46.545Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_039.json",
+    "timestamp": "2026-05-14T20:17:46.737Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_040.json",
+    "timestamp": "2026-05-14T20:17:46.931Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_041.json",
+    "timestamp": "2026-05-14T20:17:47.124Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_042.json",
+    "timestamp": "2026-05-14T20:17:47.320Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_043.json",
+    "timestamp": "2026-05-14T20:17:47.512Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_044.json",
+    "timestamp": "2026-05-14T20:17:47.707Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_045.json",
+    "timestamp": "2026-05-14T20:17:47.908Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_046.json",
+    "timestamp": "2026-05-14T20:17:48.104Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_047.json",
+    "timestamp": "2026-05-14T20:17:48.300Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_048.json",
+    "timestamp": "2026-05-14T20:17:48.498Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_049.json",
+    "timestamp": "2026-05-14T20:17:48.694Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_050.json",
+    "timestamp": "2026-05-14T20:17:48.887Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_051.json",
+    "timestamp": "2026-05-14T20:17:49.080Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_052.json",
+    "timestamp": "2026-05-14T20:17:49.276Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_053.json",
+    "timestamp": "2026-05-14T20:17:49.468Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_054.json",
+    "timestamp": "2026-05-14T20:17:49.663Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_055.json",
+    "timestamp": "2026-05-14T20:17:49.862Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_056.json",
+    "timestamp": "2026-05-14T20:17:50.061Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_057.json",
+    "timestamp": "2026-05-14T20:17:50.520Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_058.json",
+    "timestamp": "2026-05-14T20:17:50.716Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_059.json",
+    "timestamp": "2026-05-14T20:17:50.910Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_060.json",
+    "timestamp": "2026-05-14T20:17:51.104Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_061.json",
+    "timestamp": "2026-05-14T20:17:51.297Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_062.json",
+    "timestamp": "2026-05-14T20:17:51.492Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_063.json",
+    "timestamp": "2026-05-14T20:17:51.686Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_064.json",
+    "timestamp": "2026-05-14T20:17:51.878Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_065.json",
+    "timestamp": "2026-05-14T20:17:52.076Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_066.json",
+    "timestamp": "2026-05-14T20:17:52.271Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_067.json",
+    "timestamp": "2026-05-14T20:17:52.466Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_068.json",
+    "timestamp": "2026-05-14T20:17:52.658Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_069.json",
+    "timestamp": "2026-05-14T20:17:52.852Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_070.json",
+    "timestamp": "2026-05-14T20:17:53.313Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_071.json",
+    "timestamp": "2026-05-14T20:17:53.506Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_072.json",
+    "timestamp": "2026-05-14T20:17:53.699Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_073.json",
+    "timestamp": "2026-05-14T20:17:53.893Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_074.json",
+    "timestamp": "2026-05-14T20:17:54.086Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_075.json",
+    "timestamp": "2026-05-14T20:17:54.281Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_076.json",
+    "timestamp": "2026-05-14T20:17:54.474Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_077.json",
+    "timestamp": "2026-05-14T20:17:54.666Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_078.json",
+    "timestamp": "2026-05-14T20:17:54.863Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_079.json",
+    "timestamp": "2026-05-14T20:17:55.057Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_080.json",
+    "timestamp": "2026-05-14T20:17:55.253Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_081.json",
+    "timestamp": "2026-05-14T20:17:55.447Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_082.json",
+    "timestamp": "2026-05-14T20:17:55.642Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_083.json",
+    "timestamp": "2026-05-14T20:17:55.836Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_084.json",
+    "timestamp": "2026-05-14T20:17:56.031Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_085.json",
+    "timestamp": "2026-05-14T20:17:56.224Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_086.json",
+    "timestamp": "2026-05-14T20:17:56.419Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_087.json",
+    "timestamp": "2026-05-14T20:17:56.614Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_088.json",
+    "timestamp": "2026-05-14T20:17:56.810Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_089.json",
+    "timestamp": "2026-05-14T20:17:57.004Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_090.json",
+    "timestamp": "2026-05-14T20:17:57.353Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_091.json",
+    "timestamp": "2026-05-14T20:17:57.670Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_092.json",
+    "timestamp": "2026-05-14T20:17:58.029Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_093.json",
+    "timestamp": "2026-05-14T20:17:58.350Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/equipment-leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_001.json",
+    "timestamp": "2026-05-14T20:18:12.121Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_002.json",
+    "timestamp": "2026-05-14T20:18:12.251Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_003.json",
+    "timestamp": "2026-05-14T20:18:12.388Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_004.json",
+    "timestamp": "2026-05-14T20:18:12.519Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_005.json",
+    "timestamp": "2026-05-14T20:18:12.650Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_006.json",
+    "timestamp": "2026-05-14T20:18:12.780Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_007.json",
+    "timestamp": "2026-05-14T20:18:12.910Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_008.json",
+    "timestamp": "2026-05-14T20:18:13.038Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_009.json",
+    "timestamp": "2026-05-14T20:18:13.166Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_010.json",
+    "timestamp": "2026-05-14T20:18:13.296Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_011.json",
+    "timestamp": "2026-05-14T20:18:13.424Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_012.json",
+    "timestamp": "2026-05-14T20:18:13.558Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_013.json",
+    "timestamp": "2026-05-14T20:18:13.687Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_014.json",
+    "timestamp": "2026-05-14T20:18:13.827Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_015.json",
+    "timestamp": "2026-05-14T20:18:13.957Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_016.json",
+    "timestamp": "2026-05-14T20:18:14.092Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_017.json",
+    "timestamp": "2026-05-14T20:18:14.224Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_018.json",
+    "timestamp": "2026-05-14T20:18:14.352Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_019.json",
+    "timestamp": "2026-05-14T20:18:14.483Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_020.json",
+    "timestamp": "2026-05-14T20:18:14.612Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_021.json",
+    "timestamp": "2026-05-14T20:18:14.758Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_022.json",
+    "timestamp": "2026-05-14T20:18:14.888Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_023.json",
+    "timestamp": "2026-05-14T20:18:15.019Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_024.json",
+    "timestamp": "2026-05-14T20:18:15.149Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_025.json",
+    "timestamp": "2026-05-14T20:18:15.279Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_026.json",
+    "timestamp": "2026-05-14T20:18:15.407Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_027.json",
+    "timestamp": "2026-05-14T20:18:15.536Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_028.json",
+    "timestamp": "2026-05-14T20:18:15.674Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_029.json",
+    "timestamp": "2026-05-14T20:18:15.803Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_030.json",
+    "timestamp": "2026-05-14T20:18:15.932Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_031.json",
+    "timestamp": "2026-05-14T20:18:16.062Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_032.json",
+    "timestamp": "2026-05-14T20:18:16.192Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_033.json",
+    "timestamp": "2026-05-14T20:18:16.321Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_034.json",
+    "timestamp": "2026-05-14T20:18:16.452Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_035.json",
+    "timestamp": "2026-05-14T20:18:16.582Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_036.json",
+    "timestamp": "2026-05-14T20:18:16.711Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_037.json",
+    "timestamp": "2026-05-14T20:18:16.843Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_038.json",
+    "timestamp": "2026-05-14T20:18:16.974Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_039.json",
+    "timestamp": "2026-05-14T20:18:17.103Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_040.json",
+    "timestamp": "2026-05-14T20:18:17.233Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_041.json",
+    "timestamp": "2026-05-14T20:18:17.371Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_042.json",
+    "timestamp": "2026-05-14T20:18:17.503Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_043.json",
+    "timestamp": "2026-05-14T20:18:17.634Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_044.json",
+    "timestamp": "2026-05-14T20:18:17.765Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_045.json",
+    "timestamp": "2026-05-14T20:18:17.897Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_046.json",
+    "timestamp": "2026-05-14T20:18:18.031Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_047.json",
+    "timestamp": "2026-05-14T20:18:18.163Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_048.json",
+    "timestamp": "2026-05-14T20:18:18.299Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_049.json",
+    "timestamp": "2026-05-14T20:18:18.429Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_050.json",
+    "timestamp": "2026-05-14T20:18:18.559Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_051.json",
+    "timestamp": "2026-05-14T20:18:18.689Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_052.json",
+    "timestamp": "2026-05-14T20:18:18.820Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_053.json",
+    "timestamp": "2026-05-14T20:18:18.951Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_054.json",
+    "timestamp": "2026-05-14T20:18:19.082Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_055.json",
+    "timestamp": "2026-05-14T20:18:19.214Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_056.json",
+    "timestamp": "2026-05-14T20:18:19.343Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_057.json",
+    "timestamp": "2026-05-14T20:18:19.473Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_058.json",
+    "timestamp": "2026-05-14T20:18:19.601Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_059.json",
+    "timestamp": "2026-05-14T20:18:19.731Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_060.json",
+    "timestamp": "2026-05-14T20:18:19.861Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_061.json",
+    "timestamp": "2026-05-14T20:18:19.990Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_062.json",
+    "timestamp": "2026-05-14T20:18:20.118Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_063.json",
+    "timestamp": "2026-05-14T20:18:20.249Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_064.json",
+    "timestamp": "2026-05-14T20:18:20.380Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_065.json",
+    "timestamp": "2026-05-14T20:18:20.509Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_066.json",
+    "timestamp": "2026-05-14T20:18:20.640Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_067.json",
+    "timestamp": "2026-05-14T20:18:20.768Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_068.json",
+    "timestamp": "2026-05-14T20:18:20.898Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_069.json",
+    "timestamp": "2026-05-14T20:18:21.121Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_070.json",
+    "timestamp": "2026-05-14T20:18:21.420Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_071.json",
+    "timestamp": "2026-05-14T20:18:21.548Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_072.json",
+    "timestamp": "2026-05-14T20:18:21.809Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_073.json",
+    "timestamp": "2026-05-14T20:18:22.060Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_074.json",
+    "timestamp": "2026-05-14T20:18:22.189Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_075.json",
+    "timestamp": "2026-05-14T20:18:22.319Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_076.json",
+    "timestamp": "2026-05-14T20:18:22.447Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_077.json",
+    "timestamp": "2026-05-14T20:18:22.576Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_078.json",
+    "timestamp": "2026-05-14T20:18:22.704Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_079.json",
+    "timestamp": "2026-05-14T20:18:22.833Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_080.json",
+    "timestamp": "2026-05-14T20:18:22.962Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_081.json",
+    "timestamp": "2026-05-14T20:18:23.092Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_082.json",
+    "timestamp": "2026-05-14T20:18:23.223Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_083.json",
+    "timestamp": "2026-05-14T20:18:23.352Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_084.json",
+    "timestamp": "2026-05-14T20:18:23.482Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_085.json",
+    "timestamp": "2026-05-14T20:18:23.611Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_086.json",
+    "timestamp": "2026-05-14T20:18:23.740Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_087.json",
+    "timestamp": "2026-05-14T20:18:23.869Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_088.json",
+    "timestamp": "2026-05-14T20:18:24.000Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_089.json",
+    "timestamp": "2026-05-14T20:18:24.128Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_090.json",
+    "timestamp": "2026-05-14T20:18:24.256Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_091.json",
+    "timestamp": "2026-05-14T20:18:24.385Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_092.json",
+    "timestamp": "2026-05-14T20:18:24.514Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  },
+  {
+    "file": "bitrix_leads_hard_batch_093.json",
+    "timestamp": "2026-05-14T20:18:24.642Z",
+    "status": "Failed",
+    "error": "Cannot POST /api/v1/leads/import/preview"
+  }
+]

@@ -1,0 +1,79 @@
+{
+  "runAt": "2026-05-14T20:20:54.646Z",
+  "targets": [
+    "bitrix_leads_hard_batch_080.json",
+    "bitrix_leads_hard_batch_092.json",
+    "bitrix_leads_hard_batch_093.json"
+  ],
+  "out": [
+    {
+      "fileName": "bitrix_leads_hard_batch_080.json",
+      "status": "success",
+      "previewSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100
+      },
+      "runSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100,
+        "created": 0,
+        "updated": 100,
+        "imported": 100,
+        "skipped": 0,
+        "failed": 0
+      },
+      "importId": "IMP-MP5XO4NI-OE87IQ",
+      "activityId": "cmp5xo4nl0qpskbncpbptg2tp"
+    },
+    {
+      "fileName": "bitrix_leads_hard_batch_092.json",
+      "status": "success",
+      "previewSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100
+      },
+      "runSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100,
+        "created": 0,
+        "updated": 100,
+        "imported": 100,
+        "skipped": 0,
+        "failed": 0
+      },
+      "importId": "IMP-MP5XO5JZ-H1FV2A",
+      "activityId": "cmp5xo5k60qvekbnc3e127v30"
+    },
+    {
+      "fileName": "bitrix_leads_hard_batch_093.json",
+      "status": "success",
+      "previewSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100
+      },
+      "runSummary": {
+        "totalRows": 100,
+        "validRows": 100,
+        "errorRows": 0,
+        "potentialDuplicates": 100,
+        "created": 0,
+        "updated": 100,
+        "imported": 100,
+        "skipped": 0,
+        "failed": 0
+      },
+      "importId": "IMP-MP5XO6AP-2SRSUV",
+      "activityId": "cmp5xo6ar0r10kbncpo3pbnls"
+    }
+  ]
+}
