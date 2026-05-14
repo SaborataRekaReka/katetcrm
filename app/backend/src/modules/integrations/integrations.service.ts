@@ -607,7 +607,7 @@ export class IntegrationsService {
     const call = this.asRecord(root.call);
     const scopes = [root, lead, contact, sender, call];
 
-    const phone = this.pickString(scopes, [
+    const phone = this.pickEndpointString(scopes, [
       'contactPhone',
       'phone',
       'phoneNumber',
@@ -972,7 +972,7 @@ export class IntegrationsService {
     const phoneRaw =
       callCounterpartyPhone
       ?? this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber', 'senderPhone'])
-      ?? this.pickString(scopes, [
+      ?? this.pickEndpointString(scopes, [
         'from',
         'from_number',
         'fromNumber',
@@ -1195,7 +1195,7 @@ export class IntegrationsService {
       ?? this.normalizeCallDirectionFromFlags(scopes)
       ?? 'unknown';
 
-    const from = this.pickString(scopes, [
+    const from = this.pickEndpointString(scopes, [
       'from',
       'from_number',
       'fromNumber',
@@ -1208,7 +1208,7 @@ export class IntegrationsService {
       'source_number',
       'abonent_number',
     ]);
-    const to = this.pickString(scopes, [
+    const to = this.pickEndpointString(scopes, [
       'to',
       'to_number',
       'toNumber',
@@ -1529,6 +1529,36 @@ export class IntegrationsService {
         }
       }
     }
+    return undefined;
+  }
+
+  private pickEndpointString(
+    scopes: Array<Record<string, unknown> | undefined>,
+    keys: string[],
+  ): string | undefined {
+    const direct = this.pickString(scopes, keys);
+    if (direct) return direct;
+
+    for (const scope of scopes) {
+      if (!scope) continue;
+      for (const key of keys) {
+        const value = this.asRecord(scope[key]);
+        if (!value) continue;
+        const nested = this.pickString([value], [
+          'number',
+          'phone',
+          'phoneNumber',
+          'from_number',
+          'to_number',
+          'caller_number',
+          'callee_number',
+          'abonent_number',
+          'line_number',
+        ]);
+        if (nested) return nested;
+      }
+    }
+
     return undefined;
   }
 

@@ -246,6 +246,7 @@ Expectations:
 6. Mango Office API connector callbacks may arrive as signed form fields `vpbx_api_key`, `sign`, `json`; signature is `sha256(vpbx_api_key + json + INTEGRATION_MANGO_SECRET)`.
 7. Mango connector callbacks rejected by auth or schema validation should still create a redacted `failed` IntegrationEvent when possible, so admins can diagnose missing leads from `/admin/integrations`.
 8. CRM accepts both the direct connector path `/api/v1/integrations/events/mango` and Mango-style typed event paths such as `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
+9. Mango call parties may be sent as flat phone fields or nested endpoint objects such as `from.number` and `to.number`; both forms must normalize to Lead phone and call activity context.
 
 ## 7. Contract stability rules
 

@@ -317,8 +317,8 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)'
       entry_id: `mango-connector-apic-039-entry-1-${seed}`,
       call_id: `mango-connector-apic-039-call-1-${seed}`,
       call_direction: 'incoming',
-      from_number: phone,
-      to_number: '+74951234567',
+      from: { number: phone },
+      to: { number: '+74951234567' },
       duration: 25,
       call_state: 'connected',
       create_time: '2026-05-13T16:00:00.000Z',
@@ -337,5 +337,13 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051)'
       status: 'processed',
       relatedLeadId: expect.any(String),
     });
+
+    const lead = await prisma.lead.findUnique({
+      where: { id: response.body.event.relatedLeadId as string },
+    });
+
+    expect(lead).not.toBeNull();
+    expect(lead?.source).toBe('mango');
+    expect(lead?.contactPhone).toContain(phone.slice(-10));
   });
 });
