@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1456 768" role="img" aria-labelledby="katet-logo-title katet-logo-desc">
+  <title id="katet-logo-title">KATET</title>
+  <desc id="katet-logo-desc">KATET logo with a blue and yellow geometric mark and the tagline: Точность, надежность, результат.</desc>
+  <defs>
+    <linearGradient id="katet-blue" x1="180" x2="500" y1="530" y2="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#20257c" />
+      <stop offset="0.46" stop-color="#1e287f" />
+      <stop offset="1" stop-color="#142177" />
+    </linearGradient>
+    <linearGradient id="katet-blue-edge" x1="225" x2="512" y1="516" y2="516" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#293199" />
+      <stop offset="1" stop-color="#182178" />
+    </linearGradient>
+    <linearGradient id="katet-yellow" x1="423" x2="458" y1="476" y2="298" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d59212" />
+      <stop offset="0.5" stop-color="#f4b824" />
+      <stop offset="1" stop-color="#ffd154" />
+    </linearGradient>
+    <linearGradient id="katet-charcoal" x1="540" x2="1264" y1="314" y2="458" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#141a20" />
+      <stop offset="0.5" stop-color="#0f141a" />
+      <stop offset="1" stop-color="#171b20" />
+    </linearGradient>
+    <filter id="katet-soft-shadow" x="-8%" y="-12%" width="116%" height="128%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.24" />
+    </filter>
+    <filter id="katet-letter-depth" x="-6%" y="-10%" width="112%" height="124%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.6" flood-color="#000000" flood-opacity="0.28" />
+      <feDropShadow dx="0" dy="-1" stdDeviation="0.7" flood-color="#ffffff" flood-opacity="0.06" />
+    </filter>
+  </defs>
+
+  <g filter="url(#katet-soft-shadow)">
+    <path d="M176 529 L430 235 L430 292 L257 493 L499 493 L499 530 L176 530 Z" fill="url(#katet-blue)" />
+    <path d="M257 493 L499 493 L499 530 L176 530 Z" fill="url(#katet-blue-edge)" opacity="0.72" />
+    <path d="M177 530 L257 493 L499 493 L499 530 Z" fill="#252d90" opacity="0.52" />
+    <path d="M430 235 L430 292 L257 493 L225 493 Z" fill="#25309a" opacity="0.3" />
+    <path d="M425 330 L454 298 L456 476 L425 475 Z" fill="url(#katet-yellow)" />
+    <path d="M454 298 L456 476 L466 470 L462 300 Z" fill="#e1a21d" opacity="0.55" />
+  </g>
+
+  <g fill="url(#katet-charcoal)" filter="url(#katet-letter-depth)">
+    <path d="M545 315 H568 V457 H545 Z M588 385 L656 315 H695 L613 397 L702 457 H660 L588 407 Z" />
+    <path fill-rule="evenodd" clip-rule="evenodd" d="M721 457 L778 315 H818 L877 457 H841 L827 421 H768 L754 457 Z M778 392 H817 L797 340 Z" />
+    <path d="M850 315 H968 V340 H922 V457 H897 V340 H850 Z" />
+    <path d="M1004 315 H1113 V340 H1029 V371 H1105 V396 H1029 V432 H1116 V457 H1004 Z" />
+    <path d="M1145 315 H1263 V340 H1217 V457 H1192 V340 H1145 Z" />
+  </g>
+
+  <g font-family="Montserrat, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="11" fill="#11161d" opacity="0.92">
+    <text x="542" y="520">ТОЧНОСТЬ<tspan fill="#c89219" letter-spacing="0">.</tspan> НАДЁЖНОСТЬ<tspan fill="#c89219" letter-spacing="0">.</tspan> РЕЗУЛЬТАТ<tspan fill="#c89219" letter-spacing="0">.</tspan></text>
+  </g>
+</svg>

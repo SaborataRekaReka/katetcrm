@@ -18,6 +18,7 @@ import { ImportsModule } from './modules/imports/imports.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { NavigationModule } from './modules/navigation/navigation.module';
+import { BugReportsModule } from './modules/bug-reports/bug-reports.module';
 import { validateEnv } from './config/env.validation';
 
 @Module({
@@ -42,6 +43,7 @@ import { validateEnv } from './config/env.validation';
     ImportsModule,
     SettingsModule,
     TasksModule,
+    BugReportsModule,
     NavigationModule,
     StatsModule,
     HealthModule,

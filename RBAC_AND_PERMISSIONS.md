@@ -27,10 +27,11 @@ Manager can:
 1. Work daily operational flow (lead -> application -> reservation -> departure -> completion).
 2. Use board/list/table and detail workspaces.
 3. Create and process records within allowed visibility scope.
+4. Submit bug reports from the shell sidebar form.
 
 Manager cannot:
 
-1. Access admin-only modules (control dashboard/reports/audit, imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
+1. Access admin-only modules (control dashboard/reports/audit/bug-reports, imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
 
 ## 2.3 User Access Lifecycle
 
@@ -53,9 +54,10 @@ Backend must validate regardless of frontend state:
 
 1. Role access for every protected endpoint.
 2. Capability/role access for admin-only endpoint groups (control reports/analytics, activity search, users, permissions, settings, imports, integrations, directory writes).
-3. Record scope access (own vs all where applicable).
-4. Transition rights for critical workflow actions.
-5. Mutation rights for directories/admin modules.
+3. Bug report management endpoints (`GET/POST status/DELETE /bug-reports`) must remain admin-only; create endpoint may be available to authenticated users.
+4. Record scope access (own vs all where applicable).
+5. Transition rights for critical workflow actions.
+6. Mutation rights for directories/admin modules.
 
 Runtime policy details:
 
@@ -76,7 +78,7 @@ At minimum require explicit confirmation for:
 
 Admin-only modules:
 
-1. Control workspace (dashboard, reports, audit).
+1. Control workspace (dashboard, reports, audit, bug reports).
 2. Imports management.
 3. Integrations journal and retry/replay operations.
 4. Global settings.

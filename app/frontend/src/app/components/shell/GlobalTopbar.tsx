@@ -20,6 +20,7 @@ import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
 import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
 import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
 import { useAuth } from '../../auth/AuthProvider';
+import logoMiniModern from '../../../imports/logo_mini_modern.svg';
 import type { RouteEntityType } from './routeSync';
 
 const WORKSPACE_SEARCH_SELECTOR = '[data-crm-search-input="true"]';
@@ -551,8 +552,8 @@ export function GlobalTopbar() {
   return (
     <header className="flex h-10 w-full shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-white px-2 sm:gap-3 sm:px-3">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--brand-logo-bg)] text-[13px] font-bold text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
-          к
+        <span className="flex h-6 w-6 items-center justify-center overflow-hidden rounded shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
+          <img src={logoMiniModern} alt="Логотип Катет CRM" className="h-full w-full object-cover" />
         </span>
         <span className="hidden truncate text-[13px] font-semibold tracking-tight sm:inline">{workspaceTitle}</span>
       </div>

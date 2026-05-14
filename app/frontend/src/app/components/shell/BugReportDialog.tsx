@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Bug, Mail, Send } from 'lucide-react';
+import { Bug, CheckCircle2, Send } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -19,8 +19,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { Textarea } from '../ui/textarea';
-
-const BUG_REPORT_EMAIL = 'breneize@yandex.ru';
+import { useCreateBugReportMutation } from '../../hooks/useBugReportMutations';
 
 type BugSeverity = 'low' | 'normal' | 'high' | 'blocker';
 
@@ -43,10 +42,13 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
   const [steps, setSteps] = useState('');
   const [expected, setExpected] = useState('');
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const createMutation = useCreateBugReportMutation();
 
   useEffect(() => {
     if (!open) return;
     setSent(false);
+    setError(null);
   }, [open]);
 
   const route = useMemo(() => {
@@ -54,28 +56,34 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
     return `${window.location.pathname}${window.location.search}`;
   }, [open]);
 
-  const canSend = title.trim().length >= 3 && description.trim().length >= 5;
+  const canSend =
+    title.trim().length >= 3
+    && description.trim().length >= 5
+    && !createMutation.isPending;
 
-  const submit = () => {
+  const submit = async () => {
     if (!canSend) return;
+    setError(null);
+    setSent(false);
 
-    const subject = `[Katet CRM] ${title.trim()}`;
-    const body = [
-      `Критичность: ${SEVERITY_LABEL[severity]}`,
-      `Маршрут: ${route || 'не указан'}`,
-      '',
-      'Описание:',
-      description.trim(),
-      '',
-      'Шаги воспроизведения:',
-      steps.trim() || 'не указаны',
-      '',
-      'Ожидаемое поведение:',
-      expected.trim() || 'не указано',
-    ].join('\n');
-
-    window.location.href = `mailto:${BUG_REPORT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    try {
+      await createMutation.mutateAsync({
+        title: title.trim(),
+        description: description.trim(),
+        steps: steps.trim() || undefined,
+        expected: expected.trim() || undefined,
+        routePath: route || undefined,
+        severity,
+      });
+      setTitle('');
+      setDescription('');
+      setSteps('');
+      setExpected('');
+      setSeverity('normal');
+      setSent(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Не удалось сохранить сообщение о баге');
+    }
   };
 
   return (
@@ -89,7 +97,7 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
             Сообщить о баге
           </DialogTitle>
           <DialogDescription className="text-[12px]">
-            Письмо будет адресовано на {BUG_REPORT_EMAIL}.
+            Сообщение попадёт в раздел «Контроль → Сообщения о багах» для администратора.
           </DialogDescription>
         </DialogHeader>
 
@@ -153,8 +161,14 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
 
           {sent ? (
             <div className="flex items-center gap-2 rounded-md border border-[var(--brand-accent-border)] bg-[var(--brand-accent-soft)] px-3 py-2 text-[12px] text-[var(--brand-accent-foreground)]">
-              <Mail className="h-3.5 w-3.5" />
-              Открыто письмо для отправки.
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Сообщение сохранено.
+            </div>
+          ) : null}
+
+          {error ? (
+            <div className="rounded-md border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+              {error}
             </div>
           ) : null}
         </div>
@@ -170,7 +184,7 @@ export function BugReportDialog({ open, onOpenChange }: BugReportDialogProps) {
             disabled={!canSend}
           >
             <Send className="h-3.5 w-3.5" />
-            Отправить
+            {createMutation.isPending ? 'Сохраняем…' : 'Отправить'}
           </Button>
         </DialogFooter>
       </DialogContent>

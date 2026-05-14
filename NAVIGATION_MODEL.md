@@ -105,6 +105,7 @@ Saved views (ops-local):
 - Dashboard
 - Reports
 - Audit log
+- Bug reports
 - Analytics-focused saved views
 
 Saved views (control-local):
@@ -183,7 +184,7 @@ Examples:
 - Sees domains: `home`, `sales`, `clients`, `ops`, `catalogs`.
 - Must not see admin-only sections in navigation UI.
 - Must not see Control or Admin primary domains.
-- Must not see Dashboard, Reports, Audit log, Imports, Integrations journal, Settings, Users, or Permissions.
+- Must not see Dashboard, Reports, Audit log, Bug reports, Imports, Integrations journal, Settings, Users, or Permissions.
 - Works on own/all scopes according to module filters and backend policy.
 
 Security note:

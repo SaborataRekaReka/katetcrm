@@ -74,6 +74,7 @@ Canonical pathnames:
 - `/dashboard` -> `dashboard` (admin-only)
 - `/reports` -> `reports` (admin-only)
 - `/audit` -> `audit` (admin-only)
+- `/control/bug-reports` -> `bug-reports` (admin-only)
 - `/admin/imports` -> `imports` (admin-only)
 - `/admin/integrations` -> `integrations` (admin-only)
 - `/admin/settings` -> `settings` (admin-only)
@@ -128,6 +129,7 @@ Open-behavior rule:
 
 - Reports: `reports`, `dashboard`
 - Audit: `table`, `feed`
+- Bug reports: table-first list surface with row actions (`resolved`, `delete`)
 
 Rule:
 

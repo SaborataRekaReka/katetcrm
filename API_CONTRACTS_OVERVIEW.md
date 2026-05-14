@@ -28,6 +28,7 @@ Primary groups (current):
 17. `/users/*`
 18. `/settings/*`
 19. `/navigation/*`
+20. `/bug-reports/*`
 
 ## 3. Domain contract notes
 
@@ -205,6 +206,20 @@ Contract expectations:
 3. Uses existing server-side visibility checks; foreign entity access returns role-appropriate deny (`403` or `404` depending on domain policy).
 4. Unknown entity ids return `404`; invalid `entityType` returns `400`.
 5. Backend deep-link resolver does not currently accept `client`; frontend route state can still open client workspace with `entityType=client`.
+
+### 3.11 Bug reports
+
+- `POST /api/v1/bug-reports`
+- `GET /api/v1/bug-reports` (admin-only)
+- `POST /api/v1/bug-reports/:id/status` (admin-only)
+- `DELETE /api/v1/bug-reports/:id` (admin-only)
+
+Contract expectations:
+
+1. Any authenticated user can create a bug report from shell sidebar form.
+2. Control bug list/management endpoints are admin-only and return `403` for manager.
+3. Bug report status supports `open` and `resolved` for triage flow.
+4. Bug report mutations write activity log entries with `entityType=bug_report`.
 
 ## 4. Error handling policy
 

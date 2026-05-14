@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Bug,
   BarChart3,
   User,
   TrendingUp,
@@ -9,6 +10,8 @@ import {
   Sparkles,
   ArrowRight,
   History,
+  CheckCircle2,
+  Trash2,
 } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { useLayout } from '../shell/layoutStore';
@@ -49,12 +52,23 @@ import {
 } from '../../hooks/useStatsQuery';
 import { useActivitySearchQuery } from '../../hooks/useActivityQuery';
 import { type ActivityAction, type ActivityLogEntryApi, type ActivityModule } from '../../lib/activityApi';
+import {
+  useDeleteBugReportMutation,
+  useUpdateBugReportStatusMutation,
+} from '../../hooks/useBugReportMutations';
+import { useBugReportsQuery } from '../../hooks/useBugReportsQuery';
+import {
+  type BugReportApi,
+  type BugReportSeverityApi,
+  type BugReportStatusApi,
+} from '../../lib/bugReportsApi';
 
 export function ControlWorkspacePage() {
   const { activeSecondaryNav } = useLayout();
   if (activeSecondaryNav === 'dashboard') return <ControlDashboardPage />;
   if (activeSecondaryNav === 'reports') return <ReportsCatalogPage />;
   if (activeSecondaryNav === 'audit') return <AuditPage />;
+  if (activeSecondaryNav === 'bug-reports') return <BugReportsPage />;
   return <AnalyticsViewPage viewId={activeSecondaryNav} />;
 }
 
@@ -355,6 +369,235 @@ function ReportsCatalogPage() {
       {USE_API && (reportsQuery.isPending || reportsQuery.isError) && !reportsQuery.data
         ? null
         : <EntityListTable rows={filtered} columns={columns} minWidth={860} onRowClick={openReport} />}
+    </ListScaffold>
+  );
+}
+
+/* ------------------------------ Bug reports ------------------------------ */
+
+type BugReportStatusFilter = 'all' | BugReportStatusApi;
+type BugReportSeverityFilter = 'all' | BugReportSeverityApi;
+
+const BUG_REPORT_STATUS_LABEL: Record<BugReportStatusApi, string> = {
+  open: 'Открыт',
+  resolved: 'Выполнен',
+};
+
+const BUG_REPORT_STATUS_CLASS: Record<BugReportStatusApi, string> = {
+  open: 'border-amber-200 bg-amber-50 text-amber-800',
+  resolved: 'border-emerald-200 bg-emerald-50 text-emerald-700',
+};
+
+const BUG_REPORT_SEVERITY_LABEL: Record<BugReportSeverityApi, string> = {
+  low: 'Низкая',
+  normal: 'Обычная',
+  high: 'Высокая',
+  blocker: 'Блокер',
+};
+
+function formatBugDate(value: string | null) {
+  if (!value) return '—';
+  const d = new Date(value);
+  if (!Number.isFinite(d.getTime())) return value;
+  return d.toLocaleString('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+}
+
+function BugReportsPage() {
+  const meta = getModuleMeta('bug-reports');
+  const [query, setQuery] = useState('');
+  const [status, setStatus] = useState<BugReportStatusFilter>('open');
+  const [severity, setSeverity] = useState<BugReportSeverityFilter>('all');
+
+  const bugReportsQuery = useBugReportsQuery(
+    {
+      status: status === 'all' ? undefined : status,
+      severity: severity === 'all' ? undefined : severity,
+      query: query.trim() || undefined,
+      take: 300,
+    },
+    USE_API,
+  );
+  const statusMutation = useUpdateBugReportStatusMutation();
+  const deleteMutation = useDeleteBugReportMutation();
+
+  const rows = useMemo(
+    () => (USE_API ? bugReportsQuery.data?.items ?? [] : []),
+    [bugReportsQuery.data],
+  );
+
+  const hasActive = query.length > 0 || status !== 'open' || severity !== 'all';
+
+  const markResolved = async (row: BugReportApi) => {
+    if (row.status === 'resolved') return;
+    await statusMutation.mutateAsync({ id: row.id, status: 'resolved' });
+  };
+
+  const remove = async (row: BugReportApi) => {
+    const confirmed = globalThis.confirm(`Удалить сообщение «${row.title}»?`);
+    if (!confirmed) return;
+    await deleteMutation.mutateAsync({ id: row.id });
+  };
+
+  const columns: EntityColumn<BugReportApi>[] = [
+    {
+      id: 'status',
+      header: 'Статус',
+      width: '110px',
+      render: (row) => (
+        <span className={cn('inline-flex rounded border px-1.5 py-0 text-[10px] leading-4', BUG_REPORT_STATUS_CLASS[row.status])}>
+          {BUG_REPORT_STATUS_LABEL[row.status]}
+        </span>
+      ),
+    },
+    {
+      id: 'severity',
+      header: 'Критичность',
+      width: '110px',
+      render: (row) => BUG_REPORT_SEVERITY_LABEL[row.severity],
+    },
+    {
+      id: 'message',
+      header: 'Сообщение',
+      render: (row) => (
+        <div className="min-w-0">
+          <div className="truncate text-foreground font-medium">{row.title}</div>
+          <div className="line-clamp-2 text-[11px] text-muted-foreground">{row.description}</div>
+          {row.routePath ? (
+            <div className="truncate text-[10px] text-muted-foreground">{row.routePath}</div>
+          ) : null}
+        </div>
+      ),
+    },
+    {
+      id: 'reporter',
+      header: 'Автор',
+      width: '160px',
+      render: (row) => row.reporterName ?? 'Система',
+    },
+    {
+      id: 'created',
+      header: 'Создано',
+      width: '170px',
+      render: (row) => <span className="text-[11px] text-muted-foreground">{formatBugDate(row.createdAt)}</span>,
+    },
+    {
+      id: 'resolved',
+      header: 'Выполнено',
+      width: '170px',
+      render: (row) => <span className="text-[11px] text-muted-foreground">{formatBugDate(row.resolvedAt)}</span>,
+    },
+    {
+      id: 'actions',
+      header: 'Действия',
+      width: '170px',
+      render: (row) => (
+        <div className="flex items-center justify-end gap-1">
+          <button
+            type="button"
+            className="inline-flex h-6 items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-2 text-[11px] text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={row.status === 'resolved' || statusMutation.isPending}
+            onClick={() => {
+              void markResolved(row);
+            }}
+          >
+            <CheckCircle2 className="h-3 w-3" />
+            Выполнено
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-6 items-center gap-1 rounded border border-rose-200 bg-rose-50 px-2 text-[11px] text-rose-700 transition-colors hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={deleteMutation.isPending}
+            onClick={() => {
+              void remove(row);
+            }}
+          >
+            <Trash2 className="h-3 w-3" />
+            Удалить
+          </button>
+        </div>
+      ),
+      className: 'text-right',
+      align: 'right',
+    },
+  ];
+
+  const toolbar = (
+    <SimpleToolbar
+      searchPlaceholder={meta.searchPlaceholder}
+      query={query}
+      onQueryChange={setQuery}
+      filters={[
+        {
+          id: 'status',
+          value: status,
+          placeholder: 'Статус',
+          width: 140,
+          options: [
+            { value: 'open', label: 'Открытые' },
+            { value: 'resolved', label: 'Выполненные' },
+            { value: 'all', label: 'Все' },
+          ],
+          onChange: (value) => setStatus(value as BugReportStatusFilter),
+        },
+        {
+          id: 'severity',
+          value: severity,
+          placeholder: 'Критичность',
+          width: 150,
+          options: [
+            { value: 'all', label: 'Все уровни' },
+            { value: 'low', label: BUG_REPORT_SEVERITY_LABEL.low },
+            { value: 'normal', label: BUG_REPORT_SEVERITY_LABEL.normal },
+            { value: 'high', label: BUG_REPORT_SEVERITY_LABEL.high },
+            { value: 'blocker', label: BUG_REPORT_SEVERITY_LABEL.blocker },
+          ],
+          onChange: (value) => setSeverity(value as BugReportSeverityFilter),
+        },
+      ]}
+      hasActive={hasActive}
+      onReset={() => {
+        setQuery('');
+        setStatus('open');
+        setSeverity('all');
+      }}
+    />
+  );
+
+  if (!USE_API) {
+    return (
+      <ListScaffold toolbar={toolbar}>
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Раздел доступен в API-режиме.
+        </div>
+      </ListScaffold>
+    );
+  }
+
+  return (
+    <ListScaffold toolbar={toolbar}>
+      {bugReportsQuery.isPending && !bugReportsQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          Загружаем сообщения о багах...
+        </div>
+      ) : null}
+
+      {bugReportsQuery.isError && !bugReportsQuery.data ? (
+        <div className="flex flex-1 items-center justify-center p-10 text-[13px] text-muted-foreground">
+          {bugReportsQuery.error instanceof Error
+            ? bugReportsQuery.error.message
+            : 'Не удалось загрузить сообщения о багах.'}
+        </div>
+      ) : null}
+
+      {(bugReportsQuery.isPending || bugReportsQuery.isError) && !bugReportsQuery.data
+        ? null
+        : <EntityListTable rows={rows} columns={columns} minWidth={1240} emptyLabel="Сообщений о багах пока нет" />}
     </ListScaffold>
   );
 }

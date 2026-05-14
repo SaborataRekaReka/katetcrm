@@ -469,12 +469,21 @@ Test priority: P0
 
 QA-REQ-047:
 Question: QA-Q-047. What should the sidebar bug report action do?
-Answer: The old Draft action is removed. The Sidebar bug report action opens a form that prepares an email to `breneize@yandex.ru` with severity, route, description, steps, and expected result.
-Route surface: global shell sidebar
-Domain surface: Support feedback, no CRM entity mutation
+Answer: The old Draft action is removed. The Sidebar bug report action opens a form that stores a bug report in CRM with severity, route, description, steps, and expected result.
+Route surface: global shell sidebar, /control/bug-reports
+Domain surface: Support feedback registry for admin triage
 UI surface: Sidebar footer button is "Сообщить о баге" and opens the bug form.
-State/API/audit surface: No CRM API mutation is performed; send uses a `mailto:` handoff.
+State/API/audit surface: `POST /api/v1/bug-reports` persists a bug report and writes activity log entry.
 Test priority: P2
+
+QA-REQ-049:
+Question: QA-Q-049. How should admin process bug reports in Control?
+Answer: In Control -> Bug reports, Admin can open the list, mark an open report as completed, and delete any report.
+Route surface: /control/bug-reports
+Domain surface: Admin support-triage operations on bug reports
+UI surface: Bug report table provides row actions "Выполнено" and "Удалить".
+State/API/audit surface: `GET /api/v1/bug-reports`, `POST /api/v1/bug-reports/:id/status`, and `DELETE /api/v1/bug-reports/:id` are admin-only and write activity entries.
+Test priority: P1
 
 QA-REQ-048:
 Question: QA-Q-048. What is the shell brand accent?

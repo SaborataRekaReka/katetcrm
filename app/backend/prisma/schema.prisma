@@ -148,6 +148,18 @@ enum TaskPriority {
   low
 }
 
+enum BugReportSeverity {
+  low
+  normal
+  high
+  blocker
+}
+
+enum BugReportStatus {
+  open
+  resolved
+}
+
 // ---------------------------------------------------------------------------
 // Auth / Users
 // ---------------------------------------------------------------------------
@@ -171,6 +183,8 @@ model User {
   assignedTasks        Task[]             @relation("TaskAssignee")
   reportedTasks        Task[]             @relation("TaskReporter")
   createdTasks         Task[]             @relation("TaskCreatedBy")
+  reportedBugReports   BugReport[]        @relation("BugReportReporter")
+  resolvedBugReports   BugReport[]        @relation("BugReportResolvedBy")
 
   @@map("users")
 }
@@ -613,6 +627,32 @@ model Task {
   @@index([dueDate])
   @@index([status])
   @@map("tasks")
+}
+
+model BugReport {
+  id           String            @id @default(cuid())
+  title        String
+  description  String
+  steps        String?
+  expected     String?
+  routePath    String?           @map("route_path")
+  severity     BugReportSeverity @default(normal)
+  status       BugReportStatus   @default(open)
+
+  reporterId   String?           @map("reporter_id")
+  reporter     User?             @relation("BugReportReporter", fields: [reporterId], references: [id])
+
+  resolvedAt   DateTime?         @map("resolved_at")
+  resolvedById String?           @map("resolved_by_id")
+  resolvedBy   User?             @relation("BugReportResolvedBy", fields: [resolvedById], references: [id])
+
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@index([severity])
+  @@index([reporterId])
+  @@map("bug_reports")
 }
 
 // ---------------------------------------------------------------------------

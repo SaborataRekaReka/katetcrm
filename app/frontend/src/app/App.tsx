@@ -81,6 +81,7 @@ function RouteOutlet() {
     'dashboard',
     'reports',
     'audit',
+    'bug-reports',
     'view-stale-leads',
     'view-lost-leads',
     'view-active-reservations',

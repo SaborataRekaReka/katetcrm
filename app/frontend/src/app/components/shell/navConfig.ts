@@ -31,6 +31,7 @@ import {
   Rocket,
   ClipboardList,
   Activity,
+  Bug,
 } from 'lucide-react';
 import type { ComponentType } from 'react';
 import type { UserRole } from './layoutStore';
@@ -215,6 +216,7 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
           { id: 'dashboard', label: 'Дашборд', icon: Gauge },
           { id: 'reports', label: 'Отчёты', icon: BarChart3 },
           { id: 'audit', label: 'Журнал действий', icon: History },
+          { id: 'bug-reports', label: 'Сообщения о багах', icon: Bug },
         ],
       },
     ],
@@ -469,6 +471,11 @@ export const MODULE_META: Record<string, ModuleMeta> = {
       { id: 'table', label: 'Таблица' },
       { id: 'feed', label: 'Лента' },
     ],
+  },
+  'bug-reports': {
+    domain: 'control',
+    title: 'Сообщения о багах',
+    searchPlaceholder: 'Поиск по баг-репортам',
   },
   'view-stale-leads': {
     domain: 'control',
