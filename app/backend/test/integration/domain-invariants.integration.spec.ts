@@ -15,6 +15,7 @@ import {
   createReservation,
   ensureEquipmentFixture,
   futureIso,
+  uniquePhone,
   uniqueSeed,
 } from '../helpers/domain-fixtures';
 import { closeTestApp, createTestApp } from '../helpers/test-app';
@@ -72,6 +73,34 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
       },
     });
     expect(activeCountAfterDirectCreate).toBe(1);
+  });
+
+  it('INT-001A: invalid Lead to Application transition creates no Application', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('INT001A');
+
+    const created = await request(app.getHttpServer())
+      .post('/api/v1/leads')
+      .set('Authorization', authHeader(login.accessToken))
+      .send({
+        contactName: `QA ${seed} Lead`,
+        contactPhone: uniquePhone('001'),
+      })
+      .expect(201);
+
+    const leadId = created.body.lead.id as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'application' })
+      .expect(400);
+
+    const dbLead = await prisma.lead.findUnique({ where: { id: leadId } });
+    expect(dbLead?.stage).toBe('lead');
+
+    const applicationCount = await prisma.application.count({ where: { leadId } });
+    expect(applicationCount).toBe(0);
   });
 
   it('INT-002: multi-item application support in happy path fixtures', async () => {
@@ -201,6 +230,61 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
     expect(dbReservation).not.toBeNull();
     expect(dbReservation?.hasConflictWarning).toBe(true);
     expect(dbReservation?.isActive).toBe(true);
+  });
+
+  it('INT-004A: Application to Reservation transition requires an active Reservation', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('INT004A');
+    const equipment = await ensureEquipmentFixture(prisma, seed);
+    const fixture = await createLeadAndApplication(app, login.accessToken, seed);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(400);
+
+    const leadBeforeReservation = await prisma.lead.findUnique({ where: { id: fixture.leadId } });
+    expect(leadBeforeReservation?.stage).toBe('application');
+
+    const appBeforeReservation = await prisma.application.findUnique({
+      where: { id: fixture.applicationId },
+    });
+    expect(appBeforeReservation?.stage).toBe('application');
+
+    const item = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentTypeLabel: 'QA INT-004A Position',
+      quantity: 1,
+      plannedDate: futureIso(160),
+      plannedTimeFrom: '09:00',
+      plannedTimeTo: '18:00',
+      address: 'QA INT-004A Address',
+      readyForReservation: true,
+      sourcingType: 'own',
+    });
+
+    await createReservation(app, login.accessToken, {
+      applicationItemId: item.id,
+      sourcingType: 'own',
+      equipmentTypeId: equipment.equipmentTypeId,
+      plannedStart: futureIso(220),
+      plannedEnd: futureIso(340),
+    });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(201);
+
+    const leadAfterReservation = await prisma.lead.findUnique({ where: { id: fixture.leadId } });
+    expect(leadAfterReservation?.stage).toBe('reservation');
+
+    const appAfterReservation = await prisma.application.findUnique({
+      where: { id: fixture.applicationId },
+    });
+    expect(appAfterReservation?.stage).toBe('reservation');
   });
 
   it('INT-005: unit required before departure transition', async () => {

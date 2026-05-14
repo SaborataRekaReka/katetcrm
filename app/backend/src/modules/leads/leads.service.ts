@@ -15,6 +15,13 @@ export interface ActorContext {
   role: UserRole;
 }
 
+type LeadApplicationPrerequisites = {
+  address: string | null;
+  requestedDate: Date | null;
+  contactPhone: string | null;
+  hasNoContact: boolean;
+};
+
 /**
  * Правила перехода стадий (ТЗ §2.3, §3):
  *   lead          → application | unqualified
@@ -221,6 +228,53 @@ export class LeadsService {
     return { lead, duplicates };
   }
 
+  private getLeadApplicationMissingFields(lead: LeadApplicationPrerequisites): string[] {
+    const missing: string[] = [];
+    if (!lead.address?.trim()) missing.push('адрес');
+    if (!lead.requestedDate) missing.push('дата');
+    if (!lead.contactPhone?.trim() || lead.hasNoContact) missing.push('контакт');
+    return missing;
+  }
+
+  private async assertReservationTransitionReady(
+    tx: Prisma.TransactionClient,
+    leadId: string,
+  ): Promise<string[]> {
+    const applications = await tx.application.findMany({
+      where: { leadId, isActive: true },
+      select: {
+        id: true,
+        items: {
+          select: {
+            reservations: {
+              where: { isActive: true },
+              select: { id: true },
+              take: 1,
+            },
+          },
+        },
+      },
+    });
+
+    if (applications.length === 0) {
+      throw new BadRequestException(
+        'Нельзя перевести в бронь без активной заявки',
+      );
+    }
+
+    const hasActiveReservation = applications.some((application) =>
+      application.items.some((item) => item.reservations.length > 0),
+    );
+
+    if (!hasActiveReservation) {
+      throw new BadRequestException(
+        'Сначала создайте бронь по готовой позиции заявки',
+      );
+    }
+
+    return applications.map((application) => application.id);
+  }
+
   async update(id: string, dto: UpdateLeadDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
     const phoneChanged = dto.contactPhone !== undefined && dto.contactPhone !== existing.contactPhone;
@@ -245,6 +299,14 @@ export class LeadsService {
 
   async changeStage(id: string, dto: ChangeStageDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+    if (existing.stage === 'lead' && dto.stage === 'application') {
+      const missing = this.getLeadApplicationMissingFields(existing);
+      if (missing.length > 0) {
+        throw new BadRequestException(
+          `Для перевода в заявку заполните: ${missing.join(', ')}`,
+        );
+      }
+    }
     if (dto.stage === 'unqualified' && !dto.reason?.trim()) {
       throw new BadRequestException('reason is required for unqualified stage');
     }
@@ -266,12 +328,18 @@ export class LeadsService {
     // Инвариант: lead → application создаёт одну активную Application.
     // Используем partial unique index (leadId, isActive=true) для enforcement.
     return this.prisma.$transaction(async (tx) => {
+      const now = new Date();
+      const activeApplicationIdsForReservation =
+        existing.stage === 'application' && dto.stage === 'reservation'
+          ? await this.assertReservationTransitionReady(tx, id)
+          : [];
+
       const lead = await tx.lead.update({
         where: { id },
         data: {
           stage: dto.stage,
           unqualifiedReason: dto.stage === 'unqualified' ? dto.reason : existing.unqualifiedReason,
-          lastActivityAt: new Date(),
+          lastActivityAt: now,
         },
       });
 
@@ -316,6 +384,16 @@ export class LeadsService {
             comment: lead.comment,
             isUrgent: lead.isUrgent,
             isActive: true,
+          },
+        });
+      }
+
+      if (existing.stage === 'application' && dto.stage === 'reservation') {
+        await tx.application.updateMany({
+          where: { id: { in: activeApplicationIdsForReservation } },
+          data: {
+            stage: 'reservation',
+            lastActivityAt: now,
           },
         });
       }

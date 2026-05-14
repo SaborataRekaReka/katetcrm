@@ -193,6 +193,23 @@ npm run backfill:client-contacts
 
 - `INTEGRATION_REQUIRE_SIGNATURES=true` — принудительно включает проверку webhook-подписей во всех окружениях (включая local/CI).
 
+### Elementor quick start (WordPress)
+
+Для Elementor Pro форм можно использовать готовый сниппет:
+
+- `../../integrations/elementor/katet-elementor-to-crm-snippet.php`
+
+Минимальная подготовка backend:
+
+```env
+INTEGRATION_SITE_SECRET=super-strong-shared-secret
+INTEGRATION_REQUIRE_SIGNATURES=true
+```
+
+Сниппет отправляет события в `POST /api/v1/integrations/events/ingest` с `channel=site`
+и подписывает payload через `x-integration-timestamp` + `x-integration-signature`.
+Алгоритм подписи полностью совместим с текущей backend-проверкой HMAC.
+
 ## Инварианты, которые enforced на уровне БД
 
 См. `prisma/schema.prisma` и соответствующие уникальные/частичные индексы:

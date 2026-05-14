@@ -19,7 +19,7 @@ import {
 } from '../helpers/domain-fixtures';
 import { closeTestApp, createTestApp } from '../helpers/test-app';
 
-describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..035)', () => {
+describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..038)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
@@ -87,6 +87,46 @@ describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..035)', () => 
     expect(second.body.duplicates.length).toBeGreaterThanOrEqual(1);
   });
 
+  it('APIC-037: Lead to Application rejects missing conversion prerequisites', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('APIC037');
+
+    const created = await request(app.getHttpServer())
+      .post('/api/v1/leads')
+      .set('Authorization', authHeader(login.accessToken))
+      .send({
+        contactName: `QA ${seed} Lead`,
+        contactPhone: uniquePhone('037'),
+      })
+      .expect(201);
+
+    const leadId = created.body.lead.id as string;
+
+    const blocked = await request(app.getHttpServer())
+      .post(`/api/v1/leads/${leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'application' })
+      .expect(400);
+
+    expect(String(blocked.body.message)).toContain('Для перевода в заявку заполните');
+
+    const leadAfterBlockedTransition = await request(app.getHttpServer())
+      .get(`/api/v1/leads/${leadId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+
+    expect(leadAfterBlockedTransition.body.stage).toBe('lead');
+
+    const applications = await request(app.getHttpServer())
+      .get('/api/v1/applications')
+      .query({ leadId })
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+
+    expect(applications.body.total).toBe(0);
+    expect(applications.body.items).toHaveLength(0);
+  });
+
   it('APIC-004: Lead to Application relation model and single active invariant contract', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
     const fixture = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC004'));
@@ -137,6 +177,67 @@ describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..035)', () => 
       (item: { isActive: boolean }) => item.isActive,
     ).length;
     expect(activeCount).toBe(1);
+  });
+
+  it('APIC-038: Application to Reservation stage requires an active Reservation entity', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('APIC038');
+    const equipment = await ensureEquipmentFixture(prisma, seed);
+    const fixture = await createLeadAndApplication(app, login.accessToken, seed);
+
+    const blocked = await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(400);
+
+    expect(String(blocked.body.message)).toContain('Сначала создайте бронь');
+
+    const leadAfterBlockedTransition = await request(app.getHttpServer())
+      .get(`/api/v1/leads/${fixture.leadId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+    expect(leadAfterBlockedTransition.body.stage).toBe('application');
+
+    const applicationAfterBlockedTransition = await request(app.getHttpServer())
+      .get(`/api/v1/applications/${fixture.applicationId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+    expect(applicationAfterBlockedTransition.body.stage).toBe('application');
+
+    const item = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentTypeLabel: 'QA APIC-038 Position',
+      quantity: 1,
+      plannedDate: futureIso(120),
+      plannedTimeFrom: '09:00',
+      plannedTimeTo: '18:00',
+      address: 'QA APIC-038 Address',
+      sourcingType: 'own',
+      readyForReservation: true,
+    });
+
+    await createReservation(app, login.accessToken, {
+      applicationItemId: item.id,
+      sourcingType: 'own',
+      equipmentTypeId: equipment.equipmentTypeId,
+      plannedStart: futureIso(180),
+      plannedEnd: futureIso(300),
+    });
+
+    const moved = await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(201);
+
+    expect(moved.body.stage).toBe('reservation');
+
+    const applicationAfterMove = await request(app.getHttpServer())
+      .get(`/api/v1/applications/${fixture.applicationId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+    expect(applicationAfterMove.body.stage).toBe('reservation');
   });
 
   it('APIC-005: Application item readiness and source policy contract', async () => {

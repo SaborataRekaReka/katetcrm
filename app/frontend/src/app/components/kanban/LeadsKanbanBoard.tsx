@@ -8,6 +8,7 @@ import { USE_API } from '../../lib/featureFlags';
 type Props = {
   leads: Lead[];
   onCardClick?: (lead: Lead) => void;
+  validateStageDrop?: (lead: Lead, target: StageType) => string | null;
 };
 
 const COLUMNS: KanbanColumn[] = STAGE_ORDER.map((id) => ({
@@ -29,17 +30,22 @@ const ALLOWED: Record<StageType, StageType[]> = {
   unqualified: [],
 };
 
-export function LeadsKanbanBoard({ leads, onCardClick }: Props) {
+export function LeadsKanbanBoard({ leads, onCardClick, validateStageDrop }: Props) {
   const changeStage = useChangeLeadStage();
   const [dragging, setDragging] = useState<Lead | null>(null);
   const [dragError, setDragError] = useState<string | null>(null);
 
   const byStage = (stage: StageType) => leads.filter((l) => l.stage === stage);
 
-  const canDropOn = (target: StageType): boolean => {
+  const isStageTransitionAllowed = (target: StageType): boolean => {
     if (!dragging) return false;
     if (dragging.stage === target) return false;
     return ALLOWED[dragging.stage]?.includes(target) ?? false;
+  };
+
+  const showDragError = (message: string) => {
+    setDragError(message);
+    setTimeout(() => setDragError(null), 4000);
   };
 
   const handleDropOn = async (target: StageType) => {
@@ -49,15 +55,21 @@ export function LeadsKanbanBoard({ leads, onCardClick }: Props) {
     }
     const lead = dragging;
     setDragging(null);
-    if (!canDropOn(target)) return;
+    if (!isStageTransitionAllowed(target)) return;
+
+    const validationError = validateStageDrop?.(lead, target);
+    if (validationError) {
+      showDragError(validationError);
+      return;
+    }
+
     try {
       await changeStage.mutateAsync({ id: lead.id, stage: target });
       setDragError(null);
     } catch (err) {
-      setDragError(
+      showDragError(
         err instanceof Error ? err.message : 'Не удалось сменить стадию',
       );
-      setTimeout(() => setDragError(null), 4000);
     }
   };
 
@@ -79,8 +91,8 @@ export function LeadsKanbanBoard({ leads, onCardClick }: Props) {
             onCardClick={onCardClick}
             onCardDragStart={USE_API ? (lead) => setDragging(lead) : undefined}
             onCardDragEnd={USE_API ? () => setDragging(null) : undefined}
-            dropActive={!!dragging && canDropOn(c.id)}
-            dropDisabled={!!dragging && !canDropOn(c.id) && dragging.stage !== c.id}
+            dropActive={!!dragging && isStageTransitionAllowed(c.id)}
+            dropDisabled={!!dragging && !isStageTransitionAllowed(c.id) && dragging.stage !== c.id}
             onColumnDrop={USE_API ? () => handleDropOn(c.id) : undefined}
           />
         ))}

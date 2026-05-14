@@ -56,6 +56,7 @@ Contract expectations:
 2. Dedupe-related flags are returned for UI signaling.
 3. Repeat-order flow is canonical via `POST /api/v1/leads` with `source=manual`, `sourceLabel=repeat_order`, and `clientId` from client workspace context.
 4. `GET /api/v1/leads` supports list filters used by analytics views (`stage`, `managerId`, `query`, `isUrgent`, `isStale`).
+5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites: `lead -> application` requires contact, requested date, and address, and `application -> reservation` requires an existing active Reservation for the active Application.
 
 ### 3.3 Applications
 
@@ -74,6 +75,7 @@ Contract expectations:
 1. One active application per lead is guarded by DB/business rules.
 2. Item-level statuses remain consistent with reservation lifecycle.
 3. Item readiness follows `QA-REQ-009`: equipment type, quantity, planned date/time, address, and non-undecided source.
+4. Moving an Application out of Sales scope to Reservation must be tied to a real active Reservation entity, not a stage-only Lead update.
 
 ### 3.4 Reservations
 

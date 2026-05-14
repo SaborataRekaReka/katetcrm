@@ -360,6 +360,24 @@ State/API/audit surface: `POST /api/v1/integrations/events/ingest` with `channel
 Test priority: P1
 
 QA-REQ-037:
+Question: QA-Q-037. Can Lead -> Application create an Application when conversion-required Lead data is missing?
+Answer: No. Conversion requires contact, requested date, and address; if any are missing, the Lead remains in `lead` stage and no Application is created.
+Route surface: /leads -> /applications
+Domain surface: Lead -> Application transition
+UI surface: Lead conversion and kanban drag/drop show the missing fields instead of moving the card.
+State/API/audit surface: `POST /api/v1/leads/:id/stage` rejects invalid `stage=application` without creating an Application.
+Test priority: P0
+
+QA-REQ-038:
+Question: QA-Q-038. Can Application -> Reservation be represented by moving a Lead stage without an active Reservation entity?
+Answer: No. A Lead can enter `reservation` stage only when its active Application already has at least one active Reservation.
+Route surface: /leads, /applications, /reservations
+Domain surface: Application -> Reservation transition
+UI surface: Kanban drag/drop to Reservation is blocked until reservation preparation creates a real Reservation; stage-specific card click opens the linked Reservation/Application when present.
+State/API/audit surface: `POST /api/v1/leads/:id/stage` rejects invalid `stage=reservation` without an active Reservation and keeps Lead/Application stages unchanged.
+Test priority: P0
+
+QA-REQ-037:
 Question: QA-Q-037. Where should Mango call recording metadata be visible?
 Answer: In activity timeline of linked Lead and active Application.
 Route surface: /leads detail, /applications detail

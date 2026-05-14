@@ -69,6 +69,10 @@ export async function createLeadAndApplication(
     .send({
       contactName: `QA ${seed} Lead`,
       contactPhone: uniquePhone(seed.replace(/\D/g, '').slice(0, 6) || '777'),
+      equipmentTypeHint: `QA ${seed} Equipment`,
+      requestedDate: futureIso(1440),
+      timeWindow: '09:00-18:00',
+      address: `QA ${seed} Address`,
     })
     .expect(201);
 

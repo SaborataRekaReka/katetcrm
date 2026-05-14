@@ -851,7 +851,7 @@ export function LeadDetailModal({
     setStageError(null);
 
     const toCreate = application.positions.filter(
-      (p) => !p.status || p.status === 'no_reservation',
+      (p) => p.readyForReservation && (!p.status || p.status === 'no_reservation'),
     );
     const hasAnyReservation = application.positions.some(
       (p) => p.status === 'unit_selected' || p.status === 'reserved' || p.status === 'conflict',

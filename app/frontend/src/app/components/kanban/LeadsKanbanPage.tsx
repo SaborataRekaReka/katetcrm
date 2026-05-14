@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
-import { Lead } from '../../types/kanban';
+import { Lead, StageType } from '../../types/kanban';
 import { mockLeads } from '../../data/mockLeads';
 import { mockApplication } from '../../data/mockApplications';
 import { mockApplicationsList } from '../../data/mockApplicationsList';
@@ -204,9 +204,35 @@ export function LeadsKanbanPage() {
     filters.stale ||
     query.length > 0;
 
+  const validateStageDrop = (lead: Lead, target: StageType): string | null => {
+    if (lead.stage === 'lead' && target === 'application') {
+      const missing: string[] = [];
+      if (!lead.address?.trim()) missing.push('адрес');
+      if (!lead.date) missing.push('дата');
+      if (lead.hasNoContact || !lead.phone?.trim()) missing.push('контакт');
+
+      if (missing.length > 0) {
+        return `Для перевода в заявку заполните: ${missing.join(', ')}`;
+      }
+    }
+
+    if (lead.stage === 'application' && target === 'reservation') {
+      const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
+      if (!linkedIds?.applicationId) {
+        return 'Сначала должна быть создана заявка';
+      }
+      if (!linkedIds.reservationId) {
+        return 'Сначала подготовьте бронь по готовой позиции заявки';
+      }
+    }
+
+    return null;
+  };
+
   const handleCardClick = (lead: Lead) => {
     const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
 
+    const applicationId = lead.stage === 'application' ? linkedIds?.applicationId ?? null : null;
     const reservationId = lead.stage === 'reservation' ? linkedIds?.reservationId ?? null : null;
     const departureId = lead.stage === 'departure' ? linkedIds?.departureId ?? null : null;
     const completionId =
@@ -217,6 +243,13 @@ export function LeadsKanbanPage() {
       lead.stage === 'completed' || lead.stage === 'unqualified'
         ? linkedIds?.departureId ?? null
         : null;
+
+    if (applicationId) {
+      setSelectedLead(null);
+      setIsDetailOpen(false);
+      setActiveEntityRoute('application', applicationId);
+      return;
+    }
 
     if (reservationId) {
       setSelectedLead(null);
@@ -382,7 +415,11 @@ export function LeadsKanbanPage() {
       {effectiveView === 'board' ? <KpiRow leads={filteredLeads} onSelect={handleKpiSelect} /> : null}
 
       {effectiveView === 'board' && (
-        <LeadsKanbanBoard leads={filteredLeads} onCardClick={handleCardClick} />
+        <LeadsKanbanBoard
+          leads={filteredLeads}
+          onCardClick={handleCardClick}
+          validateStageDrop={validateStageDrop}
+        />
       )}
 
       {effectiveView === 'list' && (
