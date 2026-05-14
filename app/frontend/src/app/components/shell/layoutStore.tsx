@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import {
+  canonicalSecondaryForEntityType,
   type RouteEntityType,
   parseInitialRoute,
   pathnameForSecondary,
@@ -142,6 +143,38 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
 
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // External deep-links should always land in entity canonical module route.
+  // In-app cross-entity opens still keep current workspace context via openSecondaryWithEntity.
+  useEffect(() => {
+    if (!initialRoute.entityType || !initialRoute.entityId || !initialRoute.secondaryId) return;
+
+    const canonicalSecondary = canonicalSecondaryForEntityType(initialRoute.entityType);
+    if (initialRoute.secondaryId === canonicalSecondary) return;
+
+    const canonicalView =
+      resolveViewForModule(canonicalSecondary, initialRoute.view ?? currentView)
+      ?? initialRoute.view
+      ?? currentView;
+
+    setActiveSecondaryNavState(canonicalSecondary);
+    setCurrentViewState(canonicalView);
+    setViewBySecondary((prev) => {
+      if (prev[canonicalSecondary] === canonicalView) return prev;
+      return { ...prev, [canonicalSecondary]: canonicalView };
+    });
+
+    writeRoute(
+      canonicalSecondary,
+      {
+        view: canonicalView || null,
+        entityType: initialRoute.entityType,
+        entityId: initialRoute.entityId,
+      },
+      { history: 'replace' },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const resolveWritableSecondary = (fallbackSecondaryId: string): string | null => {

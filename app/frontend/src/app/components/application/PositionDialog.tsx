@@ -1,8 +1,8 @@
 /**
  * PositionDialog — shell-модалка позиции заявки (добавление + редактирование).
  *
- * Тот же EntityModalFramework, что у детального лид/брони. Save disabled пока
- * не заполнены обязательные поля (тип техники + количество ≥1 + смен ≥1).
+ * Тот же EntityModalFramework, что у детального лид/брони.
+ * Save disabled пока не заполнены обязательные поля подготовки позиции к брони.
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -156,19 +156,27 @@ export function PositionDialog({
   const deliveryCheck = parseMoneyInput(form.deliveryPrice);
   const surchargeCheck = parseMoneyInput(form.surcharge);
   const moneyValid = priceCheck.valid && deliveryCheck.valid && surchargeCheck.valid;
-  const canSave = labelValid && qtyValid && shiftsValid && moneyValid && !mutation.isPending;
   const plannedDateReady = Boolean(form.plannedDate);
-  const plannedTimeReady = Boolean(form.plannedTimeFrom && form.plannedTimeTo);
+  const plannedTimeFromReady = Boolean(form.plannedTimeFrom);
+  const plannedTimeToReady = Boolean(form.plannedTimeTo);
+  const plannedTimeReady = plannedTimeFromReady && plannedTimeToReady;
   const addressReady = form.address.trim().length > 0;
-  const sourcingReady = form.sourcingType !== 'undecided';
-  const reservationReady = labelValid && qtyValid && plannedDateReady && plannedTimeReady && addressReady && sourcingReady;
+  const reservationReady =
+    labelValid &&
+    qtyValid &&
+    shiftsValid &&
+    plannedDateReady &&
+    plannedTimeReady &&
+    addressReady;
+  const canSave = reservationReady && moneyValid && !mutation.isPending;
   const reservationMissing = [
     !labelValid ? 'тип техники' : null,
     !qtyValid ? 'количество' : null,
+    !shiftsValid ? 'смены' : null,
     !plannedDateReady ? 'дата' : null,
-    !plannedTimeReady ? 'время' : null,
+    !plannedTimeFromReady ? 'время с' : null,
+    !plannedTimeToReady ? 'время до' : null,
     !addressReady ? 'адрес' : null,
-    !sourcingReady ? 'источник' : null,
   ].filter(Boolean);
 
   const typeOptions = useMemo(
@@ -335,13 +343,18 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<Truck className="h-3 w-3" />}
-                label="Источник для брони *"
+                label="Источник для брони"
                 value={
-                  <FieldSelect
-                    value={form.sourcingType}
-                    onChange={(v) => set('sourcingType', v as SourcingType)}
-                    options={SOURCING_OPTIONS}
-                  />
+                  <div className="space-y-1">
+                    <FieldSelect
+                      value={form.sourcingType}
+                      onChange={(v) => set('sourcingType', v as SourcingType)}
+                      options={SOURCING_OPTIONS}
+                    />
+                    <div className="text-[10px] text-muted-foreground">
+                      Можно выбрать позже на стадии брони.
+                    </div>
+                  </div>
                 }
               />
             </EntityMetaGrid>
@@ -356,7 +369,11 @@ export function PositionDialog({
                   <FieldInput
                     type="date"
                     value={form.plannedDate}
-                    onChange={(v) => set('plannedDate', v)}
+                    onChange={(v) => {
+                      set('plannedDate', v);
+                      setTouched(true);
+                    }}
+                    invalid={touched && !plannedDateReady}
                   />
                 }
               />
@@ -366,8 +383,12 @@ export function PositionDialog({
                 value={
                   <FieldInput
                     value={form.address}
-                    onChange={(v) => set('address', v)}
+                    onChange={(v) => {
+                      set('address', v);
+                      setTouched(true);
+                    }}
                     placeholder="Москва, ул. ..."
+                    invalid={touched && !addressReady}
                   />
                 }
               />
@@ -378,7 +399,11 @@ export function PositionDialog({
                   <FieldInput
                     type="time"
                     value={form.plannedTimeFrom}
-                    onChange={(v) => set('plannedTimeFrom', v)}
+                    onChange={(v) => {
+                      set('plannedTimeFrom', v);
+                      setTouched(true);
+                    }}
+                    invalid={touched && !plannedTimeFromReady}
                   />
                 }
               />
@@ -389,18 +414,38 @@ export function PositionDialog({
                   <FieldInput
                     type="time"
                     value={form.plannedTimeTo}
-                    onChange={(v) => set('plannedTimeTo', v)}
+                    onChange={(v) => {
+                      set('plannedTimeTo', v);
+                      setTouched(true);
+                    }}
+                    invalid={touched && !plannedTimeToReady}
                   />
                 }
               />
             </EntityMetaGrid>
-            <div className={reservationReady
-              ? 'rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-700'
-              : 'rounded border border-[var(--brand-accent-border)] bg-[var(--brand-accent-soft)] px-3 py-2 text-[11px] text-[var(--brand-accent-foreground)]'}
+            <div
+              className={
+                reservationReady
+                  ? 'rounded-lg border border-emerald-200 bg-emerald-50/80 px-3 py-2'
+                  : 'rounded-lg border border-amber-200 bg-amber-50/80 px-3 py-2'
+              }
             >
-              {reservationReady
-                ? 'Позиция готова к брони.'
-                : `Позиция сохранится в заявке, но для брони не хватает: ${reservationMissing.join(', ')}.`}
+              <div
+                className={
+                  reservationReady
+                    ? 'text-[11px] font-medium text-emerald-700'
+                    : 'text-[11px] font-medium text-amber-800'
+                }
+              >
+                {reservationReady
+                  ? 'Позиция готова к брони. Сохранение доступно.'
+                  : 'Для сохранения заполните все обязательные поля со звездочкой.'}
+              </div>
+              {!reservationReady && reservationMissing.length > 0 ? (
+                <div className="mt-1 text-[10px] text-amber-700">
+                  Не заполнено: {reservationMissing.join(', ')}.
+                </div>
+              ) : null}
             </div>
           </EntitySection>
 

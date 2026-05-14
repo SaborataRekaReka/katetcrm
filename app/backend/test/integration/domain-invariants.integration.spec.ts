@@ -134,7 +134,7 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
     expect(dbApplication?.items.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('INT-003: readiness derivation requires non-undecided source and mandatory fields', async () => {
+  it('INT-003: readiness derivation requires mandatory fields and allows undecided source', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
     const seed = uniqueSeed('INT003');
     const fixture = await createLeadAndApplication(app, login.accessToken, seed);
@@ -165,9 +165,13 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
         readyForReservation: true,
         sourcingType: 'undecided',
       })
-      .expect(400);
+      .expect(201);
 
-    expect(String(undecidedSource.body.message)).toContain('sourcingType');
+    const undecidedDbItem = await prisma.applicationItem.findUnique({
+      where: { id: undecidedSource.body.id as string },
+    });
+    expect(undecidedDbItem?.readyForReservation).toBe(true);
+    expect(undecidedDbItem?.sourcingType).toBe('undecided');
 
     const validItem = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
       equipmentTypeLabel: 'QA INT-003 Valid',

@@ -149,10 +149,11 @@ export function parseInitialRoute(): InitialRoute {
   }
   const secondaryId = secondaryForPathname(window.location.pathname);
   const params = new URLSearchParams(window.location.search);
-  const entityTypeRaw = params.get('entityType');
+  const entityTypeRaw = params.get('entityType')?.trim().toLowerCase() ?? null;
   const entityIdRaw = params.get('entityId');
+  const entityIdValue = entityIdRaw?.trim() ?? '';
   const entityType = isRouteEntityType(entityTypeRaw) ? entityTypeRaw : null;
-  const entityId = entityType && entityIdRaw ? entityIdRaw : null;
+  const entityId = entityType && entityIdValue ? entityIdValue : null;
 
   return {
     secondaryId,
@@ -248,12 +249,13 @@ export function writeRoute(
         ? currentEntityId
         : null
       : state.entityId;
+  const normalizedEntityId = typeof nextEntityId === 'string' ? nextEntityId.trim() : null;
 
   const next = buildRouteLocation(secondaryId, {
     view: nextView,
     preset: nextPreset,
     entityType: nextEntityType,
-    entityId: nextEntityType && nextEntityId ? nextEntityId : null,
+    entityId: nextEntityType && normalizedEntityId ? normalizedEntityId : null,
   });
 
   if (!next) return;

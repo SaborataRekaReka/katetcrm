@@ -11,6 +11,7 @@ Primary routing anchor:
 - `viewBySecondary` stores each secondary section's preferred valid view; `?view=` still overrides local preference for explicit links.
 - `routeSync` mirrors routed secondary ids into pathname + `?view=`.
 - Entity open context is mirrored as `?entityType=<type>&entityId=<id>`.
+- On initial load, if pathname module does not match `entityType`, URL is normalized to the canonical module pathname for that entity type.
 
 Rule:
 

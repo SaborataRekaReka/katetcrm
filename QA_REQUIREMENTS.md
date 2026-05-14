@@ -109,10 +109,10 @@ Test priority: P0
 
 QA-REQ-009:
 Question: QA-Q-009. Minimum fields for ready ApplicationItem?
-Answer: `equipmentType`, `quantity`, `plannedDate`, `plannedTimeFrom/plannedTimeTo`, `address`, and `sourcingType != undecided`.
+Answer: `equipmentType`, `quantity`, `shiftCount`, `plannedDate`, `plannedTimeFrom/plannedTimeTo`, and `address`.
 Route surface: /applications
 Domain surface: ApplicationItem readiness
-UI surface: Readiness indicator appears only when all listed fields are present.
+UI surface: Save for reservation preparation is enabled only when all listed fields are present.
 State/API/audit surface: Readiness derivation follows this exact required set.
 Test priority: P0
 
@@ -451,11 +451,11 @@ Test priority: P1
 
 QA-REQ-045:
 Question: QA-Q-045. When can an ApplicationItem be marked ready for Reservation from the position dialog?
-Answer: Only when type, quantity, planned date, both time boundaries, address, and non-undecided sourcing are filled. Incomplete positions may still be saved in the Application, but must be sent with `readyForReservation=false` so the backend does not reject missing reservation fields.
+Answer: Only when type, quantity, shift count, planned date, both time boundaries, and address are filled. Source selection may remain `undecided` on Application stage and be chosen later in Reservation.
 Route surface: /applications detail position dialog
 Domain surface: ApplicationItem readiness
-UI surface: Reservation-required fields are visibly marked for booking readiness and the dialog explains missing readiness fields.
-State/API/audit surface: Create/update body computes `readyForReservation` from the exact readiness set instead of forcing true.
+UI surface: Required booking fields are visibly marked with `*`; save remains disabled until they are complete.
+State/API/audit surface: Create/update keeps `readyForReservation` tied to required booking fields; `sourcingType` is no longer a readiness blocker.
 Test priority: P0
 
 QA-REQ-046:
