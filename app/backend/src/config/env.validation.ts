@@ -50,6 +50,10 @@ class EnvVars {
 
   @IsString()
   @IsOptional()
+  INTEGRATION_MANGO_API_KEY = '';
+
+  @IsString()
+  @IsOptional()
   INTEGRATION_MANGO_SECRET = '';
 
   @IsString()

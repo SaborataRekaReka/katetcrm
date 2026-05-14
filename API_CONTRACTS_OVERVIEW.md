@@ -225,6 +225,7 @@ Not allowed for optimistic updates (must await server confirmation):
 Example inbound endpoint:
 
 - `POST /api/v1/integrations/events/ingest`
+- `POST /api/v1/integrations/events/mango`
 
 Expectations:
 
@@ -233,6 +234,7 @@ Expectations:
 3. Retry/replay endpoints for failed events.
 4. Clear lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
 5. Mango call payloads normalize telephony context (`direction`, `from`/`to`, `duration`, optional `recordingUrl`) for operator-visible activity timeline.
+6. Mango Office API connector callbacks may arrive as signed form fields `vpbx_api_key`, `sign`, `json`; signature is `sha256(vpbx_api_key + json + INTEGRATION_MANGO_SECRET)`.
 
 ## 7. Contract stability rules
 

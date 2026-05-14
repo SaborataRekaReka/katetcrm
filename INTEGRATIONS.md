@@ -94,6 +94,7 @@ For `channel=mango` call events:
 2. If recording URL is provided, it should be preserved for operator timeline visibility.
 3. Lead upsert remains dedup-safe by phone/company rules.
 4. Successful ingest should add activity notes to linked Lead and active Application contexts.
+5. Mango Office API connector callbacks are accepted at `/api/v1/integrations/events/mango` as signed form fields `vpbx_api_key`, `sign`, and `json`.
 
 ## 9. Dedup strategy
 

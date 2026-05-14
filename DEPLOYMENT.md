@@ -54,7 +54,13 @@ IPv6 note:
 4. `DATABASE_URL=postgresql://<user>:<pass>@postgres:5432/<db>?schema=public`
 5. `JWT_SECRET=<strong_secret>`
 6. `CORS_ORIGINS=https://<your-domain>`
-7. integration secrets as needed (`INTEGRATION_MANGO_SECRET`, ...)
+7. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
+
+Mango Office note:
+
+1. `INTEGRATION_MANGO_API_KEY` = «Уникальный код вашей АТС» from Mango API connector settings.
+2. `INTEGRATION_MANGO_SECRET` = «Ключ для создания подписи» from the same Mango settings.
+3. Mango external system URL should be `https://<your-domain>/api/v1/integrations/events/mango`.
 
 If `DATABASE_URL` uses localhost, deploy script rewrites host to `postgres:5432`.
 

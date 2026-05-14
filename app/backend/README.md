@@ -174,9 +174,20 @@ npm run backfill:client-contacts
 Секреты задаются per-channel через env-переменные:
 
 - `INTEGRATION_SITE_SECRET`
+- `INTEGRATION_MANGO_API_KEY` — опционально ожидаемый Mango `vpbx_api_key` / «Уникальный код вашей АТС» для callback из API коннектора.
 - `INTEGRATION_MANGO_SECRET`
 - `INTEGRATION_TELEGRAM_SECRET`
 - `INTEGRATION_MAX_SECRET`
+
+Для Mango Office API коннектора также поддерживается штатный form callback на
+`POST /api/v1/integrations/events/mango`:
+
+- `vpbx_api_key`
+- `sign`
+- `json`
+
+Подпись проверяется как `sha256(vpbx_api_key + json + INTEGRATION_MANGO_SECRET)`.
+Если задан `INTEGRATION_MANGO_API_KEY`, полученный `vpbx_api_key` должен совпасть.
 
 Дополнительно:
 

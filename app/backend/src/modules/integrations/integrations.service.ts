@@ -70,6 +70,13 @@ interface LeadUpsertResult {
 interface IngestAuthHeaders {
   signature?: string;
   timestamp?: string;
+  mangoConnector?: MangoConnectorAuth;
+}
+
+interface MangoConnectorAuth {
+  apiKey?: string;
+  sign?: string;
+  rawJson?: string;
 }
 
 export interface IntegrationProcessResult {
@@ -155,14 +162,18 @@ export class IntegrationsService {
     payload: Record<string, unknown>,
     auth: IngestAuthHeaders = {},
   ): Promise<IntegrationIngestResult> {
-    const externalId = this.extractMangoExternalId(payload);
+    const connector = this.unwrapMangoConnectorPayload(payload);
+    const externalId = this.extractMangoExternalId(connector.payload);
     return this.ingest(
       {
         channel: 'mango',
         externalId,
-        payload,
+        payload: connector.payload,
       },
-      auth,
+      {
+        ...auth,
+        mangoConnector: connector.auth,
+      },
     );
   }
 
@@ -541,6 +552,11 @@ export class IntegrationsService {
       );
     }
 
+    if (dto.channel === 'mango' && auth.mangoConnector) {
+      this.assertMangoConnectorAuth(auth.mangoConnector, secret);
+      return;
+    }
+
     const signatureRaw = auth.signature?.trim();
     const timestampRaw = auth.timestamp?.trim();
     if (!signatureRaw || !timestampRaw) {
@@ -583,7 +599,15 @@ export class IntegrationsService {
       'phoneNumber',
       'senderPhone',
       'from',
+      'from_number',
+      'fromNumber',
       'to',
+      'to_number',
+      'toNumber',
+      'caller_number',
+      'callee_number',
+      'abonent_number',
+      'line_number',
     ]);
     if (!phone) {
       throw new BadRequestException(
@@ -614,10 +638,17 @@ export class IntegrationsService {
         dto.externalId?.trim() ||
           this.pickString(scopes, [
             'callId',
+            'call_id',
             'sessionId',
+            'session_id',
             'eventId',
+            'event_id',
+            'entryId',
+            'entry_id',
             'timestamp',
             'eventTime',
+            'event_time',
+            'create_time',
           ]),
       );
       if (!hasCallContext) {
@@ -665,6 +696,66 @@ export class IntegrationsService {
     return (this.config.get<string>(envKey) ?? '').trim();
   }
 
+  private unwrapMangoConnectorPayload(payload: Record<string, unknown>): {
+    payload: Record<string, unknown>;
+    auth?: MangoConnectorAuth;
+  } {
+    const rawJson = this.pickString([payload], ['json']);
+    if (!rawJson) {
+      return { payload };
+    }
+
+    const parsed = this.parseMangoConnectorJson(rawJson);
+    const apiKey = this.pickString([payload], ['vpbx_api_key', 'api_key', 'apiKey']);
+    const sign = this.pickString([payload], ['sign', 'signature']);
+
+    return {
+      payload: parsed,
+      auth: {
+        apiKey,
+        sign,
+        rawJson,
+      },
+    };
+  }
+
+  private parseMangoConnectorJson(rawJson: string): Record<string, unknown> {
+    try {
+      const parsed = JSON.parse(rawJson) as unknown;
+      const record = this.asRecord(parsed);
+      if (!record) {
+        throw new BadRequestException('Mango connector json must be an object');
+      }
+      return record;
+    } catch (error) {
+      if (error instanceof BadRequestException) throw error;
+      throw new BadRequestException('Invalid Mango connector json');
+    }
+  }
+
+  private assertMangoConnectorAuth(auth: MangoConnectorAuth, secret: string) {
+    const apiKey = auth.apiKey?.trim();
+    const sign = auth.sign?.trim();
+    const rawJson = auth.rawJson?.trim();
+    if (!apiKey || !sign || !rawJson) {
+      throw new ForbiddenException('Missing Mango connector auth fields');
+    }
+
+    const expectedApiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
+    if (expectedApiKey && apiKey !== expectedApiKey) {
+      throw new ForbiddenException('Invalid Mango connector API key');
+    }
+
+    const expectedHex = createHash('sha256')
+      .update(`${apiKey}${rawJson}${secret}`)
+      .digest('hex');
+    const provided = this.parseSignatureHeader(sign);
+
+    if (!this.safeHexEquals(expectedHex, provided)) {
+      throw new ForbiddenException('Invalid Mango connector signature');
+    }
+  }
+
   private extractMangoExternalId(payload: Record<string, unknown>): string | undefined {
     const root = this.asRecord(payload);
     const call = this.asRecord(root?.call);
@@ -682,6 +773,9 @@ export class IntegrationsService {
       'record_id',
       'sipCallId',
       'sip_call_id',
+      'uuid',
+      'requestId',
+      'request_id',
     ]);
     return externalId ? this.limitText(externalId, 255) : undefined;
   }
@@ -750,7 +844,18 @@ export class IntegrationsService {
     const phoneRaw =
       callCounterpartyPhone
       ?? this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber', 'senderPhone'])
-      ?? this.pickString(scopes, ['from', 'to'])
+      ?? this.pickString(scopes, [
+        'from',
+        'from_number',
+        'fromNumber',
+        'to',
+        'to_number',
+        'toNumber',
+        'caller_number',
+        'callee_number',
+        'abonent_number',
+        'line_number',
+      ])
       ?? '';
     const phoneNormalized = normalizePhone(phoneRaw);
     if (!phoneNormalized) {
@@ -940,33 +1045,53 @@ export class IntegrationsService {
       'sessionId',
       'session_id',
       'eventId',
+      'event_id',
       'entryId',
+      'entry_id',
+      'recordId',
+      'record_id',
+      'sipCallId',
+      'sip_call_id',
     ]) ?? externalId ?? undefined;
 
     const direction =
       this.normalizeCallDirection(
-        this.pickString(scopes, ['direction', 'callDirection', 'call_direction', 'type']),
+        this.pickString(scopes, [
+          'direction',
+          'callDirection',
+          'call_direction',
+          'callDirectionType',
+          'type',
+        ]),
       )
       ?? this.normalizeCallDirectionFromFlags(scopes)
       ?? 'unknown';
 
     const from = this.pickString(scopes, [
       'from',
+      'from_number',
       'fromNumber',
       'caller',
       'callerPhone',
       'callerNumber',
+      'caller_number',
       'ani',
       'sourceNumber',
+      'source_number',
+      'abonent_number',
     ]);
     const to = this.pickString(scopes, [
       'to',
+      'to_number',
       'toNumber',
       'callee',
       'calleePhone',
       'calleeNumber',
+      'callee_number',
       'dnis',
       'destinationNumber',
+      'destination_number',
+      'line_number',
     ]);
     const status = this.pickString(scopes, [
       'status',
@@ -974,6 +1099,8 @@ export class IntegrationsService {
       'disposition',
       'hangupReason',
       'hangup_reason',
+      'call_state',
+      'callState',
     ]);
     const durationSec = this.normalizeDurationSeconds(
       this.pickNumber(scopes, [
@@ -983,6 +1110,8 @@ export class IntegrationsService {
         'talkDuration',
         'talkTime',
         'billsec',
+        'talk_time',
+        'call_duration',
       ]),
     );
     const startedAt = this.pickDate(scopes, [
@@ -992,12 +1121,17 @@ export class IntegrationsService {
       'start_time',
       'timestamp',
       'eventTime',
+      'event_time',
+      'create_time',
+      'call_start_time',
     ])?.toISOString();
     const endedAt = this.pickDate(scopes, [
       'endedAt',
       'ended_at',
       'endTime',
       'end_time',
+      'finish_time',
+      'call_end_time',
     ])?.toISOString();
     const recordingUrl = this.pickUrl(scopes, [
       'recordingUrl',

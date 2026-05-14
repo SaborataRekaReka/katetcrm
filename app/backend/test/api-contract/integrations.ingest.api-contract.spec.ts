@@ -1,5 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
-import { createHmac } from 'crypto';
+import { createHash, createHmac } from 'crypto';
 import request from 'supertest';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import {
@@ -43,15 +43,33 @@ function buildMangoIngestHeaders(payload: Record<string, unknown>) {
   };
 }
 
+function buildMangoConnectorBody(payload: Record<string, unknown>) {
+  const apiKey = process.env.INTEGRATION_MANGO_API_KEY ?? 'qa-test-mango-api-key';
+  const secret = (process.env.INTEGRATION_MANGO_SECRET ?? '').trim();
+  const json = JSON.stringify(payload);
+  const sign = createHash('sha256').update(`${apiKey}${json}${secret}`).digest('hex');
+
+  return {
+    vpbx_api_key: apiKey,
+    sign,
+    json,
+  };
+}
+
 describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
+  let originalMangoApiKey: string | undefined;
 
   beforeAll(async () => {
     originalMangoSecret = process.env.INTEGRATION_MANGO_SECRET;
+    originalMangoApiKey = process.env.INTEGRATION_MANGO_API_KEY;
     if (!originalMangoSecret) {
       process.env.INTEGRATION_MANGO_SECRET = 'qa-test-mango-secret';
+    }
+    if (!originalMangoApiKey) {
+      process.env.INTEGRATION_MANGO_API_KEY = 'qa-test-mango-api-key';
     }
 
     app = await createTestApp();
@@ -64,6 +82,11 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
       delete process.env.INTEGRATION_MANGO_SECRET;
     } else {
       process.env.INTEGRATION_MANGO_SECRET = originalMangoSecret;
+    }
+    if (originalMangoApiKey === undefined) {
+      delete process.env.INTEGRATION_MANGO_API_KEY;
+    } else {
+      process.env.INTEGRATION_MANGO_API_KEY = originalMangoApiKey;
     }
     await closeTestApp(app);
   });
@@ -208,5 +231,41 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037)', () => {
     expect(appActivityPayload?.telephony?.recordingUrl).toBe(
       'https://records.mango.test/apic036-call-2.mp3',
     );
+  });
+
+  it('APIC-037: accepts Mango Office API connector signed form callback', async () => {
+    const phone = uniquePhone('037');
+    const payload = {
+      entry_id: 'mango-connector-apic-037-entry-1',
+      call_id: 'mango-connector-apic-037-call-1',
+      call_direction: 'incoming',
+      from_number: phone,
+      to_number: '+74951234567',
+      duration: 37,
+      call_state: 'connected',
+      create_time: '2026-05-13T14:00:00.000Z',
+    } as Record<string, unknown>;
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango')
+      .type('form')
+      .send(buildMangoConnectorBody(payload))
+      .expect(201);
+
+    expect(response.body.processed).toBe(true);
+    expect(response.body.event).toMatchObject({
+      channel: 'mango',
+      externalId: 'mango-connector-apic-037-entry-1',
+      status: 'processed',
+      relatedLeadId: expect.any(String),
+    });
+
+    const lead = await prisma.lead.findUnique({
+      where: { id: response.body.event.relatedLeadId as string },
+    });
+
+    expect(lead).not.toBeNull();
+    expect(lead?.source).toBe('mango');
+    expect(lead?.contactPhone).toContain(phone.slice(-10));
   });
 });

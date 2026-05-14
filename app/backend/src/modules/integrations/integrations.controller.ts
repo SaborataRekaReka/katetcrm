@@ -28,7 +28,7 @@ export class IntegrationsController {
 
   @Post('events/mango')
   ingestMangoConnectorEvent(
-    @Body() payload: Record<string, unknown>,
+    @Body() payload: Record<string, unknown> = {},
     @Headers('x-integration-signature') signature?: string,
     @Headers('x-integration-timestamp') timestamp?: string,
     @Headers('x-signature') altSignature?: string,
@@ -38,6 +38,11 @@ export class IntegrationsController {
       signature: signature ?? altSignature,
       timestamp: timestamp ?? altTimestamp,
     });
+  }
+
+  @Get('events/mango')
+  checkMangoConnector() {
+    return { ok: true, provider: 'mango' };
   }
 
   @Get('events')
