@@ -395,6 +395,42 @@ UI surface: Admin Users form captures email, role, active status, and temporary 
 State/API/audit surface: `/users` mutations are admin-only, manager forbidden operations return 403, `isActive` is enforced by auth and manager selectors, password updates hash server-side, and user access mutations write audit/activity entries.
 Test priority: P0
 
+QA-REQ-039:
+Question: QA-Q-039. Who can roll a CRM chain back one lifecycle step?
+Answer: Manager and Admin can roll back one step when the user is allowed to access the Lead chain; rollback is never multi-step in a single operation.
+Route surface: /leads, /applications, /reservations, /departures, /completion
+Domain surface: Lead -> Application -> Reservation -> Departure -> Completed/Unqualified rollback
+UI surface: Detail workspaces show a confirmed rollback/delete-current action for the current representation.
+State/API/audit surface: `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` perform one server-side lifecycle rollback and write audit with snapshot payload.
+Test priority: P0
+
+QA-REQ-040:
+Question: QA-Q-040. What does rollback/delete-current remove at each active lifecycle stage?
+Answer: Application -> Lead deletes the active Application only when no downstream records exist; Reservation -> Application deletes all active Reservations of the active Application only when none has a Departure; Departure -> Reservation deletes active Departures; Completed/Unqualified -> Departure deletes Completion and restores Departure, Reservation, and Application active.
+Route surface: /applications, /reservations, /departures, /completion
+Domain surface: Current representation hard-delete semantics
+UI surface: Confirmation copy names destructive rollback semantics before action.
+State/API/audit surface: Backend owns delete order and blocks unsafe reservation rollback when a Departure exists.
+Test priority: P0
+
+QA-REQ-041:
+Question: QA-Q-041. Who can delete the full CRM chain and what survives?
+Answer: Full chain deletion is Admin-only. It deletes Lead, Application, ApplicationItems, Reservations, Departures, and Completions; it preserves Clients, contacts, companies, and audit/activity entries.
+Route surface: all CRM detail routes
+Domain surface: Full lifecycle hard delete
+UI surface: Chain delete action is visible only for Admin and requires confirmation.
+State/API/audit surface: `DELETE /api/v1/leads/:id/chain` returns 403 for Manager, deletes dependent entities in FK-safe order, and writes a pre-delete audit snapshot.
+Test priority: P0
+
+QA-REQ-042:
+Question: QA-Q-042. How should terminal rollback restore statuses?
+Answer: Terminal rollback removes Completion; restores Departure to `arrived` if `arrivedAt` exists, `in_transit` if `startedAt` exists, otherwise `scheduled`; restores related Reservations active; restores Application active with stage `departure`; restores Lead stage `departure`.
+Route surface: /completion -> /departures
+Domain surface: Terminal rollback status restoration
+UI surface: Completion detail returns to the linked Departure context after rollback.
+State/API/audit surface: Completion deletion and state restoration are transactional and auditable.
+Test priority: P0
+
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.

@@ -35,6 +35,7 @@ import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { mapActivityEntries } from '../../lib/activityMapper';
 import { toReservationEntity } from '../../lib/reservationAdapter';
 import { USE_API } from '../../lib/featureFlags';
+import type { LeadApi } from '../../lib/leadsApi';
 import type { SubcontractorConfirmationStatus } from '../../lib/reservationsApi';
 import { InlineText } from '../detail/InlineEdit/InlineText';
 import { InlineDate } from '../detail/InlineEdit/InlineDate';
@@ -78,6 +79,7 @@ import {
   sidebarTokens,
 } from '../detail/DetailShell';
 import { EntityActivityList, EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { LifecycleRollbackActions } from '../detail/LifecycleRollbackActions';
 import { UnqualifyLeadDialog } from '../leads/UnqualifyLeadDialog';
 import { useLayout } from '../shell/layoutStore';
 import { buildAbsoluteEntityUrl } from '../shell/routeSync';
@@ -442,6 +444,30 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     );
   const handleOpenCompletion = () =>
     openEntitySecondary('completion', 'completion', completionEntityId);
+  const openLeadLifecycleStage = (fresh: LeadApi) => {
+    const ids = fresh.linkedIds;
+    if (fresh.stage === 'application' && ids.applicationId) {
+      openEntitySecondary('applications', 'application', ids.applicationId);
+      return;
+    }
+    if (fresh.stage === 'reservation' && ids.reservationId) {
+      openEntitySecondary('reservations', 'reservation', ids.reservationId);
+      return;
+    }
+    if (fresh.stage === 'departure' && ids.departureId) {
+      openEntitySecondary('departures', 'departure', ids.departureId);
+      return;
+    }
+    if ((fresh.stage === 'completed' || fresh.stage === 'unqualified') && ids.completionId) {
+      openEntitySecondary('completion', 'completion', ids.completionId);
+      return;
+    }
+    openEntitySecondary('leads', 'lead', fresh.id);
+  };
+  const handleLifecycleChainDeleted = () => {
+    setActionError(null);
+    openSecondary('leads');
+  };
   const handleDuplicateReservation = () =>
     openEntitySecondary('applications', 'application', applicationEntityId);
   const handleOpenUnqualify = () => {
@@ -798,14 +824,32 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         ]}
         secondaryActions={
           USE_API
-            ? canMarkChainUnqualified
-              ? [
-                  {
-                    label: 'Закрыть как некачественный',
-                    onClick: handleOpenUnqualify,
-                  },
-                ]
-              : undefined
+            ? [
+                ...(canMarkChainUnqualified
+                  ? [
+                      {
+                        label: 'Закрыть как некачественный',
+                        onClick: handleOpenUnqualify,
+                      },
+                    ]
+                  : []),
+                ...(resolvedLeadId
+                  ? [
+                      {
+                        label: 'Откат и удаление',
+                        render: (
+                          <LifecycleRollbackActions
+                            leadId={resolvedLeadId}
+                            canRollback={linkedLeadStage !== 'lead' && linkedLeadStage !== 'cancelled'}
+                            onRollbackSuccess={openLeadLifecycleStage}
+                            onChainDeleted={handleLifecycleChainDeleted}
+                            onError={setActionError}
+                          />
+                        ),
+                      },
+                    ]
+                  : []),
+              ]
             : undefined
         }
         className="mb-5"

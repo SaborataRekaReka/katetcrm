@@ -1,13 +1,16 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { LeadsService } from './leads.service';
 import {
   ChangeStageDto,
   CreateLeadDto,
+  LifecycleActionDto,
   LeadListQueryDto,
   UpdateLeadDto,
 } from './leads.dto';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
+import { Roles } from '../../common/roles.decorator';
+import { RolesGuard } from '../../common/roles.guard';
 import { projectLead, projectLeads } from '../../common/projections/lead.projection';
 import type { JwtPayload } from '../auth/jwt.strategy';
 
@@ -61,5 +64,39 @@ export class LeadsController {
   ) {
     const lead = await this.leads.changeStage(id, dto, { id: user.sub, role: user.role });
     return projectLead(lead);
+  }
+
+  @Post(':id/rollback')
+  async rollback(
+    @Param('id') id: string,
+    @Body() dto: LifecycleActionDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const lead = await this.leads.rollbackStage(id, dto, { id: user.sub, role: user.role });
+    return projectLead(lead);
+  }
+
+  @Post(':id/delete-current')
+  async deleteCurrent(
+    @Param('id') id: string,
+    @Body() dto: LifecycleActionDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const lead = await this.leads.deleteCurrentRepresentation(id, dto, {
+      id: user.sub,
+      role: user.role,
+    });
+    return projectLead(lead);
+  }
+
+  @Delete(':id/chain')
+  @UseGuards(RolesGuard)
+  @Roles('admin')
+  deleteChain(
+    @Param('id') id: string,
+    @Body() dto: LifecycleActionDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.leads.deleteChain(id, dto, { id: user.sub, role: user.role });
   }
 }

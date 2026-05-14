@@ -14,6 +14,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { Lead } from '../../types/kanban';
+import type { LeadApi } from '../../lib/leadsApi';
 import { useCompletionQuery } from '../../hooks/useCompletionsQuery';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
 import { useCreateCompletion, useUpdateCompletion } from '../../hooks/useCompletionMutations';
@@ -37,6 +38,7 @@ import {
   sidebarTokens,
 } from '../detail/DetailShell';
 import { EntityMetaGrid, EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import { LifecycleRollbackActions } from '../detail/LifecycleRollbackActions';
 
 interface Props {
   lead: Lead;
@@ -374,6 +376,30 @@ export function CompletionWorkspaceApi({
   const shareUrl = completionEntityId
     ? buildAbsoluteEntityUrl('completion', completionEntityId)
     : null;
+  const openLeadLifecycleStage = (fresh: LeadApi) => {
+    const ids = fresh.linkedIds;
+    if (fresh.stage === 'application' && ids.applicationId) {
+      openEntitySecondary('applications', 'application', ids.applicationId);
+      return;
+    }
+    if (fresh.stage === 'reservation' && ids.reservationId) {
+      openEntitySecondary('reservations', 'reservation', ids.reservationId);
+      return;
+    }
+    if (fresh.stage === 'departure' && ids.departureId) {
+      openEntitySecondary('departures', 'departure', ids.departureId);
+      return;
+    }
+    if ((fresh.stage === 'completed' || fresh.stage === 'unqualified') && ids.completionId) {
+      openEntitySecondary('completion', 'completion', ids.completionId);
+      return;
+    }
+    openEntitySecondary('leads', 'lead', fresh.id);
+  };
+  const handleLifecycleChainDeleted = () => {
+    setActionError(null);
+    openSecondary('leads');
+  };
   const entitySwitcherOptions = [
     {
       id: 'lead',
@@ -477,6 +503,23 @@ export function CompletionWorkspaceApi({
           onClick: hasDepartureLink ? () => openEntitySecondary('departures', 'departure', departureEntityId) : undefined,
           disabled: !hasDepartureLink,
         }}
+        secondaryActions={
+          leadEntityId
+            ? [
+                {
+                  label: 'Откат и удаление',
+                  render: (
+                    <LifecycleRollbackActions
+                      leadId={leadEntityId}
+                      onRollbackSuccess={openLeadLifecycleStage}
+                      onChainDeleted={handleLifecycleChainDeleted}
+                      onError={setActionError}
+                    />
+                  ),
+                },
+              ]
+            : undefined
+        }
       />
 
       <NextStepLine

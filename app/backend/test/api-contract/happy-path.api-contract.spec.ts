@@ -2,6 +2,7 @@ import type { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import {
+  TEST_ADMIN,
   TEST_MANAGER,
   ensureBaseUsers,
   loginByPassword,
@@ -19,7 +20,7 @@ import {
 } from '../helpers/domain-fixtures';
 import { closeTestApp, createTestApp } from '../helpers/test-app';
 
-describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..038)', () => {
+describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..042)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
@@ -238,6 +239,113 @@ describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..038)', () => 
       .set('Authorization', authHeader(login.accessToken))
       .expect(200);
     expect(applicationAfterMove.body.stage).toBe('reservation');
+  });
+
+  it('APIC-039: QA-REQ-039/040 manager rollback removes current Reservation representation only', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('APIC039');
+    const equipment = await ensureEquipmentFixture(prisma, seed);
+    const fixture = await createLeadAndApplication(app, login.accessToken, seed);
+
+    const item = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentTypeLabel: 'QA APIC-039 Position',
+      quantity: 1,
+      plannedDate: futureIso(120),
+      plannedTimeFrom: '09:00',
+      plannedTimeTo: '18:00',
+      address: 'QA APIC-039 Address',
+      sourcingType: 'own',
+      readyForReservation: true,
+    });
+
+    await createReservation(app, login.accessToken, {
+      applicationItemId: item.id,
+      sourcingType: 'own',
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentUnitId: equipment.equipmentUnitId,
+      plannedStart: futureIso(180),
+      plannedEnd: futureIso(300),
+    });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(201);
+
+    const rolledBack = await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/rollback`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ reason: 'QA-REQ-039' })
+      .expect(201);
+
+    expect(rolledBack.body.stage).toBe('application');
+
+    const applicationAfterRollback = await request(app.getHttpServer())
+      .get(`/api/v1/applications/${fixture.applicationId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+    expect(applicationAfterRollback.body.stage).toBe('application');
+    expect(applicationAfterRollback.body.isActive).toBe(true);
+
+    const reservationsAfterRollback = await request(app.getHttpServer())
+      .get('/api/v1/reservations')
+      .query({ applicationId: fixture.applicationId })
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+    expect(reservationsAfterRollback.body.total).toBe(0);
+  });
+
+  it('APIC-040: QA-REQ-041 manager cannot delete full chain', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const fixture = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC040'));
+
+    await request(app.getHttpServer())
+      .delete(`/api/v1/leads/${fixture.leadId}/chain`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ reason: 'QA-REQ-041 forbidden manager attempt' })
+      .expect(403);
+  });
+
+  it('APIC-041: QA-REQ-041 admin deletes chain and preserves Client', async () => {
+    const login = await loginByPassword(app, TEST_ADMIN);
+    const fixture = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC041'));
+    expect(fixture.clientId).toEqual(expect.any(String));
+
+    const deleted = await request(app.getHttpServer())
+      .delete(`/api/v1/leads/${fixture.leadId}/chain`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ reason: 'QA-REQ-041 admin chain delete' })
+      .expect(200);
+
+    expect(deleted.body).toMatchObject({
+      ok: true,
+      deleted: {
+        leadId: fixture.leadId,
+        applications: 1,
+      },
+      preserved: {
+        clientId: fixture.clientId,
+      },
+    });
+
+    await request(app.getHttpServer())
+      .get(`/api/v1/leads/${fixture.leadId}`)
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(404);
+
+    const preservedClient = await prisma.client.findUnique({ where: { id: fixture.clientId! } });
+    expect(preservedClient).not.toBeNull();
+
+    const auditEntry = await prisma.activityLogEntry.findFirst({
+      where: {
+        entityType: 'lead',
+        entityId: fixture.leadId,
+        summary: { contains: 'Удалена CRM-цепочка' },
+      },
+    });
+    expect(auditEntry?.payload).toBeTruthy();
   });
 
   it('APIC-005: Application item readiness and source policy contract', async () => {

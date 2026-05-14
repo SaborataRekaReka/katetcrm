@@ -287,6 +287,159 @@ describe('Integration Invariants (INT-001..INT-010)', () => {
     expect(appAfterReservation?.stage).toBe('reservation');
   });
 
+  it('INT-004B: QA-REQ-040 Reservation rollback is blocked when a Departure exists', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('INT004B');
+    const equipment = await ensureEquipmentFixture(prisma, seed);
+    const fixture = await createLeadAndApplication(app, login.accessToken, seed);
+
+    const item = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentTypeLabel: 'QA INT-004B Position',
+      quantity: 1,
+      plannedDate: futureIso(180),
+      plannedTimeFrom: '09:00',
+      plannedTimeTo: '18:00',
+      address: 'QA INT-004B Address',
+      readyForReservation: true,
+      sourcingType: 'own',
+    });
+
+    const reservation = await createReservation(app, login.accessToken, {
+      applicationItemId: item.id,
+      sourcingType: 'own',
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentUnitId: equipment.equipmentUnitId,
+      plannedStart: futureIso(220),
+      plannedEnd: futureIso(340),
+    });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(201);
+
+    await createDeparture(app, login.accessToken, {
+      reservationId: reservation.body.id,
+      scheduledAt: futureIso(240),
+    });
+
+    const blocked = await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/rollback`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ reason: 'QA-REQ-040' })
+      .expect(400);
+
+    expect(String(blocked.body.message)).toContain('с выездом');
+
+    const dbLead = await prisma.lead.findUnique({ where: { id: fixture.leadId } });
+    expect(dbLead?.stage).toBe('reservation');
+    const reservationStillExists = await prisma.reservation.findUnique({
+      where: { id: reservation.body.id as string },
+    });
+    expect(reservationStillExists).not.toBeNull();
+  });
+
+  it('INT-004C: QA-REQ-042 Terminal rollback deletes Completion and restores active chain', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const seed = uniqueSeed('INT004C');
+    const equipment = await ensureEquipmentFixture(prisma, seed);
+    const fixture = await createLeadAndApplication(app, login.accessToken, seed);
+
+    const item = await addApplicationItem(app, login.accessToken, fixture.applicationId, {
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentTypeLabel: 'QA INT-004C Position',
+      quantity: 1,
+      plannedDate: futureIso(180),
+      plannedTimeFrom: '09:00',
+      plannedTimeTo: '18:00',
+      address: 'QA INT-004C Address',
+      readyForReservation: true,
+      sourcingType: 'own',
+    });
+
+    const reservation = await createReservation(app, login.accessToken, {
+      applicationItemId: item.id,
+      sourcingType: 'own',
+      equipmentTypeId: equipment.equipmentTypeId,
+      equipmentUnitId: equipment.equipmentUnitId,
+      plannedStart: futureIso(220),
+      plannedEnd: futureIso(340),
+    });
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'reservation' })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/stage`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ stage: 'departure' })
+      .expect(201);
+
+    const departures = await request(app.getHttpServer())
+      .get('/api/v1/departures')
+      .query({ applicationId: fixture.applicationId })
+      .set('Authorization', authHeader(login.accessToken))
+      .expect(200);
+
+    const departureId = departures.body.items[0].id as string;
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/departures/${departureId}/start`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({})
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/departures/${departureId}/arrive`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({})
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/departures/${departureId}/complete`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ outcome: 'completed', completionNote: 'QA-REQ-042 complete' })
+      .expect(201);
+
+    const terminalLead = await prisma.lead.findUnique({ where: { id: fixture.leadId } });
+    expect(terminalLead?.stage).toBe('completed');
+
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${fixture.leadId}/rollback`)
+      .set('Authorization', authHeader(login.accessToken))
+      .send({ reason: 'QA-REQ-042' })
+      .expect(201);
+
+    const restoredLead = await prisma.lead.findUnique({ where: { id: fixture.leadId } });
+    expect(restoredLead?.stage).toBe('departure');
+
+    const restoredApplication = await prisma.application.findUnique({
+      where: { id: fixture.applicationId },
+    });
+    expect(restoredApplication?.stage).toBe('departure');
+    expect(restoredApplication?.isActive).toBe(true);
+    expect(restoredApplication?.completedAt).toBeNull();
+
+    const restoredReservation = await prisma.reservation.findUnique({
+      where: { id: reservation.body.id as string },
+    });
+    expect(restoredReservation?.isActive).toBe(true);
+    expect(restoredReservation?.releasedAt).toBeNull();
+
+    const restoredDeparture = await prisma.departure.findUnique({
+      where: { id: departureId },
+      include: { completion: true },
+    });
+    expect(restoredDeparture?.status).toBe('arrived');
+    expect(restoredDeparture?.completedAt).toBeNull();
+    expect(restoredDeparture?.completion).toBeNull();
+  });
+
   it('INT-005: unit required before departure transition', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
     const seed = uniqueSeed('INT005');

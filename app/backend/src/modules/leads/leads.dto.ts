@@ -132,6 +132,13 @@ export class ChangeStageDto {
   reason?: string;
 }
 
+export class LifecycleActionDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  reason?: string;
+}
+
 export class LeadListQueryDto {
   @IsOptional()
   @IsEnum(PipelineStage)

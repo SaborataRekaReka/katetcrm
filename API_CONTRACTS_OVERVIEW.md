@@ -49,6 +49,10 @@ Contract expectations:
 - `GET /api/v1/leads/:id`
 - `PATCH /api/v1/leads/:id`
 - `POST /api/v1/leads`
+- `POST /api/v1/leads/:id/stage`
+- `POST /api/v1/leads/:id/rollback`
+- `POST /api/v1/leads/:id/delete-current`
+- `DELETE /api/v1/leads/:id/chain` (admin-only)
 
 Contract expectations:
 
@@ -57,6 +61,9 @@ Contract expectations:
 3. Repeat-order flow is canonical via `POST /api/v1/leads` with `source=manual`, `sourceLabel=repeat_order`, and `clientId` from client workspace context.
 4. `GET /api/v1/leads` supports list filters used by analytics views (`stage`, `managerId`, `query`, `isUrgent`, `isStale`).
 5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites: `lead -> application` requires contact, requested date, and address, and `application -> reservation` requires an existing active Reservation for the active Application.
+6. `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` are server-owned one-step lifecycle rollback operations. They hard-delete only the current representation, restore the previous stage, and write audit snapshot payloads.
+7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
+8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
 
 ### 3.3 Applications
 

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import type { Lead } from '../../types/kanban';
 import type { CompletionOutcome, DepartureStatus } from '../../lib/departuresApi';
+import type { LeadApi } from '../../lib/leadsApi';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
 import {
   useArriveDeparture,
@@ -57,6 +58,7 @@ import {
   EntityModalHeader,
   EntitySection,
 } from '../detail/EntityModalFramework';
+import { LifecycleRollbackActions } from '../detail/LifecycleRollbackActions';
 
 interface Props {
   departureId: string;
@@ -260,6 +262,32 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
   const shareUrl = departureEntityId
     ? buildAbsoluteEntityUrl('departure', departureEntityId)
     : null;
+
+  const openLeadLifecycleStage = (fresh: LeadApi) => {
+    const ids = fresh.linkedIds;
+    if (fresh.stage === 'application' && ids.applicationId) {
+      openEntitySecondary('applications', 'application', ids.applicationId);
+      return;
+    }
+    if (fresh.stage === 'reservation' && ids.reservationId) {
+      openEntitySecondary('reservations', 'reservation', ids.reservationId);
+      return;
+    }
+    if (fresh.stage === 'departure' && ids.departureId) {
+      openEntitySecondary('departures', 'departure', ids.departureId);
+      return;
+    }
+    if ((fresh.stage === 'completed' || fresh.stage === 'unqualified') && ids.completionId) {
+      openEntitySecondary('completion', 'completion', ids.completionId);
+      return;
+    }
+    openEntitySecondary('leads', 'lead', fresh.id);
+  };
+
+  const handleLifecycleChainDeleted = () => {
+    setActionError(null);
+    openSecondary('leads');
+  };
 
   const completeAsCompletedReason = (() => {
     if (departure.status === 'cancelled') return 'Отмененный выезд нельзя завершить';
@@ -566,6 +594,23 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
             </AlertDialog>
           ),
         }}
+        secondaryActions={
+          leadEntityId
+            ? [
+                {
+                  label: 'Откат и удаление',
+                  render: (
+                    <LifecycleRollbackActions
+                      leadId={leadEntityId}
+                      onRollbackSuccess={openLeadLifecycleStage}
+                      onChainDeleted={handleLifecycleChainDeleted}
+                      onError={setActionError}
+                    />
+                  ),
+                },
+              ]
+            : undefined
+        }
         className="mb-5"
       />
 

@@ -84,6 +84,8 @@ import { updateApplication } from '../../lib/applicationsApi';
 import { useLayout } from '../shell/layoutStore';
 import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 import { RelatedRecordsFields, type RelatedRecordItem } from './RelatedRecordsFields';
+import { LifecycleRollbackActions } from './LifecycleRollbackActions';
+import type { LeadApi } from '../../lib/leadsApi';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
 
@@ -508,6 +510,10 @@ export function LeadDetailModal({
   const isCurrentStageTail = isLead ? !hasDownstreamForLead : !hasDownstreamForApplication;
   const targetLeadIdForUnqualify = leadEntityId;
   const linkedLeadStage = isLead ? lead?.stage : linkedLeadQuery.data?.stage;
+  const lifecycleLeadStage = linkedLeadStage ?? (isLead ? lead?.stage : application?.stage);
+  const canRollbackCurrentStage = lifecycleLeadStage
+    ? lifecycleLeadStage !== 'lead' && lifecycleLeadStage !== 'cancelled'
+    : !!application;
   const canMarkChainUnqualified =
     USE_API
     && !!targetLeadIdForUnqualify
@@ -541,6 +547,37 @@ export function LeadDetailModal({
     if (!targetEntityId) return false;
     openSecondaryWithEntity(secondaryId, targetEntityType, targetEntityId);
     return true;
+  };
+
+  const openLeadLifecycleStage = (fresh: LeadApi) => {
+    const ids = fresh.linkedIds;
+    if (fresh.stage === 'application' && ids.applicationId) {
+      openEntitySecondary('applications', 'application', ids.applicationId);
+      return;
+    }
+    if (fresh.stage === 'reservation' && ids.reservationId) {
+      openEntitySecondary('reservations', 'reservation', ids.reservationId);
+      return;
+    }
+    if (fresh.stage === 'departure' && ids.departureId) {
+      openEntitySecondary('departures', 'departure', ids.departureId);
+      return;
+    }
+    if ((fresh.stage === 'completed' || fresh.stage === 'unqualified') && ids.completionId) {
+      openEntitySecondary('completion', 'completion', ids.completionId);
+      return;
+    }
+    openEntitySecondary('leads', 'lead', fresh.id);
+  };
+
+  const handleLifecycleRollbackSuccess = (fresh: LeadApi) => {
+    setStageError(null);
+    openLeadLifecycleStage(fresh);
+  };
+
+  const handleLifecycleChainDeleted = () => {
+    setStageError(null);
+    openSecondary('leads');
   };
 
   const formatEntityLink = (prefix: string, entityId?: string | null): string | null => {
@@ -1036,9 +1073,9 @@ export function LeadDetailModal({
             : undefined
         }
         secondaryActions={
-          !isLead && USE_API
+          USE_API
             ? [
-                ...(canMarkChainUnqualified
+                ...(!isLead && canMarkChainUnqualified
                   ? [
                       {
                         label: 'Закрыть как некачественный',
@@ -1046,11 +1083,27 @@ export function LeadDetailModal({
                       },
                     ]
                   : []),
-                ...(application!.stage !== 'cancelled'
+                ...(!isLead && application!.stage !== 'cancelled'
                   ? [
                       {
                         label: 'Отменить заявку',
                         onClick: () => setIsCancelAppOpen(true),
+                      },
+                    ]
+                  : []),
+                ...(leadEntityId
+                  ? [
+                      {
+                        label: 'Откат и удаление',
+                        render: (
+                          <LifecycleRollbackActions
+                            leadId={leadEntityId}
+                            canRollback={canRollbackCurrentStage}
+                            onRollbackSuccess={handleLifecycleRollbackSuccess}
+                            onChainDeleted={handleLifecycleChainDeleted}
+                            onError={setStageError}
+                          />
+                        ),
                       },
                     ]
                   : []),

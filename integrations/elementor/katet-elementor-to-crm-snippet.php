@@ -1,4 +1,4 @@
-<?php
+	<?php
 /**
  * Katet CRM <- Elementor Pro forms bridge.
  *
@@ -12,11 +12,12 @@ if (!defined('ABSPATH')) {
 }
 
 if (!defined('KATET_CRM_INGEST_URL')) {
-    define('KATET_CRM_INGEST_URL', 'https://crm.example.com/api/v1/integrations/events/ingest');
+    define('KATET_CRM_INGEST_URL', 'https://crm.katet.tech/api/v1/integrations/events/ingest');
 }
 
 if (!defined('KATET_CRM_SITE_SECRET')) {
-    define('KATET_CRM_SITE_SECRET', 'replace-with-integration-site-secret');
+    define('KATET_CRM_SITE_SECRET', 'QqzFiKuzDpqiN24ZN_k8E2gH8XylWsjbkoUKR9tC_09VfeSUbPAE2xik3sUF8f2B
+');
 }
 
 if (!defined('KATET_CRM_FORM_NAMES_ALLOWLIST')) {
@@ -57,6 +58,8 @@ if (!function_exists('katet_crm_handle_elementor_record')) {
             $formName = trim((string) $record->get_form_settings('form_name'));
         }
 
+        katet_crm_log('Elementor hook fired.', array('formName' => $formName));
+
         if (!katet_crm_is_form_allowed($formName)) {
             return;
         }
@@ -76,34 +79,72 @@ if (!function_exists('katet_crm_handle_elementor_record')) {
 
         $name = katet_crm_find_value(
             $fields,
-            array('full_name', 'fullname', 'name', 'contact_name', 'client_name', 'fio'),
+            array(
+                'full_name',
+                'fullname',
+                'name',
+                'contact_name',
+                'client_name',
+                'fio',
+                'имя',
+                'фио',
+                'контакт',
+            ),
             array('text')
         );
         $company = katet_crm_find_value(
             $fields,
-            array('company', 'organization', 'org', 'business', 'brand'),
+            array(
+                'company',
+                'organization',
+                'org',
+                'business',
+                'brand',
+                'компан',
+                'организац',
+                'бренд',
+            ),
             array('text')
         );
         $equipment = katet_crm_find_value(
             $fields,
-            array('equipment', 'machine', 'technique', 'model', 'service', 'product')
+            array(
+                'equipment',
+                'machine',
+                'technique',
+                'model',
+                'service',
+                'product',
+                'техник',
+                'оборуд',
+                'модель',
+                'услуг',
+            )
         );
         $address = katet_crm_find_value(
             $fields,
-            array('address', 'location', 'city', 'street', 'site_address')
+            array('address', 'location', 'city', 'street', 'site_address', 'адрес', 'город', 'улиц')
         );
         $comment = katet_crm_find_value(
             $fields,
-            array('comment', 'message', 'note', 'details', 'description')
+            array('comment', 'message', 'note', 'details', 'description', 'коммент', 'сообщен')
         );
         $requestedDateRaw = katet_crm_find_value(
             $fields,
-            array('requested_date', 'preferred_date', 'date', 'start_date', 'rent_date'),
+            array(
+                'requested_date',
+                'preferred_date',
+                'date',
+                'start_date',
+                'rent_date',
+                'дата',
+                'когда',
+            ),
             array('date', 'datetime')
         );
         $isUrgentRaw = katet_crm_find_value(
             $fields,
-            array('urgent', 'asap', 'priority', 'rush')
+            array('urgent', 'asap', 'priority', 'rush', 'сроч', 'приоритет', 'быстр')
         );
 
         $eventTime = gmdate('c');
@@ -278,18 +319,39 @@ if (!function_exists('katet_crm_value_to_string')) {
 if (!function_exists('katet_crm_find_phone')) {
     function katet_crm_find_phone(array $fields)
     {
+        foreach ($fields as $field) {
+            $type = katet_crm_lower((string) ($field['type'] ?? ''));
+            $value = trim((string) ($field['value'] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+            if (($type === 'tel' || $type === 'phone') && katet_crm_looks_like_phone($value)) {
+                return $value;
+            }
+        }
+
         $fromKeywords = katet_crm_find_value(
             $fields,
-            array('phone', 'tel', 'mobile', 'whatsapp', 'contact_phone'),
+            array(
+                'phone',
+                'tel',
+                'mobile',
+                'whatsapp',
+                'contact_phone',
+                'тел',
+                'телефон',
+                'номер',
+                'ватсап',
+            ),
             array('tel', 'phone', 'text')
         );
 
-        if ($fromKeywords !== '') {
+        if ($fromKeywords !== '' && katet_crm_looks_like_phone($fromKeywords)) {
             return $fromKeywords;
         }
 
         foreach ($fields as $field) {
-            $type = strtolower((string) ($field['type'] ?? ''));
+            $type = katet_crm_lower((string) ($field['type'] ?? ''));
             $value = trim((string) ($field['value'] ?? ''));
             if ($value === '') {
                 continue;
@@ -299,16 +361,32 @@ if (!function_exists('katet_crm_find_phone')) {
             }
         }
 
+        foreach ($fields as $field) {
+            $value = trim((string) ($field['value'] ?? ''));
+            if ($value === '') {
+                continue;
+            }
+
+            if (katet_crm_looks_like_phone($value)) {
+                return $value;
+            }
+        }
+
         return '';
     }
 }
 
 if (!function_exists('katet_crm_find_value')) {
-    function katet_crm_find_value(array $fields, array $keywords, array $preferredTypes = array())
+    function katet_crm_find_value(
+        array $fields,
+        array $keywords,
+        array $preferredTypes = array(),
+        $allowTypeFallback = false
+    )
     {
         $keywordsMap = array();
         foreach ($keywords as $keyword) {
-            $key = strtolower(trim((string) $keyword));
+            $key = katet_crm_lower(trim((string) $keyword));
             if ($key !== '') {
                 $keywordsMap[$key] = true;
             }
@@ -316,16 +394,16 @@ if (!function_exists('katet_crm_find_value')) {
 
         $typesMap = array();
         foreach ($preferredTypes as $type) {
-            $key = strtolower(trim((string) $type));
+            $key = katet_crm_lower(trim((string) $type));
             if ($key !== '') {
                 $typesMap[$key] = true;
             }
         }
 
         foreach ($fields as $field) {
-            $id = strtolower((string) ($field['id'] ?? ''));
-            $title = strtolower((string) ($field['title'] ?? ''));
-            $type = strtolower((string) ($field['type'] ?? ''));
+            $id = katet_crm_lower((string) ($field['id'] ?? ''));
+            $title = katet_crm_lower((string) ($field['title'] ?? ''));
+            $type = katet_crm_lower((string) ($field['type'] ?? ''));
             $value = trim((string) ($field['value'] ?? ''));
             if ($value === '') {
                 continue;
@@ -350,9 +428,9 @@ if (!function_exists('katet_crm_find_value')) {
             return $value;
         }
 
-        if ($typesMap !== array()) {
+        if ($allowTypeFallback && $typesMap !== array()) {
             foreach ($fields as $field) {
-                $type = strtolower((string) ($field['type'] ?? ''));
+                $type = katet_crm_lower((string) ($field['type'] ?? ''));
                 $value = trim((string) ($field['value'] ?? ''));
                 if ($value === '') {
                     continue;
@@ -370,12 +448,41 @@ if (!function_exists('katet_crm_find_value')) {
 if (!function_exists('katet_crm_is_truthy')) {
     function katet_crm_is_truthy($value)
     {
-        $normalized = strtolower(trim((string) $value));
+        $normalized = katet_crm_lower(trim((string) $value));
         if ($normalized === '') {
             return false;
         }
 
         return in_array($normalized, array('1', 'true', 'yes', 'on', 'checked', 'urgent', 'high'), true);
+    }
+}
+
+if (!function_exists('katet_crm_lower')) {
+    function katet_crm_lower($value)
+    {
+        $str = (string) $value;
+        if (function_exists('mb_strtolower')) {
+            return mb_strtolower($str, 'UTF-8');
+        }
+
+        return strtolower($str);
+    }
+}
+
+if (!function_exists('katet_crm_looks_like_phone')) {
+    function katet_crm_looks_like_phone($value)
+    {
+        $raw = trim((string) $value);
+        if ($raw === '') {
+            return false;
+        }
+
+        $digits = preg_replace('/\D+/', '', $raw);
+        if (!is_string($digits)) {
+            return false;
+        }
+
+        return strlen($digits) >= 10;
     }
 }
 

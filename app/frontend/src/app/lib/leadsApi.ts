@@ -51,6 +51,20 @@ export interface LeadListResponse {
   total: number;
 }
 
+export interface LeadChainDeleteResponse {
+  ok: true;
+  deleted: {
+    leadId: string;
+    applications: number;
+    reservations: number;
+    departures: number;
+    completions: number;
+  };
+  preserved: {
+    clientId: string | null;
+  };
+}
+
 export interface LeadListParams {
   stage?: PipelineStage;
   source?: SourceChannel;
@@ -97,6 +111,27 @@ export function changeLeadStage(id: string, stage: PipelineStage, reason?: strin
   return apiRequest<LeadApi>(`leads/${id}/stage`, {
     method: 'POST',
     body: { stage, reason },
+  });
+}
+
+export function rollbackLeadStage(id: string, reason?: string) {
+  return apiRequest<LeadApi>(`leads/${id}/rollback`, {
+    method: 'POST',
+    body: { reason },
+  });
+}
+
+export function deleteCurrentLeadRepresentation(id: string, reason?: string) {
+  return apiRequest<LeadApi>(`leads/${id}/delete-current`, {
+    method: 'POST',
+    body: { reason },
+  });
+}
+
+export function deleteLeadChain(id: string, reason?: string) {
+  return apiRequest<LeadChainDeleteResponse>(`leads/${id}/chain`, {
+    method: 'DELETE',
+    body: { reason },
   });
 }
 
