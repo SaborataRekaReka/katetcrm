@@ -7,7 +7,8 @@ This repository currently uses state-driven navigation with partial URL sync and
 Primary routing anchor:
 
 - `activeSecondaryNav` in layout store chooses workspace page.
-- `currentView` controls board/list/table (or module-specific tabs).
+- `currentView` controls board/list/table (or module-specific tabs) for the active section.
+- `viewBySecondary` stores each secondary section's preferred valid view; `?view=` still overrides local preference for explicit links.
 - `routeSync` mirrors routed secondary ids into pathname + `?view=`.
 - Entity open context is mirrored as `?entityType=<type>&entityId=<id>`.
 
@@ -84,10 +85,11 @@ Control analytics saved-view ids are `view-stale-leads`, `view-lost-leads`, `vie
 ## 3. Which entities open from which route/view
 
 1. Leads board/list/table row/card click -> lead detail modal or stage-specific workspace.
-2. Applications list/table row click -> application detail modal (or reservation/departure/completion workspace by stage).
-3. Reservations list/table row click -> reservation workspace modal.
-4. Departures/completion row click -> stage-specific full-screen workspace.
-5. Client row/card/open actions -> client workspace modal.
+2. Leads Kanban lead-column inline add action -> Lead creation dialog, never a generic card/task.
+3. Applications list/table row click -> application detail modal (or reservation/departure/completion workspace by stage).
+4. Reservations list/table row click -> reservation workspace modal.
+5. Departures/completion row click -> stage-specific full-screen workspace.
+6. Client row/card/open actions -> client workspace modal.
 
 Open-behavior rule:
 
@@ -169,6 +171,7 @@ Mandatory current MVP pages:
 Examples:
 
 - Leads: CTA "New lead" is valid.
+- Leads Kanban: inline add button must open Lead creation and label the action as a Lead, not a card/task.
 - Applications: no fake top-level create CTA if creation is lead-driven.
 - Reservations: no top-level primary CTA in shell metadata. Current API-mode page has a contextual "New reservation" action that selects an `ApplicationItem` without active reservation; it must stay item-context-backed and must not become free-form reservation creation.
 

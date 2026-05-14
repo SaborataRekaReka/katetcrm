@@ -551,8 +551,8 @@ export function GlobalTopbar() {
   return (
     <header className="flex h-10 w-full shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-white px-2 sm:gap-3 sm:px-3">
       <div className="flex min-w-0 items-center gap-2">
-        <span className="flex h-6 w-6 items-center justify-center rounded bg-rose-500 text-[11px] font-bold text-white">
-          К
+        <span className="flex h-6 w-6 items-center justify-center rounded bg-[var(--brand-logo-bg)] text-[13px] font-bold text-black shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
+          к
         </span>
         <span className="hidden truncate text-[13px] font-semibold tracking-tight sm:inline">{workspaceTitle}</span>
       </div>
@@ -605,7 +605,7 @@ export function GlobalTopbar() {
             }}
             placeholder={placeholder}
             aria-label="Быстрый поиск"
-            className="h-7 w-full rounded-md border border-border/60 bg-[#f7f8fa] pl-7 pr-2 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-blue-400 focus:bg-white sm:pr-14"
+            className="h-7 w-full rounded-md border border-border/60 bg-[#f7f8fa] pl-7 pr-2 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-[var(--brand-accent)] focus:bg-white sm:pr-14"
           />
           <kbd className="pointer-events-none absolute right-2 hidden rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground sm:block">
             Ctrl K
@@ -624,7 +624,7 @@ export function GlobalTopbar() {
                       onClick={() => runSuggestion(item)}
                       className={cn(
                         'flex w-full flex-col items-start gap-0.5 px-2.5 py-1.5 text-left transition-colors',
-                        index === activeSuggestionIndex ? 'bg-blue-50' : 'hover:bg-muted/70',
+                        index === activeSuggestionIndex ? 'bg-[var(--brand-accent-soft)]' : 'hover:bg-muted/70',
                       )}
                     >
                       <span className="text-[12px] leading-4 text-foreground">{item.label}</span>

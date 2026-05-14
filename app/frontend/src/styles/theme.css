@@ -18,6 +18,12 @@
   --accent-foreground: #030213;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
+  --brand-accent: #5e43aa;
+  --brand-accent-hover: #4f3698;
+  --brand-accent-soft: #f0ecff;
+  --brand-accent-border: #d8ccff;
+  --brand-accent-foreground: #3b246f;
+  --brand-logo-bg: #ffd84d;
   --border: rgba(0, 0, 0, 0.1);
   --input: transparent;
   --input-background: #f3f3f5;
@@ -46,8 +52,8 @@
   --shell-nav-active-bg: #e3e8f1;
   --shell-nav-active-fg: #1f2430;
   --shell-nav-hover-bg: #e9ecf2;
-  --shell-nav-view-active-bg: #e7ecff;
-  --shell-nav-view-active-fg: #334fc8;
+  --shell-nav-view-active-bg: #f0ecff;
+  --shell-nav-view-active-fg: #5e43aa;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: #030213;
@@ -75,6 +81,12 @@
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
+  --brand-accent: #8b6be8;
+  --brand-accent-hover: #9b82ef;
+  --brand-accent-soft: rgba(139, 107, 232, 0.22);
+  --brand-accent-border: rgba(139, 107, 232, 0.36);
+  --brand-accent-foreground: #efeaff;
+  --brand-logo-bg: #ffd84d;
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
@@ -303,5 +315,64 @@
 
   .scroll-xthin::-webkit-scrollbar-corner {
     background: transparent;
+  }
+}
+
+@layer utilities {
+  .bg-blue-50 {
+    background-color: var(--brand-accent-soft) !important;
+  }
+
+  .bg-blue-500,
+  .bg-blue-600 {
+    background-color: var(--brand-accent) !important;
+  }
+
+  .hover\:bg-blue-700:hover,
+  .hover\:bg-blue-600:hover,
+  .hover\:bg-blue-500:hover {
+    background-color: var(--brand-accent-hover) !important;
+  }
+
+  .text-blue-500,
+  .text-blue-600,
+  .text-blue-700,
+  .text-blue-800,
+  .text-blue-900 {
+    color: var(--brand-accent) !important;
+  }
+
+  .border-blue-100,
+  .border-blue-200,
+  .border-blue-300,
+  .border-blue-400,
+  .border-blue-500,
+  .border-blue-600 {
+    border-color: var(--brand-accent-border) !important;
+  }
+
+  .ring-blue-300,
+  .focus\:ring-blue-500:focus,
+  .focus-visible\:ring-blue-300:focus-visible {
+    --tw-ring-color: var(--brand-accent-border) !important;
+  }
+
+  .focus\:border-blue-400:focus,
+  .focus\:border-blue-500:focus,
+  .focus-visible\:border-blue-400:focus-visible,
+  .focus-visible\:border-blue-500:focus-visible {
+    border-color: var(--brand-accent) !important;
+  }
+
+  .bg-\[\#2a6af0\] {
+    background-color: var(--brand-accent) !important;
+  }
+
+  .hover\:bg-\[\#2358d1\]:hover {
+    background-color: var(--brand-accent-hover) !important;
+  }
+
+  .text-\[\#2a6af0\] {
+    color: var(--brand-accent) !important;
   }
 }

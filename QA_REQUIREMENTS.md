@@ -431,6 +431,60 @@ UI surface: Completion detail returns to the linked Departure context after roll
 State/API/audit surface: Completion deletion and state restoration are transactional and auditable.
 Test priority: P0
 
+QA-REQ-043:
+Question: QA-Q-043. What should the Leads Kanban inline add action do?
+Answer: The Kanban lead column action must be labeled "Добавить лид" and open the same Lead creation flow as the module primary CTA; after successful creation the created Lead detail context opens.
+Route surface: /leads?view=board
+Domain surface: Lead creation
+UI surface: Kanban add action is active, creates a Lead, and does not create a generic card/task.
+State/API/audit surface: Returned Lead id is used as entity route context and Lead queries are invalidated.
+Test priority: P0
+
+QA-REQ-044:
+Question: QA-Q-044. How should preferred workspace view mode persist?
+Answer: The preferred view mode is stored independently per secondary section/module; a user choosing Kanban for Leads must not force Kanban/invalid view into Applications, Reservations, Clients, or Catalogs. Explicit URL `?view=` still takes precedence on initial load and back/forward navigation.
+Route surface: all routed workspaces with `?view=`
+Domain surface: View representation consistency
+UI surface: Switching sections restores that section's last valid view.
+State/API/audit surface: Layout state persists per-section view preferences in localStorage and coerces invalid views to module-valid tabs.
+Test priority: P1
+
+QA-REQ-045:
+Question: QA-Q-045. When can an ApplicationItem be marked ready for Reservation from the position dialog?
+Answer: Only when type, quantity, planned date, both time boundaries, address, and non-undecided sourcing are filled. Incomplete positions may still be saved in the Application, but must be sent with `readyForReservation=false` so the backend does not reject missing reservation fields.
+Route surface: /applications detail position dialog
+Domain surface: ApplicationItem readiness
+UI surface: Reservation-required fields are visibly marked for booking readiness and the dialog explains missing readiness fields.
+State/API/audit surface: Create/update body computes `readyForReservation` from the exact readiness set instead of forcing true.
+Test priority: P0
+
+QA-REQ-046:
+Question: QA-Q-046. How should Reservation support adding missing resources from inside the stage?
+Answer: In Reservation resource selection, a user with directory write permission can create an EquipmentUnit for own equipment or a Subcontractor for contractor sourcing from the Reservation workspace; the created directory record is immediately assigned to the active Reservation.
+Route surface: /reservations detail workspace
+Domain surface: Reservation resource assignment and directory entities
+UI surface: Own equipment and subcontractor blocks expose inline create actions in the stage context.
+State/API/audit surface: Directory create endpoints persist the new record; Reservation update links the created id and advances internal stage (`unit_defined` or `subcontractor_selected`). Server RBAC remains authoritative.
+Test priority: P0
+
+QA-REQ-047:
+Question: QA-Q-047. What should the sidebar bug report action do?
+Answer: The old Draft action is removed. The Sidebar bug report action opens a form that prepares an email to `breneize@yandex.ru` with severity, route, description, steps, and expected result.
+Route surface: global shell sidebar
+Domain surface: Support feedback, no CRM entity mutation
+UI surface: Sidebar footer button is "Сообщить о баге" and opens the bug form.
+State/API/audit surface: No CRM API mutation is performed; send uses a `mailto:` handoff.
+Test priority: P2
+
+QA-REQ-048:
+Question: QA-Q-048. What is the shell brand accent?
+Answer: Accent blue in primary shell/actions is replaced by the brand purple palette, and the header logo uses a black lowercase `к` on the Katet yellow background.
+Route surface: global shell
+Domain surface: None
+UI surface: Header logo and accent controls use the brand palette consistently.
+State/API/audit surface: No API state impact.
+Test priority: P2
+
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.

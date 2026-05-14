@@ -423,6 +423,8 @@ type UnitDialogProps = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   unit?: EquipmentUnitApi | null;
+  initialValues?: { name?: string; equipmentTypeId?: string; notes?: string };
+  onCreated?: (unit: EquipmentUnitApi) => void;
 };
 
 type UnitForm = {
@@ -443,7 +445,7 @@ const EMPTY_UNIT: UnitForm = {
   status: 'active',
 };
 
-export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
+export function UnitDialog({ open, onOpenChange, unit, initialValues, onCreated }: UnitDialogProps) {
   const [form, setForm] = useState<UnitForm>(EMPTY_UNIT);
   const [touched, setTouched] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -466,7 +468,7 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
         status: unit.status,
       });
     } else {
-      setForm(EMPTY_UNIT);
+      setForm({ ...EMPTY_UNIT, ...initialValues });
     }
     setTouched(false);
     setError(null);
@@ -474,7 +476,7 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
     updateMut.reset();
     deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, unit?.id]);
+  }, [open, unit?.id, initialValues?.name, initialValues?.equipmentTypeId, initialValues?.notes]);
 
   const set = <K extends keyof UnitForm>(k: K, v: UnitForm[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -509,7 +511,8 @@ export function UnitDialog({ open, onOpenChange, unit }: UnitDialogProps) {
       if (isEdit && unit) {
         await updateMut.mutateAsync({ id: unit.id, body });
       } else {
-        await createMut.mutateAsync(body);
+        const created = await createMut.mutateAsync(body);
+        onCreated?.(created);
       }
       onOpenChange(false);
     } catch (err) {
@@ -743,6 +746,15 @@ type SubcontractorDialogProps = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   subcontractor?: SubcontractorApi | null;
+  initialValues?: {
+    name?: string;
+    specialization?: string;
+    region?: string;
+    contactPhone?: string;
+    contactEmail?: string;
+    notes?: string;
+  };
+  onCreated?: (subcontractor: SubcontractorApi) => void;
 };
 
 type SubForm = {
@@ -771,6 +783,8 @@ export function SubcontractorDialog({
   open,
   onOpenChange,
   subcontractor,
+  initialValues,
+  onCreated,
 }: SubcontractorDialogProps) {
   const [form, setForm] = useState<SubForm>(EMPTY_SUB);
   const [touched, setTouched] = useState(false);
@@ -795,7 +809,7 @@ export function SubcontractorDialog({
         status: subcontractor.status,
       });
     } else {
-      setForm(EMPTY_SUB);
+      setForm({ ...EMPTY_SUB, ...initialValues });
     }
     setTouched(false);
     setError(null);
@@ -803,7 +817,7 @@ export function SubcontractorDialog({
     updateMut.reset();
     deleteMut.reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open, subcontractor?.id]);
+  }, [open, subcontractor?.id, initialValues?.name, initialValues?.specialization, initialValues?.region, initialValues?.contactPhone, initialValues?.contactEmail, initialValues?.notes]);
 
   const set = <K extends keyof SubForm>(k: K, v: SubForm[K]) =>
     setForm((p) => ({ ...p, [k]: v }));
@@ -847,7 +861,8 @@ export function SubcontractorDialog({
       if (isEdit && subcontractor) {
         await updateMut.mutateAsync({ id: subcontractor.id, body });
       } else {
-        await createMut.mutateAsync(body);
+        const created = await createMut.mutateAsync(body);
+        onCreated?.(created);
       }
       onOpenChange(false);
     } catch (err) {

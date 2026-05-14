@@ -157,6 +157,19 @@ export function PositionDialog({
   const surchargeCheck = parseMoneyInput(form.surcharge);
   const moneyValid = priceCheck.valid && deliveryCheck.valid && surchargeCheck.valid;
   const canSave = labelValid && qtyValid && shiftsValid && moneyValid && !mutation.isPending;
+  const plannedDateReady = Boolean(form.plannedDate);
+  const plannedTimeReady = Boolean(form.plannedTimeFrom && form.plannedTimeTo);
+  const addressReady = form.address.trim().length > 0;
+  const sourcingReady = form.sourcingType !== 'undecided';
+  const reservationReady = labelValid && qtyValid && plannedDateReady && plannedTimeReady && addressReady && sourcingReady;
+  const reservationMissing = [
+    !labelValid ? 'тип техники' : null,
+    !qtyValid ? 'количество' : null,
+    !plannedDateReady ? 'дата' : null,
+    !plannedTimeReady ? 'время' : null,
+    !addressReady ? 'адрес' : null,
+    !sourcingReady ? 'источник' : null,
+  ].filter(Boolean);
 
   const typeOptions = useMemo(
     () => [
@@ -191,8 +204,7 @@ export function PositionDialog({
       quantity: qty,
       shiftCount: shifts,
       sourcingType: form.sourcingType,
-      // По новому процессу позиция заявки автоматически доступна для этапа брони.
-      readyForReservation: true,
+      readyForReservation: reservationReady,
     };
     if (form.equipmentTypeId) body.equipmentTypeId = form.equipmentTypeId;
     if (form.plannedDate) body.plannedDate = form.plannedDate;
@@ -242,7 +254,7 @@ export function PositionDialog({
             render: (
               <Button
                 size="sm"
-                className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] disabled:bg-gray-200 disabled:text-gray-400"
+                className="h-7 gap-1 bg-[var(--brand-accent)] text-white hover:bg-[var(--brand-accent-hover)] text-[11px] disabled:bg-gray-200 disabled:text-gray-400"
                 onClick={submit}
                 disabled={!canSave}
               >
@@ -323,7 +335,7 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<Truck className="h-3 w-3" />}
-                label="Источник"
+                label="Источник для брони *"
                 value={
                   <FieldSelect
                     value={form.sourcingType}
@@ -339,7 +351,7 @@ export function PositionDialog({
             <EntityMetaGrid>
               <PropertyRow
                 icon={<Calendar className="h-3 w-3" />}
-                label="Дата"
+                label="Дата для брони *"
                 value={
                   <FieldInput
                     type="date"
@@ -350,7 +362,7 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<MapPin className="h-3 w-3" />}
-                label="Адрес"
+                label="Адрес для брони *"
                 value={
                   <FieldInput
                     value={form.address}
@@ -361,7 +373,7 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<Clock className="h-3 w-3" />}
-                label="С"
+                label="С *"
                 value={
                   <FieldInput
                     type="time"
@@ -372,7 +384,7 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<Clock className="h-3 w-3" />}
-                label="До"
+                label="До *"
                 value={
                   <FieldInput
                     type="time"
@@ -382,6 +394,14 @@ export function PositionDialog({
                 }
               />
             </EntityMetaGrid>
+            <div className={reservationReady
+              ? 'rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] text-emerald-700'
+              : 'rounded border border-[var(--brand-accent-border)] bg-[var(--brand-accent-soft)] px-3 py-2 text-[11px] text-[var(--brand-accent-foreground)]'}
+            >
+              {reservationReady
+                ? 'Позиция готова к брони.'
+                : `Позиция сохранится в заявке, но для брони не хватает: ${reservationMissing.join(', ')}.`}
+            </div>
           </EntitySection>
 
           <EntitySection title="Стоимость">

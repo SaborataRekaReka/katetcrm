@@ -83,6 +83,8 @@ import { LifecycleRollbackActions } from '../detail/LifecycleRollbackActions';
 import { UnqualifyLeadDialog } from '../leads/UnqualifyLeadDialog';
 import { useLayout } from '../shell/layoutStore';
 import { buildAbsoluteEntityUrl } from '../shell/routeSync';
+import { UnitDialog, SubcontractorDialog } from '../catalogs/CatalogDialogs';
+import type { EquipmentUnitApi, SubcontractorApi } from '../../lib/directoriesApi';
 
 interface Props {
   lead: Lead;
@@ -131,7 +133,7 @@ const propertyLinkInlineClass =
   'inline-flex min-h-[20px] max-w-full items-center rounded px-1 text-[11px] text-blue-600 text-left truncate transition-colors hover:bg-gray-100 hover:underline disabled:cursor-not-allowed disabled:text-gray-500 disabled:no-underline';
 
 export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, apiReservationId }: Props) {
-  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
+  const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType, role } = useLayout();
   const isApiDetail = USE_API && !!apiReservationId;
   const reservationQuery = useReservationQuery(apiReservationId, USE_API && !!apiReservationId);
   const mockReservation: Reservation = useMemo(() => buildMockReservation(lead), [lead]);
@@ -223,6 +225,8 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   const [releaseReason, setReleaseReason] = useState('');
   const [releaseError, setReleaseError] = useState<string | null>(null);
   const [isUnqualOpen, setIsUnqualOpen] = useState(false);
+  const [isUnitCreateOpen, setIsUnitCreateOpen] = useState(false);
+  const [isSubCreateOpen, setIsSubCreateOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const releaseMutation = useReleaseReservation();
   const updateResMutation = useUpdateReservation();
@@ -281,6 +285,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     !unitsQuery.isPending && !unitsQuery.isError && reservation.candidateUnits.length === 0;
   const subDirectoryEmpty =
     !subsQuery.isPending && !subsQuery.isError && reservation.subcontractorOptions.length === 0;
+  const createResourceDisabled = role !== 'admin' || !USE_API || !apiReservationId || updateResMutation.isPending;
 
   // Источник: если можно сохранять — берём актуальный с API (через reservation.source),
   // иначе управляем локально (для mock / kanban-контекста без apiReservationId).
@@ -312,6 +317,40 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
     }
 
     setLocalSource(next);
+  };
+
+  const handleCreatedUnit = async (unit: EquipmentUnitApi) => {
+    if (!apiReservationId) return;
+    setActionError(null);
+    try {
+      await updateResMutation.mutateAsync({
+        id: apiReservationId,
+        patch: {
+          sourcingType: 'own',
+          equipmentUnitId: unit.id,
+          internalStage: 'unit_defined',
+        } as any,
+      });
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Единица создана, но не назначена в бронь');
+    }
+  };
+
+  const handleCreatedSubcontractor = async (subcontractor: SubcontractorApi) => {
+    if (!apiReservationId) return;
+    setActionError(null);
+    try {
+      await updateResMutation.mutateAsync({
+        id: apiReservationId,
+        patch: {
+          sourcingType: 'subcontractor',
+          subcontractorId: subcontractor.id,
+          internalStage: 'subcontractor_selected',
+        } as any,
+      });
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Подрядчик создан, но не назначен в бронь');
+    }
   };
 
   /** Фабрика save-обработчиков для инлайн-полей брони. */
@@ -1134,6 +1173,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                   </span>
                 )}
               </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                onClick={() => setIsUnitCreateOpen(true)}
+                disabled={createResourceDisabled}
+              >
+                <Package className="w-3 h-3 mr-1" /> Добавить единицу
+              </Button>
               <details className="text-[11px]">
                 <summary className="cursor-pointer inline-flex items-center gap-1 h-6 px-2 rounded border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-gray-600 list-none">
                   <Wrench className="w-3 h-3" /> Сменить единицу
@@ -1266,7 +1314,18 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             </div>
           ) : (
             <>
-              <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Кандидатные юниты</div>
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <div className="text-[11px] text-gray-500 uppercase tracking-wide">Кандидатные юниты</div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2 text-[11px]"
+                  onClick={() => setIsUnitCreateOpen(true)}
+                  disabled={createResourceDisabled}
+                >
+                  <Package className="w-3 h-3 mr-1" /> Добавить единицу
+                </Button>
+              </div>
               <div className="mb-2">
                 <Input
                   value={unitSearch}
@@ -1366,6 +1425,15 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               <div className="flex-1 min-w-0 text-[11px] text-gray-800">
                 <span className="text-gray-500">Выбран подрядчик:</span> {reservation.subcontractor}
               </div>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-[11px]"
+                onClick={() => setIsSubCreateOpen(true)}
+                disabled={createResourceDisabled}
+              >
+                <Building2 className="w-3 h-3 mr-1" /> Добавить подрядчика
+              </Button>
               <details className="text-[11px]">
                 <summary className="cursor-pointer inline-flex items-center gap-1 h-6 px-2 rounded border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors text-gray-600 list-none">
                   <Building2 className="w-3 h-3" /> Сменить подрядчика
@@ -1462,7 +1530,18 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
             </div>
           ) : (
             <>
-              <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Подрядчики</div>
+              <div className="mb-1.5 flex items-center justify-between gap-2">
+                <div className="text-[11px] text-gray-500 uppercase tracking-wide">Подрядчики</div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 px-2 text-[11px]"
+                  onClick={() => setIsSubCreateOpen(true)}
+                  disabled={createResourceDisabled}
+                >
+                  <Building2 className="w-3 h-3 mr-1" /> Добавить подрядчика
+                </Button>
+              </div>
               <div className="mb-2">
                 <Input
                   value={subSearch}
@@ -1865,6 +1944,28 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         onOpenChange={setIsUnqualOpen}
         leadId={resolvedLeadId ?? null}
         onDone={onClose}
+      />
+      <UnitDialog
+        open={isUnitCreateOpen}
+        onOpenChange={setIsUnitCreateOpen}
+        initialValues={{
+          equipmentTypeId: resEquipmentTypeId ?? '',
+          notes: `Создано из брони ${reservation.id}`,
+        }}
+        onCreated={(unit) => {
+          void handleCreatedUnit(unit);
+        }}
+      />
+      <SubcontractorDialog
+        open={isSubCreateOpen}
+        onOpenChange={setIsSubCreateOpen}
+        initialValues={{
+          specialization: reservation.equipmentType,
+          notes: `Создано из брони ${reservation.id}`,
+        }}
+        onCreated={(subcontractor) => {
+          void handleCreatedSubcontractor(subcontractor);
+        }}
       />
     </>
   );

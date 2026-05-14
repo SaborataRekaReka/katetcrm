@@ -15,6 +15,7 @@ type Props = {
   leads: Lead[];
   color: string;
   onCardClick?: (lead: Lead) => void;
+  onAddLead?: () => void;
   onCardDragStart?: (lead: Lead) => void;
   onCardDragEnd?: () => void;
   /** Колонка — валидная цель для drop (подсветить зелёным пунктиром). */
@@ -30,6 +31,7 @@ export function LeadsKanbanColumn({
   leads,
   color,
   onCardClick,
+  onAddLead,
   onCardDragStart,
   onCardDragEnd,
   dropActive,
@@ -115,7 +117,7 @@ export function LeadsKanbanColumn({
         ) : (
           leads.map(renderCard)
         )}
-        {stage === 'lead' && <KanbanAddCard />}
+        {stage === 'lead' && <KanbanAddCard onClick={onAddLead} />}
       </div>
     </div>
   );

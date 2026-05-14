@@ -55,13 +55,16 @@ const LayoutContext = createContext<LayoutState | null>(null);
 type Persisted = Pick<
   LayoutState,
   'sidebarExpanded' | 'activePrimaryNav' | 'activeSecondaryNav' | 'currentView' | 'expandedSections' | 'role'
->;
+> & {
+  viewBySecondary: Record<string, ViewMode>;
+};
 
 const DEFAULTS: Persisted = {
   sidebarExpanded: true,
   activePrimaryNav: 'sales',
   activeSecondaryNav: 'leads',
   currentView: 'board',
+  viewBySecondary: {},
   expandedSections: {
     'home-main': true,
     'sales-leads': true,
@@ -92,6 +95,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   // URL takes precedence over localStorage on first mount so deep links and
   // reloads behave predictably.
   const initialRoute = parseInitialRoute();
+  const initialSecondary = initialRoute.secondaryId ?? initial.activeSecondaryNav;
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
       return false;
@@ -99,16 +103,17 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
     return initial.sidebarExpanded;
   });
   const [activePrimaryNav, setActivePrimaryNav] = useState(initial.activePrimaryNav);
-  const [activeSecondaryNavState, setActiveSecondaryNavState] = useState(
-    initialRoute.secondaryId ?? initial.activeSecondaryNav,
-  );
+  const [activeSecondaryNavState, setActiveSecondaryNavState] = useState(initialSecondary);
   const [activeEntityType, setActiveEntityType] = useState<RouteEntityType | null>(
     initialRoute.entityType,
   );
   const [activeEntityId, setActiveEntityId] = useState<string | null>(initialRoute.entityId);
-  const [currentView, setCurrentView] = useState<ViewMode>(() => {
-    const effective = initialRoute.secondaryId ?? initial.activeSecondaryNav;
-    const requested = initialRoute.view ?? initial.currentView;
+  const [viewBySecondary, setViewBySecondary] = useState<Record<string, ViewMode>>(
+    initial.viewBySecondary,
+  );
+  const [currentView, setCurrentViewState] = useState<ViewMode>(() => {
+    const requested = initialRoute.view ?? initial.viewBySecondary[initialSecondary] ?? initial.currentView;
+    const effective = initialSecondary;
     return resolveViewForModule(effective, requested) ?? requested;
   });
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(
@@ -157,6 +162,15 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
     return null;
   };
 
+  const setPreferredCurrentView = (view: ViewMode, secondaryId = activeSecondaryNavState) => {
+    const resolved = resolveViewForModule(secondaryId, view) ?? view;
+    setCurrentViewState(resolved);
+    setViewBySecondary((prev) => {
+      if (prev[secondaryId] === resolved) return prev;
+      return { ...prev, [secondaryId]: resolved };
+    });
+  };
+
   // Persist to localStorage
   useEffect(() => {
     const data: Persisted = {
@@ -164,6 +178,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       activePrimaryNav,
       activeSecondaryNav: activeSecondaryNavState,
       currentView,
+      viewBySecondary,
       expandedSections,
       role,
     };
@@ -177,6 +192,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
     activePrimaryNav,
     activeSecondaryNavState,
     currentView,
+    viewBySecondary,
     expandedSections,
     role,
   ]);
@@ -205,7 +221,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const valid = resolveViewForModule(activeSecondaryNavState, currentView);
     if (valid && valid !== currentView) {
-      setCurrentView(valid);
+      setPreferredCurrentView(valid, activeSecondaryNavState);
       return;
     }
     if (pathnameForSecondary(activeSecondaryNavState)) {
@@ -272,7 +288,8 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   };
 
   const setActiveSecondaryNav = (secondaryId: string) => {
-    const nextView = resolveViewForModule(secondaryId, currentView) ?? currentView;
+    const requestedView = viewBySecondary[secondaryId] ?? currentView;
+    const nextView = resolveViewForModule(secondaryId, requestedView) ?? requestedView;
     if (pathnameForSecondary(secondaryId)) {
       writeRoute(
         secondaryId,
@@ -285,6 +302,11 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       );
     }
     setActiveSecondaryNavState(secondaryId);
+    setCurrentViewState(nextView);
+    setViewBySecondary((prev) => {
+      if (prev[secondaryId] === nextView) return prev;
+      return { ...prev, [secondaryId]: nextView };
+    });
     setActiveEntityType(null);
     setActiveEntityId(null);
   };
@@ -324,16 +346,16 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       }
       setActiveEntityType(route.entityType);
       setActiveEntityId(route.entityId);
-      const v = route.view;
-      if (v) {
-        const id = nextId ?? activeSecondaryNavState;
-        const valid = resolveViewForModule(id, v);
-        if (valid) setCurrentView(valid);
+      const id = nextId ?? activeSecondaryNavState;
+      const requestedView = route.view ?? viewBySecondary[id];
+      if (requestedView) {
+        const valid = resolveViewForModule(id, requestedView);
+        if (valid) setPreferredCurrentView(valid, id);
       }
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, [activeSecondaryNavState]);
+  }, [activeSecondaryNavState, currentView, viewBySecondary]);
 
   const value: LayoutState = {
     sidebarExpanded,
@@ -351,7 +373,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
     setActiveEntityRoute,
     clearActiveEntityRoute,
     openSecondaryWithEntity,
-    setCurrentView,
+    setCurrentView: (view) => setPreferredCurrentView(view),
     toggleSection: (id) =>
       setExpandedSections((prev) => ({ ...prev, [id]: !(prev[id] ?? true) })),
     setRole,

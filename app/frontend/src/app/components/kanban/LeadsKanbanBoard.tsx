@@ -8,6 +8,7 @@ import { USE_API } from '../../lib/featureFlags';
 type Props = {
   leads: Lead[];
   onCardClick?: (lead: Lead) => void;
+  onAddLead?: () => void;
   validateStageDrop?: (lead: Lead, target: StageType) => string | null;
 };
 
@@ -30,7 +31,7 @@ const ALLOWED: Record<StageType, StageType[]> = {
   unqualified: [],
 };
 
-export function LeadsKanbanBoard({ leads, onCardClick, validateStageDrop }: Props) {
+export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageDrop }: Props) {
   const changeStage = useChangeLeadStage();
   const [dragging, setDragging] = useState<Lead | null>(null);
   const [dragError, setDragError] = useState<string | null>(null);
@@ -89,6 +90,7 @@ export function LeadsKanbanBoard({ leads, onCardClick, validateStageDrop }: Prop
             leads={byStage(c.id)}
             color={c.color}
             onCardClick={onCardClick}
+            onAddLead={c.id === 'lead' ? onAddLead : undefined}
             onCardDragStart={USE_API ? (lead) => setDragging(lead) : undefined}
             onCardDragEnd={USE_API ? () => setDragging(null) : undefined}
             dropActive={!!dragging && isStageTransitionAllowed(c.id)}

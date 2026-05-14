@@ -418,6 +418,7 @@ export function LeadsKanbanPage() {
         <LeadsKanbanBoard
           leads={filteredLeads}
           onCardClick={handleCardClick}
+          onAddLead={() => setIsNewLeadOpen(true)}
           validateStageDrop={validateStageDrop}
         />
       )}

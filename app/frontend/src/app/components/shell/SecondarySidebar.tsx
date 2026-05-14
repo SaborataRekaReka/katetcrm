@@ -1,10 +1,12 @@
-import { ChevronDown, ChevronsLeft, FileText, Search } from 'lucide-react';
+import { useState, type ComponentType, type ReactNode } from 'react';
+import { Bug, ChevronDown, ChevronsLeft, Search } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import { useLayout } from './layoutStore';
 import { getDomainConfig, type NavLeaf } from './navConfig';
 import { USE_API } from '../../lib/featureFlags';
 import { useClientsQuery } from '../../hooks/useClientsQuery';
+import { BugReportDialog } from './BugReportDialog';
 
 const MOBILE_SIDEBAR_BREAKPOINT = 768;
 
@@ -177,29 +179,32 @@ export function SecondarySidebar() {
 }
 
 function SidebarFooter() {
-  const { setActivePrimaryNav, setActiveSecondaryNav, setSidebarExpanded } = useLayout();
+  const { setSidebarExpanded } = useLayout();
+  const [isBugReportOpen, setIsBugReportOpen] = useState(false);
   return (
-    <div className="shrink-0 px-2 pb-2 pt-2">
-      <button
-        type="button"
-        onClick={() => {
-          setActivePrimaryNav('home');
-          setActiveSecondaryNav('my-tasks');
-          if (typeof window !== 'undefined' && window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
-            setSidebarExpanded(false);
-          }
-        }}
-        className={cn(
-          'flex h-7 w-full items-center gap-1.5 rounded-md px-2 text-[12px] font-medium',
-          'bg-[var(--shell-footer-bg)] text-foreground/80',
-          'transition-colors hover:bg-[var(--shell-nav-hover-bg)] hover:text-foreground',
-        )}
-        aria-label="Черновик"
-      >
-        <FileText className="h-[14px] w-[14px] text-muted-foreground" />
-        <span className="truncate">Черновик</span>
-      </button>
-    </div>
+    <>
+      <div className="shrink-0 px-2 pb-2 pt-2">
+        <button
+          type="button"
+          onClick={() => {
+            setIsBugReportOpen(true);
+            if (typeof window !== 'undefined' && window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
+              setSidebarExpanded(false);
+            }
+          }}
+          className={cn(
+            'flex h-7 w-full items-center gap-1.5 rounded-md px-2 text-[12px] font-medium',
+            'bg-[var(--shell-footer-bg)] text-foreground/80',
+            'transition-colors hover:bg-[var(--shell-nav-hover-bg)] hover:text-foreground',
+          )}
+          aria-label="Сообщить о баге"
+        >
+          <Bug className="h-[14px] w-[14px] text-[var(--brand-accent)]" />
+          <span className="truncate">Сообщить о баге</span>
+        </button>
+      </div>
+      <BugReportDialog open={isBugReportOpen} onOpenChange={setIsBugReportOpen} />
+    </>
   );
 }
 
@@ -208,7 +213,7 @@ function SidebarUtilityButton({
   label,
   onClick,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
   label: string;
   onClick: () => void;
 }) {
@@ -277,7 +282,7 @@ function SidebarSection({
 }: {
   id: string;
   title?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   const { expandedSections, toggleSection } = useLayout();
   const open = expandedSections[id] ?? true;
