@@ -21,6 +21,7 @@ import { Lead } from '../../types/kanban';
 import { Departure, DepartureAlert, DepartureStatus } from '../../types/departure';
 import { buildMockDeparture } from '../../data/mockDeparture';
 import { USE_API } from '../../lib/featureFlags';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -154,6 +155,8 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
   const hasApplication = !!applicationEntityId;
   const hasReservation = !!reservationEntityId;
   const hasCompletion = !!completionEntityId;
+  const departureDisplayId = formatEntityDisplayId('departure', departureEntityId ?? base.id, '—');
+  const completionDisplayId = formatEntityDisplayId('completion', completionEntityId, '—');
   const canOpenClient = !!onOpenClient;
 
   const activeSwitcherEntityType = activeEntityType ?? 'departure';
@@ -408,7 +411,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
         entityIcon={<Truck className="h-3 w-3" />}
         entityLabel="Выезд"
         entitySwitcherOptions={entitySwitcherOptions}
-        title={base.id}
+        title={departureDisplayId}
         subtitle={
           <>
             <button
@@ -482,7 +485,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Отменить выезд {base.id}?</AlertDialogTitle>
+                  <AlertDialogTitle>Отменить выезд {departureDisplayId}?</AlertDialogTitle>
                   <AlertDialogDescription>
                     Действие зафиксируется в журнале. Причина нужна для прозрачности команды.
                   </AlertDialogDescription>
@@ -793,7 +796,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
               onClick={handleOpenDeparture}
               disabled={!departureEntityId}
             >
-              {base.id}
+              {departureDisplayId}
             </button>
           }
         />
@@ -806,7 +809,7 @@ export function DepartureWorkspace({ lead, onClose, onOpenClient, apiDepartureId
               onClick={handleOpenCompletion}
               disabled={!hasCompletion}
             >
-              {hasCompletion ? `CMP-${completionEntityId?.slice(0, 8).toUpperCase()}` : '—'}
+              {completionDisplayId}
             </button>
           }
         />

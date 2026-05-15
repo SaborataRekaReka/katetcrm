@@ -9,6 +9,7 @@ import type { JwtPayload } from '../auth/jwt.strategy';
 import {
   IntegrationEventListQueryDto,
   UpdateMangoCallRoutingSettingsDto,
+  UpdateSiteLeadRoutingSettingsDto,
   ReceiveIntegrationEventDto,
   RetryOrReplayIntegrationEventDto,
 } from './integrations.dto';
@@ -101,6 +102,25 @@ export class IntegrationsController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.integrations.updateMangoCallRoutingSettings(dto, user.sub);
+  }
+
+  @Get('site/lead-routing')
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
+  @Roles('admin')
+  @Capabilities('admin.integrations')
+  getSiteLeadRoutingSettings() {
+    return this.integrations.getSiteLeadRoutingSettings();
+  }
+
+  @Post('site/lead-routing')
+  @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
+  @Roles('admin')
+  @Capabilities('admin.integrations')
+  updateSiteLeadRoutingSettings(
+    @Body() dto: UpdateSiteLeadRoutingSettingsDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.integrations.updateSiteLeadRoutingSettings(dto, user.sub);
   }
 
   @Get('events')

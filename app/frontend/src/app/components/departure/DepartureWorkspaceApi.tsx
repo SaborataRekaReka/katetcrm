@@ -18,6 +18,7 @@ import {
 import type { Lead } from '../../types/kanban';
 import type { CompletionOutcome, DepartureStatus } from '../../lib/departuresApi';
 import type { LeadApi } from '../../lib/leadsApi';
+import { formatApplicationDisplayId, formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
 import {
   useArriveDeparture,
@@ -257,6 +258,15 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
   const hasReservation = !!reservationEntityId;
   const hasCompletion = !!completionEntityId;
   const canOpenClient = !!onOpenClient && !!departure.linked.clientId;
+  const leadDisplayId = formatEntityDisplayId('lead', leadEntityId, '—');
+  const applicationDisplayId = formatApplicationDisplayId(
+    departure.linked.applicationNumber,
+    departure.linked.applicationId,
+    '—',
+  );
+  const reservationDisplayId = formatEntityDisplayId('reservation', reservationEntityId, '—');
+  const departureDisplayId = formatEntityDisplayId('departure', departureEntityId, '—');
+  const completionDisplayId = formatEntityDisplayId('completion', completionEntityId, '—');
 
   const activeSwitcherEntityType = activeEntityType ?? 'departure';
   const shareUrl = departureEntityId
@@ -492,7 +502,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
         entityIcon={<Truck className="h-3 w-3" />}
         entityLabel="Выезд"
         entitySwitcherOptions={entitySwitcherOptions}
-        title={`DEP-${departure.id.slice(0, 8).toUpperCase()}`}
+        title={departureDisplayId}
         subtitle={
           <>
             <button
@@ -501,8 +511,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               onClick={() => openEntitySecondary('applications', 'application', applicationEntityId)}
               disabled={!hasApplication}
             >
-              {departure.linked.applicationNumber
-                ?? `APP-${departure.linked.applicationId.slice(0, 8).toUpperCase()}`}
+              {applicationDisplayId}
             </button>{' '}
             ·{' '}
             <button
@@ -870,7 +879,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               disabled={!hasLead}
               onClick={() => openEntitySecondary('leads', 'lead', leadEntityId)}
             >
-              {leadEntityId ? `LEAD-${leadEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {leadDisplayId}
             </button>
           }
         />
@@ -883,8 +892,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               disabled={!hasApplication}
               onClick={() => openEntitySecondary('applications', 'application', applicationEntityId)}
             >
-              {departure.linked.applicationNumber
-                ?? (applicationEntityId ? `APP-${applicationEntityId.slice(0, 8).toUpperCase()}` : '—')}
+              {applicationDisplayId}
             </button>
           }
         />
@@ -897,7 +905,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               disabled={!hasReservation}
               onClick={() => openEntitySecondary('reservations', 'reservation', reservationEntityId)}
             >
-              {reservationEntityId ? `RSV-${reservationEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {reservationDisplayId}
             </button>
           }
         />
@@ -910,7 +918,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               disabled={!departureEntityId}
               onClick={() => openEntitySecondary('departures', 'departure', departureEntityId)}
             >
-              {departureEntityId ? `DEP-${departureEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {departureDisplayId}
             </button>
           }
         />
@@ -923,7 +931,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               disabled={!hasCompletion}
               onClick={() => openEntitySecondary('completion', 'completion', completionEntityId)}
             >
-              {completionEntityId ? `CMP-${completionEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {completionDisplayId}
             </button>
           }
         />

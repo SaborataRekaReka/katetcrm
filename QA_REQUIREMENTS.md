@@ -458,6 +458,15 @@ UI surface: Admin -> Integrations shows a Mango Office section with extension-to
 State/API/audit surface: Rules are stored in SystemConfig, settings updates are audited, and successful Mango ingest applies matching `managerId`/`responsibleManagerId` without bypassing integration event idempotency.
 Test priority: P1
 
+QA-REQ-053:
+Question: QA-Q-053. How should site lead distribution assign CRM managers?
+Answer: Admin can configure a site lead routing queue in Admin -> Integrations. New site leads are assigned round-robin across active configured managers. Duplicate site leads keep their existing manager when one is already set, and fallback manager is used only when the queue cannot provide an active manager.
+Route surface: /api/v1/integrations/site/lead-routing, /api/v1/integrations/events/ingest, /admin/integrations
+Domain surface: Site inbound lead intake -> Lead/Application responsible manager assignment
+UI surface: Admin -> Integrations shows a Site section with routing toggles, manager queue, and fallback manager selector.
+State/API/audit surface: Rules and queue cursor are stored in SystemConfig, settings updates are audited, and site ingest applies `managerId`/`responsibleManagerId` through the integration pipeline without breaking event idempotency.
+Test priority: P1
+
 ## 5. Open Questions
 
 None for QA-Q-001..QA-Q-037 in this first interview pass.

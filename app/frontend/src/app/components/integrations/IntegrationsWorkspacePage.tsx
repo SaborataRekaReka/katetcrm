@@ -38,8 +38,10 @@ import {
   useIntegrationEventQuery,
   useIntegrationEventsQuery,
   useMangoCallRoutingSettingsQuery,
+  useSiteLeadRoutingSettingsQuery,
 } from '../../hooks/useIntegrationsQuery';
 import {
+  useUpdateSiteLeadRoutingSettings,
   useUpdateMangoCallRoutingSettings,
   useReplayIntegrationEvent,
   useRetryIntegrationEvent,
@@ -50,10 +52,11 @@ import type {
   IntegrationEventApi,
   IntegrationEventStatus,
   MangoCallRoutingSettingsApi,
+  SiteLeadRoutingSettingsApi,
 } from '../../lib/integrationsApi';
 
 type PeriodFilter = 'all' | '24h' | '7d' | '30d';
-type IntegrationSectionId = 'mango-office' | 'events';
+type IntegrationSectionId = 'site' | 'mango-office' | 'events';
 
 interface IntegrationSectionItem {
   id: IntegrationSectionId;
@@ -63,6 +66,12 @@ interface IntegrationSectionItem {
 }
 
 const INTEGRATION_SECTIONS: IntegrationSectionItem[] = [
+  {
+    id: 'site',
+    label: 'Сайт',
+    description: 'Формы, заявки, очередь менеджеров',
+    icon: Globe2,
+  },
   {
     id: 'mango-office',
     label: 'Mango Office',
@@ -180,6 +189,14 @@ const EMPTY_MANGO_CALL_ROUTING: MangoCallRoutingSettingsApi = {
   rules: [],
 };
 
+const EMPTY_SITE_LEAD_ROUTING: SiteLeadRoutingSettingsApi = {
+  enabled: true,
+  preserveExistingManager: true,
+  fallbackManagerId: null,
+  managerIds: [],
+  lastAssignedManagerId: null,
+};
+
 function SettingsSwitchRow({
   title,
   description,
@@ -200,6 +217,334 @@ function SettingsSwitchRow({
         <div className="mt-0.5 text-[11px] text-muted-foreground">{description}</div>
       </div>
       <Switch checked={checked} disabled={disabled} onCheckedChange={onCheckedChange} />
+    </div>
+  );
+}
+
+function SiteLeadRoutingSettingsPanel() {
+  const managersQuery = useManagersQuery(true);
+  const settingsQuery = useSiteLeadRoutingSettingsQuery(true);
+  const updateMutation = useUpdateSiteLeadRoutingSettings();
+  const [draft, setDraft] = useState<SiteLeadRoutingSettingsApi>(EMPTY_SITE_LEAD_ROUTING);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (settingsQuery.data) {
+      setDraft(settingsQuery.data);
+      setError(null);
+      setSuccess(null);
+    }
+  }, [settingsQuery.data]);
+
+  const managerOptions = managersQuery.data ?? [];
+  const serializedDraft = JSON.stringify(draft);
+  const serializedSource = JSON.stringify(settingsQuery.data ?? EMPTY_SITE_LEAD_ROUTING);
+  const dirty = serializedDraft !== serializedSource;
+  const busy = settingsQuery.isPending || managersQuery.isPending || updateMutation.isPending;
+
+  const addManager = () => {
+    const firstAvailable = managerOptions.find((manager) => !draft.managerIds.includes(manager.id));
+    setDraft((prev) => ({
+      ...prev,
+      managerIds: [...prev.managerIds, firstAvailable?.id ?? ''],
+    }));
+  };
+
+  const updateManager = (index: number, managerId: string) => {
+    setDraft((prev) => ({
+      ...prev,
+      managerIds: prev.managerIds.map((id, managerIndex) => (
+        managerIndex === index ? managerId : id
+      )),
+    }));
+  };
+
+  const removeManager = (index: number) => {
+    setDraft((prev) => ({
+      ...prev,
+      managerIds: prev.managerIds.filter((_, managerIndex) => managerIndex !== index),
+    }));
+  };
+
+  const save = async () => {
+    setError(null);
+    setSuccess(null);
+
+    const normalized: SiteLeadRoutingSettingsApi = {
+      ...draft,
+      fallbackManagerId: draft.fallbackManagerId || null,
+      managerIds: draft.managerIds.map((managerId) => managerId.trim()),
+    };
+
+    if (normalized.managerIds.some((managerId) => !managerId)) {
+      setError('Выберите менеджера во всех строках очереди.');
+      return;
+    }
+
+    const duplicateManager = normalized.managerIds.find((managerId, index) => (
+      normalized.managerIds.findIndex((candidate) => candidate === managerId) !== index
+    ));
+    if (duplicateManager) {
+      const manager = managerOptions.find((candidate) => candidate.id === duplicateManager);
+      setError(`${manager?.fullName ?? 'Менеджер'} уже есть в очереди.`);
+      return;
+    }
+
+    try {
+      const saved = await updateMutation.mutateAsync(normalized);
+      setDraft(saved);
+      setSuccess('Правила распределения заявок с сайта сохранены.');
+    } catch (saveError) {
+      setError(saveError instanceof Error ? saveError.message : 'Не удалось сохранить правила сайта.');
+    }
+  };
+
+  return (
+    <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 px-4 py-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <h2 className="text-[14px] font-medium text-foreground">Распределение заявок</h2>
+            <Badge
+              variant="outline"
+              className={cn(
+                'h-5 rounded px-1.5 text-[10px]',
+                draft.enabled
+                  ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+                  : 'border-slate-200 bg-slate-50 text-slate-600',
+              )}
+            >
+              {draft.enabled ? 'Включено' : 'Выключено'}
+            </Badge>
+          </div>
+          <div className="mt-0.5 text-[11px] text-muted-foreground">
+            Новые заявки с сайта назначаются по очереди активных менеджеров.
+          </div>
+        </div>
+        <div className="ml-auto flex flex-wrap items-center gap-1.5">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1 px-2 text-[11px]"
+            onClick={addManager}
+            disabled={busy || managerOptions.length === 0}
+          >
+            <Plus className="h-3.5 w-3.5" /> Добавить менеджера
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 gap-1 px-2 text-[11px]"
+            onClick={() => settingsQuery.data && setDraft(settingsQuery.data)}
+            disabled={busy || !dirty || !settingsQuery.data}
+          >
+            <RotateCcw className="h-3.5 w-3.5" /> Сбросить
+          </Button>
+          <Button
+            size="sm"
+            className="h-8 gap-1 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
+            onClick={() => { void save(); }}
+            disabled={busy || !dirty}
+          >
+            <Save className="h-3.5 w-3.5" /> {updateMutation.isPending ? 'Сохранение...' : 'Сохранить'}
+          </Button>
+        </div>
+      </div>
+
+      <div className="space-y-2 px-4 py-3">
+        {settingsQuery.isError ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+            {settingsQuery.error instanceof Error ? settingsQuery.error.message : 'Не удалось загрузить правила сайта.'}
+          </div>
+        ) : null}
+        {error ? (
+          <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+            {error}
+          </div>
+        ) : null}
+        {success ? (
+          <div className="rounded border border-emerald-200 bg-emerald-50 px-2 py-1.5 text-[11px] text-emerald-700">
+            {success}
+          </div>
+        ) : null}
+      </div>
+
+      <div className="divide-y divide-border/60 border-y border-border/60">
+        <SettingsSwitchRow
+          title="Распределение включено"
+          description="CRM назначает менеджера новым заявкам с сайта по очереди."
+          checked={draft.enabled}
+          disabled={busy}
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, enabled: checked }))}
+        />
+        <SettingsSwitchRow
+          title="Не переназначать существующие лиды"
+          description="Если найден дубль и у лида уже есть менеджер, ответственный остается прежним."
+          checked={draft.preserveExistingManager}
+          disabled={busy}
+          onCheckedChange={(checked) => setDraft((prev) => ({ ...prev, preserveExistingManager: checked }))}
+        />
+      </div>
+
+      <div className="grid gap-2 px-4 py-3 text-[12px] md:grid-cols-[220px_1fr]">
+        <label className="flex items-center text-muted-foreground">Менеджер по умолчанию</label>
+        <Select
+          value={draft.fallbackManagerId ?? MANAGER_NONE_VALUE}
+          onValueChange={(value) => setDraft((prev) => ({
+            ...prev,
+            fallbackManagerId: value === MANAGER_NONE_VALUE ? null : value,
+          }))}
+          disabled={busy}
+        >
+          <SelectTrigger size="sm" className="text-[12px]">
+            <SelectValue placeholder="Не назначать" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={MANAGER_NONE_VALUE}>Не назначать, если очередь пуста</SelectItem>
+            {managerOptions.map((manager) => (
+              <SelectItem key={manager.id} value={manager.id}>{manager.fullName}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="overflow-x-auto border-t border-border/60">
+        <table className="w-full min-w-[620px] border-collapse text-[12px]">
+          <thead className="bg-muted/30 text-muted-foreground">
+            <tr>
+              <th className="w-[72px] px-4 py-2 text-left font-medium">Очередь</th>
+              <th className="px-3 py-2 text-left font-medium">Менеджер CRM</th>
+              <th className="w-12 px-3 py-2" />
+            </tr>
+          </thead>
+          <tbody>
+            {draft.managerIds.length === 0 ? (
+              <tr>
+                <td colSpan={3} className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+                  Очередь менеджеров пока пустая.
+                </td>
+              </tr>
+            ) : draft.managerIds.map((managerId, index) => (
+              <tr key={`${managerId}-${index}`} className="border-t border-border/50">
+                <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">
+                  {index + 1}
+                </td>
+                <td className="px-3 py-2">
+                  <Select
+                    value={managerId || MANAGER_NONE_VALUE}
+                    onValueChange={(value) => updateManager(index, value === MANAGER_NONE_VALUE ? '' : value)}
+                    disabled={busy}
+                  >
+                    <SelectTrigger size="sm" className="text-[12px]">
+                      <SelectValue placeholder="Выберите менеджера" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={MANAGER_NONE_VALUE}>Выберите менеджера</SelectItem>
+                      {managerOptions.map((manager) => (
+                        <SelectItem key={manager.id} value={manager.id}>{manager.fullName}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </td>
+                <td className="px-3 py-2 text-right">
+                  <button
+                    type="button"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50"
+                    onClick={() => removeManager(index)}
+                    disabled={busy}
+                    aria-label="Удалить менеджера из очереди"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function SiteIntegrationPage() {
+  const recentQuery = useIntegrationEventsQuery(
+    { channel: 'site', take: 6, skip: 0 },
+    true,
+  );
+  const recentRows = recentQuery.data?.items ?? [];
+
+  return (
+    <div className="min-h-0 min-w-0 flex-1 overflow-auto bg-muted/10">
+      <div className="mx-auto flex w-full max-w-[980px] flex-col gap-4 p-4">
+        <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+          <div className="flex flex-wrap items-start gap-3 px-4 py-4">
+            <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-sky-200 bg-sky-50 text-sky-700">
+              <Globe2 className="h-5 w-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-[18px] font-semibold tracking-tight text-foreground">Сайт</h1>
+                <Badge variant="outline" className="border-sky-200 bg-sky-50 text-[10px] text-sky-700">
+                  Webhook активен
+                </Badge>
+              </div>
+              <p className="mt-1 max-w-2xl text-[12px] leading-5 text-muted-foreground">
+                Формы сайта создают лиды, сохраняют источник и распределяют новые заявки между менеджерами.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <SiteLeadRoutingSettingsPanel />
+
+        <section className="rounded-lg border border-border/60 bg-white shadow-sm">
+          <div className="flex items-center justify-between gap-2 border-b border-border/60 px-4 py-3">
+            <div>
+              <h2 className="text-[14px] font-medium text-foreground">Последние события сайта</h2>
+              <div className="mt-0.5 text-[11px] text-muted-foreground">Свежие заявки, webhook-и и ошибки обработки.</div>
+            </div>
+            {recentQuery.isFetching ? <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" /> : null}
+          </div>
+
+          {recentQuery.isError ? (
+            <div className="px-4 py-4 text-[12px] text-rose-700">
+              {recentQuery.error instanceof Error ? recentQuery.error.message : 'Не удалось загрузить события сайта.'}
+            </div>
+          ) : null}
+
+          {!recentQuery.isError && recentRows.length === 0 ? (
+            <div className="px-4 py-8 text-center text-[12px] text-muted-foreground">
+              Событий сайта пока нет.
+            </div>
+          ) : null}
+
+          {recentRows.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[620px] border-collapse text-[12px]">
+                <thead className="bg-muted/30 text-muted-foreground">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-medium">ID</th>
+                    <th className="px-3 py-2 text-left font-medium">Статус</th>
+                    <th className="px-3 py-2 text-left font-medium">Внешний ID</th>
+                    <th className="px-3 py-2 text-left font-medium">Получено</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentRows.map((event) => (
+                    <tr key={event.id} className="border-t border-border/50">
+                      <td className="px-4 py-2.5 font-mono text-[11px] text-muted-foreground">{shortId(event.id)}</td>
+                      <td className="px-3 py-2.5"><EventStatusPill status={event.status} /></td>
+                      <td className="px-3 py-2.5 text-foreground/80">{event.externalId ?? '—'}</td>
+                      <td className="px-3 py-2.5 text-muted-foreground">{formatDateTime(event.receivedAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+        </section>
+      </div>
     </div>
   );
 }
@@ -631,7 +976,6 @@ function IntegrationSectionNav({
           </div>
           <div className="space-y-1">
             {[
-              { label: 'Сайт', icon: Globe2 },
               { label: 'Telegram', icon: MessageCircle },
               { label: 'MAX', icon: Plug },
             ].map((provider) => {
@@ -655,7 +999,7 @@ export function IntegrationsWorkspacePage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const meta = getModuleMeta('integrations');
 
-  const [activeSection, setActiveSection] = useState<IntegrationSectionId>('mango-office');
+  const [activeSection, setActiveSection] = useState<IntegrationSectionId>('site');
   const [integrationQuery, setIntegrationQuery] = useState('');
   const [query, setQuery] = useState('');
   const [channel, setChannel] = useState<'all' | IntegrationChannel>('all');
@@ -823,7 +1167,9 @@ export function IntegrationsWorkspacePage() {
           query={integrationQuery}
           onSelect={setActiveSection}
         />
-        {activeSection === 'mango-office' ? (
+        {activeSection === 'site' ? (
+          <SiteIntegrationPage />
+        ) : activeSection === 'mango-office' ? (
           <MangoOfficePage />
         ) : (
           <div className="flex min-h-0 min-w-0 flex-1 flex-col lg:flex-row">

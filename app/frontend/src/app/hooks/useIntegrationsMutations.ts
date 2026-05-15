@@ -3,8 +3,10 @@ import {
   replayIntegrationEvent,
   retryIntegrationEvent,
   updateMangoCallRoutingSettings,
+  updateSiteLeadRoutingSettings,
   type IntegrationActionResultApi,
   type MangoCallRoutingSettingsApi,
+  type SiteLeadRoutingSettingsApi,
 } from '../lib/integrationsApi';
 import { integrationsQueryKeys } from './useIntegrationsQuery';
 
@@ -51,6 +53,18 @@ export function useUpdateMangoCallRoutingSettings() {
     mutationFn: (settings) => updateMangoCallRoutingSettings(settings),
     onSuccess: (settings) => {
       qc.setQueryData(integrationsQueryKeys.mangoCallRouting, settings);
+      invalidateIntegrations(qc);
+    },
+  });
+}
+
+export function useUpdateSiteLeadRoutingSettings() {
+  const qc = useQueryClient();
+
+  return useMutation<SiteLeadRoutingSettingsApi, Error, SiteLeadRoutingSettingsApi>({
+    mutationFn: (settings) => updateSiteLeadRoutingSettings(settings),
+    onSuccess: (settings) => {
+      qc.setQueryData(integrationsQueryKeys.siteLeadRouting, settings);
       invalidateIntegrations(qc);
     },
   });

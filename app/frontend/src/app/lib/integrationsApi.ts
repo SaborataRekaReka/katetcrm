@@ -66,6 +66,14 @@ export interface MangoCallRoutingSettingsApi {
   rules: MangoCallRoutingRuleApi[];
 }
 
+export interface SiteLeadRoutingSettingsApi {
+  enabled: boolean;
+  preserveExistingManager: boolean;
+  fallbackManagerId: string | null;
+  managerIds: string[];
+  lastAssignedManagerId: string | null;
+}
+
 export function listIntegrationEvents(params: IntegrationListParams = {}) {
   return apiRequest<{ items: IntegrationEventApi[]; total: number }>('integrations/events', {
     query: {
@@ -106,5 +114,21 @@ export function updateMangoCallRoutingSettings(body: MangoCallRoutingSettingsApi
   return apiRequest<MangoCallRoutingSettingsApi>('integrations/mango/call-routing', {
     method: 'POST',
     body,
+  });
+}
+
+export function getSiteLeadRoutingSettings() {
+  return apiRequest<SiteLeadRoutingSettingsApi>('integrations/site/lead-routing');
+}
+
+export function updateSiteLeadRoutingSettings(body: SiteLeadRoutingSettingsApi) {
+  return apiRequest<SiteLeadRoutingSettingsApi>('integrations/site/lead-routing', {
+    method: 'POST',
+    body: {
+      enabled: body.enabled,
+      preserveExistingManager: body.preserveExistingManager,
+      fallbackManagerId: body.fallbackManagerId,
+      managerIds: body.managerIds,
+    },
   });
 }

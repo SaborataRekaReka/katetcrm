@@ -30,6 +30,7 @@ import {
   ReservationRow,
   deriveReservationState,
 } from '../shell/reservationHelpers';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 
 function fmtDate(d?: string) {
   if (!d) return '—';
@@ -205,6 +206,7 @@ function ReservationListRow({
       : reservation.source === 'undecided'
         ? '—'
         : 'не выбран';
+  const reservationDisplayId = formatEntityDisplayId('reservation', reservation.id, '—');
   const clientLabel = reservation.linked.clientName || reservation.linked.clientCompany || '—';
   const showClientCompany =
     !!reservation.linked.clientCompany
@@ -230,7 +232,7 @@ function ReservationListRow({
           title={RESERVATION_STAGE_LABEL[stage]}
         />
         <div className="min-w-0 flex-1 truncate">
-          <span className="text-[13px] font-medium text-foreground">{reservation.id}</span>
+          <span className="text-[13px] font-medium text-foreground">{reservationDisplayId}</span>
           <span className="ml-1.5 text-[12px] text-muted-foreground">· {clientLabel}</span>
           {showClientCompany ? (
             <span className="ml-1 text-[12px] text-muted-foreground/80">({reservation.linked.clientCompany})</span>

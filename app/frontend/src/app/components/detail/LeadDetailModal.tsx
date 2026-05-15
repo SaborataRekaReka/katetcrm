@@ -64,6 +64,7 @@ import {
   mapActivityEntries,
   type TelephonyRecording,
 } from '../../lib/activityMapper';
+import { getEntityDisplayId } from '../../lib/entityDisplayId';
 import { toKanbanLead } from '../../lib/leadAdapter';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { USE_API } from '../../lib/featureFlags';
@@ -626,9 +627,8 @@ export function LeadDetailModal({
     openSecondary('leads');
   };
 
-  const formatEntityLink = (prefix: string, entityId?: string | null): string | null => {
-    if (!entityId) return null;
-    return `${prefix}-${entityId.slice(0, 8).toUpperCase()}`;
+  const formatEntityLink = (entityType: string, entityId?: string | null): string | null => {
+    return getEntityDisplayId(entityType, entityId);
   };
   const normalizeDisplayText = (value?: string | null): string | null => {
     const text = value?.trim();
@@ -700,33 +700,33 @@ export function LeadDetailModal({
   const leadRelatedRecordItems: RelatedRecordItem[] = isLead ? [
     {
       label: 'Лид',
-      text: formatEntityLink('LEAD', leadEntityId),
+      text: formatEntityLink('lead', leadEntityId),
       onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
     },
     {
       label: 'Заявка',
-      text: formatEntityLink('APP', applicationEntityId),
+      text: formatEntityLink('application', applicationEntityId),
       onClick: applicationEntityId
         ? () => openEntitySecondary('applications', 'application', applicationEntityId)
         : null,
     },
     {
       label: 'Бронь',
-      text: formatEntityLink('RSV', reservationEntityId),
+      text: formatEntityLink('reservation', reservationEntityId),
       onClick: reservationEntityId
         ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
         : null,
     },
     {
       label: 'Выезд',
-      text: formatEntityLink('DEP', departureEntityId),
+      text: formatEntityLink('departure', departureEntityId),
       onClick: departureEntityId
         ? () => openEntitySecondary('departures', 'departure', departureEntityId)
         : null,
     },
     {
       label: 'Завершение',
-      text: formatEntityLink('CMP', completionEntityId),
+      text: formatEntityLink('completion', completionEntityId),
       onClick: completionEntityId
         ? () => openEntitySecondary('completion', 'completion', completionEntityId)
         : null,
@@ -749,7 +749,7 @@ export function LeadDetailModal({
   const applicationRelatedRecordItems: RelatedRecordItem[] = !isLead ? [
     {
       label: 'Лид',
-      text: formatEntityLink('LEAD', leadEntityId),
+      text: formatEntityLink('lead', leadEntityId),
       onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
     },
     {
@@ -761,21 +761,21 @@ export function LeadDetailModal({
     },
     {
       label: 'Бронь',
-      text: formatEntityLink('RSV', reservationEntityId),
+      text: formatEntityLink('reservation', reservationEntityId),
       onClick: reservationEntityId
         ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
         : null,
     },
     {
       label: 'Выезд',
-      text: formatEntityLink('DEP', departureEntityId),
+      text: formatEntityLink('departure', departureEntityId),
       onClick: departureEntityId
         ? () => openEntitySecondary('departures', 'departure', departureEntityId)
         : null,
     },
     {
       label: 'Завершение',
-      text: formatEntityLink('CMP', completionEntityId),
+      text: formatEntityLink('completion', completionEntityId),
       onClick: completionEntityId
         ? () => openEntitySecondary('completion', 'completion', completionEntityId)
         : null,

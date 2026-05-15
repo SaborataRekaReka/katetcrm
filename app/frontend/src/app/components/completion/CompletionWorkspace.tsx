@@ -29,6 +29,7 @@ import { Lead } from '../../types/kanban';
 import { Completion, CompletionStatus } from '../../types/completion';
 import { buildMockCompletion } from '../../data/mockCompletion';
 import { USE_API } from '../../lib/featureFlags';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
@@ -165,6 +166,11 @@ export function CompletionWorkspace({
   const hasLinkedReservation = !!reservationEntityId;
   const hasLinkedDeparture = !!departureEntityId;
   const hasLinkedCompletion = !!completionEntityId;
+  const completionDisplayId = formatEntityDisplayId(
+    'completion',
+    completionEntityId ?? base.id,
+    '—',
+  );
   const canOpenClient = !!onOpenClient;
   const activeSwitcherEntityType = activeEntityType ?? 'completion';
   const shareUrl = completionEntityId
@@ -316,7 +322,7 @@ export function CompletionWorkspace({
         entityIcon={<CheckCircle2 className="w-3 h-3" />}
         entityLabel="Завершение"
         entitySwitcherOptions={entitySwitcherOptions}
-        title={base.id}
+        title={completionDisplayId}
         subtitle={
           <>
             <button
@@ -388,7 +394,7 @@ export function CompletionWorkspace({
                       <AlertDialogContent>
                         <AlertDialogHeader>
                           <AlertDialogTitle>
-                            Пометить заказ {base.id} некачественным?
+                            Пометить заказ {completionDisplayId} некачественным?
                           </AlertDialogTitle>
                           <AlertDialogDescription>
                             Заказ будет закрыт как некачественный. Действие попадёт в журнал.
@@ -501,7 +507,7 @@ export function CompletionWorkspace({
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="ID"
-            value={<InlineValue>{base.id}</InlineValue>}
+            value={<InlineValue>{completionDisplayId}</InlineValue>}
           />
           {!isCompleted && (
             <PropertyRow
@@ -1109,7 +1115,7 @@ export function CompletionWorkspace({
       <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Завершить заказ {base.id}?</AlertDialogTitle>
+            <AlertDialogTitle>Завершить заказ {completionDisplayId}?</AlertDialogTitle>
             <AlertDialogDescription>
               Заказ перейдёт в статус «Завершён», выезд {linked.departureTitle} будет закрыт,
               бронь {linked.reservationTitle} будет освобождена. Действие попадёт в журнал.

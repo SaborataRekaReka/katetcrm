@@ -51,6 +51,7 @@ import {
   useUpdateUser,
 } from '../../hooks/useUserMutations';
 import { USE_API } from '../../lib/featureFlags';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import type { ActivityLogEntryApi } from '../../lib/activityApi';
 import type {
   ImportDedupPolicy,
@@ -95,16 +96,6 @@ const ENTITY_LABEL: Record<string, string> = {
   reservation: 'Бронь',
   departure: 'Выезд',
   completion: 'Завершение',
-};
-
-const ENTITY_PREFIX: Record<string, string> = {
-  lead: 'LEAD',
-  application: 'APP',
-  application_item: 'ITEM',
-  client: 'CL',
-  reservation: 'RSV',
-  departure: 'DEP',
-  completion: 'CMP',
 };
 
 const FALLBACK_IMPORT_LOG: ImportLogRow[] = [
@@ -412,9 +403,7 @@ function isWithinPeriod(value: string, period: ImportPeriod): boolean {
 }
 
 function formatEntityRef(entityType: string, entityId: string): string {
-  const prefix = ENTITY_PREFIX[entityType] ?? entityType.slice(0, 4).toUpperCase();
-  const suffix = entityId.slice(-6).toUpperCase();
-  return `${prefix}-${suffix}`;
+  return formatEntityDisplayId(entityType, entityId, '-');
 }
 
 function ImportsPage() {

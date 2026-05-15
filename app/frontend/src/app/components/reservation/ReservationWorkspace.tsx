@@ -36,6 +36,7 @@ import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { mapActivityEntries } from '../../lib/activityMapper';
 import { toReservationEntity } from '../../lib/reservationAdapter';
 import { USE_API } from '../../lib/featureFlags';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import type { LeadApi } from '../../lib/leadsApi';
 import type { SubcontractorConfirmationStatus } from '../../lib/reservationsApi';
 import { InlineText } from '../detail/InlineEdit/InlineText';
@@ -442,6 +443,14 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
   const linkedLeadStage = linkedLeadQuery.data?.stage ?? lead.stage;
   const hasLinkedDeparture = !!resolvedDepartureEntityId;
   const hasLinkedCompletion = !!completionEntityId;
+  const leadDisplayId = formatEntityDisplayId('lead', resolvedLeadId, '—');
+  const reservationDisplayId = formatEntityDisplayId(
+    'reservation',
+    reservationEntityId ?? reservation.id,
+    '—',
+  );
+  const departureDisplayId = formatEntityDisplayId('departure', resolvedDepartureEntityId, '—');
+  const completionDisplayId = formatEntityDisplayId('completion', completionEntityId, '—');
   const isCurrentStageTail = !hasLinkedDeparture && !hasLinkedCompletion;
   const canMarkChainUnqualified =
     USE_API
@@ -798,7 +807,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         entityIcon={<FileText className="w-3 h-3" />}
         entityLabel="Бронь"
         entitySwitcherOptions={entitySwitcherOptions}
-        title={reservation.id}
+        title={reservationDisplayId}
         subtitle={
           <>
             <button
@@ -933,7 +942,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
 
       <EntitySection title="Основные данные" className="mb-5">
         <div className="grid grid-cols-2 gap-x-8 gap-y-0">
-          <PropertyRow icon={<FileText className="w-3 h-3" />} label="ID" value={<InlineValue>{reservation.id}</InlineValue>} />
+          <PropertyRow icon={<FileText className="w-3 h-3" />} label="ID" value={<InlineValue>{reservationDisplayId}</InlineValue>} />
           <PropertyRow
             icon={<Activity className="w-3 h-3" />}
             label="Статус"
@@ -1770,7 +1779,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
               onClick={() => void handleOpenLead()}
             >
-              {resolvedLeadId ? `LEAD-${resolvedLeadId.slice(0, 8).toUpperCase()}` : '—'}
+              {leadDisplayId}
             </button>
           }
         />
@@ -1799,7 +1808,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
                 openEntitySecondary('reservations', 'reservation', reservationEntityId)
               }
             >
-              {reservationEntityId ? `RSV-${reservationEntityId.slice(0, 8).toUpperCase()}` : reservation.id}
+              {reservationDisplayId}
             </button>
           }
         />
@@ -1812,7 +1821,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
               onClick={() => handleOpenDeparture()}
             >
-              {resolvedDepartureEntityId ? `DEP-${resolvedDepartureEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {departureDisplayId}
             </button>
           }
         />
@@ -1825,7 +1834,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               className={`${sidebarTokens.link} disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed`}
               onClick={handleOpenCompletion}
             >
-              {completionEntityId ? `CMP-${completionEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {completionDisplayId}
             </button>
           }
         />
@@ -1891,7 +1900,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Снять бронь {reservation.id}?</AlertDialogTitle>
+                  <AlertDialogTitle>Снять бронь {reservationDisplayId}?</AlertDialogTitle>
                   <AlertDialogDescription>
                     Действие будет зафиксировано в журнале. Укажите причину (необязательно).
                   </AlertDialogDescription>
@@ -1951,7 +1960,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         onOpenChange={setIsUnitCreateOpen}
         initialValues={{
           equipmentTypeId: resEquipmentTypeId ?? '',
-          notes: `Создано из брони ${reservation.id}`,
+          notes: `Создано из брони ${reservationDisplayId}`,
         }}
         onCreated={(unit) => {
           void handleCreatedUnit(unit);
@@ -1962,7 +1971,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
         onOpenChange={setIsSubCreateOpen}
         initialValues={{
           specialization: reservation.equipmentType,
-          notes: `Создано из брони ${reservation.id}`,
+          notes: `Создано из брони ${reservationDisplayId}`,
         }}
         onCreated={(subcontractor) => {
           void handleCreatedSubcontractor(subcontractor);

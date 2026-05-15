@@ -22,6 +22,7 @@ import {
   type IntegrationEventListQueryDto,
   type ReceiveIntegrationEventDto,
   type UpdateMangoCallRoutingSettingsDto,
+  type UpdateSiteLeadRoutingSettingsDto,
 } from './integrations.dto';
 
 type ProcessingMode = 'ingest' | 'retry' | 'replay';
@@ -63,11 +64,30 @@ export interface MangoCallRoutingSettings {
   rules: MangoCallRoutingRule[];
 }
 
-interface MangoManagerAssignment {
-  managerId: string;
-  extension?: string;
-  reason: 'extension_match' | 'fallback';
+export interface SiteLeadRoutingSettings {
+  enabled: boolean;
+  preserveExistingManager: boolean;
+  fallbackManagerId: string | null;
+  managerIds: string[];
+  lastAssignedManagerId: string | null;
 }
+
+interface IntegrationManagerAssignment {
+  managerId: string;
+  channel: 'mango' | 'site';
+  extension?: string;
+  reason: 'extension_match' | 'fallback' | 'round_robin';
+}
+
+type MangoManagerAssignment = IntegrationManagerAssignment & {
+  channel: 'mango';
+  reason: 'extension_match' | 'fallback';
+};
+
+type SiteLeadManagerAssignment = IntegrationManagerAssignment & {
+  channel: 'site';
+  reason: 'round_robin' | 'fallback';
+};
 
 type CallDirection = 'inbound' | 'outbound' | 'unknown';
 
@@ -87,6 +107,7 @@ interface LeadUpsertResult {
   leadId: string;
   operation: 'created' | 'updated';
   duplicatesFound: number;
+  managerAssignment?: IntegrationManagerAssignment;
 }
 
 interface IngestAuthHeaders {
@@ -121,6 +142,7 @@ const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
 };
 
 const MANGO_CALL_ROUTING_SETTINGS_KEY = 'integrations.mango.call_routing.v1';
+const SITE_LEAD_ROUTING_SETTINGS_KEY = 'integrations.site.lead_routing.v1';
 
 const DEFAULT_MANGO_CALL_ROUTING_SETTINGS: MangoCallRoutingSettings = {
   enabled: true,
@@ -129,6 +151,14 @@ const DEFAULT_MANGO_CALL_ROUTING_SETTINGS: MangoCallRoutingSettings = {
   assignMissedCalls: false,
   fallbackManagerId: null,
   rules: [],
+};
+
+const DEFAULT_SITE_LEAD_ROUTING_SETTINGS: SiteLeadRoutingSettings = {
+  enabled: true,
+  preserveExistingManager: true,
+  fallbackManagerId: null,
+  managerIds: [],
+  lastAssignedManagerId: null,
 };
 
 const TRANSIENT_PRISMA_CODES = new Set(['P1001', 'P1002', 'P1008', 'P1017']);
@@ -212,6 +242,61 @@ export class IntegrationsService {
       entityId: MANGO_CALL_ROUTING_SETTINGS_KEY,
       actorId: actorId ?? null,
       summary: 'Обновлены правила распределения звонков Mango',
+      payload: {
+        before: previous,
+        after: next,
+      } as unknown as Prisma.InputJsonValue,
+    });
+
+    return next;
+  }
+
+  async getSiteLeadRoutingSettings(): Promise<SiteLeadRoutingSettings> {
+    return this.readSiteLeadRoutingSettings();
+  }
+
+  async updateSiteLeadRoutingSettings(
+    dto: UpdateSiteLeadRoutingSettingsDto,
+    actorId?: string,
+  ): Promise<SiteLeadRoutingSettings> {
+    const previous = await this.readSiteLeadRoutingSettings();
+    const managerIds = dto.managerIds
+      ? this.normalizeSiteLeadRoutingManagerIds(dto.managerIds)
+      : previous.managerIds;
+    const next: SiteLeadRoutingSettings = {
+      ...previous,
+      enabled: dto.enabled ?? previous.enabled,
+      preserveExistingManager:
+        dto.preserveExistingManager ?? previous.preserveExistingManager,
+      fallbackManagerId:
+        dto.fallbackManagerId === undefined
+          ? previous.fallbackManagerId
+          : dto.fallbackManagerId?.trim() || null,
+      managerIds,
+      lastAssignedManagerId: previous.lastAssignedManagerId && managerIds.includes(previous.lastAssignedManagerId)
+        ? previous.lastAssignedManagerId
+        : null,
+    };
+
+    await this.assertSiteLeadRoutingUsersExist(next);
+
+    await this.prisma.systemConfig.upsert({
+      where: { key: SITE_LEAD_ROUTING_SETTINGS_KEY },
+      create: {
+        key: SITE_LEAD_ROUTING_SETTINGS_KEY,
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+      update: {
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+    });
+
+    await this.activity.log({
+      action: 'updated',
+      entityType: 'integration_settings',
+      entityId: SITE_LEAD_ROUTING_SETTINGS_KEY,
+      actorId: actorId ?? null,
+      summary: 'Обновлены правила распределения заявок с сайта',
       payload: {
         before: previous,
         after: next,
@@ -494,6 +579,12 @@ export class IntegrationsService {
         mangoManagerAssignment,
       );
 
+      await this.applySiteManagerAssignmentToActiveApplications(
+        event,
+        leadResult.leadId,
+        leadResult.managerAssignment,
+      );
+
       if (mode === 'retry' || mode === 'replay') {
         await this.activity.log({
           action: 'updated',
@@ -509,6 +600,14 @@ export class IntegrationsService {
             leadId: leadResult.leadId,
             operation: leadResult.operation,
             duplicatesFound: leadResult.duplicatesFound,
+            managerAssignment: leadResult.managerAssignment
+              ? {
+                  channel: leadResult.managerAssignment.channel,
+                  managerId: leadResult.managerAssignment.managerId,
+                  reason: leadResult.managerAssignment.reason,
+                  extension: leadResult.managerAssignment.extension ?? null,
+                }
+              : null,
           },
         });
       }
@@ -571,6 +670,8 @@ export class IntegrationsService {
     const duplicates = await this.leads.findDuplicates(payload.contactPhone, payload.contactCompany);
     if (duplicates.length > 0) {
       const target = duplicates[0];
+      const effectiveManagerAssignment = managerAssignment
+        ?? await this.resolveSiteLeadManagerAssignment(event.channel, target.managerId);
       const comment = this.mergeIntegrationComment(
         target.comment ?? undefined,
         payload.comment,
@@ -590,7 +691,7 @@ export class IntegrationsService {
           address: payload.address,
           comment,
           isUrgent: payload.isUrgent,
-          managerId: managerAssignment?.managerId,
+          managerId: effectiveManagerAssignment?.managerId,
         },
         actor,
       );
@@ -599,8 +700,12 @@ export class IntegrationsService {
         leadId: updated.id,
         operation: 'updated',
         duplicatesFound: duplicates.length,
+        managerAssignment: effectiveManagerAssignment,
       };
     }
+
+    const effectiveManagerAssignment = managerAssignment
+      ?? await this.resolveSiteLeadManagerAssignment(event.channel);
 
     const comment = this.mergeIntegrationComment(
       undefined,
@@ -622,7 +727,7 @@ export class IntegrationsService {
         address: payload.address,
         comment,
         isUrgent: payload.isUrgent,
-        managerId: managerAssignment?.managerId,
+        managerId: effectiveManagerAssignment?.managerId,
       },
       actor,
     );
@@ -631,6 +736,7 @@ export class IntegrationsService {
       leadId: lead.id,
       operation: 'created',
       duplicatesFound: 0,
+      managerAssignment: effectiveManagerAssignment,
     };
   }
 
@@ -651,6 +757,19 @@ export class IntegrationsService {
     }
 
     return this.normalizeMangoCallRoutingSettings(existing.payload);
+  }
+
+  private async readSiteLeadRoutingSettings(): Promise<SiteLeadRoutingSettings> {
+    const existing = await this.prisma.systemConfig.findUnique({
+      where: { key: SITE_LEAD_ROUTING_SETTINGS_KEY },
+      select: { payload: true },
+    });
+
+    if (!existing) {
+      return this.cloneSiteLeadRoutingSettings(DEFAULT_SITE_LEAD_ROUTING_SETTINGS);
+    }
+
+    return this.normalizeSiteLeadRoutingSettings(existing.payload);
   }
 
   private normalizeMangoCallRoutingSettings(payload: unknown): MangoCallRoutingSettings {
@@ -684,6 +803,33 @@ export class IntegrationsService {
     };
   }
 
+  private normalizeSiteLeadRoutingSettings(payload: unknown): SiteLeadRoutingSettings {
+    const root = this.asRecord(payload);
+    if (!root) {
+      return this.cloneSiteLeadRoutingSettings(DEFAULT_SITE_LEAD_ROUTING_SETTINGS);
+    }
+
+    const fallback = DEFAULT_SITE_LEAD_ROUTING_SETTINGS;
+    return {
+      enabled: typeof root.enabled === 'boolean' ? root.enabled : fallback.enabled,
+      preserveExistingManager:
+        typeof root.preserveExistingManager === 'boolean'
+          ? root.preserveExistingManager
+          : fallback.preserveExistingManager,
+      fallbackManagerId:
+        typeof root.fallbackManagerId === 'string' && root.fallbackManagerId.trim()
+          ? root.fallbackManagerId.trim()
+          : null,
+      managerIds: this.normalizeSiteLeadRoutingManagerIds(
+        Array.isArray(root.managerIds) ? root.managerIds : fallback.managerIds,
+      ),
+      lastAssignedManagerId:
+        typeof root.lastAssignedManagerId === 'string' && root.lastAssignedManagerId.trim()
+          ? root.lastAssignedManagerId.trim()
+          : null,
+    };
+  }
+
   private normalizeMangoCallRoutingRules(
     rules: Array<{ extension?: unknown; userId?: unknown; isActive?: unknown }>,
   ): MangoCallRoutingRule[] {
@@ -710,6 +856,25 @@ export class IntegrationsService {
     return normalized;
   }
 
+  private normalizeSiteLeadRoutingManagerIds(managerIds: unknown[]): string[] {
+    const normalized: string[] = [];
+    const seen = new Set<string>();
+
+    for (const value of managerIds) {
+      const managerId = typeof value === 'string' ? value.trim() : '';
+      if (!managerId) {
+        throw new BadRequestException('Укажите менеджера CRM в каждой строке распределения сайта.');
+      }
+      if (seen.has(managerId)) {
+        throw new BadRequestException('Менеджер CRM указан в очереди сайта несколько раз.');
+      }
+      seen.add(managerId);
+      normalized.push(managerId);
+    }
+
+    return normalized;
+  }
+
   private normalizeMangoExtension(value: unknown): string | undefined {
     if (value === null || value === undefined) return undefined;
     const raw = String(value).trim();
@@ -728,6 +893,12 @@ export class IntegrationsService {
     value: MangoCallRoutingSettings,
   ): MangoCallRoutingSettings {
     return JSON.parse(JSON.stringify(value)) as MangoCallRoutingSettings;
+  }
+
+  private cloneSiteLeadRoutingSettings(
+    value: SiteLeadRoutingSettings,
+  ): SiteLeadRoutingSettings {
+    return JSON.parse(JSON.stringify(value)) as SiteLeadRoutingSettings;
   }
 
   private async assertMangoCallRoutingUsersExist(settings: MangoCallRoutingSettings) {
@@ -750,6 +921,106 @@ export class IntegrationsService {
     if (missing.length > 0) {
       throw new BadRequestException('В правилах Mango выбран неактивный или несуществующий менеджер.');
     }
+  }
+
+  private async assertSiteLeadRoutingUsersExist(settings: SiteLeadRoutingSettings) {
+    const userIds = Array.from(new Set([
+      ...settings.managerIds,
+      ...(settings.fallbackManagerId ? [settings.fallbackManagerId] : []),
+    ]));
+    if (userIds.length === 0) return;
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+        role: 'manager',
+        isActive: true,
+      },
+      select: { id: true },
+    });
+    const existingIds = new Set(users.map((user) => user.id));
+    const missing = userIds.filter((userId) => !existingIds.has(userId));
+    if (missing.length > 0) {
+      throw new BadRequestException('В правилах сайта выбран неактивный или несуществующий менеджер.');
+    }
+  }
+
+  private async resolveSiteLeadManagerAssignment(
+    channel: IntegrationChannel,
+    existingManagerId?: string | null,
+  ): Promise<SiteLeadManagerAssignment | undefined> {
+    if (channel !== 'site') return undefined;
+
+    const settings = await this.readSiteLeadRoutingSettings();
+    if (!settings.enabled) return undefined;
+    if (settings.preserveExistingManager && existingManagerId) return undefined;
+
+    return this.selectNextSiteLeadRoutingManager(settings);
+  }
+
+  private async selectNextSiteLeadRoutingManager(
+    settings: SiteLeadRoutingSettings,
+  ): Promise<SiteLeadManagerAssignment | undefined> {
+    const userIds = Array.from(new Set([
+      ...settings.managerIds,
+      ...(settings.fallbackManagerId ? [settings.fallbackManagerId] : []),
+    ]));
+    if (userIds.length === 0) return undefined;
+
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+        role: 'manager',
+        isActive: true,
+      },
+      select: { id: true },
+    });
+    const activeIds = new Set(users.map((user) => user.id));
+    const activeManagerIds = settings.managerIds.filter((managerId) => activeIds.has(managerId));
+
+    if (activeManagerIds.length > 0) {
+      const currentIndex = settings.lastAssignedManagerId
+        ? activeManagerIds.indexOf(settings.lastAssignedManagerId)
+        : -1;
+      const nextManagerId = activeManagerIds[(currentIndex + 1) % activeManagerIds.length];
+      await this.persistSiteLeadRoutingCursor(settings, nextManagerId);
+      return {
+        channel: 'site',
+        managerId: nextManagerId,
+        reason: 'round_robin',
+      };
+    }
+
+    if (settings.fallbackManagerId && activeIds.has(settings.fallbackManagerId)) {
+      return {
+        channel: 'site',
+        managerId: settings.fallbackManagerId,
+        reason: 'fallback',
+      };
+    }
+
+    return undefined;
+  }
+
+  private async persistSiteLeadRoutingCursor(
+    settings: SiteLeadRoutingSettings,
+    managerId: string,
+  ) {
+    const next: SiteLeadRoutingSettings = {
+      ...settings,
+      lastAssignedManagerId: managerId,
+    };
+
+    await this.prisma.systemConfig.upsert({
+      where: { key: SITE_LEAD_ROUTING_SETTINGS_KEY },
+      create: {
+        key: SITE_LEAD_ROUTING_SETTINGS_KEY,
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+      update: {
+        payload: next as unknown as Prisma.InputJsonValue,
+      },
+    });
   }
 
   private async resolveSystemActor(): Promise<ActorContext> {
@@ -1350,6 +1621,7 @@ export class IntegrationsService {
       const rule = activeRules.get(extension);
       if (rule) {
         return {
+          channel: 'mango',
           managerId: rule.userId,
           extension,
           reason: 'extension_match',
@@ -1359,6 +1631,7 @@ export class IntegrationsService {
 
     if (settings.fallbackManagerId) {
       return {
+        channel: 'mango',
         managerId: settings.fallbackManagerId,
         reason: 'fallback',
       };
@@ -1558,6 +1831,61 @@ export class IntegrationsService {
           },
           managerAssignment: {
             extension: managerAssignment.extension ?? null,
+            reason: managerAssignment.reason,
+          },
+        } as unknown as Prisma.InputJsonValue,
+      });
+    }
+  }
+
+  private async applySiteManagerAssignmentToActiveApplications(
+    event: IntegrationEvent,
+    leadId: string,
+    managerAssignment?: IntegrationManagerAssignment,
+  ): Promise<void> {
+    if (event.channel !== 'site' || managerAssignment?.channel !== 'site') return;
+
+    const activeApplications = await this.prisma.application.findMany({
+      where: {
+        leadId,
+        isActive: true,
+      },
+      select: {
+        id: true,
+        responsibleManagerId: true,
+      },
+    });
+
+    for (const application of activeApplications) {
+      if (application.responsibleManagerId === managerAssignment.managerId) continue;
+
+      await this.prisma.application.update({
+        where: { id: application.id },
+        data: {
+          responsibleManagerId: managerAssignment.managerId,
+          lastActivityAt: new Date(),
+        },
+      });
+
+      await this.activity.log({
+        action: 'updated',
+        entityType: 'application',
+        entityId: application.id,
+        summary: 'Ответственный обновлен по заявке с сайта',
+        actorId: null,
+        payload: {
+          integration: {
+            provider: 'site',
+            eventId: event.id,
+            externalId: event.externalId,
+          },
+          before: {
+            responsibleManagerId: application.responsibleManagerId,
+          },
+          after: {
+            responsibleManagerId: managerAssignment.managerId,
+          },
+          managerAssignment: {
             reason: managerAssignment.reason,
           },
         } as unknown as Prisma.InputJsonValue,

@@ -44,6 +44,22 @@ function buildMangoIngestHeaders(payload: Record<string, unknown>) {
   };
 }
 
+function buildSiteIngestHeaders(payload: Record<string, unknown>) {
+  const secret = (process.env.INTEGRATION_SITE_SECRET ?? '').trim();
+  if (!secret) {
+    return {};
+  }
+
+  const timestamp = Date.now().toString();
+  const message = `${timestamp}.site.${stableSerialize(payload)}`;
+  const signature = createHmac('sha256', secret).update(message).digest('hex');
+
+  return {
+    'x-integration-timestamp': timestamp,
+    'x-integration-signature': `sha256=${signature}`,
+  };
+}
+
 function buildMangoConnectorBody(payload: Record<string, unknown>) {
   const apiKey = process.env.INTEGRATION_MANGO_API_KEY ?? 'qa-test-mango-api-key';
   const secret = (process.env.INTEGRATION_MANGO_SECRET ?? '').trim();
@@ -57,33 +73,38 @@ function buildMangoConnectorBody(payload: Record<string, unknown>) {
   };
 }
 
-describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 052)', () => {
+describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 052, 053)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
   let originalMangoApiKey: string | undefined;
+  let originalSiteSecret: string | undefined;
 
   beforeAll(async () => {
     originalMangoSecret = process.env.INTEGRATION_MANGO_SECRET;
     originalMangoApiKey = process.env.INTEGRATION_MANGO_API_KEY;
+    originalSiteSecret = process.env.INTEGRATION_SITE_SECRET;
     if (!originalMangoSecret) {
       process.env.INTEGRATION_MANGO_SECRET = 'qa-test-mango-secret';
     }
     if (!originalMangoApiKey) {
       process.env.INTEGRATION_MANGO_API_KEY = 'qa-test-mango-api-key';
     }
+    if (!originalSiteSecret) {
+      process.env.INTEGRATION_SITE_SECRET = 'qa-test-site-secret';
+    }
 
     app = await createTestApp();
     prisma = app.get(PrismaService);
     await ensureBaseUsers(prisma);
     await prisma.systemConfig.deleteMany({
-      where: { key: 'integrations.mango.call_routing.v1' },
+      where: { key: { in: ['integrations.mango.call_routing.v1', 'integrations.site.lead_routing.v1'] } },
     });
   });
 
   afterAll(async () => {
     await prisma.systemConfig.deleteMany({
-      where: { key: 'integrations.mango.call_routing.v1' },
+      where: { key: { in: ['integrations.mango.call_routing.v1', 'integrations.site.lead_routing.v1'] } },
     });
     if (originalMangoSecret === undefined) {
       delete process.env.INTEGRATION_MANGO_SECRET;
@@ -94,6 +115,11 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       delete process.env.INTEGRATION_MANGO_API_KEY;
     } else {
       process.env.INTEGRATION_MANGO_API_KEY = originalMangoApiKey;
+    }
+    if (originalSiteSecret === undefined) {
+      delete process.env.INTEGRATION_SITE_SECRET;
+    } else {
+      process.env.INTEGRATION_SITE_SECRET = originalSiteSecret;
     }
     await closeTestApp(app);
   });
@@ -503,5 +529,155 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       orderBy: { createdAt: 'desc' },
     });
     expect(assignmentActivity?.summary).toContain('Mango');
+  });
+
+  it('APIC-042: protects and persists site lead-routing settings (QA-REQ-053)', async () => {
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const managerLogin = await loginByPassword(app, TEST_MANAGER);
+    const manager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+
+    const settings = {
+      enabled: true,
+      preserveExistingManager: true,
+      fallbackManagerId: null,
+      managerIds: [manager.id],
+    };
+
+    await request(app.getHttpServer())
+      .get('/api/v1/integrations/site/lead-routing')
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/site/lead-routing')
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .send(settings)
+      .expect(403);
+
+    const saved = await request(app.getHttpServer())
+      .post('/api/v1/integrations/site/lead-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send(settings)
+      .expect(201);
+
+    expect(saved.body).toMatchObject(settings);
+    expect(saved.body.lastAssignedManagerId).toBeNull();
+
+    const fetched = await request(app.getHttpServer())
+      .get('/api/v1/integrations/site/lead-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .expect(200);
+
+    expect(fetched.body).toMatchObject(settings);
+    expect(fetched.body.lastAssignedManagerId).toBeNull();
+  });
+
+  it('APIC-043: routes new site leads round-robin and preserves duplicate manager (QA-REQ-053)', async () => {
+    const seed = uniqueSeed('043');
+    const firstPhone = uniquePhone('0431');
+    const secondPhone = uniquePhone('0432');
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const firstManager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+    const secondManager = await prisma.user.create({
+      data: {
+        email: `site-routing-${seed}@qa.test`,
+        fullName: 'QA Site Routing Manager',
+        passwordHash: 'not-used-in-test',
+        role: 'manager',
+        isActive: true,
+      },
+      select: { id: true },
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/site/lead-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({
+        enabled: true,
+        preserveExistingManager: true,
+        fallbackManagerId: null,
+        managerIds: [firstManager.id, secondManager.id],
+      })
+      .expect(201);
+
+    const firstPayload = {
+      contactName: 'QA Site Routing First Lead',
+      contactPhone: firstPhone,
+      contactCompany: `QA Site ${seed} LLC`,
+      message: 'first site form',
+    } as Record<string, unknown>;
+
+    const firstResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildSiteIngestHeaders(firstPayload))
+      .send({
+        channel: 'site',
+        externalId: `SITE-ROUTING-APIC-043-1-${seed}`,
+        payload: firstPayload,
+      })
+      .expect(201);
+
+    const firstLeadId = firstResponse.body.event.relatedLeadId as string;
+    const firstLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: firstLeadId },
+      select: { managerId: true, source: true },
+    });
+    expect(firstLead.source).toBe('site');
+    expect(firstLead.managerId).toBe(firstManager.id);
+
+    const secondPayload = {
+      contactName: 'QA Site Routing Second Lead',
+      contactPhone: secondPhone,
+      contactCompany: `QA Site ${seed} Second LLC`,
+      message: 'second site form',
+    } as Record<string, unknown>;
+
+    const secondResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildSiteIngestHeaders(secondPayload))
+      .send({
+        channel: 'site',
+        externalId: `SITE-ROUTING-APIC-043-2-${seed}`,
+        payload: secondPayload,
+      })
+      .expect(201);
+
+    const secondLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: secondResponse.body.event.relatedLeadId as string },
+      select: { managerId: true },
+    });
+    expect(secondLead.managerId).toBe(secondManager.id);
+
+    const duplicatePayload = {
+      contactName: 'QA Site Routing First Lead Updated',
+      contactPhone: firstPhone,
+      contactCompany: `QA Site ${seed} LLC`,
+      message: 'duplicate site form',
+    } as Record<string, unknown>;
+
+    const duplicateResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildSiteIngestHeaders(duplicatePayload))
+      .send({
+        channel: 'site',
+        externalId: `SITE-ROUTING-APIC-043-3-${seed}`,
+        payload: duplicatePayload,
+      })
+      .expect(201);
+
+    expect(duplicateResponse.body.event.relatedLeadId).toBe(firstLeadId);
+
+    const preservedLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: firstLeadId },
+      select: { managerId: true, contactName: true },
+    });
+    expect(preservedLead.managerId).toBe(firstManager.id);
+    expect(preservedLead.contactName).toBe('QA Site Routing First Lead Updated');
   });
 });

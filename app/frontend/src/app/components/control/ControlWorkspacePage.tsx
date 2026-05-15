@@ -45,6 +45,7 @@ import {
   type PipelineStage,
 } from '../../lib/stageTokens';
 import { USE_API } from '../../lib/featureFlags';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import {
   useStatsAnalyticsViewQuery,
   useStatsQuery,
@@ -677,14 +678,7 @@ function auditKindByEntry(entry: ActivityLogEntryApi): AuditEventKind {
 }
 
 function formatAuditTarget(entityType: string, entityId: string): string {
-  const suffix = entityId.slice(-6).toUpperCase();
-  if (entityType === 'lead') return `LEAD-${suffix}`;
-  if (entityType === 'application' || entityType === 'application_item') return `APP-${suffix}`;
-  if (entityType === 'reservation') return `RSV-${suffix}`;
-  if (entityType === 'departure') return `DEP-${suffix}`;
-  if (entityType === 'completion') return `CMP-${suffix}`;
-  if (entityType === 'client') return `CL-${suffix}`;
-  return `${entityType}:${suffix}`;
+  return formatEntityDisplayId(entityType, entityId, '-');
 }
 
 function mapActivityToAuditEntry(entry: ActivityLogEntryApi): AuditEntry {

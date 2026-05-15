@@ -17,6 +17,7 @@ import {
   ReservationRow,
   deriveReservationState,
 } from '../shell/reservationHelpers';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 
 function fmtDate(d?: string) {
   if (!d) return '—';
@@ -46,7 +47,9 @@ export function ReservationsTableView({ rows, onRowClick, isFiltered }: Reservat
               RESERVATION_STAGE_COLOR[deriveReservationState(r.reservation).stage],
             )}
           />
-          <span className="truncate font-medium text-foreground">{r.reservation.id}</span>
+          <span className="truncate font-medium text-foreground">
+            {formatEntityDisplayId('reservation', r.reservation.id, '—')}
+          </span>
         </div>
       ),
     },

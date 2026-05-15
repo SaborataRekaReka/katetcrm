@@ -158,6 +158,8 @@ Contract expectations:
 - `POST /api/v1/integrations/events/:id/replay`
 - `GET /api/v1/integrations/mango/call-routing`
 - `POST /api/v1/integrations/mango/call-routing`
+- `GET /api/v1/integrations/site/lead-routing`
+- `POST /api/v1/integrations/site/lead-routing`
 - `POST /api/v1/imports/preview`
 - `POST /api/v1/imports/run`
 - `GET /api/v1/imports/:id/report`
@@ -171,6 +173,7 @@ Contract expectations:
 5. Admin-only integration/import endpoints require both admin role and enabled capability toggle.
 6. Mango ingest events with call metadata create/update lead context and write `note_added` activity records for linked Lead and active Application entities.
 7. Mango call-routing settings are admin-only, stored in `SystemConfig`, and map internal Mango extensions to active CRM managers for inbound call assignment.
+8. Site lead-routing settings are admin-only, stored in `SystemConfig`, and assign new site Leads round-robin across configured active managers while preserving existing duplicate Lead managers by default.
 
 ### 3.9 Users / Settings
 

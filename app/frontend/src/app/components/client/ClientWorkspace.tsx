@@ -41,6 +41,7 @@ import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { useCreateLead } from '../../hooks/useLeadMutations';
 import { USE_API } from '../../lib/featureFlags';
 import { toClientWorkspaceModel } from '../../lib/clientWorkspaceAdapter';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { InlineText } from '../detail/InlineEdit/InlineText';
 import { badgeBase, badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
@@ -361,6 +362,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
   const completedOrders = base.ordersHistory.filter((o) => o.status === 'completed');
   const lastCompleted = completedOrders[0] ?? null;
+  const createdLeadDisplayId = createdLeadId
+    ? formatEntityDisplayId('lead', createdLeadId, createdLeadId)
+    : null;
   const historyEntries = [
     ...base.activity.map((a) => ({
       id: a.id,
@@ -372,11 +376,12 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       ? [{
           id: `repeat-order-${createdLeadId}`,
           actor: base.manager ?? 'Менеджер',
-          text: `Повтор заказа → ${createdLeadId}`,
+          text: `Повтор заказа → ${createdLeadDisplayId ?? createdLeadId}`,
           time: 'только что',
         }]
       : []),
   ];
+  const clientDisplayId = formatEntityDisplayId('client', resolvedApiClientId ?? base.id, '—');
   const shareClientEntityId = normalizeEntityRouteId(resolvedApiClientId ?? base.id);
   const shareUrl = shareClientEntityId
     ? buildAbsoluteEntityUrl('client', shareClientEntityId)
@@ -722,7 +727,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <Alert className="mb-4 py-1.5 px-2.5 border-emerald-200 bg-emerald-50/60">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <AlertTitle className="text-[12px] text-emerald-900">
-            Создан новый лид {createdLeadId}
+            Создан новый лид {createdLeadDisplayId ?? createdLeadId}
           </AlertTitle>
           <AlertDescription className="text-[10px] text-emerald-800/85 mt-0.5 leading-snug">
             Лид создан на основе предыдущего заказа с клиентским контекстом и примечанием.
@@ -757,7 +762,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="ID"
-            value={<InlineValue>{base.id}</InlineValue>}
+            value={<InlineValue>{clientDisplayId}</InlineValue>}
           />
           <PropertyRow
             icon={<UserIcon className="w-3 h-3" />}

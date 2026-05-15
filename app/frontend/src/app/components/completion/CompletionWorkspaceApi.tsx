@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import type { Lead } from '../../types/kanban';
 import type { LeadApi } from '../../lib/leadsApi';
+import { formatApplicationDisplayId, formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { useCompletionQuery } from '../../hooks/useCompletionsQuery';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
 import { useCreateCompletion, useUpdateCompletion } from '../../hooks/useCompletionMutations';
@@ -293,6 +294,18 @@ export function CompletionWorkspaceApi({
   const hasReservationLink = !!reservationEntityId;
   const hasDepartureLink = !!departureEntityId;
   const hasCompletionLink = !!completionEntityId;
+  const leadDisplayId = formatEntityDisplayId('lead', leadEntityId, '—');
+  const applicationDisplayId = formatApplicationDisplayId(
+    linkedApplicationNumber,
+    linkedApplicationId,
+    '—',
+  );
+  const reservationDisplayId = formatEntityDisplayId('reservation', linkedReservationId, '—');
+  const departureDisplayId = formatEntityDisplayId('departure', linkedDepartureId, '—');
+  const completionDisplayId = formatEntityDisplayId('completion', completionEntityId, '—');
+  const completionHeaderId = completion
+    ? formatEntityDisplayId('completion', completion.id, '—')
+    : null;
   const activeSwitcherEntityType = activeEntityType ?? 'completion';
   const canOpenClient = !!onOpenClient && !!(linkedClientId ?? lead.apiClientId);
   const clientLead: Lead = {
@@ -311,7 +324,7 @@ export function CompletionWorkspaceApi({
         id: applicationEntityId ?? completion.id,
         leadId: leadEntityId ?? undefined,
         number: linkedApplicationNumber
-          ?? (applicationEntityId ? `APP-${applicationEntityId.slice(0, 8).toUpperCase()}` : `CMP-${completion.id.slice(0, 8).toUpperCase()}`),
+          ?? formatEntityDisplayId('application', applicationEntityId ?? completion.id, '—'),
         date: (linkedPlannedDate ?? completion.completedAt).slice(0, 10),
         status: 'completed',
         positions: [
@@ -450,7 +463,7 @@ export function CompletionWorkspaceApi({
         entityIcon={<CheckCircle2 className="w-3 h-3" />}
         entityLabel="Завершение"
         entitySwitcherOptions={entitySwitcherOptions}
-        title={completion ? `CMP-${completion.id.slice(0, 8).toUpperCase()}` : 'Ожидает завершения'}
+        title={completion ? completionHeaderId : 'Ожидает завершения'}
         subtitle={
           <>
             <button
@@ -461,7 +474,7 @@ export function CompletionWorkspaceApi({
               disabled={!hasDepartureLink}
               className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
-              {linkedDepartureId ? `DEP-${linkedDepartureId.slice(0, 8).toUpperCase()}` : 'Выезд'}
+              {hasDepartureLink ? departureDisplayId : 'Выезд'}
             </button>{' '}
             ·{' '}
             <button
@@ -472,7 +485,7 @@ export function CompletionWorkspaceApi({
               disabled={!hasApplicationLink}
               className="text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
             >
-              {linkedApplicationNumber ?? (linkedApplicationId ? `APP-${linkedApplicationId.slice(0, 8).toUpperCase()}` : 'Заявка')}
+              {hasApplicationLink ? applicationDisplayId : 'Заявка'}
             </button>{' '}
             ·{' '}
             <button
@@ -540,7 +553,7 @@ export function CompletionWorkspaceApi({
         <Alert className="mb-5 py-2 px-3 border-emerald-200 bg-emerald-50/60">
           <CheckCircle2 className="h-4 w-4 text-emerald-600" />
           <AlertTitle className="text-[12px] text-emerald-900">
-            Создан новый лид {createdLeadId}
+            Создан новый лид {formatEntityDisplayId('lead', createdLeadId, '—')}
           </AlertTitle>
           <AlertDescription className="text-[11px] mt-0.5 text-emerald-800/85">
             Лид создан на основе завершенного заказа и связан с клиентом.
@@ -804,7 +817,7 @@ export function CompletionWorkspaceApi({
               disabled={!hasLeadLink}
               onClick={() => openEntitySecondary('leads', 'lead', leadEntityId)}
             >
-              {leadEntityId ? `LEAD-${leadEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {leadDisplayId}
             </button>
           }
         />
@@ -819,7 +832,7 @@ export function CompletionWorkspaceApi({
                 openEntitySecondary('applications', 'application', applicationEntityId)
               }
             >
-              {linkedApplicationNumber ?? (linkedApplicationId ? `APP-${linkedApplicationId.slice(0, 8).toUpperCase()}` : '—')}
+              {applicationDisplayId}
             </button>
           }
         />
@@ -834,7 +847,7 @@ export function CompletionWorkspaceApi({
                 openEntitySecondary('reservations', 'reservation', reservationEntityId)
               }
             >
-              {linkedReservationId ? `RSV-${linkedReservationId.slice(0, 8).toUpperCase()}` : '—'}
+              {reservationDisplayId}
             </button>
           }
         />
@@ -849,7 +862,7 @@ export function CompletionWorkspaceApi({
                 openEntitySecondary('departures', 'departure', departureEntityId)
               }
             >
-              {linkedDepartureId ? `DEP-${linkedDepartureId.slice(0, 8).toUpperCase()}` : '—'}
+              {departureDisplayId}
             </button>
           }
         />
@@ -862,7 +875,7 @@ export function CompletionWorkspaceApi({
               disabled={!hasCompletionLink}
               onClick={() => openEntitySecondary('completion', 'completion', completionEntityId)}
             >
-              {completionEntityId ? `CMP-${completionEntityId.slice(0, 8).toUpperCase()}` : '—'}
+              {completionDisplayId}
             </button>
           }
         />

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   getIntegrationEvent,
   getMangoCallRoutingSettings,
+  getSiteLeadRoutingSettings,
   listIntegrationEvents,
   type IntegrationListParams,
 } from '../lib/integrationsApi';
@@ -11,6 +12,7 @@ export const integrationsQueryKeys = {
   list: (params: IntegrationListParams) => ['integrations-events', 'list', params] as const,
   detail: (id: string) => ['integrations-events', 'detail', id] as const,
   mangoCallRouting: ['integrations-events', 'mango-call-routing'] as const,
+  siteLeadRouting: ['integrations-events', 'site-lead-routing'] as const,
 };
 
 export function useIntegrationEventsQuery(
@@ -41,6 +43,14 @@ export function useMangoCallRoutingSettingsQuery(enabled = true) {
   return useQuery({
     queryKey: integrationsQueryKeys.mangoCallRouting,
     queryFn: () => getMangoCallRoutingSettings(),
+    enabled,
+  });
+}
+
+export function useSiteLeadRoutingSettingsQuery(enabled = true) {
+  return useQuery({
+    queryKey: integrationsQueryKeys.siteLeadRouting,
+    queryFn: () => getSiteLeadRoutingSettings(),
     enabled,
   });
 }

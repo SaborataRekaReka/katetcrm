@@ -118,3 +118,24 @@ export class UpdateMangoCallRoutingSettingsDto {
   @Type(() => MangoCallRoutingRuleDto)
   rules?: MangoCallRoutingRuleDto[];
 }
+
+export class UpdateSiteLeadRoutingSettingsDto {
+  @IsOptional()
+  @IsBoolean()
+  enabled?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  preserveExistingManager?: boolean;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(64)
+  fallbackManagerId?: string | null;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @MaxLength(64, { each: true })
+  managerIds?: string[];
+}

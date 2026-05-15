@@ -99,6 +99,16 @@ For `channel=mango` call events:
 7. Mango Office typed event paths are accepted for call callbacks: `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
 8. Admin can configure internal Mango extension -> CRM manager routing rules from `/admin/integrations`; inbound call ingest applies matching rules to Lead and active Application responsibility while preserving IntegrationEvent idempotency.
 
+## 8.1 Site lead distribution
+
+For `channel=site` lead events:
+
+1. Admin can configure a manager queue from `/admin/integrations`.
+2. New site leads are assigned round-robin across active configured managers.
+3. Duplicate site leads preserve the existing Lead manager by default.
+4. If no active queue manager can be selected, CRM may use the configured fallback manager.
+5. Routing settings and the queue cursor are stored in `SystemConfig` under a versioned key.
+
 ## 9. Dedup strategy
 
 Levels:

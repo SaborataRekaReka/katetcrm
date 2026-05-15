@@ -20,6 +20,7 @@ import { useDeparturesQuery } from '../../hooks/useDeparturesQuery';
 import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
 import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
 import { useAuth } from '../../auth/AuthProvider';
+import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import logoMiniModern from '../../../imports/logo_mini_modern.svg';
 import type { RouteEntityType } from './routeSync';
 
@@ -297,7 +298,7 @@ export function GlobalTopbar() {
         kind: 'entity' as const,
         id: `reservation:${reservation.id}`,
         label: `${reservation.clientCompany ?? reservation.clientName ?? 'Клиент'} · ${reservation.positionLabel}`,
-        hint: `Бронь · ${reservation.applicationNumber ? `#${reservation.applicationNumber}` : reservation.id.slice(0, 8)}`,
+        hint: `Бронь · ${reservation.applicationNumber ? `#${reservation.applicationNumber}` : formatEntityDisplayId('reservation', reservation.id, '—')}`,
         primaryId: 'ops',
         secondaryId: 'reservations',
         entityType: 'reservation' as const,
@@ -310,7 +311,7 @@ export function GlobalTopbar() {
         kind: 'entity' as const,
         id: `departure:${departure.id}`,
         label: `${departure.linked.clientCompany ?? departure.linked.clientName ?? 'Клиент'} · ${departure.linked.positionLabel}`,
-        hint: `Выезд · ${departure.linked.applicationNumber ? `#${departure.linked.applicationNumber}` : departure.id.slice(0, 8)}`,
+        hint: `Выезд · ${departure.linked.applicationNumber ? `#${departure.linked.applicationNumber}` : formatEntityDisplayId('departure', departure.id, '—')}`,
         primaryId: 'ops',
         secondaryId: 'departures',
         entityType: 'departure' as const,
@@ -323,7 +324,7 @@ export function GlobalTopbar() {
         kind: 'entity' as const,
         id: `completion:${completion.id}`,
         label: `${completion.linked.clientCompany ?? completion.linked.clientName ?? 'Клиент'} · ${completion.linked.positionLabel}`,
-        hint: `Завершение · ${completion.linked.applicationNumber ? `#${completion.linked.applicationNumber}` : completion.id.slice(0, 8)}`,
+        hint: `Завершение · ${completion.linked.applicationNumber ? `#${completion.linked.applicationNumber}` : formatEntityDisplayId('completion', completion.id, '—')}`,
         primaryId: 'ops',
         secondaryId: 'completion',
         entityType: 'completion' as const,
