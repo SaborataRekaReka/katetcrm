@@ -32,6 +32,7 @@ import { USE_API } from '../../lib/featureFlags';
 import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import {
   AlertDialog,
@@ -91,10 +92,10 @@ const statusTone: Record<CompletionStatus, string> = {
 };
 
 const sidebarStatusBadgeClass =
-  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+  'gap-1 h-5 px-1.5 text-[11px] font-normal';
 
 const headerStatusBadgeClass =
-  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
+  'gap-1 h-6 px-2 text-[11px] font-medium';
 
 const alertMeta = {
   stale: {
@@ -422,10 +423,10 @@ export function CompletionWorkspace({
         chips={[
           ...(!isCompleted
             ? [
-                <span key="status" className={`${headerStatusBadgeClass} ${statusTone[status]}`}>
+                <Badge key="status" variant="outline" className={`${headerStatusBadgeClass} ${statusTone[status]}`}>
                   <Flag className="w-3 h-3" />
                   {statusLabel[status]}
-                </span>,
+                </Badge>,
               ]
             : []),
           <ToolbarPill key="mgr" icon={<UserPlus className="w-3 h-3" />} label={base.manager} />,
@@ -448,10 +449,10 @@ export function CompletionWorkspace({
           />,
           ...(base.alert !== 'none' && !isFinal
             ? [
-                <span key="alert" className={`${headerStatusBadgeClass} ${alertMeta[base.alert].tone}`}>
+                <Badge key="alert" variant="outline" className={`${headerStatusBadgeClass} ${alertMeta[base.alert].tone}`}>
                   <AlertTriangle className="w-3 h-3" />
                   {alertMeta[base.alert].label}
-                </span>,
+                </Badge>,
               ]
             : []),
         ]}
@@ -513,7 +514,7 @@ export function CompletionWorkspace({
             <PropertyRow
               icon={<Activity className="w-3 h-3" />}
               label="Статус"
-              value={<span className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</span>}
+              value={<Badge variant="outline" className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</Badge>}
             />
           )}
           <PropertyRow
@@ -906,7 +907,7 @@ export function CompletionWorkspace({
       <SidebarSection title="Статус">
         <SidebarField
           label="Статус"
-          value={<span className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</span>}
+          value={<Badge variant="outline" className={`${sidebarStatusBadgeClass} ${statusTone[status]}`}>{statusLabel[status]}</Badge>}
         />
         <SidebarField label="Менеджер" value={base.manager} />
         <SidebarField label="Создан" value={base.createdAt} />

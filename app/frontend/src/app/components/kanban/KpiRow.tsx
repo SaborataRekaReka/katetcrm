@@ -43,7 +43,8 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
   ] as const;
 
   return (
-    <div className="grid shrink-0 grid-cols-8 gap-2 border-b border-border/60 bg-white px-4 py-2">
+    <div className="scroll-thin shrink-0 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-white px-4 py-2 [scrollbar-gutter:stable]">
+      <div className="grid w-max min-w-full grid-flow-col auto-cols-[minmax(136px,1fr)] gap-2 lg:w-full lg:grid-flow-row lg:grid-cols-8 lg:auto-cols-auto">
       {cards.map((s) => {
         const Icon = s.icon;
         return (
@@ -64,6 +65,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
           </button>
         );
       })}
+      </div>
     </div>
   );
 }

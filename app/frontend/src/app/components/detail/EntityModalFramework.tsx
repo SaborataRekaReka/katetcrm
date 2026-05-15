@@ -84,7 +84,7 @@ export function EntityModalShell({
   children: ReactNode;
   className?: string;
 }) {
-  return <div className={cn('mx-auto w-full max-w-[860px] px-6 py-6 sm:px-8', className)}>{children}</div>;
+  return <div className={cn('mx-auto w-full max-w-[860px] px-4 py-6 sm:px-8', className)}>{children}</div>;
 }
 
 function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary') {
@@ -92,8 +92,8 @@ function renderAction(action: EntityModalAction, variant: 'primary' | 'secondary
   const disabled = action.disabled ?? !action.onClick;
   const base =
     variant === 'primary'
-      ? 'h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]'
-      : 'h-7 text-[11px] gap-1';
+      ? 'h-7 min-w-0 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px] whitespace-normal sm:whitespace-nowrap'
+      : 'h-7 min-w-0 text-[11px] gap-1 whitespace-normal sm:whitespace-nowrap';
   return (
     <Button
       size="sm"
@@ -164,13 +164,13 @@ export function EntityModalHeader({
         </span>
       )}
 
-      <div className="flex items-start justify-between gap-4">
-        <h1 className="text-[22px] leading-[1.25] text-gray-900">{title}</h1>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+        <h1 className="min-w-0 text-[22px] leading-[1.25] text-gray-900">{title}</h1>
         {(primaryAction || secondaries.length > 0) && (
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            {primaryAction && <div key="primary">{renderAction(primaryAction, 'primary')}</div>}
+          <div className="flex w-full min-w-0 flex-wrap items-center gap-1.5 sm:w-auto sm:flex-shrink-0 sm:justify-end">
+            {primaryAction && <div key="primary" className="min-w-0 flex-1 sm:flex-none">{renderAction(primaryAction, 'primary')}</div>}
             {secondaries.map((a, idx) => (
-              <div key={`sec-${idx}`}>{renderAction(a, 'secondary')}</div>
+              <div key={`sec-${idx}`} className="min-w-0 flex-1 sm:flex-none">{renderAction(a, 'secondary')}</div>
             ))}
           </div>
         )}
@@ -367,9 +367,9 @@ export function EntityActivityList({
         <div key={entry.id} className="flex items-start gap-2 rounded-sm px-1 py-1 text-[11px] text-gray-600">
           <Circle className="w-2 h-2 mt-1 text-gray-300 fill-gray-300 flex-shrink-0" />
           <div className="min-w-0 flex-1 space-y-0.5">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-gray-900 truncate">{entry.actor}</span>
-              <span className="text-gray-400 ml-auto flex-shrink-0">{entry.time}</span>
+            <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5">
+              <span className="text-gray-900">{entry.actor}</span>
+              <span className="text-gray-400 sm:ml-auto sm:flex-shrink-0">{entry.time}</span>
             </div>
             <div className="text-gray-500 leading-snug break-words">
               <span>{entry.text}</span>

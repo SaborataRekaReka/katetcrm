@@ -26,7 +26,18 @@ import {
   TaskStatus,
 } from '../../data/mockTasks';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
+import { Alert, AlertDescription } from '../ui/alert';
 import { Dialog, DialogContent } from '../ui/dialog';
+import { Input } from '../ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../ui/select';
+import { Textarea } from '../ui/textarea';
 import { useLayout } from '../shell/layoutStore';
 import {
   Breadcrumb,
@@ -72,10 +83,13 @@ export interface TaskUpdatePatch {
 }
 
 const TASK_EDIT_FIELD_CLASS =
-  'h-6 w-full rounded px-1.5 text-[11px] leading-5 bg-transparent border border-transparent hover:border-gray-200 text-gray-800 outline-none transition-colors focus:border-blue-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60';
+  'h-6 min-h-6 rounded px-1.5 py-0 text-[11px] leading-5 bg-transparent border-transparent shadow-none hover:border-gray-200 text-gray-800 focus-visible:border-blue-400 focus-visible:bg-white focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 md:text-[11px]';
 
 const TASK_EDIT_TEXTAREA_CLASS =
-  'w-full min-h-[88px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent border border-transparent hover:border-gray-200 text-gray-800 outline-none transition-colors focus:border-blue-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 resize-none';
+  'min-h-[88px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent border-transparent shadow-none hover:border-gray-200 text-gray-800 focus-visible:border-blue-400 focus-visible:bg-white focus-visible:ring-0 disabled:cursor-not-allowed disabled:opacity-60 resize-none md:text-[11px]';
+
+const TASK_SELECT_TRIGGER_CLASS =
+  'h-6 min-h-6 rounded px-1.5 py-0 text-[11px] leading-5 bg-transparent border-transparent shadow-none hover:border-gray-200 text-gray-800 focus-visible:border-blue-400 focus-visible:bg-white focus-visible:ring-0 data-[size=sm]:h-6 md:text-[11px] *:data-[slot=select-value]:text-[11px]';
 
 const TASK_EDIT_LABEL_CLASS = 'text-[10px] uppercase tracking-wide text-gray-500';
 
@@ -308,7 +322,7 @@ function TaskDetailBody({
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
             <label className="space-y-1">
               <span className={TASK_EDIT_LABEL_CLASS}>Заголовок</span>
-              <input
+              <Input
                 type="text"
                 value={editTitle}
                 onChange={(event) => setEditTitle(event.target.value)}
@@ -320,22 +334,26 @@ function TaskDetailBody({
 
             <label className="space-y-1">
               <span className={TASK_EDIT_LABEL_CLASS}>Приоритет</span>
-              <select
+              <Select
                 value={editPriority}
-                onChange={(event) => setEditPriority(event.target.value as TaskPriority)}
+                onValueChange={(value) => setEditPriority(value as TaskPriority)}
                 disabled={!onUpdateTask || isSaving}
-                className={`${TASK_EDIT_FIELD_CLASS} pr-6`}
               >
-                <option value="urgent">{TASK_PRIORITY_LABEL.urgent}</option>
-                <option value="high">{TASK_PRIORITY_LABEL.high}</option>
-                <option value="normal">{TASK_PRIORITY_LABEL.normal}</option>
-                <option value="low">{TASK_PRIORITY_LABEL.low}</option>
-              </select>
+                <SelectTrigger size="sm" className={TASK_SELECT_TRIGGER_CLASS}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="urgent">{TASK_PRIORITY_LABEL.urgent}</SelectItem>
+                  <SelectItem value="high">{TASK_PRIORITY_LABEL.high}</SelectItem>
+                  <SelectItem value="normal">{TASK_PRIORITY_LABEL.normal}</SelectItem>
+                  <SelectItem value="low">{TASK_PRIORITY_LABEL.low}</SelectItem>
+                </SelectContent>
+              </Select>
             </label>
 
             <label className="space-y-1">
               <span className={TASK_EDIT_LABEL_CLASS}>Дедлайн (дата)</span>
-              <input
+              <Input
                 type="date"
                 value={editDueDate}
                 onChange={(event) => setEditDueDate(event.target.value)}
@@ -346,7 +364,7 @@ function TaskDetailBody({
 
             <label className="space-y-1">
               <span className={TASK_EDIT_LABEL_CLASS}>Теги</span>
-              <input
+              <Input
                 type="text"
                 value={editTags}
                 onChange={(event) => setEditTags(event.target.value)}
@@ -359,7 +377,7 @@ function TaskDetailBody({
 
           <label className="space-y-1 block">
             <span className={TASK_EDIT_LABEL_CLASS}>Описание</span>
-            <textarea
+            <Textarea
               value={editDescription}
               onChange={(event) => setEditDescription(event.target.value)}
               disabled={!onUpdateTask || isSaving}
@@ -370,7 +388,9 @@ function TaskDetailBody({
           </label>
 
           {saveError ? (
-            <div className="rounded border border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">{saveError}</div>
+            <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-2 py-1.5 text-[11px] text-rose-700">
+              <AlertDescription className="text-[11px] text-rose-700">{saveError}</AlertDescription>
+            </Alert>
           ) : null}
 
           <div className="flex items-center justify-end gap-1.5">
@@ -424,12 +444,13 @@ function TaskDetailBody({
               ) : (
                 <div className="flex flex-wrap gap-1">
                   {task.tags.map((tag) => (
-                    <span
+                    <Badge
                       key={tag}
-                      className="inline-flex rounded border border-gray-200 bg-white px-1 py-0 text-[10px] text-gray-700"
+                      variant="outline"
+                      className="rounded border-gray-200 bg-white px-1 py-0 text-[10px] font-normal text-gray-700"
                     >
                       {tag}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               )
@@ -441,14 +462,16 @@ function TaskDetailBody({
             value={
               task.linkedEntity ? (
                 onOpenLinkedEntity ? (
-                  <button
-                    className="inline-flex items-center gap-1.5 max-w-full truncate text-blue-600 hover:underline"
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="h-auto max-w-full justify-start gap-1.5 truncate p-0 text-[12px] text-blue-600"
                     onClick={() => onOpenLinkedEntity(task.linkedEntity!.domain, task.linkedEntity!.id)}
                   >
                     <span className="text-gray-500">{TASK_DOMAIN_LABEL[task.linkedEntity.domain]}:</span>
                     <span>{task.linkedEntity.label}</span>
                     <span className="font-mono text-[10px] text-gray-400">{task.linkedEntity.id}</span>
-                  </button>
+                  </Button>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 max-w-full truncate text-gray-700">
                     <span className="text-gray-500">{TASK_DOMAIN_LABEL[task.linkedEntity.domain]}:</span>
@@ -479,14 +502,16 @@ function TaskDetailBody({
         title={`Подзадачи · ${task.subtasks.length}`}
         action={
           onAddSubtask ? (
-            <button
+            <Button
               type="button"
+              variant="ghost"
+              size="sm"
               onClick={() => onAddSubtask(task.id)}
-              className="inline-flex items-center gap-1 text-[10px] text-gray-500 hover:text-gray-700"
+              className="h-6 gap-1 px-1.5 text-[10px] text-gray-500 hover:text-gray-700"
             >
               <Plus className="w-3 h-3" />
               <span>Добавить</span>
-            </button>
+            </Button>
           ) : null
         }
       >
@@ -540,12 +565,14 @@ function TaskDetailBody({
             label="Запись"
             value={
               onOpenLinkedEntity ? (
-                <button
-                  className={sidebarTokens.link}
+                <Button
+                  type="button"
+                  variant="link"
+                  className={`${sidebarTokens.link} h-auto p-0 text-[11px]`}
                   onClick={() => onOpenLinkedEntity(task.linkedEntity!.domain, task.linkedEntity!.id)}
                 >
                   {task.linkedEntity.label}
-                </button>
+                </Button>
               ) : (
                 <span>{task.linkedEntity.label}</span>
               )
@@ -657,10 +684,10 @@ function StatusChip({ status, size = 'sm' }: { status: TaskStatus; size?: 'sm' |
   const Icon = config.Icon;
 
   return (
-    <span className={`inline-flex items-center gap-1 rounded border ${TASK_BADGE_SIZE_CLASS[size]} ${config.cls}`}>
+    <Badge variant="outline" className={`gap-1 font-normal ${TASK_BADGE_SIZE_CLASS[size]} ${config.cls}`}>
       <Icon className="w-3 h-3" />
       {TASK_STATUS_LABEL[status]}
-    </span>
+    </Badge>
   );
 }
 
@@ -673,18 +700,18 @@ const PRIORITY_CONFIG: Record<TaskPriority, string> = {
 
 function PriorityChip({ priority, size = 'sm' }: { priority: TaskPriority; size?: 'sm' | 'md' }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded border ${TASK_BADGE_SIZE_CLASS[size]} ${PRIORITY_CONFIG[priority]}`}>
+    <Badge variant="outline" className={`gap-1 font-normal ${TASK_BADGE_SIZE_CLASS[size]} ${PRIORITY_CONFIG[priority]}`}>
       <Flag className="w-3 h-3" />
       {TASK_PRIORITY_LABEL[priority]}
-    </span>
+    </Badge>
   );
 }
 
 function LinkedEntityChip({ entity, size = 'sm' }: { entity: { domain: TaskDomain; id: string }; size?: 'sm' | 'md' }) {
   return (
-    <span className={`inline-flex items-center gap-1 rounded border border-gray-200 bg-white ${TASK_BADGE_SIZE_CLASS[size]} text-gray-600`}>
+    <Badge variant="outline" className={`gap-1 border-gray-200 bg-white font-normal ${TASK_BADGE_SIZE_CLASS[size]} text-gray-600`}>
       {TASK_DOMAIN_LABEL[entity.domain]} · {entity.id}
-    </span>
+    </Badge>
   );
 }
 

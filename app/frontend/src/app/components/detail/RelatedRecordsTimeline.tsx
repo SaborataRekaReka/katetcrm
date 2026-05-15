@@ -1,6 +1,5 @@
 import { Fragment } from 'react';
 import { sidebarTokens } from './DetailShell';
-import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 
 export interface RelatedChainNode {
   stage: string;
@@ -28,54 +27,51 @@ export function RelatedRecordsTimeline({
   }
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1.5">
       {visibleChains.map((chain, chainIndex) => (
-        <div key={`chain-${chainIndex}`} className="py-0.5">
-          <div className="relative inline-flex w-fit items-center gap-2.5">
-            {chain.length > 1 ? (
-              <div
-                className="pointer-events-none absolute left-2.5 right-2.5 top-1/2 h-px -translate-y-1/2 bg-blue-200"
-                aria-hidden="true"
-              />
-            ) : null}
-
-            {chain.map((node, nodeIndex) => {
-              const isClickable = !!node.onClick;
-              return (
-                <Fragment key={`${node.stage}-${nodeIndex}`}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {isClickable ? (
-                        <button
-                          type="button"
-                          onClick={node.onClick ?? undefined}
-                          className="relative z-10 inline-flex h-5 w-5 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-300"
-                          aria-label={`Открыть: ${node.stage}`}
-                        >
-                          <span className="h-2.5 w-2.5 rounded-full border border-blue-600 bg-blue-500 transition-colors hover:bg-blue-600" />
-                        </button>
-                      ) : (
-                        <span
-                          className="relative z-10 inline-flex h-5 w-5 items-center justify-center"
-                          aria-label={node.stage}
-                        >
-                          <span className="h-2.5 w-2.5 rounded-full border border-blue-500 bg-blue-400" />
-                        </span>
-                      )}
-                    </TooltipTrigger>
-                    <TooltipContent side="top" sideOffset={6}>
-                      <div className="text-[11px]">
-                        <div className="font-semibold">{node.stage}</div>
-                        {hasValue(node.details) ? (
-                          <div className="opacity-90">{node.details}</div>
-                        ) : null}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </Fragment>
-              );
-            })}
+        <div key={`chain-${chainIndex}`} className="rounded-md border border-gray-200 bg-white/80 px-2 py-1.5">
+          <div className="flex flex-wrap items-center gap-1">
+            {chain.map((node, nodeIndex) => (
+              <Fragment key={`${node.stage}-${nodeIndex}`}>
+                {nodeIndex > 0 ? <span className="text-[10px] text-gray-300">/</span> : null}
+                {node.onClick ? (
+                  <button
+                    type="button"
+                    onClick={node.onClick}
+                    className="inline-flex h-5 items-center rounded-full border border-blue-200 bg-blue-50 px-1.5 text-[10px] font-medium text-blue-700 hover:border-blue-300 hover:bg-blue-100"
+                  >
+                    {node.stage}
+                  </button>
+                ) : (
+                  <span className="inline-flex h-5 items-center rounded-full border border-gray-200 bg-gray-50 px-1.5 text-[10px] font-medium text-gray-600">
+                    {node.stage}
+                  </span>
+                )}
+              </Fragment>
+            ))}
           </div>
+          {chain.some((node) => hasValue(node.details)) ? (
+            <div className="mt-1 space-y-0.5">
+              {chain.map((node, nodeIndex) => (
+                hasValue(node.details) ? (
+                  node.onClick ? (
+                    <button
+                      key={`${node.stage}-${nodeIndex}-details`}
+                      type="button"
+                      onClick={node.onClick}
+                      className="block max-w-full truncate text-left text-[10px] text-blue-600 hover:underline"
+                    >
+                      {node.details}
+                    </button>
+                  ) : (
+                    <div key={`${node.stage}-${nodeIndex}-details`} className="truncate text-[10px] text-gray-500">
+                      {node.details}
+                    </div>
+                  )
+                ) : null
+              ))}
+            </div>
+          ) : null}
         </div>
       ))}
     </div>

@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Card } from '../../ui/card';
 import { cn } from '../../ui/utils';
 
 /**
@@ -35,10 +36,10 @@ export function WidgetCard({
 }: WidgetCardProps) {
   const hasHeader = title != null || description != null || action != null;
   return (
-    <section className={cn('flex flex-col rounded-lg border border-border bg-white', className)}>
+    <Card className={cn('min-w-0 gap-0 rounded-lg border-border bg-white shadow-none', className)}>
       {hasHeader ? (
-        <header className="flex items-center gap-3 border-b border-border/60 px-3 py-2 sm:px-4 sm:py-2.5">
-          <div className="min-w-0 flex-1">
+        <header className="flex flex-col gap-2 border-b border-border/60 px-3 py-2 sm:flex-row sm:items-center sm:gap-3 sm:px-4 sm:py-2.5">
+          <div className="w-full min-w-0 flex-1">
             {title != null ? (
               <div className="flex items-center gap-2 text-[13px] font-medium text-foreground">
                 {icon ? <span className="text-muted-foreground">{icon}</span> : null}
@@ -49,10 +50,10 @@ export function WidgetCard({
               <div className="mt-0.5 text-[11px] text-muted-foreground">{description}</div>
             ) : null}
           </div>
-          {action ? <div className="shrink-0">{action}</div> : null}
+          {action ? <div className="w-full shrink-0 sm:w-auto">{action}</div> : null}
         </header>
       ) : null}
       <div className={cn(bodyPadded ? 'p-3 sm:p-4' : '', 'min-w-0 flex-1', bodyClassName)}>{children}</div>
-    </section>
+    </Card>
   );
 }

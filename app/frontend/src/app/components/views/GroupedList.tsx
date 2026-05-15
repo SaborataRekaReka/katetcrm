@@ -17,6 +17,8 @@ export interface GroupedListProps<T> {
   renderRow: (item: T) => ReactNode;
   /** Column header strip shown ONCE at the top of the list. */
   columnsHeader?: ReactNode;
+  /** Minimum content width for horizontally scrollable grid-like lists. */
+  contentMinWidth?: number | string;
   /** Controlled expansion map by group id. */
   expanded?: Record<string, boolean>;
   onToggleGroup?: (id: string) => void;
@@ -35,6 +37,7 @@ export function GroupedList<T>({
   groups,
   renderRow,
   columnsHeader,
+  contentMinWidth,
   expanded,
   onToggleGroup,
   emptyGroupHint = 'Нет записей',
@@ -56,8 +59,10 @@ export function GroupedList<T>({
     else setLocalExpanded((prev) => ({ ...prev, [id]: !isExpanded(id) }));
   };
 
+  const contentStyle = contentMinWidth ? { minWidth: contentMinWidth } : undefined;
+
   return (
-    <div className="flex flex-col">
+    <div className="flex w-full min-w-full flex-col" style={contentStyle}>
       {columnsHeader ? (
         <div className="sticky top-0 z-[2] bg-white">{columnsHeader}</div>
       ) : null}

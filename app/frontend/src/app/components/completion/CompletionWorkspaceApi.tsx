@@ -22,6 +22,7 @@ import { useCreateCompletion, useUpdateCompletion } from '../../hooks/useComplet
 import { useCreateLead } from '../../hooks/useLeadMutations';
 import type { ClientOrderHistoryItem } from '../../types/client';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { useLayout } from '../shell/layoutStore';
@@ -63,7 +64,7 @@ function fmtIso(value: string | null | undefined): string {
 }
 
 const sidebarStatusBadgeClass =
-  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+  'gap-1 h-5 px-1.5 text-[11px] font-normal';
 
 export function CompletionWorkspaceApi({
   lead,
@@ -798,7 +799,7 @@ export function CompletionWorkspaceApi({
       <SidebarSection title="Сводка">
         <SidebarField
           label="Статус"
-          value={<span className={`${sidebarStatusBadgeClass} ${completionStatusTone}`}>{completionStatusLabel}</span>}
+          value={<Badge variant="outline" className={`${sidebarStatusBadgeClass} ${completionStatusTone}`}>{completionStatusLabel}</Badge>}
         />
         <SidebarField
           label="Дата"

@@ -32,6 +32,10 @@ import {
 } from '../shell/reservationHelpers';
 import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 
+const RESERVATIONS_LIST_GRID_TEMPLATE =
+  'minmax(260px,1fr) 140px 170px 140px 160px minmax(160px,1fr) 130px 130px 40px';
+const RESERVATIONS_LIST_MIN_WIDTH = 1330;
+
 function fmtDate(d?: string) {
   if (!d) return '—';
   const date = new Date(d);
@@ -103,14 +107,12 @@ export function ReservationsListView({
     <div className="min-h-0 flex-1 overflow-auto bg-white">
       <GroupedList
         groups={groups}
+        contentMinWidth={RESERVATIONS_LIST_MIN_WIDTH}
         emptyGroupHint="Нет броней в этой стадии"
         columnsHeader={
           <div
             className="grid h-7 items-center border-b border-border/40 bg-muted/30 text-[11px] uppercase tracking-wide text-muted-foreground"
-            style={{
-              gridTemplateColumns:
-                'minmax(260px,1fr) 140px 170px 140px 160px minmax(160px,1fr) 130px 130px 40px',
-            }}
+            style={{ gridTemplateColumns: RESERVATIONS_LIST_GRID_TEMPLATE }}
           >
             <div className="px-4">Бронь · клиент</div>
             <div className="px-3">Источник</div>
@@ -221,10 +223,7 @@ function ReservationListRow({
         if (e.key === 'Enter') onClick();
       }}
       className="group grid h-9 cursor-pointer items-center border-b border-border/40 text-[12px] transition-colors hover:bg-accent/40"
-      style={{
-        gridTemplateColumns:
-          'minmax(260px,1fr) 140px 170px 140px 160px minmax(160px,1fr) 130px 130px 40px',
-      }}
+      style={{ gridTemplateColumns: RESERVATIONS_LIST_GRID_TEMPLATE }}
     >
       <div className="flex min-w-0 items-center gap-2 px-4">
         <span

@@ -15,6 +15,8 @@ import { ListScaffold } from '../shell/ListScaffold';
 import { SimpleToolbar } from '../shell/SimpleToolbar';
 import { EntityListTable, type EntityColumn } from '../shell/EntityListTable';
 import { parseInitialRoute, writeRoute } from '../shell/routeSync';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { cn } from '../ui/utils';
 import { USE_API } from '../../lib/featureFlags';
 import {
@@ -250,9 +252,9 @@ function StatusPill({ status }: { status: Status }) {
   };
   const it = map[status];
   return (
-    <span className={`inline-flex rounded border px-1.5 py-0 text-[10px] leading-4 ${it.cls}`}>
+    <Badge variant="outline" className={`px-1.5 py-0 text-[10px] font-normal leading-4 ${it.cls}`}>
       {it.label}
-    </span>
+    </Badge>
   );
 }
 
@@ -418,10 +420,11 @@ function ViewListRow({
   onClick?: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="ghost"
       onClick={onClick}
-      className="group w-full flex items-center gap-3 px-3 py-2 border-b border-gray-100 hover:bg-gray-50/70 text-left transition-colors"
+      className="group h-auto w-full justify-start gap-3 rounded-none border-b border-gray-100 px-3 py-2 text-left font-normal whitespace-normal hover:bg-gray-50/70"
     >
       <div className="min-w-0 flex-1">
         <div className="text-[12px] text-foreground truncate">{primary}</div>
@@ -431,7 +434,7 @@ function ViewListRow({
       </div>
       {meta && <div className="text-[11px] text-muted-foreground whitespace-nowrap">{meta}</div>}
       {badges && <div className="flex items-center gap-1.5 flex-shrink-0">{badges}</div>}
-    </button>
+    </Button>
   );
 }
 
@@ -451,10 +454,11 @@ function ViewCard({
   onClick?: () => void;
 }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
-      className="flex flex-col border border-gray-200 rounded-lg bg-white hover:border-blue-300 hover:shadow-sm transition-all text-left p-3 gap-2 min-w-0"
+      className="h-auto w-full min-w-0 flex-col items-stretch justify-start gap-2 whitespace-normal rounded-lg border-gray-200 bg-white p-3 text-left font-normal hover:border-blue-300 hover:bg-white hover:shadow-sm"
     >
       <div className="flex items-start gap-2 min-w-0">
         <div className="w-7 h-7 rounded bg-gray-100 flex items-center justify-center text-muted-foreground flex-shrink-0">
@@ -476,7 +480,7 @@ function ViewCard({
         ))}
       </div>
       {footer && <div className="mt-1">{footer}</div>}
-    </button>
+    </Button>
   );
 }
 
@@ -490,16 +494,17 @@ function CardsGrid({ children }: { children: React.ReactNode }) {
 
 function AddCard({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button
+    <Button
       type="button"
+      variant="outline"
       onClick={onClick}
-      className="flex flex-col items-center justify-center gap-2 min-h-[100px] border border-dashed border-gray-300 rounded-lg bg-white hover:border-blue-400 hover:bg-blue-50/40 text-gray-500 hover:text-blue-600 transition-colors"
+      className="min-h-[100px] w-full flex-col items-center justify-center gap-2 whitespace-normal rounded-lg border-dashed border-gray-300 bg-white text-gray-500 hover:border-blue-400 hover:bg-blue-50/40 hover:text-blue-600"
     >
       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-current">
         <Plus className="h-4 w-4" />
       </span>
       <span className="text-[11px]">{label}</span>
-    </button>
+    </Button>
   );
 }
 

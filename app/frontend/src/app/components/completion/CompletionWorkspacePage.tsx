@@ -6,6 +6,7 @@ import { getModuleMeta } from '../shell/navConfig';
 import { ListScaffold } from '../shell/ListScaffold';
 import { SimpleToolbar } from '../shell/SimpleToolbar';
 import { Dialog, DialogContent } from '../ui/dialog';
+import { Badge } from '../ui/badge';
 import { CompletionWorkspace } from './CompletionWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
 import { mockLeads } from '../../data/mockLeads';
@@ -283,15 +284,15 @@ export function CompletionWorkspacePage() {
                   </td>
                   <td className="px-3 py-2.5">
                     {l.completionDate ? (
-                      <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">
+                      <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700">
                         <CheckCircle2 className="h-3 w-3" />
                         Закрыт
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] text-amber-700">
+                      <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700">
                         <FileText className="h-3 w-3" />
                         Нужен акт
-                      </span>
+                      </Badge>
                     )}
                   </td>
                   <td className="px-3 py-2.5 text-foreground/80">{l.equipmentType}</td>

@@ -646,18 +646,18 @@ function MyTasksPage() {
         tabIndex={-1}
       />
 
-      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
-        <div className="flex flex-1 items-center gap-4 text-[12px] text-muted-foreground">
+      <div className="scroll-thin flex shrink-0 items-center gap-2 overflow-x-auto border-b border-border/60 bg-white px-3 py-2 sm:px-4">
+        <div className="flex min-w-max items-center gap-3 text-[12px] text-muted-foreground sm:gap-4">
           <SummaryChip tone="danger" label="Просрочено" value={grouped.overdue.length} />
           <SummaryChip tone="progress" label="Сегодня" value={grouped.today.length} />
           <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
           <SummaryChip label="Позже" value={grouped.later.length} />
           <SummaryChip label="Без срока" value={grouped.none.length} />
-          <span className="ml-2 text-[11px] text-muted-foreground/80">
+          <span className="ml-1 whitespace-nowrap text-[11px] text-muted-foreground/80 sm:ml-2">
             {query.trim().length > 0 ? `Показано · ${filteredTasks.length} из ${tasks.length}` : `Всего · ${tasks.length}`}
           </span>
         </div>
-        <Button variant="outline" size="sm" className="h-7 gap-1 text-[12px]" onClick={handleCreateTask}>
+        <Button variant="outline" size="sm" className="h-7 shrink-0 gap-1 text-[12px]" onClick={handleCreateTask}>
           <PlusCircle className="h-3.5 w-3.5" />
           Новая задача
         </Button>
@@ -856,21 +856,21 @@ function ApiMyTasksPage() {
         tabIndex={-1}
       />
 
-      <div className="flex shrink-0 items-center gap-2 border-b border-border/60 bg-white px-4 py-2">
-        <div className="flex flex-1 items-center gap-4 text-[12px] text-muted-foreground">
+      <div className="scroll-thin flex shrink-0 items-center gap-2 overflow-x-auto border-b border-border/60 bg-white px-3 py-2 sm:px-4">
+        <div className="flex min-w-max items-center gap-3 text-[12px] text-muted-foreground sm:gap-4">
           <SummaryChip tone="danger" label="Просрочено" value={grouped.overdue.length} />
           <SummaryChip tone="progress" label="Сегодня" value={grouped.today.length} />
           <SummaryChip label="Завтра" value={grouped.tomorrow.length} />
           <SummaryChip label="Позже" value={grouped.later.length} />
           <SummaryChip label="Без срока" value={grouped.none.length} />
-          <span className="ml-2 text-[11px] text-muted-foreground/80">
+          <span className="ml-1 whitespace-nowrap text-[11px] text-muted-foreground/80 sm:ml-2">
             {query.trim().length > 0 ? `Показано · ${filteredTasks.length} из ${tasks.length}` : `Всего · ${tasks.length}`}
           </span>
         </div>
         <Button
           variant="outline"
           size="sm"
-          className="h-7 gap-1 text-[12px]"
+          className="h-7 shrink-0 gap-1 text-[12px]"
           onClick={() => {
             void handleCreateTask();
           }}
@@ -983,7 +983,7 @@ function SummaryChip({
         ? 'text-[#2a6af0]'
         : 'text-foreground/80';
   return (
-    <span className="inline-flex items-center gap-1 text-[11px]">
+    <span className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap text-[11px]">
       <span className="text-muted-foreground">{label}</span>
       <span className={`tabular-nums font-medium ${toneCls}`}>{value}</span>
     </span>
@@ -1471,6 +1471,7 @@ function RecentActivityPage() {
   const { setActivePrimaryNav, setActiveSecondaryNav } = useLayout();
   const activityQuery = useRecentActivityQuery(40, USE_API);
   const [query, setQuery] = useState('');
+  const apiActivityRows = activityQuery.data ?? [];
 
   const formatRelative = (iso: string) => {
     const ts = Date.parse(iso);
@@ -1510,7 +1511,7 @@ function RecentActivityPage() {
   const items = useMemo(
     () => {
       if (USE_API) {
-        return (activityQuery.data ?? []).map((e) => {
+        return apiActivityRows.map((e) => {
           const kind = mapEntityKind(e.entityType);
           return {
             id: e.id,
@@ -1536,7 +1537,7 @@ function RecentActivityPage() {
         { id: 'a9', at: 'Вчера, 14:45', actor: 'Иванова С.', text: 'подтвердила бронь', entity: 'RSV-00011', kind: 'reservation' as const, icon: <History className="h-3.5 w-3.5" /> },
       ];
     },
-    [activityQuery.data],
+    [apiActivityRows],
   );
 
   const filteredItems = useMemo(() => {
@@ -1554,7 +1555,7 @@ function RecentActivityPage() {
 
   const todayItems = filteredItems.filter((it) => {
     if (!USE_API) return filteredItems.indexOf(it) < 6;
-    const raw = activityQuery.data?.items.find((e) => e.id === it.id);
+    const raw = apiActivityRows.find((e) => e.id === it.id);
     if (!raw) return false;
     const ts = Date.parse(raw.createdAt);
     return Number.isFinite(ts) && ts >= todayStart.getTime();

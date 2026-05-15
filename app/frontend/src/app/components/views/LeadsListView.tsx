@@ -40,6 +40,9 @@ const STAGE_META: Record<StageType, { title: string; color: string }> = {
   unqualified: { title: 'Некачественный', color: 'bg-[#E74C3C]' },
 };
 
+const LEADS_LIST_GRID_TEMPLATE = 'minmax(260px,1fr) 150px 150px 140px 1fr 130px 120px 40px';
+const LEADS_LIST_MIN_WIDTH = 1016;
+
 function formatDate(d?: string): string {
   if (!d) return '—';
   const date = new Date(d);
@@ -84,10 +87,11 @@ export function LeadsListView({ leads, onRowClick, onConvertToApplication, isFil
     <div className="min-h-0 flex-1 overflow-auto bg-white">
       <GroupedList
         groups={groups}
+        contentMinWidth={LEADS_LIST_MIN_WIDTH}
         emptyGroupHint="Нет записей в этой стадии"
         columnsHeader={
           <div className="grid h-7 items-center border-b border-border/40 bg-muted/30 text-[11px] uppercase tracking-wide text-muted-foreground"
-               style={{ gridTemplateColumns: 'minmax(260px,1fr) 150px 150px 140px 1fr 130px 120px 40px' }}>
+               style={{ gridTemplateColumns: LEADS_LIST_GRID_TEMPLATE }}>
             <div className="px-4">Имя · Компания</div>
             <div className="px-3">Телефон</div>
             <div className="px-3">Тип техники</div>
@@ -131,7 +135,7 @@ function LeadListRow({
       className={cn(
         'group grid h-9 cursor-pointer items-center border-b border-border/40 text-[12px] transition-colors hover:bg-accent/40',
       )}
-      style={{ gridTemplateColumns: 'minmax(260px,1fr) 150px 150px 140px 1fr 130px 120px 40px' }}
+      style={{ gridTemplateColumns: LEADS_LIST_GRID_TEMPLATE }}
     >
       {/* Name + badges */}
       <div className="flex min-w-0 items-center gap-2 px-4">

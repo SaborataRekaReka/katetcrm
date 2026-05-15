@@ -43,8 +43,9 @@ import { USE_API } from '../../lib/featureFlags';
 import { toClientWorkspaceModel } from '../../lib/clientWorkspaceAdapter';
 import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { InlineText } from '../detail/InlineEdit/InlineText';
-import { badgeBase, badgeTones } from '../kanban/badgeTokens';
+import { badgeTones } from '../kanban/badgeTokens';
 import { Button } from '../ui/button';
+import { Badge } from '../ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Textarea } from '../ui/textarea';
 import {
@@ -98,10 +99,10 @@ const leadStatusMeta: Record<ClientLeadStatus, { label: string; tone: string }> 
 };
 
 const headerStatusBadgeClass =
-  'inline-flex items-center gap-1 h-6 px-2 rounded border text-[11px] font-medium';
+  'gap-1 h-6 px-2 text-[11px] font-medium';
 
 const sidebarStatusBadgeClass =
-  'inline-flex items-center gap-1 h-5 px-1.5 rounded border text-[11px]';
+  'gap-1 h-5 px-1.5 text-[11px] font-normal';
 
 export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   const { setActiveSecondaryNav, openSecondaryWithEntity } = useLayout();
@@ -576,7 +577,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
   };
 
   const main = (
-    <div className="max-w-[820px] mx-auto px-4 pb-10 pt-6 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-[820px] px-3 pb-8 pt-4 sm:px-6 sm:pb-10 sm:pt-6 lg:px-8">
       {isContextPending && (
         <Alert className="mb-3 py-1.5 px-2.5">
           <Activity className="h-4 w-4" />
@@ -648,12 +649,12 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
             : []),
         ]}
         chips={[
-          <span key="type" className={`${headerStatusBadgeClass} ${badgeTones.source}`}>
+          <Badge key="type" variant="outline" className={`${headerStatusBadgeClass} ${badgeTones.source}`}>
             {base.type === 'company'
               ? <Building2 className="w-3 h-3" />
               : <UserIcon className="w-3 h-3" />}
             {base.type === 'company' ? 'Юр. лицо' : 'Физ. лицо'}
-          </span>,
+          </Badge>,
           ...(base.manager
             ? [<ToolbarPill key="mgr" icon={<UserPlus className="w-3 h-3" />} label={base.manager} />]
             : []),
@@ -711,13 +712,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       {base.tags.length > 0 && (
         <div className="flex flex-wrap items-center gap-1 mb-5">
           {base.tags.map((t) => (
-            <span key={t.label} className={`${badgeBase} ${tagTone[t.tone]}`}>
+            <Badge key={t.label} variant="outline" className={`gap-1 px-1.5 py-0 text-[11px] font-normal ${tagTone[t.tone]}`}>
               {t.tone === 'success' && <CheckCircle2 className="w-3 h-3" />}
               {t.tone === 'caution' && <AlertTriangle className="w-3 h-3" />}
               {t.tone === 'progress' && <Activity className="w-3 h-3" />}
               {t.tone === 'warning' && <AlertCircle className="w-3 h-3" />}
               {t.label}
-            </span>
+            </Badge>
           ))}
         </div>
       )}
@@ -758,7 +759,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
       {/* Overview */}
       <EntitySection title="Основные данные" className="mb-5">
-        <div className="grid grid-cols-2 gap-x-8 gap-y-0">
+        <div className="grid grid-cols-1 gap-y-1 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">
           <PropertyRow
             icon={<FileText className="w-3 h-3" />}
             label="ID"
@@ -859,49 +860,49 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
             </div>
           ) : (
             base.contacts.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 px-3 py-2">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-white text-[10px] inline-flex items-center justify-center flex-shrink-0">
-                  {c.name.charAt(0)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-[12px] text-gray-900 truncate">{c.name}</span>
+              <div key={c.id} className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex min-w-0 items-start gap-2 sm:flex-1">
+                  <div className="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-indigo-400 to-purple-500 text-[10px] text-white">
+                    {c.name.charAt(0)}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="min-w-0 text-[12px] text-gray-900">{c.name}</span>
                     {c.isPrimary && (
-                      <span className={`${badgeBase} ${badgeTones.success}`}>
+                      <Badge variant="outline" className={`gap-1 px-1.5 py-0 text-[11px] font-normal ${badgeTones.success}`}>
                         <CheckCircle2 className="w-3 h-3" /> Основной
-                      </span>
+                      </Badge>
                     )}
                     {c.role && (
                       <span className="text-[10px] text-gray-500">· {c.role}</span>
                     )}
                   </div>
-                  <div className="text-[11px] text-gray-500 truncate flex items-center gap-1 flex-wrap">
+                    <div className="flex flex-wrap items-center gap-1 text-[11px] text-gray-500">
                     <PhoneLink value={c.phone} />
                     {c.email ? <><span className="text-gray-300">·</span><EmailLink value={c.email} /></> : null}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex w-full flex-wrap items-center gap-1 sm:w-auto sm:flex-shrink-0">
                   {c.phone && (
-                    <a
-                      href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}
-                      className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
-                    >
-                      <Phone className="w-3 h-3" /> Позвонить
-                    </a>
+                    <Button asChild size="sm" variant="outline" className="h-6 flex-1 gap-1 px-2 text-[11px] sm:flex-none">
+                      <a href={`tel:${c.phone.replace(/[^\d+]/g, '')}`}>
+                        <Phone className="w-3 h-3" /> Позвонить
+                      </a>
+                    </Button>
                   )}
                   {c.email && (
-                    <a
-                      href={`mailto:${c.email}`}
-                      className="h-6 px-2 text-[11px] gap-1 inline-flex items-center rounded border border-gray-200 hover:bg-gray-50 text-gray-700"
-                    >
-                      <Mail className="w-3 h-3" /> Написать
-                    </a>
+                    <Button asChild size="sm" variant="outline" className="h-6 flex-1 gap-1 px-2 text-[11px] sm:flex-none">
+                      <a href={`mailto:${c.email}`}>
+                        <Mail className="w-3 h-3" /> Написать
+                      </a>
+                    </Button>
                   )}
                   {(c.phone || c.email) && (
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-6 px-2 text-[11px] gap-1"
+                      className="h-6 flex-1 gap-1 px-2 text-[11px] sm:flex-none"
                       onClick={() => handleCopy(c.email || c.phone || '', `contact-${c.id}`)}
                       title="Скопировать"
                     >
@@ -920,7 +921,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       {base.type === 'company' && (
         <div className="mb-5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide mb-1.5">Реквизиты</div>
-          <div className="grid grid-cols-2 gap-x-8 gap-y-0">
+          <div className="grid grid-cols-1 gap-y-1 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-0">
             {base.requisites.inn && (
               <PropertyRow icon={<FileText className="w-3 h-3" />} label="ИНН" value={<InlineValue>{base.requisites.inn}</InlineValue>} />
             )}
@@ -960,12 +961,15 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <div className="flex items-center justify-between mb-1.5">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Бизнес-контекст</div>
           {!canInlineEditClient && (
-            <button
-              className="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-800"
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-6 gap-1 px-1.5 text-[11px] text-gray-500 hover:text-gray-800"
               onClick={() => setNotesEditing((v) => !v)}
             >
               <Edit3 className="w-3 h-3" /> {notesEditing ? 'Готово' : 'Редактировать заметки'}
-            </button>
+            </Button>
           )}
         </div>
 
@@ -974,11 +978,11 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
             <div className="text-[10px] text-gray-500 mb-1">Любимые категории техники</div>
             <div className="flex flex-wrap gap-1">
               {base.favoriteCategories.map((f) => (
-                <span key={f.category} className={`${badgeBase} ${badgeTones.source}`}>
+                <Badge key={f.category} variant="outline" className={`gap-1 px-1.5 py-0 text-[11px] font-normal ${badgeTones.source}`}>
                   <Truck className="w-3 h-3" />
                   {f.category}
                   <span className="text-[10px] text-gray-500">×{f.count}</span>
-                </span>
+                </Badge>
               ))}
             </div>
           </div>
@@ -1021,13 +1025,14 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                 label={activeRowLabel(node.stage)}
                 value={
                   node.onClick ? (
-                    <button
+                    <Button
                       type="button"
-                      className="text-blue-600 hover:underline"
+                      variant="link"
+                      className="h-auto p-0 text-[11px] text-blue-600"
                       onClick={node.onClick}
                     >
                       {node.details}
-                    </button>
+                    </Button>
                   ) : (
                     <span>{node.details}</span>
                   )
@@ -1045,9 +1050,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         </div>
 
         {lastCompleted ? (
-          <div className="border border-gray-200 rounded-md bg-white p-2.5 space-y-2 mb-2">
-            <div className="flex items-center justify-between gap-2">
-              <div className="min-w-0">
+          <div className="mb-2 space-y-2 rounded-md border border-gray-200 bg-white p-2.5">
+            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div className="min-w-0 self-stretch sm:self-auto">
                 <div className="text-[11px] text-gray-500">Как в прошлый раз</div>
                 <div className="text-[12px] text-gray-900 truncate">
                   {lastCompleted.equipmentSummary}
@@ -1057,10 +1062,10 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   {lastCompleted.address ? ` · ${lastCompleted.address}` : ''}
                 </div>
               </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
+              <div className="flex w-full items-center gap-1 sm:w-auto sm:flex-shrink-0">
                 <Button
                   size="sm"
-                  className="h-7 gap-1 bg-blue-600 hover:bg-blue-700 text-white text-[11px]"
+                  className="h-7 w-full gap-1 bg-blue-600 text-[11px] text-white hover:bg-blue-700 sm:w-auto"
                   onClick={() => handleRepeatFromOrder(lastCompleted)}
                 >
                   Повторить как в прошлый раз
@@ -1078,25 +1083,27 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         {completedOrders.length > 0 && (
           <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
             {completedOrders.slice(0, 4).map((o) => (
-              <div key={o.id} className="flex items-center gap-3 px-3 py-2">
-                <FileText className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
+              <div key={o.id} className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex min-w-0 flex-1 items-start gap-2">
+                  <FileText className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-gray-400" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[12px] text-gray-900">{o.number}</span>
-                    <span className={`${badgeBase} ${orderStatusMeta[o.status].tone}`}>
+                    <Badge variant="outline" className={`px-1.5 py-0 text-[11px] font-normal ${orderStatusMeta[o.status].tone}`}>
                       {orderStatusMeta[o.status].label}
-                    </span>
-                  </div>
-                  <div className="text-[11px] text-gray-500 truncate">
+                    </Badge>
+                    </div>
+                    <div className="text-[11px] text-gray-500 sm:truncate">
                     {o.date} · {o.equipmentSummary}
                     {o.address ? ` · ${o.address}` : ''}
+                    </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex w-full items-center gap-1 sm:w-auto sm:flex-shrink-0">
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-6 px-2 text-[11px] gap-1"
+                    className="h-6 w-full gap-1 px-2 text-[11px] sm:w-auto"
                     onClick={() => handleRepeatFromOrder(o)}
                   >
                     <Copy className="w-3 h-3" /> Повторить
@@ -1119,43 +1126,48 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           {base.ordersHistory.map((o) => {
             const applicationEntityId = normalizeEntityRouteId(o.id);
             return (
-              <div key={o.id} className="flex items-center gap-3 px-3 py-1.5">
-                <span className={`${badgeBase} ${orderStatusMeta[o.status].tone} flex-shrink-0`}>
-                  {orderStatusMeta[o.status].label}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <button
+              <div key={o.id} className="flex flex-col gap-1.5 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex flex-wrap items-center gap-1.5 sm:w-[116px] sm:flex-shrink-0">
+                  <Badge variant="outline" className={`shrink-0 px-1.5 py-0 text-[11px] font-normal ${orderStatusMeta[o.status].tone}`}>
+                    {orderStatusMeta[o.status].label}
+                  </Badge>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <Button
                       type="button"
-                      className="text-[11px] text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                      variant="link"
+                      className="h-auto p-0 text-[11px] text-blue-600 disabled:text-gray-500 disabled:no-underline"
                       onClick={applicationEntityId
                         ? () => openEntitySecondary('applications', 'application', applicationEntityId)
                         : undefined}
                       disabled={!applicationEntityId}
                     >
                       {o.number}
-                    </button>
+                    </Button>
                     <span className="text-[10px] text-gray-500">· {o.date}</span>
                     {o.amount && (
                       <span className="text-[10px] text-gray-500">· {o.amount}</span>
                     )}
                     {o.hasActiveReservation && (
-                      <span className={`${badgeBase} ${badgeTones.progress}`}>Бронь</span>
+                      <Badge variant="outline" className={`px-1.5 py-0 text-[11px] font-normal ${badgeTones.progress}`}>Бронь</Badge>
                     )}
                     {o.hasActiveDeparture && (
-                      <span className={`${badgeBase} ${badgeTones.progress}`}>Выезд</span>
+                      <Badge variant="outline" className={`px-1.5 py-0 text-[11px] font-normal ${badgeTones.progress}`}>Выезд</Badge>
                     )}
                   </div>
-                  <div className="text-[10px] text-gray-500 truncate">{o.equipmentSummary}{o.address ? ` · ${o.address}` : ''}</div>
+                  <div className="text-[10px] text-gray-500 sm:truncate">{o.equipmentSummary}{o.address ? ` · ${o.address}` : ''}</div>
                 </div>
-                <div className="flex items-center gap-1 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:flex-shrink-0">
                   {o.status === 'completed' && (
-                    <button
-                      className="text-[11px] text-blue-600 hover:underline"
+                    <Button
+                      type="button"
+                      variant="link"
+                      className="h-auto p-0 text-[11px] text-blue-600"
                       onClick={() => handleRepeatFromOrder(o)}
                     >
                       Повторить
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -1175,24 +1187,27 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           {base.leadsHistory.map((l) => {
             const leadEntityId = normalizeEntityRouteId(l.id);
             return (
-              <div key={l.id} className="flex items-center gap-3 px-3 py-1.5">
-                <span className={`${badgeBase} ${leadStatusMeta[l.status].tone} flex-shrink-0`}>
-                  {leadStatusMeta[l.status].label}
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <button
+              <div key={l.id} className="flex flex-col gap-1.5 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+                <div className="flex flex-wrap items-center gap-1.5 sm:w-[116px] sm:flex-shrink-0">
+                  <Badge variant="outline" className={`shrink-0 px-1.5 py-0 text-[11px] font-normal ${leadStatusMeta[l.status].tone}`}>
+                    {leadStatusMeta[l.status].label}
+                  </Badge>
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <Button
                       type="button"
-                      className="text-[11px] text-blue-600 hover:underline disabled:text-gray-500 disabled:no-underline disabled:cursor-not-allowed"
+                      variant="link"
+                      className="h-auto p-0 text-[11px] text-blue-600 disabled:text-gray-500 disabled:no-underline"
                       onClick={leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : undefined}
                       disabled={!leadEntityId}
                     >
                       {l.id}
-                    </button>
+                    </Button>
                     <span className="text-[10px] text-gray-500">· {l.date}</span>
                     <span className="text-[10px] text-gray-500">· {l.source}</span>
                   </div>
-                  <div className="text-[10px] text-gray-500 truncate">
+                  <div className="text-[10px] text-gray-500 sm:truncate">
                     {l.equipmentType}{l.address ? ` · ${l.address}` : ''} · {l.manager}
                   </div>
                 </div>
@@ -1206,14 +1221,17 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       <div className="mb-5">
         <div className="flex items-center justify-between mb-1">
           <div className="text-[11px] text-gray-500 uppercase tracking-wide">Комментарий</div>
-          <button
-            className="inline-flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-800"
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="h-6 gap-1 px-1.5 text-[11px] text-gray-500 hover:text-gray-800"
             onClick={() => {
               void toggleCommentEditing();
             }}
           >
             <Edit3 className="w-3 h-3" /> {commentEditing ? 'Готово' : 'Редактировать'}
-          </button>
+          </Button>
         </div>
         {commentEditing ? (
           <Textarea
@@ -1249,10 +1267,12 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
           <div className="text-[10px] text-gray-500 uppercase tracking-wide mb-1">Возможные дубли</div>
           <div className="border border-amber-200 rounded-md bg-amber-50/40 divide-y divide-amber-100 overflow-hidden">
             {base.possibleDuplicates.map((d) => (
-              <div key={d.id} className="flex items-center gap-2 px-3 py-1.5 text-[11px]">
-                <AlertTriangle className="w-3 h-3 text-amber-600 flex-shrink-0" />
-                <span className="text-gray-900">{d.name}</span>
-                <span className="text-gray-500 truncate">· {d.reason}</span>
+              <div key={d.id} className="flex items-start gap-2 px-3 py-2 text-[11px] sm:items-center sm:py-1.5">
+                <AlertTriangle className="mt-0.5 h-3 w-3 flex-shrink-0 text-amber-600 sm:mt-0" />
+                <div className="min-w-0 flex-1 sm:flex sm:items-center sm:gap-1.5">
+                  <span className="block text-gray-900 sm:inline">{d.name}</span>
+                  <span className="block text-gray-500 sm:inline sm:truncate">{d.reason}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -1275,9 +1295,9 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <SidebarField
           label="Тип"
           value={
-            <span className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>
+            <Badge variant="outline" className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>
               {base.type === 'company' ? 'Юр. лицо' : 'Физ. лицо'}
-            </span>
+            </Badge>
           }
         />
         {base.manager && <SidebarField label="Менеджер" value={base.manager} />}
@@ -1305,16 +1325,16 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       <SidebarSection title="Любимые категории">
         <div className="flex flex-wrap gap-1">
           {base.favoriteCategories.map((f) => (
-            <span key={f.category} className={`${badgeBase} ${badgeTones.source}`}>
+            <Badge key={f.category} variant="outline" className={`gap-1 px-1.5 py-0 text-[11px] font-normal ${badgeTones.source}`}>
               <Truck className="w-3 h-3" />
               {f.category}
               <span className="text-[10px] text-gray-500">×{f.count}</span>
-            </span>
+            </Badge>
           ))}
         </div>
       </SidebarSection>
 
-      <SidebarSection title="Быстрый repeat order">
+      <SidebarSection title="Быстрый повтор">
         {lastCompleted ? (
           <>
             <div className="text-[11px] text-gray-700 leading-snug">
@@ -1326,7 +1346,8 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
             <div className="pt-2">
               <Button
                 size="sm"
-                className="h-7 w-full text-[11px] bg-blue-600 hover:bg-blue-700 text-white"
+                variant="outline"
+                className="h-7 w-full justify-center text-[11px] text-gray-700"
                 onClick={() => handleRepeatFromOrder(lastCompleted)}
               >
                 <Copy className="w-3 h-3 mr-1" /> Повторить заказ
@@ -1355,20 +1376,16 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
       <SidebarSection title="Быстрые действия" defaultOpen={false}>
         <div className="space-y-1">
-          <a
-            href={telHref ?? undefined}
-            aria-disabled={!telHref}
-            className={`h-6 w-full justify-start text-[11px] inline-flex items-center rounded border border-gray-200 px-2 ${telHref ? 'hover:bg-gray-50 text-gray-700' : 'opacity-50 pointer-events-none text-gray-400'}`}
-          >
-            <Phone className="w-3 h-3 mr-1" /> Позвонить
-          </a>
-          <a
-            href={mailHref ?? undefined}
-            aria-disabled={!mailHref}
-            className={`h-6 w-full justify-start text-[11px] inline-flex items-center rounded border border-gray-200 px-2 ${mailHref ? 'hover:bg-gray-50 text-gray-700' : 'opacity-50 pointer-events-none text-gray-400'}`}
-          >
-            <MessageSquare className="w-3 h-3 mr-1" /> Написать
-          </a>
+          <Button asChild size="sm" variant="outline" className={`h-6 w-full justify-start text-[11px] ${telHref ? '' : 'pointer-events-none opacity-50'}`}>
+            <a href={telHref ?? undefined} aria-disabled={!telHref}>
+              <Phone className="w-3 h-3 mr-1" /> Позвонить
+            </a>
+          </Button>
+          <Button asChild size="sm" variant="outline" className={`h-6 w-full justify-start text-[11px] ${mailHref ? '' : 'pointer-events-none opacity-50'}`}>
+            <a href={mailHref ?? undefined} aria-disabled={!mailHref}>
+              <MessageSquare className="w-3 h-3 mr-1" /> Написать
+            </a>
+          </Button>
           <Button
             size="sm"
             variant="outline"

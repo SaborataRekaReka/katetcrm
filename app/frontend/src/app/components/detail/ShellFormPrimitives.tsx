@@ -6,8 +6,11 @@
  * NewClientDialog / PositionDialog / CatalogDialogs и любых будущих create-shell.
  */
 
-import { type ChangeEvent, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { X } from 'lucide-react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 import { Dialog, DialogContent } from '../ui/dialog';
 import {
   Select,
@@ -20,7 +23,7 @@ import { Checkbox } from '../ui/checkbox';
 import { cn } from '../../lib/utils';
 
 const SHELL_FIELD_BASE_CLASS =
-  'w-full h-6 min-h-6 rounded px-1.5 text-[11px] leading-5 bg-transparent outline-none transition-colors border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white';
+  'h-6 min-h-6 rounded px-1.5 py-0 text-[11px] leading-5 bg-transparent border-transparent shadow-none hover:border-gray-200 focus-visible:border-blue-400 focus-visible:bg-white focus-visible:ring-0 md:text-[11px]';
 
 const SHELL_FIELD_INVALID_CLASS = 'border-rose-300 bg-rose-50/40';
 
@@ -52,14 +55,15 @@ export function FieldInput({
   disabled?: boolean;
 }) {
   return (
-    <input
+    <Input
       type={type}
       min={min}
       max={max}
       value={value}
       disabled={disabled}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+      onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      aria-invalid={invalid || undefined}
       className={cn(
         SHELL_FIELD_BASE_CLASS,
         (type === 'date' || type === 'time') && SHELL_FIELD_DATE_TIME_CLASS,
@@ -85,15 +89,15 @@ export function FieldTextarea({
   rows?: number;
 }) {
   return (
-    <textarea
+    <Textarea
       rows={rows}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       placeholder={placeholder}
+      aria-invalid={invalid || undefined}
       className={cn(
-        'w-full min-h-[58px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent resize-none',
-        'outline-none transition-colors',
-        'border border-transparent hover:border-gray-200 focus:border-blue-400 focus:bg-white',
+        'min-h-[58px] rounded px-1.5 py-1 text-[11px] leading-5 bg-transparent shadow-none resize-none md:text-[11px]',
+        'border-transparent hover:border-gray-200 focus-visible:border-blue-400 focus-visible:bg-white focus-visible:ring-0',
         invalid && SHELL_FIELD_INVALID_CLASS,
       )}
     />
@@ -171,14 +175,16 @@ export function ShellDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
         <div className="relative h-full overflow-auto bg-white">
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="icon"
             onClick={() => onOpenChange(false)}
-            className="absolute top-3 right-3 z-10 inline-flex h-7 w-7 items-center justify-center rounded hover:bg-gray-100"
+            className="absolute right-3 top-3 z-10 h-7 w-7 rounded text-gray-500 hover:bg-gray-100 hover:text-gray-700"
             aria-label="Закрыть"
           >
             <X className="h-4 w-4 text-gray-500" />
-          </button>
+          </Button>
           {children}
         </div>
       </DialogContent>

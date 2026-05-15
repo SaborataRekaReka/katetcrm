@@ -49,6 +49,9 @@ const GROUP_META: Record<ApplicationGroupId, { title: string; color: string }> =
   cancelled: { title: 'Отменённые', color: 'bg-[#7B68EE]' },
 };
 
+const APPLICATIONS_LIST_GRID_TEMPLATE = 'minmax(280px,1fr) 160px 180px 150px 1fr 130px 130px 40px';
+const APPLICATIONS_LIST_MIN_WIDTH = 1096;
+
 function fmtDate(d?: string) {
   if (!d) return '—';
   const date = new Date(d);
@@ -94,11 +97,12 @@ export function ApplicationsListView({ applications, onRowClick, isFiltered }: A
     <div className="min-h-0 flex-1 overflow-auto bg-white">
       <GroupedList
         groups={groups}
+        contentMinWidth={APPLICATIONS_LIST_MIN_WIDTH}
         emptyGroupHint="Нет заявок в этой группе"
         columnsHeader={
           <div
             className="grid h-7 items-center border-b border-border/40 bg-muted/30 text-[11px] uppercase tracking-wide text-muted-foreground"
-            style={{ gridTemplateColumns: 'minmax(280px,1fr) 160px 180px 150px 1fr 130px 130px 40px' }}
+            style={{ gridTemplateColumns: APPLICATIONS_LIST_GRID_TEMPLATE }}
           >
             <div className="px-4">Заявка · клиент</div>
             <div className="px-3">Позиции</div>
@@ -144,7 +148,7 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
         if (e.key === 'Enter') onClick();
       }}
       className="group grid h-9 cursor-pointer items-center border-b border-border/40 text-[12px] transition-colors hover:bg-accent/40"
-      style={{ gridTemplateColumns: 'minmax(280px,1fr) 160px 180px 150px 1fr 130px 130px 40px' }}
+      style={{ gridTemplateColumns: APPLICATIONS_LIST_GRID_TEMPLATE }}
     >
       <div className="flex min-w-0 items-center gap-2 px-4">
         <span

@@ -203,12 +203,12 @@ export function PropertyRow({
   value: ReactNode;
 }) {
   return (
-    <div className="flex items-center min-h-7 py-0.5">
-      <div className="flex w-[112px] flex-shrink-0 items-center gap-1.5 text-[11px] text-gray-500 sm:w-[140px]">
+    <div className="flex flex-col items-start gap-0.5 py-1 sm:min-h-7 sm:flex-row sm:items-center sm:gap-0 sm:py-0.5">
+      <div className="flex w-full flex-shrink-0 items-center gap-1.5 text-[11px] text-gray-500 sm:w-[140px]">
         {icon && <span className="text-gray-400">{icon}</span>}
         <span>{label}</span>
       </div>
-      <div className="flex-1 min-w-0 text-[11px] text-gray-800">{value}</div>
+      <div className="w-full min-w-0 text-[11px] text-gray-800 sm:flex-1">{value}</div>
     </div>
   );
 }
@@ -226,7 +226,7 @@ export function InlineValue({
 }) {
   if (!onClick) {
     return (
-      <span className="inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700 truncate">
+      <span className="inline-flex min-h-[20px] max-w-full items-center gap-1 rounded px-1 text-[11px] text-gray-700 break-words sm:truncate">
         {children}
       </span>
     );
@@ -293,9 +293,9 @@ export function SidebarSection({
 
 export function SidebarField({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className="flex items-center min-h-6">
-      <div className={`w-[96px] flex-shrink-0 sm:w-[110px] ${sidebarTokens.label}`}>{label}</div>
-      <div className={`flex-1 min-w-0 ${sidebarTokens.value} truncate`}>{value}</div>
+    <div className="flex min-h-6 flex-col items-start gap-0.5 sm:flex-row sm:items-center sm:gap-0">
+      <div className={`w-full flex-shrink-0 sm:w-[110px] ${sidebarTokens.label}`}>{label}</div>
+      <div className={`w-full min-w-0 sm:flex-1 ${sidebarTokens.value} sm:truncate`}>{value}</div>
     </div>
   );
 }
@@ -489,14 +489,14 @@ export function DetailShell({
       </div>
 
       {/* Body */}
-      <div className="flex min-h-0 flex-1 flex-col lg:flex-row">
-        <div className="flex-1 min-h-0 min-w-0 flex flex-col">
-          <div className="detail-shell-scroll flex-1 min-h-0 overflow-y-auto">{main}</div>
+      <div className="detail-shell-scroll flex min-h-0 flex-1 flex-col overflow-y-auto lg:overflow-hidden lg:flex-row">
+        <div className="min-w-0 flex flex-col lg:min-h-0 lg:flex-1">
+          <div className="detail-shell-scroll lg:min-h-0 lg:flex-1 lg:overflow-y-auto">{main}</div>
           {footer && (
             <div className="border-t border-gray-200 flex-shrink-0 bg-white">{footer}</div>
           )}
         </div>
-        <aside className="detail-shell-scroll min-h-0 max-h-[42vh] w-full flex-shrink-0 overflow-y-auto border-t border-gray-200 bg-gray-50/40 lg:max-h-none lg:w-[300px] lg:border-l lg:border-t-0">
+        <aside className="detail-shell-scroll w-full flex-shrink-0 border-t border-gray-200 bg-gray-50/40 lg:min-h-0 lg:max-h-none lg:w-[300px] lg:overflow-y-auto lg:border-l lg:border-t-0">
           {sidebar}
         </aside>
       </div>

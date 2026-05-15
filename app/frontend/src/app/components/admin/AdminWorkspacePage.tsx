@@ -20,6 +20,8 @@ import { useLayout } from '../shell/layoutStore';
 import { getModuleMeta } from '../shell/navConfig';
 import { ListScaffold } from '../shell/ListScaffold';
 import { SimpleToolbar } from '../shell/SimpleToolbar';
+import { Alert, AlertDescription } from '../ui/alert';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
   Select,
@@ -671,18 +673,20 @@ function ImportsPage() {
               >
                 <Upload className="h-3.5 w-3.5" /> Загрузить CSV
               </Button>
-              <div className="inline-flex h-8 items-center rounded border border-border/60 bg-white px-2 text-[11px] text-muted-foreground">
+              <Badge variant="outline" className="h-8 border-border/60 bg-white px-2 text-[11px] font-normal text-muted-foreground">
                 Файл: {fileName || 'не выбран'}
-              </div>
-              <div className="inline-flex h-8 items-center rounded border border-border/60 bg-white px-2 text-[11px] text-muted-foreground">
+              </Badge>
+              <Badge variant="outline" className="h-8 border-border/60 bg-white px-2 text-[11px] font-normal text-muted-foreground">
                 Строк: {importRows.length}
-              </div>
+              </Badge>
             </div>
 
             {!USE_API ? (
-              <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-                API режим выключен. Импорт в mock-режиме недоступен. Включите VITE_USE_API=true.
-              </div>
+              <Alert className="border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+                <AlertDescription className="text-[12px] text-amber-800">
+                  API режим выключен. Импорт в mock-режиме недоступен. Включите VITE_USE_API=true.
+                </AlertDescription>
+              </Alert>
             ) : null}
 
             <div className="grid gap-2 md:grid-cols-4">
@@ -763,17 +767,17 @@ function ImportsPage() {
             ) : null}
 
             {wizardError ? (
-              <div className="flex items-start gap-2 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+              <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
                 <AlertCircle className="mt-0.5 h-3.5 w-3.5" />
-                <span>{wizardError}</span>
-              </div>
+                <AlertDescription className="text-[12px] text-rose-700">{wizardError}</AlertDescription>
+              </Alert>
             ) : null}
 
             {wizardSuccess ? (
-              <div className="flex items-start gap-2 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+              <Alert className="border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
                 <CheckCircle2 className="mt-0.5 h-3.5 w-3.5" />
-                <span>{wizardSuccess}</span>
-              </div>
+                <AlertDescription className="text-[12px] text-emerald-700">{wizardSuccess}</AlertDescription>
+              </Alert>
             ) : null}
 
             {activeHeaders.length > 0 ? (
@@ -1015,7 +1019,7 @@ function PreviewStatusPill({ status }: { status: 'valid' | 'duplicate' | 'error'
   } as const;
 
   const item = map[status];
-  return <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] ${item.cls}`}>{item.label}</span>;
+  return <Badge variant="outline" className={`px-1.5 py-0.5 text-[10px] font-normal ${item.cls}`}>{item.label}</Badge>;
 }
 
 function ImportStatusPill({ status }: { status: ImportLogStatus }) {
@@ -1025,7 +1029,7 @@ function ImportStatusPill({ status }: { status: ImportLogStatus }) {
     error: { label: 'Ошибка', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
   } as const;
   const it = map[status];
-  return <span className={`inline-flex rounded border px-1.5 py-0.5 text-[10px] ${it.cls}`}>{it.label}</span>;
+  return <Badge variant="outline" className={`px-1.5 py-0.5 text-[10px] font-normal ${it.cls}`}>{it.label}</Badge>;
 }
 
 const SETTINGS_SECTION_TITLE_FALLBACK: Record<string, string> = {
@@ -1220,21 +1224,23 @@ function SettingsPage() {
         </WidgetCard>
 
         {hasCorruptedLabels ? (
-          <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-            Часть подписей пришла в некорректной кодировке. На экране показаны восстановленные названия полей.
-          </div>
+          <Alert className="border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+            <AlertDescription className="text-[12px] text-amber-800">
+              Часть подписей пришла в некорректной кодировке. На экране показаны восстановленные названия полей.
+            </AlertDescription>
+          </Alert>
         ) : null}
 
         {settingsMutationError ? (
-          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-            {settingsMutationError}
-          </div>
+          <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            <AlertDescription className="text-[12px] text-rose-700">{settingsMutationError}</AlertDescription>
+          </Alert>
         ) : null}
 
         {settingsMutationSuccess ? (
-          <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
-            {settingsMutationSuccess}
-          </div>
+          <Alert className="border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+            <AlertDescription className="text-[12px] text-emerald-700">{settingsMutationSuccess}</AlertDescription>
+          </Alert>
         ) : null}
 
         {USE_API && settingsQuery.isPending && !settingsQuery.data ? (
@@ -1244,11 +1250,13 @@ function SettingsPage() {
         ) : null}
 
         {USE_API && settingsQuery.isError && !settingsQuery.data ? (
-          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-            {settingsQuery.error instanceof Error
-              ? settingsQuery.error.message
-              : 'Не удалось загрузить настройки.'}
-          </div>
+          <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            <AlertDescription className="text-[12px] text-rose-700">
+              {settingsQuery.error instanceof Error
+                ? settingsQuery.error.message
+                : 'Не удалось загрузить настройки.'}
+            </AlertDescription>
+          </Alert>
         ) : null}
 
         {USE_API && (settingsQuery.isPending || settingsQuery.isError) && !settingsQuery.data ? null : (
@@ -1270,14 +1278,14 @@ function SettingsPage() {
                   icon={s.icon}
                   bodyPadded={false}
                   action={USE_API ? (
-                    <div className="flex items-center gap-1.5">
-                      <span className="rounded border border-border/60 bg-muted/30 px-1.5 py-0.5 text-[10px] text-muted-foreground">
+                    <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
+                      <Badge variant="outline" className="shrink-0 border-border/60 bg-muted/30 px-1.5 py-0.5 text-[10px] font-normal text-muted-foreground">
                         Полей: {s.rows.length}
-                      </span>
+                      </Badge>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="h-6 px-2 text-[11px]"
+                        className="h-6 flex-1 px-2 text-[11px] sm:flex-none"
                         onClick={() => resetSectionDraft(s.id)}
                         disabled={!sectionDirty || updateSectionMutation.isPending}
                       >
@@ -1285,7 +1293,7 @@ function SettingsPage() {
                       </Button>
                       <Button
                         size="sm"
-                        className="h-6 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1]"
+                        className="h-6 flex-1 bg-[#2a6af0] px-2 text-[11px] text-white hover:bg-[#2358d1] sm:flex-none"
                         onClick={() => {
                           void handleSaveSection(s.id, displayTitle, s.rows);
                         }}
@@ -1303,18 +1311,18 @@ function SettingsPage() {
                       const rowDirty = currentValue !== r.value;
 
                       return (
-                        <div key={i} className="grid grid-cols-[220px_1fr] gap-4 px-4 py-2.5 text-[12px]">
+                        <div key={i} className="grid gap-1.5 px-4 py-2.5 text-[12px] sm:grid-cols-[220px_1fr] sm:gap-4">
                           <dt className="text-muted-foreground">{displayLabel}</dt>
                           <dd className="text-foreground">
                             {USE_API ? (
                               <div className="space-y-1">
-                                <input
+                                <Input
                                   value={currentValue}
                                   onChange={(event) => {
                                     handleSettingValueChange(s.id, i, event.target.value);
                                   }}
                                   disabled={updateSectionMutation.isPending}
-                                  className="h-7 w-full rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                                  className="h-7 min-w-0 px-2 py-0 text-[11px] md:text-[11px]"
                                 />
                                 {rowDirty ? (
                                   <div className="text-[10px] text-[#2358d1]">Есть несохраненное изменение</div>
@@ -1738,15 +1746,15 @@ function UsersPage() {
   return (
     <ListScaffold toolbar={toolbar}>
       {mutationError ? (
-        <div className="mx-4 mt-4 rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-          {mutationError}
-        </div>
+        <Alert variant="destructive" className="mx-4 mt-4 border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+          <AlertDescription className="text-[12px] text-rose-700">{mutationError}</AlertDescription>
+        </Alert>
       ) : null}
 
       {mutationSuccess ? (
-        <div className="mx-4 mt-4 rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
-          {mutationSuccess}
-        </div>
+        <Alert className="mx-4 mt-4 border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+          <AlertDescription className="text-[12px] text-emerald-700">{mutationSuccess}</AlertDescription>
+        </Alert>
       ) : null}
 
       <div className="min-h-0 flex-1 overflow-auto">
@@ -1791,7 +1799,7 @@ function UsersPage() {
                     <td className="px-3 py-2.5 text-foreground">
                       <div className="flex items-center gap-2">
                         <UsersIcon className="h-3.5 w-3.5 text-muted-foreground" />
-                        <input
+                        <Input
                           value={nameDraftById[u.id] ?? u.name}
                           onChange={(event) => {
                             const value = event.target.value;
@@ -1801,12 +1809,12 @@ function UsersPage() {
                             void handleNameChange(u.id, event.target.value);
                           }}
                           disabled={operationPending}
-                          className="h-7 min-w-[180px] rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                          className="h-7 min-w-[180px] px-2 py-0 text-[11px] md:text-[11px]"
                         />
                       </div>
                     </td>
                     <td className="px-3 py-2.5 text-foreground/80">
-                      <input
+                      <Input
                         value={emailDraftById[u.id] ?? u.email}
                         onChange={(event) => {
                           const value = event.target.value;
@@ -1816,31 +1824,35 @@ function UsersPage() {
                           void handleEmailChange(u.id, event.target.value);
                         }}
                         disabled={operationPending}
-                        className="h-7 min-w-[220px] rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
+                        className="h-7 min-w-[220px] px-2 py-0 text-[11px] md:text-[11px]"
                       />
                     </td>
                     <td className="px-3 py-2.5 text-foreground/80">
-                      <select
+                      <Select
                         value={u.role}
-                        onChange={(event) => {
-                          void handleRoleChange(u.id, event.target.value as UserRole);
+                        onValueChange={(value) => {
+                          void handleRoleChange(u.id, value as UserRole);
                         }}
                         disabled={operationPending}
-                        className="h-7 rounded border border-border bg-background px-2 text-[11px] text-foreground outline-none ring-0"
                       >
-                        <option value="admin">Админ</option>
-                        <option value="manager">Менеджер</option>
-                      </select>
+                        <SelectTrigger size="sm" className="h-7 w-[120px] px-2 py-0 text-[11px] md:text-[11px]">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">Админ</SelectItem>
+                          <SelectItem value="manager">Менеджер</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </td>
                     <td className="px-3 py-2.5">
                       {u.active ? (
-                        <span className="inline-flex items-center gap-1 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] text-emerald-700">
+                        <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700">
                           <Check className="h-3 w-3" /> Вход разрешён
-                        </span>
+                        </Badge>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] text-slate-600">
+                        <Badge variant="outline" className="gap-1 border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-normal text-slate-600">
                           <X className="h-3 w-3" /> Вход закрыт
-                        </span>
+                        </Badge>
                       )}
                     </td>
                     <td className="px-3 py-2.5 font-mono text-[11px] text-muted-foreground">{u.updatedAtLabel}</td>
@@ -1928,34 +1940,40 @@ function UsersPage() {
             <div className="grid gap-3 sm:grid-cols-2">
               <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-role">
                 <span>Роль</span>
-                <select
-                  id="admin-create-user-role"
+                <Select
                   value={createForm.role}
-                  onChange={(event) => {
-                    setCreateForm((prev) => ({ ...prev, role: event.target.value as UserRole }));
+                  onValueChange={(value) => {
+                    setCreateForm((prev) => ({ ...prev, role: value as UserRole }));
                   }}
                   disabled={createUserMutation.isPending}
-                  className="h-10 w-full rounded border border-input bg-background px-3 text-sm text-foreground outline-none ring-0"
                 >
-                  <option value="manager">Менеджер</option>
-                  <option value="admin">Админ</option>
-                </select>
+                  <SelectTrigger id="admin-create-user-role" className="h-10 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="manager">Менеджер</SelectItem>
+                    <SelectItem value="admin">Админ</SelectItem>
+                  </SelectContent>
+                </Select>
               </label>
 
               <label className="block space-y-1 text-[12px] text-muted-foreground" htmlFor="admin-create-user-status">
                 <span>Доступ</span>
-                <select
-                  id="admin-create-user-status"
+                <Select
                   value={createForm.isActive ? 'active' : 'inactive'}
-                  onChange={(event) => {
-                    setCreateForm((prev) => ({ ...prev, isActive: event.target.value === 'active' }));
+                  onValueChange={(value) => {
+                    setCreateForm((prev) => ({ ...prev, isActive: value === 'active' }));
                   }}
                   disabled={createUserMutation.isPending}
-                  className="h-10 w-full rounded border border-input bg-background px-3 text-sm text-foreground outline-none ring-0"
                 >
-                  <option value="active">Вход разрешён</option>
-                  <option value="inactive">Вход закрыт</option>
-                </select>
+                  <SelectTrigger id="admin-create-user-status" className="h-10 text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Вход разрешён</SelectItem>
+                    <SelectItem value="inactive">Вход закрыт</SelectItem>
+                  </SelectContent>
+                </Select>
               </label>
             </div>
 
@@ -2155,15 +2173,15 @@ function PermissionsPage() {
         />
 
         {mutationError ? (
-          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-            {mutationError}
-          </div>
+          <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            <AlertDescription className="text-[12px] text-rose-700">{mutationError}</AlertDescription>
+          </Alert>
         ) : null}
 
         {mutationSuccess ? (
-          <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
-            {mutationSuccess}
-          </div>
+          <Alert className="border-emerald-200 bg-emerald-50 px-3 py-2 text-[12px] text-emerald-700">
+            <AlertDescription className="text-[12px] text-emerald-700">{mutationSuccess}</AlertDescription>
+          </Alert>
         ) : null}
 
         {USE_API && permissionsQuery.isPending && !permissionsQuery.data ? (
@@ -2173,11 +2191,13 @@ function PermissionsPage() {
         ) : null}
 
         {USE_API && permissionsQuery.isError && !permissionsQuery.data ? (
-          <div className="rounded border border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
-            {permissionsQuery.error instanceof Error
-              ? permissionsQuery.error.message
-              : 'Не удалось загрузить матрицу прав.'}
-          </div>
+          <Alert variant="destructive" className="border-rose-200 bg-rose-50 px-3 py-2 text-[12px] text-rose-700">
+            <AlertDescription className="text-[12px] text-rose-700">
+              {permissionsQuery.error instanceof Error
+                ? permissionsQuery.error.message
+                : 'Не удалось загрузить матрицу прав.'}
+            </AlertDescription>
+          </Alert>
         ) : null}
 
         {USE_API && (permissionsQuery.isPending || permissionsQuery.isError) && !permissionsQuery.data ? null : (
@@ -2202,27 +2222,30 @@ function PermissionsPage() {
                       return (
                       <td key={r} className="px-3 py-2.5 text-center">
                         {locked ? (
-                          <span
-                            className="mx-auto inline-flex h-6 items-center justify-center rounded border border-slate-200 bg-slate-50 px-2 text-[10px] text-slate-600"
+                          <Badge
+                            variant="outline"
+                            className="mx-auto h-6 border-slate-200 bg-slate-50 px-2 text-[10px] font-normal text-slate-600"
                             title="Admin-only возможность закреплена backend RBAC"
                           >
                             Только admin
-                          </span>
+                          </Badge>
                         ) : USE_API ? (
-                          <button
+                          <Button
                             type="button"
+                            variant="outline"
+                            size="sm"
                             onClick={() => {
                               void handleToggleCapability(c.id, r, c.matrix[r]);
                             }}
                             disabled={updateCapabilityMutation.isPending}
-                            className="mx-auto inline-flex h-6 w-8 items-center justify-center rounded border border-border/70 bg-background hover:bg-muted/50 disabled:opacity-60"
+                            className="mx-auto h-6 w-8 px-0 hover:bg-muted/50"
                           >
                             {c.matrix[r] ? (
                               <Check className="h-3.5 w-3.5 text-emerald-600" />
                             ) : (
                               <span className="text-muted-foreground/60">—</span>
                             )}
-                          </button>
+                          </Button>
                         ) : c.matrix[r] ? (
                           <Check className="mx-auto h-3.5 w-3.5 text-emerald-600" />
                         ) : (
