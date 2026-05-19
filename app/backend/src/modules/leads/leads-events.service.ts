@@ -6,6 +6,7 @@ type LeadCreatedEvent = {
   type: 'lead_created';
   leadId: string;
   managerId: string | null;
+  actorId: string;
   createdAt: string;
 };
 
@@ -13,10 +14,16 @@ type LeadCreatedEvent = {
 export class LeadsEventsService {
   private readonly leadCreated$ = new Subject<LeadCreatedEvent>();
 
-  emitLeadCreated(params: { leadId: string; managerId?: string | null; createdAt?: string }) {
+  emitLeadCreated(params: {
+    leadId: string;
+    actorId: string;
+    managerId?: string | null;
+    createdAt?: string;
+  }) {
     this.leadCreated$.next({
       type: 'lead_created',
       leadId: params.leadId,
+      actorId: params.actorId,
       managerId: params.managerId ?? null,
       createdAt: params.createdAt ?? new Date().toISOString(),
     });

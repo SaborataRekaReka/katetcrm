@@ -26,6 +26,7 @@ import { useRegisterPrimaryCta } from '../shell/primaryCtaStore';
 import { NewLeadDialog } from '../leads/NewLeadDialog';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
 import { ACCESS_TOKEN_KEY } from '../../lib/apiClient';
+import { useAuth } from '../../auth/AuthProvider';
 
 const OPENED_LEAD_IDS_STORAGE_KEY = 'katet-crm.leads.opened.v1';
 const UNOPENED_NEW_LEAD_IDS_STORAGE_KEY = 'katet-crm.leads.new-unopened.v1';
@@ -110,6 +111,7 @@ function playLeadArrivalSound() {
  * switching view never loses or diverges from current filters.
  */
 export function LeadsKanbanPage() {
+  const { user } = useAuth();
   const {
     currentView,
     activeSecondaryNav,
@@ -285,7 +287,8 @@ export function LeadsKanbanPage() {
   }, [unopenedNewLeadIds]);
 
   const handleLeadCreatedEvent = useCallback(
-    (leadId: string) => {
+    (leadId: string, actorId: string | null) => {
+      if (actorId && user?.id && actorId === user.id) return;
       if (openedLeadIdsRef.current.has(leadId)) return;
       if (mutedLeadIdsRef.current.has(leadId)) return;
       if (unopenedNewLeadIdsRef.current.has(leadId)) return;
@@ -301,7 +304,7 @@ export function LeadsKanbanPage() {
       void leadsQuery.refetch();
       playLeadArrivalSound();
     },
-    [leadsQuery.refetch],
+    [leadsQuery.refetch, user?.id],
   );
 
   useEffect(() => {
@@ -368,9 +371,12 @@ export function LeadsKanbanPage() {
 
             if (dataPayload.length > 0) {
               try {
-                const payload = JSON.parse(dataPayload) as { leadId?: string };
+                const payload = JSON.parse(dataPayload) as {
+                  leadId?: string;
+                  actorId?: string | null;
+                };
                 if (typeof payload.leadId === 'string' && payload.leadId.length > 0) {
-                  handleLeadCreatedEvent(payload.leadId);
+                  handleLeadCreatedEvent(payload.leadId, payload.actorId ?? null);
                 }
               } catch {
                 // Ignore malformed stream payloads and keep subscription alive.

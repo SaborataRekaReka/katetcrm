@@ -62,6 +62,7 @@ Contract expectations:
 - `POST /api/v1/leads/:id/rollback`
 - `POST /api/v1/leads/:id/delete-current`
 - `DELETE /api/v1/leads/:id/chain` (admin-only)
+- `GET /api/v1/leads/stream` (SSE, auth required)
 
 Contract expectations:
 
@@ -73,6 +74,7 @@ Contract expectations:
 6. `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` are server-owned one-step lifecycle rollback operations. They hard-delete only the current representation, restore the previous stage, and write audit snapshot payloads.
 7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
 8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
+9. `GET /api/v1/leads/stream` pushes `lead_created` events as Server-Sent Events. Admin receives all events, manager receives only own assigned leads.
 
 ### 3.3 Applications
 

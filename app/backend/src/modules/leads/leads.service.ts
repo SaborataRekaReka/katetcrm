@@ -294,6 +294,7 @@ export class LeadsService {
     });
     this.leadEvents.emitLeadCreated({
       leadId: lead.id,
+      actorId: actor.id,
       managerId: lead.managerId,
       createdAt: lead.createdAt.toISOString(),
     });
