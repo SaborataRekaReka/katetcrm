@@ -279,11 +279,24 @@ export function mapActivityCommentEntries(entries: ActivityLogEntryApi[]): Mappe
   return entries
     .filter((entry) => entry.action === 'note_added')
     .map((entry) => {
+      const payload = asRecord(entry.payload);
+      const textFromPayload = pickString([payload], [
+        'text',
+        'textPreview',
+        'comment',
+        'commentText',
+        'note',
+        'noteText',
+        'notesPreview',
+        'deliveryNotesPreview',
+        'completionNotePreview',
+        'unqualifiedReasonPreview',
+      ]);
       const summary = entry.summary?.trim();
       return {
         id: entry.id,
         author: entry.actor?.fullName ?? 'Система',
-        text: summary || 'Заметка',
+        text: textFromPayload || summary || 'Заметка',
         time: formatRelativeTime(entry.createdAt),
       };
     });

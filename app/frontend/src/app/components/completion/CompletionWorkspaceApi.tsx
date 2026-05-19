@@ -18,8 +18,10 @@ import type { LeadApi } from '../../lib/leadsApi';
 import { formatApplicationDisplayId, formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { useCompletionQuery } from '../../hooks/useCompletionsQuery';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
+import { useEntityActivity } from '../../hooks/useActivityQuery';
 import { useCreateCompletion, useUpdateCompletion } from '../../hooks/useCompletionMutations';
 import { useCreateLead } from '../../hooks/useLeadMutations';
+import { mapActivityCommentEntries, mapActivityEntries } from '../../lib/activityMapper';
 import type { ClientOrderHistoryItem } from '../../types/client';
 import { Button } from '../ui/button';
 import { Badge } from '../ui/badge';
@@ -39,7 +41,14 @@ import {
   ToolbarPill,
   sidebarTokens,
 } from '../detail/DetailShell';
-import { EntityMetaGrid, EntityModalHeader, EntitySection } from '../detail/EntityModalFramework';
+import {
+  EntityActivityList,
+  EntityCommentList,
+  EntityCommentsPanel,
+  EntityMetaGrid,
+  EntityModalHeader,
+  EntitySection,
+} from '../detail/EntityModalFramework';
 import { LifecycleRollbackActions } from '../detail/LifecycleRollbackActions';
 
 interface Props {
@@ -66,6 +75,13 @@ function fmtIso(value: string | null | undefined): string {
 const sidebarStatusBadgeClass =
   'gap-1 h-5 px-1.5 text-[11px] font-normal';
 
+function buildAvatar(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'S';
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`.toUpperCase();
+}
+
 export function CompletionWorkspaceApi({
   lead,
   completionId,
@@ -79,10 +95,18 @@ export function CompletionWorkspaceApi({
   const [note, setNote] = useState('');
   const [unqualifiedReason, setUnqualifiedReason] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
+  const [commentsTab, setCommentsTab] = useState<'comments' | 'activity'>('comments');
 
   const completionQuery = useCompletionQuery(resolvedCompletionId, !!resolvedCompletionId);
   const departureQuery = useDepartureQuery(departureId, !!departureId);
   const hasDepartureId = Boolean(departureId);
+  const activityEntityType = resolvedCompletionId ? 'completion' : 'departure';
+  const activityEntityId = resolvedCompletionId ?? departureId ?? null;
+  const activityQuery = useEntityActivity(
+    activityEntityType,
+    activityEntityId,
+    !!activityEntityId,
+  );
 
   const createMutation = useCreateCompletion();
   const updateMutation = useUpdateCompletion();
@@ -92,6 +116,26 @@ export function CompletionWorkspaceApi({
   const [repeatSource, setRepeatSource] = useState<ClientOrderHistoryItem | null>(null);
   const [createdLeadId, setCreatedLeadId] = useState<string | null>(null);
   const [repeatError, setRepeatError] = useState<string | null>(null);
+
+  const activityEntries = mapActivityEntries(activityQuery.data ?? []);
+  const commentEntries = mapActivityCommentEntries(activityQuery.data ?? []).map((entry) => ({
+    id: entry.id,
+    author: entry.author,
+    avatar: buildAvatar(entry.author),
+    color: 'from-emerald-400 to-teal-500',
+    time: entry.time,
+    text: entry.text,
+  }));
+  const commentsEmptyText = activityQuery.isError
+    ? 'Не удалось загрузить комментарии'
+    : activityQuery.isPending
+      ? 'Загружаем комментарии...'
+      : 'Комментариев пока нет';
+  const activityEmptyText = activityQuery.isError
+    ? 'Не удалось загрузить журнал'
+    : activityQuery.isPending
+      ? 'Загружаем события...'
+      : 'Событий пока нет';
 
   useEffect(() => {
     setResolvedCompletionId(completionId);
@@ -171,6 +215,7 @@ export function CompletionWorkspaceApi({
     setActionError(null);
     try {
       await fn();
+      void activityQuery.refetch();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Операция не выполнена');
     }
@@ -791,6 +836,16 @@ export function CompletionWorkspaceApi({
           </div>
         </div>
       ) : null}
+
+      <EntityCommentsPanel
+        tab={commentsTab}
+        onTabChange={setCommentsTab}
+        commentsCount={commentEntries.length}
+        commentsLabel="Комментарии"
+        activityLabel="Журнал изменений"
+        commentsContent={<EntityCommentList comments={commentEntries} emptyText={commentsEmptyText} />}
+        activityContent={<EntityActivityList entries={activityEntries} emptyText={activityEmptyText} />}
+      />
     </div>
   );
 

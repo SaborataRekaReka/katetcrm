@@ -20,6 +20,8 @@ import type { CompletionOutcome, DepartureStatus } from '../../lib/departuresApi
 import type { LeadApi } from '../../lib/leadsApi';
 import { formatApplicationDisplayId, formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
+import { useEntityActivity } from '../../hooks/useActivityQuery';
+import { mapActivityCommentEntries, mapActivityEntries } from '../../lib/activityMapper';
 import {
   useArriveDeparture,
   useCancelDeparture,
@@ -55,6 +57,9 @@ import {
 } from '../detail/DetailShell';
 import { badgeTones } from '../kanban/badgeTokens';
 import {
+  EntityActivityList,
+  EntityCommentList,
+  EntityCommentsPanel,
   EntityMetaGrid,
   EntityModalHeader,
   EntitySection,
@@ -161,9 +166,17 @@ function formatDateOnly(value: string | null | undefined): string {
   return d.toLocaleDateString('ru-RU');
 }
 
+function buildAvatar(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'S';
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`.toUpperCase();
+}
+
 export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient }: Props) {
   const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
   const query = useDepartureQuery(departureId, true);
+  const activityQuery = useEntityActivity('departure', departureId, true);
   const startMutation = useStartDeparture();
   const arriveMutation = useArriveDeparture();
   const cancelMutation = useCancelDeparture();
@@ -173,6 +186,27 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
   const [cancelReason, setCancelReason] = useState('');
   const [cancelOpen, setCancelOpen] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [commentsTab, setCommentsTab] = useState<'comments' | 'activity'>('comments');
+
+  const activityEntries = mapActivityEntries(activityQuery.data ?? []);
+  const commentEntries = mapActivityCommentEntries(activityQuery.data ?? []).map((entry) => ({
+    id: entry.id,
+    author: entry.author,
+    avatar: buildAvatar(entry.author),
+    color: 'from-blue-400 to-cyan-500',
+    time: entry.time,
+    text: entry.text,
+  }));
+  const commentsEmptyText = activityQuery.isError
+    ? 'Не удалось загрузить комментарии'
+    : activityQuery.isPending
+      ? 'Загружаем комментарии...'
+      : 'Комментариев пока нет';
+  const activityEmptyText = activityQuery.isError
+    ? 'Не удалось загрузить журнал'
+    : activityQuery.isPending
+      ? 'Загружаем события...'
+      : 'Событий пока нет';
 
   const busy =
     startMutation.isPending
@@ -205,6 +239,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
     setActionError(null);
     try {
       await fn();
+      void activityQuery.refetch();
     } catch (err) {
       setActionError(err instanceof Error ? err.message : 'Операция не выполнена');
     }
@@ -855,6 +890,16 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
           />
         ) : null}
       </div>
+
+      <EntityCommentsPanel
+        tab={commentsTab}
+        onTabChange={setCommentsTab}
+        commentsCount={commentEntries.length}
+        commentsLabel="Комментарии"
+        activityLabel="Журнал изменений"
+        commentsContent={<EntityCommentList comments={commentEntries} emptyText={commentsEmptyText} />}
+        activityContent={<EntityActivityList entries={activityEntries} emptyText={activityEmptyText} />}
+      />
     </div>
   );
 
