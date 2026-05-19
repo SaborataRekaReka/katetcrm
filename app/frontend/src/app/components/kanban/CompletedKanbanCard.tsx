@@ -22,7 +22,7 @@ export function CompletedKanbanCard({ lead, onClick, draggable, onDragStart, onD
       draggable={draggable}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className="bg-white/70 border border-gray-200 rounded-md px-2 py-1.5 mb-1 cursor-pointer hover:bg-white hover:border-gray-300 transition-all group"
+      className="mb-1 cursor-pointer rounded-md border border-border/70 bg-card/80 px-2 py-1.5 transition-all group hover:bg-card hover:border-border"
     >
       <div className="flex items-center gap-1.5">
         {isCompleted ? (
@@ -32,7 +32,7 @@ export function CompletedKanbanCard({ lead, onClick, draggable, onDragStart, onD
         )}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-[12px] text-gray-800 truncate">{lead.client}</span>
+            <span className="truncate text-[12px] text-foreground">{lead.client}</span>
             <span className="text-[10px] text-muted-foreground truncate">• {lead.equipmentType}</span>
           </div>
           <div className="flex items-center gap-2 text-[10px] text-muted-foreground">

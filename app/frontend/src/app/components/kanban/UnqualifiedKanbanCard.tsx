@@ -33,14 +33,14 @@ export function UnqualifiedKanbanCard({
         <XCircle className="mt-[1px] h-3.5 w-3.5 flex-shrink-0 text-rose-600" />
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-[12px] text-gray-900">{lead.client}</span>
-            <span className="truncate text-[10px] text-gray-500">• {lead.equipmentType}</span>
+            <span className="truncate text-[12px] text-foreground">{lead.client}</span>
+            <span className="truncate text-[10px] text-muted-foreground">• {lead.equipmentType}</span>
           </div>
           <div className="mt-0.5 flex items-center gap-1 text-[10px] text-rose-700">
             <AlertTriangle className="h-2.5 w-2.5" />
             <span className="truncate">{reason}</span>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-[10px] text-gray-500">
+          <div className="mt-1 flex items-center gap-2 text-[10px] text-muted-foreground">
             <span className="inline-flex items-center gap-0.5">
               <User className="h-2.5 w-2.5" />
               {lead.manager}

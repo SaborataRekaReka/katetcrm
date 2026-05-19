@@ -251,7 +251,7 @@ export function CompletionWorkspacePage() {
       ) : (
         <div className="min-h-0 flex-1 overflow-auto">
           <table className={cn('w-full border-collapse text-[12px]', effectiveView === 'table' ? 'min-w-[1100px]' : 'min-w-[900px]')}>
-            <thead className="sticky top-0 z-10 bg-white">
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-2 text-left font-medium">Завершение · Клиент</th>
                 <th className="px-3 py-2 text-left font-medium">Акт</th>
@@ -284,12 +284,12 @@ export function CompletionWorkspacePage() {
                   </td>
                   <td className="px-3 py-2.5">
                     {l.completionDate ? (
-                      <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700">
+                      <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200">
                         <CheckCircle2 className="h-3 w-3" />
                         Закрыт
                       </Badge>
                     ) : (
-                      <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700">
+                      <Badge variant="outline" className="gap-1 border-amber-200 bg-amber-50 px-1.5 py-0.5 text-[10px] font-normal text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">
                         <FileText className="h-3 w-3" />
                         Нужен акт
                       </Badge>

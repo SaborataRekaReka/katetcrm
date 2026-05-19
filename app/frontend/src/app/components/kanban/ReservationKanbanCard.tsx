@@ -31,12 +31,12 @@ export function ReservationKanbanCard({ lead, onClick, draggable, onDragStart, o
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        'bg-white border rounded-md mb-1.5 cursor-pointer hover:shadow-sm transition-all group relative',
+        'relative mb-1.5 cursor-pointer rounded-md border bg-card transition-all group hover:shadow-sm',
         hasConflict
           ? 'border-red-300 border-l-4 border-l-red-500'
           : undecided
           ? 'border-amber-300 border-l-4 border-l-amber-400'
-          : 'border-gray-200 hover:border-gray-300'
+          : 'border-border/70 hover:border-border'
       )}
     >
       <div className="p-2.5 space-y-1.5">
@@ -94,17 +94,17 @@ export function ReservationKanbanCard({ lead, onClick, draggable, onDragStart, o
         {/* Sourcing details — neutral info rows */}
         <div className="space-y-1">
           {lead.equipmentUnit && (
-            <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-gray-50 border border-gray-100 text-[11px]">
-              <Wrench className="w-3 h-3 text-gray-500 flex-shrink-0" />
-              <span className="text-gray-500">Единица:</span>
-              <span className="text-gray-900 truncate">{lead.equipmentUnit}</span>
+            <div className="flex items-center gap-1.5 rounded border border-border/70 bg-muted/60 px-1.5 py-1 text-[11px]">
+              <Wrench className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
+              <span className="text-muted-foreground">Единица:</span>
+              <span className="truncate text-foreground">{lead.equipmentUnit}</span>
             </div>
           )}
           {lead.subcontractor && (
-            <div className="flex items-center gap-1.5 px-1.5 py-1 rounded bg-gray-50 border border-gray-100 text-[11px]">
-              <Building2 className="w-3 h-3 text-gray-500 flex-shrink-0" />
-              <span className="text-gray-500">Подрядчик:</span>
-              <span className="text-gray-900 truncate">{lead.subcontractor}</span>
+            <div className="flex items-center gap-1.5 rounded border border-border/70 bg-muted/60 px-1.5 py-1 text-[11px]">
+              <Building2 className="h-3 w-3 flex-shrink-0 text-muted-foreground" />
+              <span className="text-muted-foreground">Подрядчик:</span>
+              <span className="truncate text-foreground">{lead.subcontractor}</span>
             </div>
           )}
         </div>
@@ -144,7 +144,7 @@ export function ReservationKanbanCard({ lead, onClick, draggable, onDragStart, o
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-border/70 pt-1.5 text-[10px]">
           <div className="flex items-center gap-1 text-muted-foreground">
             <User className="w-3 h-3" />
             <span>{lead.manager}</span>

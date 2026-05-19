@@ -17,7 +17,7 @@ export function WorkspaceHeader() {
   const ctaHandler = usePrimaryCta(activeSecondaryNav);
 
   return (
-    <div className="shrink-0 border-b border-border/60 bg-white">
+    <div className="shrink-0 border-b border-border/60 bg-[var(--shell-main-bg)]">
       <div className="flex h-10 items-center justify-between px-4">
         <h1 className="text-[14px] font-medium text-foreground">{meta.title}</h1>
         {meta.ctaLabel ? (

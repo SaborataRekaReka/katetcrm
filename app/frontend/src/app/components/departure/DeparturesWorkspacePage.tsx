@@ -29,10 +29,10 @@ const STATUS_LABEL: Record<NonNullable<Lead['departureStatus']>, string> = {
   awaiting: 'Ожидается',
 };
 const STATUS_TONE: Record<NonNullable<Lead['departureStatus']>, string> = {
-  today: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  soon: 'bg-sky-50 text-sky-700 border-sky-200',
-  overdue: 'bg-rose-50 text-rose-700 border-rose-200',
-  awaiting: 'bg-slate-50 text-slate-700 border-slate-200',
+  today: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-500/40',
+  soon: 'bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-200 dark:border-sky-500/40',
+  overdue: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-500/40',
+  awaiting: 'bg-slate-50 text-slate-700 border-slate-200 dark:bg-slate-500/15 dark:text-slate-200 dark:border-slate-500/40',
 };
 
 export function DeparturesWorkspacePage() {

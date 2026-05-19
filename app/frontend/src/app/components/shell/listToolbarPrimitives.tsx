@@ -17,7 +17,7 @@ import { cn } from '../ui/utils';
  * still appears.
  */
 export const LIST_TOOLBAR_BAR =
-  'scroll-thin flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto border-b border-border/60 bg-white px-2 py-1 sm:px-3';
+  'scroll-thin flex shrink-0 flex-nowrap items-center gap-1 overflow-x-auto border-b border-border/60 bg-[var(--shell-main-bg)] px-2 py-1 sm:px-3';
 
 /** Search zone: full-width on narrow screens, fixed compact width on desktop. */
 export const LIST_TOOLBAR_SEARCH_WRAP =
@@ -36,7 +36,7 @@ export const LIST_TOOLBAR_TRIGGER =
 /** Search input class: quiet field, no loud outline. */
 export const LIST_TOOLBAR_SEARCH_INPUT =
   'h-7 rounded-md border border-transparent bg-muted/40 pl-7 text-[12px] ' +
-  'hover:bg-muted/60 focus-visible:border-border focus-visible:bg-white focus-visible:ring-0';
+  'hover:bg-muted/60 focus-visible:border-border focus-visible:bg-background focus-visible:ring-0';
 
 /** Vertical divider between semantic zones. */
 export function ToolbarDivider({ className }: { className?: string }) {

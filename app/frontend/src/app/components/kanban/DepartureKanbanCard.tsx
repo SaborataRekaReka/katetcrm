@@ -37,12 +37,12 @@ export function DepartureKanbanCard({ lead, onClick, draggable, onDragStart, onD
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        'bg-white border rounded-md mb-1.5 cursor-pointer hover:shadow-sm transition-all group',
+        'mb-1.5 cursor-pointer rounded-md border bg-card transition-all group hover:shadow-sm',
         overdue
           ? 'border-red-300 border-l-4 border-l-red-500'
           : today
           ? 'border-blue-200 border-l-4 border-l-blue-500'
-          : 'border-gray-200 hover:border-gray-300'
+          : 'border-border/70 hover:border-border'
       )}
     >
       <div className="p-2.5 space-y-1.5">
@@ -55,7 +55,7 @@ export function DepartureKanbanCard({ lead, onClick, draggable, onDragStart, onD
                 ? 'bg-red-50 border-red-200 text-red-700'
                 : today
                 ? 'bg-blue-50 border-blue-200 text-blue-700'
-                : 'bg-gray-50 border-gray-200 text-gray-700'
+                : 'bg-muted/70 border-border/70 text-foreground/80'
             )}
           >
             {overdue ? <AlertTriangle className="w-3 h-3" /> : <Clock className="w-3 h-3" />}
@@ -81,7 +81,7 @@ export function DepartureKanbanCard({ lead, onClick, draggable, onDragStart, onD
         </div>
 
         {/* Equipment */}
-        <div className="text-[11px] text-gray-700 truncate">{lead.equipmentType}</div>
+        <div className="truncate text-[11px] text-foreground/80">{lead.equipmentType}</div>
 
         {lead.address && (
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
@@ -91,7 +91,7 @@ export function DepartureKanbanCard({ lead, onClick, draggable, onDragStart, onD
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-border/70 pt-1.5 text-[10px]">
           <div className="flex items-center gap-1 text-muted-foreground">
             <User className="w-3 h-3" />
             <span>{lead.manager}</span>

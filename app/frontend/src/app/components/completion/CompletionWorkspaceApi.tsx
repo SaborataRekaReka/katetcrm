@@ -185,9 +185,9 @@ export function CompletionWorkspaceApi({
     : 'Ожидает завершения';
   const completionStatusTone = completion
     ? completion.outcome === 'completed'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-      : 'border-gray-200 bg-gray-100 text-gray-700'
-    : 'border-blue-200 bg-blue-50 text-blue-700';
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200'
+      : 'border-border/70 bg-muted text-foreground/80'
+    : 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/15 dark:text-blue-200';
 
   const createCompletedDisabledReason = useMemo(() => {
     if (completion) return 'Завершение уже создано';

@@ -55,7 +55,7 @@ export function ApplicationKanbanCard({ lead, onClick, draggable, onDragStart, o
       draggable={draggable}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      className="bg-white border border-gray-200 rounded-md p-2.5 mb-1.5 cursor-pointer hover:shadow-sm hover:border-gray-300 transition-all group"
+      className="mb-1.5 cursor-pointer rounded-md border border-border/70 bg-card p-2.5 transition-all group hover:border-border hover:shadow-sm"
     >
       <div className="space-y-1.5">
         {/* Header */}
@@ -78,12 +78,10 @@ export function ApplicationKanbanCard({ lead, onClick, draggable, onDragStart, o
         </div>
 
         {/* Breakdown one-liner */}
-        {breakdown && (
-          <div className="text-[10px] text-gray-500">{breakdown}</div>
-        )}
+        {breakdown && <div className="text-[10px] text-muted-foreground">{breakdown}</div>}
 
         {/* Equipment */}
-        <div className="text-[11px] text-gray-700 truncate">{lead.equipmentType}</div>
+        <div className="truncate text-[11px] text-foreground/80">{lead.equipmentType}</div>
 
         {/* Info */}
         <div className="space-y-0.5 text-[11px] text-muted-foreground">
@@ -111,7 +109,7 @@ export function ApplicationKanbanCard({ lead, onClick, draggable, onDragStart, o
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-border/70 pt-1.5 text-[10px]">
           <div className="flex items-center gap-1 text-muted-foreground">
             <User className="w-3 h-3" />
             <span>{lead.manager}</span>

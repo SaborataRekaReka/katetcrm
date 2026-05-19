@@ -654,7 +654,7 @@ function ImportsPage() {
     <ListScaffold toolbar={toolbar}>
       <div className="flex min-h-0 flex-1 flex-col overflow-auto">
         <section className="border-b border-border/60 bg-muted/20 p-4">
-          <div className="space-y-3 rounded border border-border/60 bg-white p-3">
+          <div className="space-y-3 rounded border border-border/60 bg-card p-3">
             <div className="flex flex-wrap items-center gap-2">
               <input
                 ref={fileInputRef}
@@ -673,10 +673,10 @@ function ImportsPage() {
               >
                 <Upload className="h-3.5 w-3.5" /> Загрузить CSV
               </Button>
-              <Badge variant="outline" className="h-8 border-border/60 bg-white px-2 text-[11px] font-normal text-muted-foreground">
+              <Badge variant="outline" className="h-8 border-border/60 bg-card px-2 text-[11px] font-normal text-muted-foreground">
                 Файл: {fileName || 'не выбран'}
               </Badge>
-              <Badge variant="outline" className="h-8 border-border/60 bg-white px-2 text-[11px] font-normal text-muted-foreground">
+              <Badge variant="outline" className="h-8 border-border/60 bg-card px-2 text-[11px] font-normal text-muted-foreground">
                 Строк: {importRows.length}
               </Badge>
             </div>
@@ -851,7 +851,7 @@ function ImportsPage() {
                 {previewData.rows.length > 0 ? (
                   <div className="overflow-auto border-t border-border/60">
                     <table className="w-full min-w-[920px] border-collapse text-[12px]">
-                      <thead className="bg-white">
+                      <thead className="bg-card">
                         <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                           <th className="px-3 py-2 text-left font-medium">Строка</th>
                           <th className="px-3 py-2 text-left font-medium">Статус</th>
@@ -890,7 +890,7 @@ function ImportsPage() {
             ) : null}
 
             {runResult ? (
-              <div className="space-y-2 rounded border border-border/60 bg-[#f7fbff] px-3 py-2">
+              <div className="space-y-2 rounded border border-border/60 bg-muted/20 px-3 py-2">
                 <div className="text-[12px] font-medium text-foreground">Результат запуска</div>
                 <div className="grid gap-2 md:grid-cols-4">
                   <StatChip label="Импорт" value={String(runResult.summary.imported)} />
@@ -937,7 +937,7 @@ function ImportsPage() {
 
           {!USE_API || importLogQuery.data || (!importLogQuery.isPending && !importLogQuery.isError) ? (
             <table className="w-full min-w-[1100px] border-collapse text-[12px]">
-              <thead className="sticky top-0 z-10 bg-white">
+              <thead className="sticky top-0 z-10 bg-card">
                 <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                   <th className="px-4 py-2 text-left font-medium">ID</th>
                   <th className="px-3 py-2 text-left font-medium">Время</th>
@@ -1002,7 +1002,7 @@ function StatChip({
   mono?: boolean;
 }) {
   return (
-    <div className="rounded border border-border/60 bg-white px-2.5 py-2 text-[11px]">
+    <div className="rounded border border-border/60 bg-card px-2.5 py-2 text-[11px]">
       <div className="text-muted-foreground">{label}</div>
       <div className={mono ? 'font-mono text-[11px] text-foreground' : 'text-[13px] font-medium text-foreground'}>
         {value}
@@ -1013,9 +1013,9 @@ function StatChip({
 
 function PreviewStatusPill({ status }: { status: 'valid' | 'duplicate' | 'error' }) {
   const map = {
-    valid: { label: 'Валидно', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    duplicate: { label: 'Дубль', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-    error: { label: 'Ошибка', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
+    valid: { label: 'Валидно', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-500/40' },
+    duplicate: { label: 'Дубль', cls: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-500/40' },
+    error: { label: 'Ошибка', cls: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-500/40' },
   } as const;
 
   const item = map[status];
@@ -1024,9 +1024,9 @@ function PreviewStatusPill({ status }: { status: 'valid' | 'duplicate' | 'error'
 
 function ImportStatusPill({ status }: { status: ImportLogStatus }) {
   const map = {
-    success: { label: 'Успешно', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    partial: { label: 'Частично', cls: 'bg-amber-50 text-amber-700 border-amber-200' },
-    error: { label: 'Ошибка', cls: 'bg-rose-50 text-rose-700 border-rose-200' },
+    success: { label: 'Успешно', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-200 dark:border-emerald-500/40' },
+    partial: { label: 'Частично', cls: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-200 dark:border-amber-500/40' },
+    error: { label: 'Ошибка', cls: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-200 dark:border-rose-500/40' },
   } as const;
   const it = map[status];
   return <Badge variant="outline" className={`px-1.5 py-0.5 text-[10px] font-normal ${it.cls}`}>{it.label}</Badge>;
@@ -1774,7 +1774,7 @@ function UsersPage() {
 
         {!USE_API || usersQuery.data || (!usersQuery.isPending && !usersQuery.isError) ? (
           <table className="w-full min-w-[1080px] border-collapse text-[12px]">
-            <thead className="sticky top-0 z-10 bg-white">
+            <thead className="sticky top-0 z-10 bg-card">
               <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
                 <th className="px-4 py-2 text-left font-medium">ID</th>
                 <th className="px-3 py-2 text-left font-medium">Имя</th>
@@ -1846,11 +1846,11 @@ function UsersPage() {
                     </td>
                     <td className="px-3 py-2.5">
                       {u.active ? (
-                        <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700">
+                        <Badge variant="outline" className="gap-1 border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-normal text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200">
                           <Check className="h-3 w-3" /> Вход разрешён
                         </Badge>
                       ) : (
-                        <Badge variant="outline" className="gap-1 border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-normal text-slate-600">
+                        <Badge variant="outline" className="gap-1 border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-normal text-slate-600 dark:border-slate-500/40 dark:bg-slate-500/15 dark:text-slate-200">
                           <X className="h-3 w-3" /> Вход закрыт
                         </Badge>
                       )}

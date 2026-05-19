@@ -25,6 +25,7 @@ export default defineConfig({
     tailwindcss(),
   ],
   resolve: {
+    dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),

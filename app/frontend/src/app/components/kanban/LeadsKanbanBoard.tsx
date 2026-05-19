@@ -85,7 +85,7 @@ export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageD
   };
 
   return (
-    <div className="scroll-thin flex min-h-0 flex-1 overflow-x-auto overflow-y-hidden bg-[#fafbfc]">
+    <div className="scroll-thin flex min-h-0 flex-1 overflow-x-auto overflow-y-hidden bg-[var(--shell-main-bg)]">
       <div className="flex h-full min-w-full gap-2 p-3 relative">
         {dragError && (
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 rounded-md border border-red-200 bg-red-50 px-3 py-1.5 text-[11px] text-red-700 shadow-sm">

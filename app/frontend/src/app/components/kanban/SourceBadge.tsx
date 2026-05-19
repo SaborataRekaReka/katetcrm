@@ -21,7 +21,7 @@ function resolveChannel(source?: string, channel?: SourceChannel): SourceChannel
 
 // Source is secondary information — kept neutral (gray) across all channels.
 // Channel is distinguished by icon only, not color, to avoid pill-noise.
-const NEUTRAL_TONE = 'bg-gray-50 text-gray-600 border-gray-200';
+const NEUTRAL_TONE = 'bg-muted/70 text-foreground/80 border-border/70';
 
 const channelMeta: Record<SourceChannel, { label: string; icon: React.ComponentType<{ className?: string }>; tone: string }> = {
   site: { label: 'Сайт', icon: Globe, tone: NEUTRAL_TONE },

@@ -424,7 +424,7 @@ function ViewListRow({
       type="button"
       variant="ghost"
       onClick={onClick}
-      className="group h-auto w-full justify-start gap-3 rounded-none border-b border-gray-100 px-3 py-2 text-left font-normal whitespace-normal hover:bg-gray-50/70"
+      className="group h-auto w-full justify-start gap-3 rounded-none border-b border-border/60 px-3 py-2 text-left font-normal whitespace-normal hover:bg-muted/40"
     >
       <div className="min-w-0 flex-1">
         <div className="text-[12px] text-foreground truncate">{primary}</div>
@@ -458,10 +458,10 @@ function ViewCard({
       type="button"
       variant="outline"
       onClick={onClick}
-      className="h-auto w-full min-w-0 flex-col items-stretch justify-start gap-2 whitespace-normal rounded-lg border-gray-200 bg-white p-3 text-left font-normal hover:border-blue-300 hover:bg-white hover:shadow-sm"
+      className="h-auto w-full min-w-0 flex-col items-stretch justify-start gap-2 whitespace-normal rounded-lg border-border/70 bg-card p-3 text-left font-normal hover:border-border hover:bg-card hover:shadow-sm"
     >
       <div className="flex items-start gap-2 min-w-0">
-        <div className="w-7 h-7 rounded bg-gray-100 flex items-center justify-center text-muted-foreground flex-shrink-0">
+        <div className="w-7 h-7 rounded bg-muted flex items-center justify-center text-muted-foreground flex-shrink-0">
           {icon}
         </div>
         <div className="min-w-0 flex-1">
@@ -471,7 +471,7 @@ function ViewCard({
           )}
         </div>
       </div>
-      <div className="flex flex-col gap-1 pt-1 border-t border-gray-100">
+      <div className="flex flex-col gap-1 pt-1 border-t border-border/60">
         {rows.map((r, i) => (
           <div key={i} className="flex items-center gap-2 text-[11px]">
             <span className="text-muted-foreground w-[90px] flex-shrink-0">{r.label}</span>
@@ -498,7 +498,7 @@ function AddCard({ label, onClick }: { label: string; onClick: () => void }) {
       type="button"
       variant="outline"
       onClick={onClick}
-      className="min-h-[100px] w-full flex-col items-center justify-center gap-2 whitespace-normal rounded-lg border-dashed border-gray-300 bg-white text-gray-500 hover:border-blue-400 hover:bg-blue-50/40 hover:text-blue-600"
+      className="min-h-[100px] w-full flex-col items-center justify-center gap-2 whitespace-normal rounded-lg border-dashed border-border bg-card text-muted-foreground hover:border-[var(--brand-accent-border)] hover:bg-[var(--brand-accent-soft)] hover:text-[var(--brand-accent)]"
     >
       <span className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-current">
         <Plus className="h-4 w-4" />
@@ -509,7 +509,7 @@ function AddCard({ label, onClick }: { label: string; onClick: () => void }) {
 }
 
 function ListContainer({ children }: { children: React.ReactNode }) {
-  return <div className="bg-white">{children}</div>;
+  return <div className="bg-card">{children}</div>;
 }
 
 function EmptyView({ label }: { label: string }) {

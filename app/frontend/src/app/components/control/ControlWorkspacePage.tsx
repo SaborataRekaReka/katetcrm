@@ -883,8 +883,8 @@ function AuditTable({ rows }: { rows: AuditEntry[] }) {
   return (
     <div className="min-h-0 flex-1 overflow-auto">
       <table className="w-full min-w-[960px] border-collapse text-[12px]">
-        <thead className="sticky top-0 z-10 bg-white">
-          <tr className="border-b border-gray-100 text-[11px] uppercase tracking-wide text-muted-foreground">
+        <thead className="sticky top-0 z-10 bg-card">
+          <tr className="border-b border-border/60 text-[11px] uppercase tracking-wide text-muted-foreground">
             <th className="px-4 py-2 text-left font-medium">Время</th>
             <th className="px-3 py-2 text-left font-medium">Автор</th>
             <th className="px-3 py-2 text-left font-medium">Модуль</th>
@@ -902,7 +902,7 @@ function AuditTable({ rows }: { rows: AuditEntry[] }) {
             </tr>
           ) : (
             rows.map((e) => (
-              <tr key={e.id} className="group border-b border-gray-100 hover:bg-gray-50 active:bg-gray-100">
+              <tr key={e.id} className="group border-b border-border/40 hover:bg-muted/30 active:bg-muted/50">
                 <td className="px-4 py-2 font-mono text-[11px] text-muted-foreground">{e.at}</td>
                 <td className="px-3 py-2 text-foreground/80">
                   <div className="flex items-center gap-1.5">

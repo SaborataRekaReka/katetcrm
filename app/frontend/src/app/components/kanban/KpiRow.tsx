@@ -55,7 +55,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
   const cards = IS_SALES_LITE ? salesLiteCards : fullCards;
 
   return (
-    <div className="scroll-thin shrink-0 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-white px-4 py-2 [scrollbar-gutter:stable]">
+    <div className="scroll-thin shrink-0 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-[var(--shell-main-bg)] px-4 py-2 [scrollbar-gutter:stable]">
       <div className={cn(
         'grid w-max min-w-full grid-flow-col auto-cols-[minmax(136px,1fr)] gap-2 lg:w-full lg:grid-flow-row lg:auto-cols-auto',
         IS_SALES_LITE ? 'lg:grid-cols-6' : 'lg:grid-cols-8',
@@ -68,7 +68,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
             type="button"
             onClick={onSelect ? () => onSelect(s.id) : undefined}
             disabled={!onSelect}
-            className="flex items-center gap-2 rounded-md border border-transparent bg-[#f7f8fa] px-2 py-1.5 text-left transition-colors hover:border-border/60 hover:bg-white disabled:cursor-default disabled:hover:border-transparent disabled:hover:bg-[#f7f8fa]"
+            className="flex items-center gap-2 rounded-md border border-transparent bg-muted/50 px-2 py-1.5 text-left transition-colors hover:border-border/60 hover:bg-card disabled:cursor-default disabled:hover:border-transparent disabled:hover:bg-muted/50"
           >
             <span className={cn('flex h-6 w-6 shrink-0 items-center justify-center rounded', toneBg(s.tone))}>
               <Icon className={cn('h-3.5 w-3.5', toneText(s.tone))} />

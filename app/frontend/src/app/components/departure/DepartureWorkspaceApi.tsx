@@ -124,16 +124,16 @@ function DepartureStepMarker({
   const Icon = state === 'done' ? CheckCircle2 : state === 'current' ? Clock : Circle;
   const tone =
     state === 'done'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+      ? 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200'
       : state === 'current'
-        ? 'border-blue-200 bg-blue-50 text-blue-700'
-        : 'border-gray-200 bg-white text-gray-500';
+        ? 'border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-500/40 dark:bg-blue-500/15 dark:text-blue-200'
+        : 'border-border/70 bg-card text-muted-foreground';
   const iconTone =
     state === 'done'
-      ? 'text-emerald-600'
+      ? 'text-emerald-600 dark:text-emerald-300'
       : state === 'current'
-        ? 'text-blue-600'
-        : 'text-gray-300';
+        ? 'text-blue-600 dark:text-blue-300'
+        : 'text-muted-foreground/70';
 
   return (
     <div className={`flex min-w-0 items-start gap-2 rounded-md border px-2.5 py-2 ${tone}`}>
@@ -737,8 +737,8 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
       </EntitySection>
 
       <EntitySection title="Управление этапом" className="mb-5">
-        <div className="overflow-hidden rounded-md border border-gray-200 bg-white">
-          <div className="grid gap-2 border-b border-gray-200 bg-gray-50/70 p-2 sm:grid-cols-3">
+        <div className="overflow-hidden rounded-md border border-border/70 bg-card">
+          <div className="grid gap-2 border-b border-border/60 bg-muted/40 p-2 sm:grid-cols-3">
             {stageSteps.map((step) => (
               <DepartureStepMarker
                 key={step.label}
@@ -750,20 +750,20 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
           </div>
 
           <div className="grid gap-3 p-3 lg:grid-cols-[minmax(0,1fr)_300px]">
-            <div className="min-w-0 rounded-md border border-blue-100 bg-blue-50/60 p-3">
+            <div className="min-w-0 rounded-md border border-[var(--brand-accent-border)] bg-[var(--brand-accent-soft)] p-3">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 space-y-1">
-                  <div className="text-[10px] font-medium uppercase tracking-wide text-blue-700">
+                  <div className="text-[10px] font-medium uppercase tracking-wide text-[var(--brand-accent)]">
                     {showStagePanelAction ? 'Следующее действие' : 'Состояние этапа'}
                   </div>
-                  <div className="text-[14px] font-semibold leading-5 text-gray-900">
+                  <div className="text-[14px] font-semibold leading-5 text-foreground">
                     {showStagePanelAction ? primaryAction.label : STATUS_LABEL[departure.status]}
                   </div>
-                  <div className="max-w-[520px] text-[11px] leading-5 text-gray-600">
+                  <div className="max-w-[520px] text-[11px] leading-5 text-muted-foreground">
                     {currentActionDescription}
                   </div>
                   {nextStep.reason ? (
-                    <div className="inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] text-amber-700">
+                    <div className="inline-flex items-center gap-1 rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] text-amber-700 dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-200">
                       <AlertTriangle className="h-3 w-3" />
                       {nextStep.reason}
                     </div>
@@ -772,7 +772,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
                 {showStagePanelAction ? (
                   <Button
                     size="sm"
-                    className="h-8 gap-1.5 bg-blue-600 text-[12px] text-white hover:bg-blue-700"
+                    className="h-8 gap-1.5 text-[12px]"
                     disabled={primaryAction.disabled}
                     onClick={primaryAction.onClick}
                   >
@@ -783,13 +783,13 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               </div>
             </div>
 
-            <div className="rounded-md border border-gray-200 bg-white p-3">
+            <div className="rounded-md border border-border/70 bg-card p-3">
               <div className="mb-2 flex items-center justify-between gap-2">
                 <div>
-                  <div className="text-[10px] font-medium uppercase tracking-wide text-gray-500">
+                  <div className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
                     Финальный исход
                   </div>
-                  <div className="text-[11px] leading-5 text-gray-600">
+                  <div className="text-[11px] leading-5 text-muted-foreground">
                     Закройте выезд результатом работ
                   </div>
                 </div>
@@ -806,7 +806,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
               </div>
 
               {departure.completion ? (
-                <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] leading-5 text-emerald-700">
+                <div className="rounded border border-emerald-200 bg-emerald-50 px-3 py-2 text-[11px] leading-5 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200">
                   Завершение уже создано: {departure.completion.outcome === 'completed' ? 'успешно' : 'некачественно'} · {fmtIso(departure.completion.completedAt)}
                 </div>
               ) : (
@@ -814,7 +814,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-8 justify-start border-emerald-200 bg-emerald-50/70 text-[12px] text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900"
+                    className="h-8 justify-start border-emerald-200 bg-emerald-50/70 text-[12px] text-emerald-800 hover:bg-emerald-50 hover:text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-500/15 dark:text-emerald-200 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100"
                     onClick={() => {
                       void runComplete('completed');
                     }}
@@ -825,7 +825,7 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
                   <Button
                     size="sm"
                     variant="outline"
-                    className="h-8 justify-start border-rose-200 bg-rose-50/70 text-[12px] text-rose-800 hover:bg-rose-50 hover:text-rose-900"
+                    className="h-8 justify-start border-rose-200 bg-rose-50/70 text-[12px] text-rose-800 hover:bg-rose-50 hover:text-rose-900 dark:border-rose-500/40 dark:bg-rose-500/15 dark:text-rose-200 dark:hover:bg-rose-500/20 dark:hover:text-rose-100"
                     onClick={() => {
                       void runComplete('unqualified');
                     }}
@@ -839,12 +839,12 @@ export function DepartureWorkspaceApi({ departureId, lead, onClose, onOpenClient
           </div>
 
           {!departure.completion ? (
-            <div className="border-t border-gray-200 bg-gray-50/50 p-3">
+            <div className="border-t border-border/60 bg-muted/30 p-3">
               <Textarea
                 value={completionNote}
                 onChange={(event) => setCompletionNote(event.target.value)}
                 placeholder="Комментарий к итогу выезда"
-                className="min-h-[68px] resize-none border-gray-200 bg-white text-[12px]"
+                className="min-h-[68px] resize-none border-border/70 bg-card text-[12px]"
                 disabled={busy}
               />
               <div className="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">

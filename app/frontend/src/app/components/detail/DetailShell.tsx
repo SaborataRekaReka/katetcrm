@@ -496,7 +496,7 @@ export function DetailShell({
             <div className="border-t border-gray-200 flex-shrink-0 bg-white">{footer}</div>
           )}
         </div>
-        <aside className="detail-shell-scroll w-full flex-shrink-0 border-t border-gray-200 bg-gray-50/40 lg:min-h-0 lg:max-h-none lg:w-[300px] lg:overflow-y-auto lg:border-l lg:border-t-0">
+        <aside className="detail-shell-scroll w-full flex-shrink-0 border-t border-gray-200 bg-card lg:min-h-0 lg:max-h-none lg:w-[300px] lg:overflow-y-auto lg:border-l lg:border-t-0">
           {sidebar}
         </aside>
       </div>

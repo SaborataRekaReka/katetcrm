@@ -63,7 +63,7 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       className={cn(
-        'bg-white border border-gray-200 rounded-md p-2.5 mb-1.5 cursor-pointer hover:shadow-sm hover:border-gray-300 transition-all group'
+        'rounded-md border border-border/70 bg-card p-2.5 mb-1.5 cursor-pointer transition-all group hover:border-border hover:shadow-sm'
       )}
     >
       <div className="space-y-1.5">
@@ -127,7 +127,7 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-[10px] pt-1.5 border-t border-gray-100">
+        <div className="flex items-center justify-between border-t border-border/70 pt-1.5 text-[10px]">
           <div className="flex items-center gap-1 text-muted-foreground">
             <User className="w-3 h-3" />
             <span>{lead.manager}</span>
