@@ -14,7 +14,7 @@ import { Dialog, DialogContent } from '../ui/dialog';
 import { useLayout } from '../shell/layoutStore';
 import { LeadsListView } from '../views/LeadsListView';
 import { LeadsTableView } from '../views/LeadsTableView';
-import { USE_API } from '../../lib/featureFlags';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
 import { toKanbanLead } from '../../lib/leadAdapter';
@@ -212,11 +212,12 @@ export function LeadsKanbanPage() {
       if (lead.hasNoContact || !lead.phone?.trim()) missing.push('контакт');
 
       if (missing.length > 0) {
-        return `Для перевода в заявку заполните: ${missing.join(', ')}`;
+        const targetLabel = IS_SALES_LITE ? 'работу' : 'заявку';
+        return `Для перевода в ${targetLabel} заполните: ${missing.join(', ')}`;
       }
     }
 
-    if (lead.stage === 'application' && target === 'reservation') {
+    if (!IS_SALES_LITE && lead.stage === 'application' && target === 'reservation') {
       const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
       if (!linkedIds?.applicationId) {
         return 'Сначала должна быть создана заявка';
@@ -230,6 +231,13 @@ export function LeadsKanbanPage() {
   };
 
   const handleCardClick = (lead: Lead) => {
+    if (IS_SALES_LITE && (lead.stage === 'completed' || lead.stage === 'unqualified')) {
+      setSelectedLead(lead);
+      setActiveEntityRoute('lead', lead.id);
+      setIsDetailOpen(true);
+      return;
+    }
+
     const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
 
     const applicationId = lead.stage === 'application' ? linkedIds?.applicationId ?? null : null;
@@ -293,6 +301,7 @@ export function LeadsKanbanPage() {
     payload?: { leadId?: string; reservationId?: string },
   ) => {
     if (target === 'reservation') {
+      if (IS_SALES_LITE) return;
       if (payload?.reservationId) {
         setSelectedLead(null);
         setIsDetailOpen(false);
@@ -357,9 +366,15 @@ export function LeadsKanbanPage() {
       case 'needs_reservation':
         reset();
         setActivePrimaryNav('sales');
+        if (IS_SALES_LITE) {
+          setActiveSecondaryNav('leads');
+          setFilters({ ...DEFAULT_LEADS_FILTERS, stage: 'application' });
+          return;
+        }
         setActiveSecondaryNav('view-needs-reservation');
         return;
       case 'departures_today':
+        if (IS_SALES_LITE) return;
         reset();
         setActivePrimaryNav('ops');
         setActiveSecondaryNav('view-departures-today');
@@ -375,6 +390,7 @@ export function LeadsKanbanPage() {
         setActiveSecondaryNav('view-duplicates');
         return;
       case 'conflicts':
+        if (IS_SALES_LITE) return;
         reset();
         setActivePrimaryNav('ops');
         setActiveSecondaryNav('view-conflict');

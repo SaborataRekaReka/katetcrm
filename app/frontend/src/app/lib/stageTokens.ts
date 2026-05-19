@@ -1,12 +1,11 @@
+import { IS_SALES_LITE } from './featureFlags';
+
 /**
  * Canonical stage color + label map for the CRM pipeline.
  *
- * Invariant (see AGENTS.md): lead → application → reservation → departure →
- * completed · unqualified. One object on a given stage must render with the
- * SAME color everywhere: kanban columns, list badges, dashboards, audit.
- *
- * Source of truth for palette is the Kanban board (historical). Values are
- * kept as explicit hex in `bg-[#...]` so Tailwind JIT picks them up.
+ * In full profile the legacy flow is lead -> application -> reservation ->
+ * departure -> completed/unqualified. In sales-lite the same persisted enum is
+ * displayed as Не обработан -> В работе -> Квалифицированный/Не квалифицированный.
  */
 
 export type PipelineStage =
@@ -17,7 +16,7 @@ export type PipelineStage =
   | 'completed'
   | 'unqualified';
 
-export const STAGE_ORDER: PipelineStage[] = [
+const FULL_STAGE_ORDER: PipelineStage[] = [
   'lead',
   'application',
   'reservation',
@@ -26,7 +25,18 @@ export const STAGE_ORDER: PipelineStage[] = [
   'unqualified',
 ];
 
-export const STAGE_LABEL: Record<PipelineStage, string> = {
+const SALES_LITE_STAGE_ORDER: PipelineStage[] = [
+  'lead',
+  'application',
+  'completed',
+  'unqualified',
+];
+
+export const STAGE_ORDER: PipelineStage[] = IS_SALES_LITE
+  ? SALES_LITE_STAGE_ORDER
+  : FULL_STAGE_ORDER;
+
+const FULL_STAGE_LABEL: Record<PipelineStage, string> = {
   lead: 'Лид',
   application: 'Заявка',
   reservation: 'Бронь',
@@ -35,8 +45,21 @@ export const STAGE_LABEL: Record<PipelineStage, string> = {
   unqualified: 'Некачественный',
 };
 
+const SALES_LITE_STAGE_LABEL: Record<PipelineStage, string> = {
+  lead: 'Не обработан',
+  application: 'В работе',
+  reservation: 'Бронь',
+  departure: 'Выезд',
+  completed: 'Квалифицированный',
+  unqualified: 'Не квалифицированный',
+};
+
+export const STAGE_LABEL: Record<PipelineStage, string> = IS_SALES_LITE
+  ? SALES_LITE_STAGE_LABEL
+  : FULL_STAGE_LABEL;
+
 /** Short label suitable for narrow columns / charts. */
-export const STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
+const FULL_STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
   lead: 'Лиды',
   application: 'Заявки',
   reservation: 'Брони',
@@ -44,6 +67,19 @@ export const STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
   completed: 'Завершено',
   unqualified: 'Не квалиф.',
 };
+
+const SALES_LITE_STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
+  lead: 'Не обработан',
+  application: 'В работе',
+  reservation: 'Брони',
+  departure: 'Выезды',
+  completed: 'Квалиф.',
+  unqualified: 'Не квалиф.',
+};
+
+export const STAGE_LABEL_SHORT: Record<PipelineStage, string> = IS_SALES_LITE
+  ? SALES_LITE_STAGE_LABEL_SHORT
+  : FULL_STAGE_LABEL_SHORT;
 
 /** Solid background class for bar charts / column dots. */
 export const STAGE_BAR: Record<PipelineStage, string> = {

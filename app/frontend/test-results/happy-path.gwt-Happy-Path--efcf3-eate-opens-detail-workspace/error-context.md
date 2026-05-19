@@ -34,7 +34,8 @@ expect(received).toEqual(expected) // deep equality
     - generic:
       - banner:
         - generic:
-          - generic: К
+          - generic:
+            - img
           - generic: Катет CRM
         - generic:
           - generic:
@@ -43,7 +44,6 @@ expect(received).toEqual(expected) // deep equality
               - /placeholder: Поиск по лидам
             - generic: Ctrl K
         - generic:
-          - button: Менеджер
           - button:
             - img
           - button:
@@ -58,8 +58,6 @@ expect(received).toEqual(expected) // deep equality
               - button:
                 - img
               - button [pressed]:
-                - img
-              - button:
                 - img
               - button:
                 - img
@@ -131,7 +129,7 @@ expect(received).toEqual(expected) // deep equality
               - generic:
                 - button:
                   - img
-                  - generic: Черновик
+                  - generic: Сообщить о баге
           - main:
             - generic:
               - generic:
@@ -175,67 +173,68 @@ expect(received).toEqual(expected) // deep equality
                     - img
                     - generic: Сохранить вид
               - generic:
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Новые лиды
-                    - generic: "0"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Без первого контакта
-                    - generic: "1"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Ждут перевода в заявку
-                    - generic: "95"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Требуют брони
-                    - generic: "95"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Выезды сегодня
-                    - generic: "0"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Зависшие
-                    - generic: "1"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Дубли
-                    - generic: "95"
-                - button:
-                  - generic:
-                    - img
-                  - generic:
-                    - generic: Конфликт брони
-                    - generic: "0"
+                - generic:
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Новые лиды
+                      - generic: "0"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Без первого контакта
+                      - generic: "0"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Ждут перевода в заявку
+                      - generic: "90"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Требуют брони
+                      - generic: "113"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Выезды сегодня
+                      - generic: "0"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Зависшие
+                      - generic: "0"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Дубли
+                      - generic: "85"
+                  - button:
+                    - generic:
+                      - img
+                    - generic:
+                      - generic: Конфликт брони
+                      - generic: "0"
               - generic:
                 - generic:
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Лид
-                        - generic: "95"
+                        - generic: "90"
                     - generic:
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E Lead 001-1778080212826-632
+                              - generic: E2E Lead 001-1779189487651-684
                           - generic:
                             - generic:
                               - img
@@ -248,8 +247,8 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79001935965
-                                - text: "+79001935965"
+                                - /url: tel:+79009612486
+                                - text: "+79009612486"
                             - generic: —
                           - generic:
                             - generic:
@@ -260,1816 +259,8 @@ expect(received).toEqual(expected) // deep equality
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 016 016-1778080198119-30
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009811978
-                                - text: "+79009811978"
-                            - generic: Бетононасос
-                            - generic:
-                              - img
-                              - generic: 09.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: только что
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 012 Lead 012-1778080147523-968
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79004752320
-                                - text: "+79004752320"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: только что
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT-009 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+790980096802
-                                - text: "+790980096802"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778080086
-                                - text: "+79990031778080086"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778080086
-                                - text: "+79990031778080086"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778080086
-                                - text: "+79990021778080086"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT-009 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+790980073506
-                                - text: "+790980073506"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778080048
-                                - text: "+79990031778080048"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778080048
-                                - text: "+79990031778080048"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778080048
-                                - text: "+79990021778080048"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 Lead 009-1778012468339-797
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79006833983
-                                - text: "+79006833983"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778012453068-814
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005621214
-                                - text: "+79005621214"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778012441070-151
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79004107019
-                                - text: "+79004107019"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778012404357-923
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000435742
-                                - text: "+79000435742"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778012404357-40
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000435742
-                                - text: "+79000435742"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778012396822-260
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000132490
-                                - text: "+79000132490"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 Lead 009-1778012230542-169
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79003054276
-                                - text: "+79003054276"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778012216837-315
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002064461
-                                - text: "+79002064461"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778012198047-540
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000348227
-                                - text: "+79000348227"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 Lead 009-1778011760308-12
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79006030830
-                                - text: "+79006030830"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778011748492-994
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005200843
-                                - text: "+79005200843"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778011734814-452
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79003481457
-                                - text: "+79003481457"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778011705369-677
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000536932
-                                - text: "+79000536932"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778011705369-212
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000536932
-                                - text: "+79000536932"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778011697657-467
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000258946
-                                - text: "+79000258946"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778011425263-533
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002856696
-                                - text: "+79002856696"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778011416858-559
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001685822
-                                - text: "+79001685822"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 Lead 009-1778011411269-609
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001126974
-                                - text: "+79001126974"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778011382870-576
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79008287093
-                                - text: "+79008287093"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778011382870-349
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79008287093
-                                - text: "+79008287093"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778011376675-478
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79007980455
-                                - text: "+79007980455"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778011320724-89
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002298097
-                                - text: "+79002298097"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778011310181-777
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001018142
-                                - text: "+79001018142"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778011258108-350
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005810756
-                                - text: "+79005810756"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778011258108-724
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005810756
-                                - text: "+79005810756"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778011248662-798
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005527951
-                                - text: "+79005527951"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778010747502-224
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79005072760
-                                - text: "+79005072760"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778010737608-121
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79003760892
-                                - text: "+79003760892"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778010708633-841
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000863376
-                                - text: "+79000863376"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778010708633-504
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000863376
-                                - text: "+79000863376"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778010703012-62
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000571476
-                                - text: "+79000571476"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778010656712-660
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79006177257
-                                - text: "+79006177257"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778010643412-491
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79004341242
-                                - text: "+79004341242"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Duplicate 002-1778010609991-333
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000999167
-                                - text: "+79000999167"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Existing 002-1778010609991-266
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000999167
-                                - text: "+79000999167"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778010603471-259
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000721774
-                                - text: "+79000721774"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778009626364-189
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009629694
-                                - text: "+79009629694"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778009613408-823
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009613408
-                                - text: "+79009613408"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778009599299-779
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009605611
-                                - text: "+79009605611"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Manager 011-1778009556645-607
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009559489
-                                - text: "+79009559489"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778009507806-745
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009507806
-                                - text: "+79009507806"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Lead 001-1778009497392-197
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009501295
-                                - text: "+79009501295"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E Route 010-1778009347608-60
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009347608
-                                - text: "+79009347608"
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT-009 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+790908670521
-                                - text: "+790908670521"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008649
-                                - text: "+79990031778008649"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008649
-                                - text: "+79990031778008649"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778008649
-                                - text: "+79990021778008649"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008415
-                                - text: "+79990031778008415"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008415
-                                - text: "+79990031778008415"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778008415
-                                - text: "+79990021778008415"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008360
-                                - text: "+79990031778008360"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778008360
-                                - text: "+79990031778008360"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778008359
-                                - text: "+79990021778008359"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead B
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778007779
-                                - text: "+79990031778007779"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 20 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-003 Lead A
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031778007779
-                                - text: "+79990031778007779"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 20 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-002 Lead
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021778007778
-                                - text: "+79990021778007778"
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 20 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid 791b269e
-                              - generic: Stage7 Invalid LLC 791b269e
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951822496
-                                - text: +7 (495) 182-24-96
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A 791b269e
-                              - generic: Stage7 LLC 791b269e
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951822494
-                                - text: +7 (495) 182-24-94
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage6 Integration Smoke Site
-                              - generic: Stage6 LLC
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, техники"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74958001122
-                                - text: +7 (495) 800-11-22
-                            - generic: —
-                            - generic:
-                              - img
-                              - generic: 30.04.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
+                              - generic: QA Site Routing First Lead Updated
+                              - generic: QA Site 043-1779189312229-8031 LLC
                           - generic:
                             - generic:
                               - img
@@ -2082,577 +273,71 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
+                                - /url: tel:+79990431177918931
+                                - text: "+79990431177918931"
                             - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid daff6579
-                              - generic: Stage7 Invalid LLC daff6579
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74954170747
-                                - text: +7 (495) 417-07-47
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A daff6579
-                              - generic: Stage7 LLC daff6579
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74954170745
-                                - text: +7 (495) 417-07-45
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid 553a79a8
-                              - generic: Stage7 Invalid LLC 553a79a8
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74959895594
-                                - text: +7 (495) 989-55-94
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A 553a79a8
-                              - generic: Stage7 LLC 553a79a8
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74959895592
-                                - text: +7 (495) 989-55-92
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid 65a35f11
-                              - generic: Stage7 Invalid LLC 65a35f11
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74955205523
-                                - text: +7 (495) 520-55-23
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A 65a35f11
-                              - generic: Stage7 LLC 65a35f11
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74955205521
-                                - text: +7 (495) 520-55-21
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A 6392ecf6
-                              - generic: Stage7 LLC 6392ecf6
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74950573302
-                                - text: +7 (495) 057-33-02
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid ab39719a
-                              - generic: Stage7 Invalid LLC ab39719a
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74952668572
-                                - text: +7 (495) 266-85-72
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A ab39719a
-                              - generic: Stage7 LLC ab39719a
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74952668570
-                                - text: +7 (495) 266-85-70
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid b4ae657c
-                              - generic: Stage7 Invalid LLC b4ae657c
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951328126
-                                - text: +7 (495) 132-81-26
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A b4ae657c
-                              - generic: Stage7 LLC b4ae657c
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951328124
-                                - text: +7 (495) 132-81-24
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid 5e7ee51b
-                              - generic: Stage7 Invalid LLC 5e7ee51b
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74955374493
-                                - text: +7 (495) 537-44-93
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Import A 5e7ee51b
-                              - generic: Stage7 LLC 5e7ee51b
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74955374491
-                                - text: +7 (495) 537-44-91
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test 2
-                              - generic: OOO Romashka
-                            - generic: Дубль
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: "Не хватает: адреса, даты…"
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:84951112233
-                                - text: 8 495 111 22 33
-                            - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ольга Романова
-                              - generic: ООО АльфаСтрой
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Готов к заявке
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79997001001
-                                - text: +7 (999) 700-10-01
-                            - generic: Экскаватор
-                            - generic:
-                              - img
-                              - generic: 30.04.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 8 дн назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Павел Макаров
-                              - generic: ООО БетонИнвест
+                              - generic: QA Site Routing Second Lead
+                              - generic: QA Site 043-1779189312229-8031 Second LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990432177918931
+                                - text: "+79990432177918931"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: QA Site Routing Manager
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1779189311629-4340 Lead
                             - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779189311
+                                - text: "+79990371779189311"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
                           - generic:
                             - generic:
                               - img
@@ -2660,55 +345,50 @@ expect(received).toEqual(expected) // deep equality
                           - generic:
                             - generic:
                               - img
-                              - text: Готов к заявке
+                              - text: "Не хватает: адреса, даты…"
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79997001002
-                                - text: +7 (999) 700-10-02
-                            - generic: Кран
-                            - generic:
-                              - img
-                              - generic: 01.05.2026
+                                - /url: tel:+79990391779189311
+                                - text: "+79990391779189311"
+                            - generic: —
                           - generic:
                             - generic:
                               - img
-                              - generic: Manager User
-                            - generic: 8 дн назад
+                              - generic: Admin User
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Ольга Романова
-                              - generic: ООО АльфаСтрой
+                              - generic: Интеграционный контакт
                           - generic:
                             - generic:
                               - img
-                              - generic: seed_other
+                              - generic: Mango
                           - generic:
                             - generic:
                               - img
-                              - text: "Не хватает: адреса, даты"
+                              - text: "Не хватает: адреса, даты…"
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79997001012
-                                - text: +7 (999) 700-10-12
-                            - generic: Экскаватор
+                                - /url: tel:+79990371779189311
+                                - text: "+79990371779189311"
+                            - generic: —
                           - generic:
                             - generic:
                               - img
-                              - generic: Manager User
-                            - generic: 8 дн назад
+                              - generic: Admin User
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Контакт не подтвержден
-                              - generic: ООО Потенциал
-                            - generic: Без контакта
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
                           - generic:
                             - generic:
                               - img
@@ -2716,36 +396,2127 @@ expect(received).toEqual(expected) // deep equality
                           - generic:
                             - generic:
                               - img
-                              - text: "Не хватает: адреса, контакта"
+                              - text: "Не хватает: адреса, даты…"
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79997001010
-                                - text: +7 (999) 700-10-10
-                            - generic: Самосвал
-                            - generic:
-                              - img
-                              - generic: 03.05.2026
+                                - /url: tel:+79990031779189311
+                                - text: "+79990031779189311"
+                            - generic: —
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 9 дн назад
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779189311
+                                - text: "+79990031779189311"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021779189311
+                                - text: "+79990021779189311"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing First Lead Updated
+                              - generic: QA Site 043-1779189249800-7297 LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990431177918924
+                                - text: "+79990431177918924"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing Second Lead
+                              - generic: QA Site 043-1779189249800-7297 Second LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990432177918924
+                                - text: "+79990432177918924"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: QA Site Routing Manager
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391779189249
+                                - text: "+79990391779189249"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779189249
+                                - text: "+79990371779189249"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1779189240693-7654 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779189240
+                                - text: "+79990371779189240"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779189240
+                                - text: "+79990031779189240"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779189240
+                                - text: "+79990031779189240"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021779189240
+                                - text: "+79990021779189240"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1779189180221-1734 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779189180
+                                - text: "+79990371779189180"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779189180
+                                - text: "+79990031779189180"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779189180
+                                - text: "+79990031779189180"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021779189179
+                                - text: "+79990021779189179"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango Routing Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990411779189017
+                                - text: "+79990411779189017"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 7 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango Routing Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990411779189002
+                                - text: "+79990411779189002"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 8 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing First Lead Updated
+                              - generic: QA Site 043-1779188956157-8862 LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990431177918895
+                                - text: "+79990431177918895"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing Second Lead
+                              - generic: QA Site 043-1779188956157-8862 Second LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990432177918895
+                                - text: "+79990432177918895"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: QA Site Routing Manager
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango Routing Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990411779188955
+                                - text: "+79990411779188955"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391779188955
+                                - text: "+79990391779188955"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779188955
+                                - text: "+79990371779188955"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1779188951796-6717 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779188951
+                                - text: "+79990371779188951"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779188951
+                                - text: "+79990031779188951"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779188951
+                                - text: "+79990031779188951"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021779188951
+                                - text: "+79990021779188951"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing First Lead Updated
+                              - generic: QA Site 043-1779188873242-7637 LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990431177918887
+                                - text: "+79990431177918887"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Site Routing Second Lead
+                              - generic: QA Site 043-1779188873242-7637 Second LLC
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Сайт
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990432177918887
+                                - text: "+79990432177918887"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: QA Site Routing Manager
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango Routing Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990411779188872
+                                - text: "+79990411779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1779188872594-4884 Lead
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779188872
+                                - text: "+79990371779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391779188872
+                                - text: "+79990391779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371779188872
+                                - text: "+79990371779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779188872
+                                - text: "+79990031779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031779188872
+                                - text: "+79990031779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021779188872
+                                - text: "+79990021779188872"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778762934568-1386 Lead
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778762934
+                                - text: "+79990371778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778762934
+                                - text: "+79990391778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778762934
+                                - text: "+79990371778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778762934
+                                - text: "+79990031778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778762934
+                                - text: "+79990031778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778762934
+                                - text: "+79990021778762934"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778762868016-1039 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778762868
+                                - text: "+79990371778762868"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778762867
+                                - text: "+79990391778762867"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778762867
+                                - text: "+79990371778762867"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778762867
+                                - text: "+79990031778762867"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778762867
+                                - text: "+79990031778762867"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778762867
+                                - text: "+79990021778762867"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778759629
+                                - text: "+79990391778759629"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778759629
+                                - text: "+79990371778759629"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778759601
+                                - text: "+79990391778759601"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778759601
+                                - text: "+79990371778759601"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778759594300-5761 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778759594
+                                - text: "+79990371778759594"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778759594
+                                - text: "+79990031778759594"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778759594
+                                - text: "+79990031778759594"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778759594
+                                - text: "+79990021778759594"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778758850
+                                - text: "+79990391778758850"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758850
+                                - text: "+79990371778758850"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778758846155-906 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758846
+                                - text: "+79990371778758846"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758846
+                                - text: "+79990031778758846"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758846
+                                - text: "+79990031778758846"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778758845
+                                - text: "+79990021778758845"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778758801
+                                - text: "+79990391778758801"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758801
+                                - text: "+79990371778758801"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778758796566-1555 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758796
+                                - text: "+79990371778758796"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758796
+                                - text: "+79990031778758796"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758796
+                                - text: "+79990031778758796"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778758796
+                                - text: "+79990021778758796"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778758773147-7010 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758773
+                                - text: "+79990371778758773"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758773
+                                - text: "+79990031778758773"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758773
+                                - text: "+79990031778758773"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778758772
+                                - text: "+79990391778758772"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758772
+                                - text: "+79990371778758772"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778758772
+                                - text: "+79990021778758772"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778758728
+                                - text: "+79990391778758728"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758728
+                                - text: "+79990371778758728"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391778758703
+                                - text: "+79990391778758703"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758703
+                                - text: "+79990371778758703"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758489
+                                - text: "+79990371778758489"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Интеграционный контакт
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758241
+                                - text: "+79990371778758241"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC037-1778758233867-7109 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990371778758233
+                                - text: "+79990371778758233"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead B
+                            - generic: Дубль
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758233
+                                - text: "+79990031778758233"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-003 Lead A
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990031778758233
+                                - text: "+79990031778758233"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-002 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990021778758233
+                                - text: "+79990021778758233"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA INT-009 Lead
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: "Не хватает: адреса, даты…"
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+790969897559
+                                - text: "+790969897559"
+                            - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 12 дн назад
                       - button:
                         - img
-                        - generic: Добавить карточку
+                        - generic: Добавить лид
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Заявка
-                        - generic: "95"
+                        - generic: "113"
                     - generic:
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 015 015-1778080188534-336
+                              - generic: QA APIC012-1779189314124-3821 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2753,26 +2524,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: Экскаватор
+                          - generic: QA APIC012-1779189314124-3821 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79008853464
-                                - text: "+79008853464"
+                                - /url: tel:+79990121771779189
+                                - text: "+79990121771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: только что
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 014 014-1778080182365-503
+                              - generic: QA APIC008CANCEL-1779189313417-5447 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2780,26 +2551,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: Экскаватор
+                          - generic: QA APIC008CANCEL-1779189313417-5447 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79008236599
-                                - text: "+79008236599"
+                                - /url: tel:+79990081771779189
+                                - text: "+79990081771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: только что
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 013 Lead 013-1778080174696-931
+                              - generic: QA APIC007-1779189313061-9597 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2807,26 +2578,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: Экскаватор
+                          - generic: QA APIC007-1779189313061-9597 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79007469673
-                                - text: "+79007469673"
+                                - /url: tel:+79990071771779189
+                                - text: "+79990071771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: только что
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA INT005-1778080095267-9319 Lead
+                              - generic: QA APIC006-1779189312876-7093 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2834,23 +2605,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: —
+                          - generic: QA APIC006-1779189312876-7093 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990051771778080
-                                - text: "+79990051771778080"
+                                - /url: tel:+79990061771779189
+                                - text: "+79990061771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA INT004-1778080094977-992 Lead
+                              - generic: QA APIC005-1779189312724-3176 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2858,23 +2632,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: —
+                          - generic: QA APIC005-1779189312724-3176 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990041771778080
-                                - text: "+79990041771778080"
+                                - /url: tel:+79990051771779189
+                                - text: "+79990051771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA INT003-1778080094695-7674 Lead
+                              - generic: QA APIC040-1779189312481-261 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2882,23 +2659,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: —
+                          - generic: QA APIC040-1779189312481-261 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990031771778080
-                                - text: "+79990031771778080"
+                                - /url: tel:+79990401771779189
+                                - text: "+79990401771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA INT002-1778080094440-8387 Lead
+                              - generic: QA APIC039-1779189312240-6156 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2906,47 +2686,26 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: —
+                          - generic: QA APIC039-1779189312240-6156 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990021771778080
-                                - text: "+79990021771778080"
+                                - /url: tel:+79990391771779189
+                                - text: "+79990391771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA INT001-1778080094186-1333 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990011771778080
-                                - text: "+79990011771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC012-1778080089172-9913 Lead
+                              - generic: QA Mango Routing Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2959,18 +2718,21 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990121771778080
-                                - text: "+79990121771778080"
+                                - /url: tel:+79990411779189311
+                                - text: "+79990411779189311"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA APIC008CANCEL-1778080088035-5005 Lead
+                              - generic: QA APIC004-1779189311751-2527 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -2978,50 +2740,30 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - text: Ждёт sourcing
-                          - generic: —
+                          - generic: QA APIC004-1779189311751-2527 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990081771778080
-                                - text: "+79990081771778080"
+                                - /url: tel:+79990041771779189
+                                - text: "+79990041771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 2 мин назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: QA APIC007-1778080087448-4144 Lead
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1779189311216-1641 LLC
                             - generic:
                               - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990071771778080
-                                - text: "+79990071771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC006-1778080087117-3343 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
+                              - generic: Mango
                           - generic:
                             - generic:
                               - img
@@ -3031,1654 +2773,2703 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79990061771778080
-                                - text: "+79990061771778080"
-                          - generic:
+                                - /url: tel:+79990361779189311
+                                - text: "+79990361779189311"
                             - generic:
                               - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC005-1778080086873-3247 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778080
-                                - text: "+79990051771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC004-1778080086576-73 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778080
-                                - text: "+79990041771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT005-1778080071419-8697 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778080
-                                - text: "+79990051771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT004-1778080071070-5069 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778080
-                                - text: "+79990041771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT003-1778080070841-6362 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031771778080
-                                - text: "+79990031771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT002-1778080070520-5105 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021771778080
-                                - text: "+79990021771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT001-1778080070164-6692 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990011771778080
-                                - text: "+79990011771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC012-1778080052829-2146 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990121771778080
-                                - text: "+79990121771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC008CANCEL-1778080050358-9220 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990081771778080
-                                - text: "+79990081771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC007-1778080049584-9066 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990071771778080
-                                - text: "+79990071771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC006-1778080049138-3487 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990061771778080
-                                - text: "+79990061771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC005-1778080048828-6321 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778080
-                                - text: "+79990051771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC004-1778080048452-1580 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778080
-                                - text: "+79990041771778080"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778012421144-870
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002114484
-                                - text: "+79002114484"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778012410768-816
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001076874
-                                - text: "+79001076874"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778012207919-27
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79000791948
-                                - text: "+79000791948"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778011717245-381
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001724521
-                                - text: "+79001724521"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778011710887-109
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001088751
-                                - text: "+79001088751"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778011396373-137
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009637328
-                                - text: "+79009637328"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778011390094-659
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009009489
-                                - text: "+79009009489"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 009-1778011285034-806
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79008503494
-                                - text: "+79008503494"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778011270265-774
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79007026591
-                                - text: "+79007026591"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778011264216-47
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79006421654
-                                - text: "+79006421654"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778010720989-560
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002098981
-                                - text: "+79002098981"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778010714458-575
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001445885
-                                - text: "+79001445885"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E 005 005-1778010623572-102
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79002357253
-                                - text: "+79002357253"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778010617940-628
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79001794091
-                                - text: "+79001794091"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778009609260-944
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009609260
-                                - text: "+79009609260"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778009504481-140
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009504481
-                                - text: "+79009504481"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: E2E App 003-1778009322874-205
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Экскаватор
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79009322874
-                                - text: "+79009322874"
-                            - generic:
-                              - img
-                              - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT005-1778008668902-896 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT004-1778008668560-1720 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT003-1778008668313-3620 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031771778008
-                                - text: "+79990031771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT002-1778008668028-8493 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021771778008
-                                - text: "+79990021771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT001-1778008667750-879 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990011771778008
-                                - text: "+79990011771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC012-1778008653583-2367 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990121771778008
-                                - text: "+79990121771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC008CANCEL-1778008651326-4386 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990081771778008
-                                - text: "+79990081771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC007-1778008650682-4099 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990071771778008
-                                - text: "+79990071771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC006-1778008650337-1020 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990061771778008
-                                - text: "+79990061771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC005-1778008650043-9771 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC004-1778008649730-2 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT005-1778008436889-2557 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT004-1778008436526-8769 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT003-1778008436244-6617 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031771778008
-                                - text: "+79990031771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT002-1778008435857-5748 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021771778008
-                                - text: "+79990021771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT001-1778008435552-9570 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990011771778008
-                                - text: "+79990011771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC012-1778008418500-7155 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990121771778008
-                                - text: "+79990121771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC008CANCEL-1778008417588-9816 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990081771778008
-                                - text: "+79990081771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC007-1778008416880-7627 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990071771778008
-                                - text: "+79990071771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC006-1778008416503-3726 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990061771778008
-                                - text: "+79990061771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC005-1778008416188-180 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC004-1778008415839-8613 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT005-1778008377739-9308 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT004-1778008377433-555 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT003-1778008377164-6759 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990031771778008
-                                - text: "+79990031771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT002-1778008376862-3926 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990021771778008
-                                - text: "+79990021771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT001-1778008376549-5202 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990011771778008
-                                - text: "+79990011771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC012-1778008362757-4153 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990121771778008
-                                - text: "+79990121771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC007-1778008361306-5789 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990071771778008
-                                - text: "+79990071771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC006-1778008360913-5073 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990061771778008
-                                - text: "+79990061771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC005-1778008360590-5234 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990051771778008
-                                - text: "+79990051771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC004-1778008360231-6505 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041771778008
-                                - text: "+79990041771778008"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA INT-001 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+78880011778007799
-                                - text: "+78880011778007799"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 20 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: QA APIC-004 Lead
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79990041778007779
-                                - text: "+79990041778007779"
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 20 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
+                              - generic: 13.05.2026
                           - generic:
                             - generic:
                               - img
                               - generic: Admin User
+                            - generic: 3 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango Routing Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990411779189249
+                                - text: "+79990411779189249"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1779189248932-379 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361779189248
+                                - text: "+79990361779189248"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1779189243582-4553 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1779189243582-4553 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771779189
+                                - text: "+79990121771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1779189242714-6935 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1779189242714-6935 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771779189
+                                - text: "+79990081771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1779189242303-3782 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1779189242303-3782 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771779189
+                                - text: "+79990071771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1779189242093-5070 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1779189242093-5070 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771779189
+                                - text: "+79990061771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1779189241918-3119 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1779189241918-3119 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771779189
+                                - text: "+79990051771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1779189241608-2142 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1779189241608-2142 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771779189
+                                - text: "+79990401771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1779189241344-9747 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1779189241344-9747 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771779189
+                                - text: "+79990391771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1779189240842-4631 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1779189240842-4631 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771779189
+                                - text: "+79990041771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1779189183021-1260 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1779189183021-1260 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771779189
+                                - text: "+79990121771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1779189182191-1214 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1779189182191-1214 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771779189
+                                - text: "+79990081771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1779189181747-1354 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1779189181747-1354 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771779189
+                                - text: "+79990071771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1779189181536-989 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1779189181536-989 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771779189
+                                - text: "+79990061771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1779189181357-567 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1779189181357-567 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771779189
+                                - text: "+79990051771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1779189181066-3414 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1779189181066-3414 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771779189
+                                - text: "+79990401771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1779189180811-1552 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1779189180811-1552 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771779189
+                                - text: "+79990391771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1779189180352-6437 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1779189180352-6437 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771779189
+                                - text: "+79990041771779189"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 5 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1779188955373-5264 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361779188955
+                                - text: "+79990361779188955"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1779188954492-5163 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1779188954492-5163 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771779188
+                                - text: "+79990121771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1779188953652-4024 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1779188953652-4024 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771779188
+                                - text: "+79990081771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1779188953254-3471 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1779188953254-3471 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771779188
+                                - text: "+79990071771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1779188953053-8446 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1779188953053-8446 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771779188
+                                - text: "+79990061771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1779188952865-2579 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1779188952865-2579 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771779188
+                                - text: "+79990051771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1779188952609-2994 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1779188952609-2994 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771779188
+                                - text: "+79990401771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1779188952345-8118 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1779188952345-8118 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771779188
+                                - text: "+79990391771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1779188951917-2874 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1779188951917-2874 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771779188
+                                - text: "+79990041771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1779188875752-4050 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1779188875752-4050 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771779188
+                                - text: "+79990121771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1779188874925-2377 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1779188874925-2377 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771779188
+                                - text: "+79990081771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1779188874467-7071 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1779188874467-7071 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771779188
+                                - text: "+79990071771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1779188874225-9838 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1779188874225-9838 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771779188
+                                - text: "+79990061771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1779188873939-1698 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1779188873939-1698 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771779188
+                                - text: "+79990051771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1779188873629-8901 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1779188873629-8901 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771779188
+                                - text: "+79990401771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1779188873314-8313 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1779188873314-8313 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771779188
+                                - text: "+79990391771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1779188872750-1824 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1779188872750-1824 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771779188
+                                - text: "+79990041771779188"
+                            - generic:
+                              - img
+                              - generic: 20.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1779188872043-8814 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361779188872
+                                - text: "+79990361779188872"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778762937406-7913 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778762937406-7913 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778762
+                                - text: "+79990121771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778762936552-3688 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778762936552-3688 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778762
+                                - text: "+79990081771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778762936058-6587 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778762936058-6587 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778762
+                                - text: "+79990071771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778762935835-1763 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778762935835-1763 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778762
+                                - text: "+79990061771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778762935654-9989 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778762935654-9989 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778762
+                                - text: "+79990051771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778762935379-3467 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778762935379-3467 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778762
+                                - text: "+79990401771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778762935155-8787 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778762935155-8787 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778762
+                                - text: "+79990391771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778762934698-2295 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778762934698-2295 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778762
+                                - text: "+79990041771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1778762934175-4615 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778762934
+                                - text: "+79990361778762934"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778762871192-9960 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778762871192-9960 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778762
+                                - text: "+79990121771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778762870258-4986 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778762870258-4986 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778762
+                                - text: "+79990081771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778762869755-1931 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778762869755-1931 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778762
+                                - text: "+79990071771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778762869525-8079 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778762869525-8079 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778762
+                                - text: "+79990061771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778762869300-5233 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778762869300-5233 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778762
+                                - text: "+79990051771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778762869017-2770 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778762869017-2770 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778762
+                                - text: "+79990401771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778762868716-4042 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778762868716-4042 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778762
+                                - text: "+79990391771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778762868176-5500 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778762868176-5500 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778762
+                                - text: "+79990041771778762"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1778762867558-3622 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778762867
+                                - text: "+79990361778762867"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1778759629329-714 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778759629
+                                - text: "+79990361778759629"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1778759601259-5755 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778759601
+                                - text: "+79990361778759601"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778759597576-4570 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778759597576-4570 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778759
+                                - text: "+79990121771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778759596548-8034 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778759596548-8034 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778759
+                                - text: "+79990081771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778759596054-5075 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778759596054-5075 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778759
+                                - text: "+79990071771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778759595801-5300 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778759595801-5300 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778759
+                                - text: "+79990061771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778759595573-2683 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778759595573-2683 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778759
+                                - text: "+79990051771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778759595243-8078 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778759595243-8078 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778759
+                                - text: "+79990401771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778759594965-4274 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778759594965-4274 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778759
+                                - text: "+79990391771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778759594441-8904 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778759594441-8904 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778759
+                                - text: "+79990041771778759"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 036-1778758850429-9630 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778758850
+                                - text: "+79990361778758850"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778758849260-9103 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778758849260-9103 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778758
+                                - text: "+79990121771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778758848285-5070 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778758848285-5070 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778758
+                                - text: "+79990081771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778758847851-42 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778758847851-42 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778758
+                                - text: "+79990071771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778758847626-6656 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778758847626-6656 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778758
+                                - text: "+79990061771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778758847409-7979 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778758847409-7979 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778758
+                                - text: "+79990051771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778758847111-4068 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778758847111-4068 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778758
+                                - text: "+79990401771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778758846835-5020 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778758846835-5020 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778758
+                                - text: "+79990391771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778758846287-617 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778758846287-617 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778758
+                                - text: "+79990041771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA Mango APIC 036
+                              - generic: QA APIC 036 LLC
+                            - generic:
+                              - img
+                              - generic: Mango
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990361778758800
+                                - text: "+79990361778758800"
+                            - generic:
+                              - img
+                              - generic: 13.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Admin User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778758799801-4371 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778758799801-4371 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778758
+                                - text: "+79990121771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778758798775-6991 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778758798775-6991 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778758
+                                - text: "+79990081771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778758798295-8188 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778758798295-8188 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778758
+                                - text: "+79990071771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778758798043-2779 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778758798043-2779 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778758
+                                - text: "+79990061771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778758797828-1399 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778758797828-1399 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778758
+                                - text: "+79990051771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778758797529-6014 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778758797529-6014 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778758
+                                - text: "+79990401771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778758797252-4372 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778758797252-4372 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778758
+                                - text: "+79990391771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778758796714-1475 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778758796714-1475 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778758
+                                - text: "+79990041771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778758776558-797 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778758776558-797 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778758
+                                - text: "+79990121771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778758775495-1995 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778758775495-1995 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778758
+                                - text: "+79990081771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778758774995-5265 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778758774995-5265 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778758
+                                - text: "+79990071771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778758774726-7034 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778758774726-7034 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778758
+                                - text: "+79990061771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778758774496-3920 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778758774496-3920 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778758
+                                - text: "+79990051771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778758774168-8246 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778758774168-8246 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778758
+                                - text: "+79990401771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778758773882-888 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778758773882-888 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778758
+                                - text: "+79990391771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778758773333-5958 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778758773333-5958 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778758
+                                - text: "+79990041771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC012-1778758237529-1272 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC012-1778758237529-1272 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990121771778758
+                                - text: "+79990121771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC008CANCEL-1778758236363-1995 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC008CANCEL-1778758236363-1995 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990081771778758
+                                - text: "+79990081771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC007-1778758235794-4607 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC007-1778758235794-4607 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990071771778758
+                                - text: "+79990071771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC006-1778758235503-888 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC006-1778758235503-888 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990061771778758
+                                - text: "+79990061771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC005-1778758235240-1321 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC005-1778758235240-1321 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778758
+                                - text: "+79990051771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC040-1778758234865-7030 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC040-1778758234865-7030 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990401771778758
+                                - text: "+79990401771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC039-1778758234547-4387 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC039-1778758234547-4387 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990391771778758
+                                - text: "+79990391771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC004-1778758234011-697 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: QA APIC004-1778758234011-697 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990041771778758
+                                - text: "+79990041771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA INT005-1778069895475-2699 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic:
+                            - generic:
+                              - img
+                              - text: Ждёт sourcing
+                          - generic: —
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990051771778069
+                                - text: "+79990051771778069"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
                             - generic: 5 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
+                              - generic: QA INT004-1778069895078-4627 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -4691,43 +5482,18 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
+                                - /url: tel:+79990041771778069
+                                - text: "+79990041771778069"
                           - generic:
                             - generic:
                               - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
+                              - generic: Manager User
+                            - generic: 12 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
+                              - generic: QA INT003-1778069894745-4112 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -4740,43 +5506,18 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
+                                - /url: tel:+79990031771778069
+                                - text: "+79990031771778069"
                           - generic:
                             - generic:
                               - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
+                              - generic: Manager User
+                            - generic: 12 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
+                              - generic: QA INT002-1778069894396-1427 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -4789,43 +5530,18 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
+                                - /url: tel:+79990021771778069
+                                - text: "+79990021771778069"
                           - generic:
                             - generic:
                               - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
+                              - generic: Manager User
+                            - generic: 12 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
+                              - generic: QA INT001-1778069893979-841 Lead
                             - generic:
                               - img
                               - generic: Ручной
@@ -4838,1696 +5554,717 @@ expect(received).toEqual(expected) // deep equality
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
+                                - /url: tel:+79990011771778069
+                                - text: "+79990011771778069"
                           - generic:
                             - generic:
                               - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Del Test
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951000001
-                                - text: +7 (495) 100-00-01
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Ivan Test
-                              - generic: OOO Romashka
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Excavator
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+74951112233
-                                - text: +7 (495) 111-22-33
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Писюня
-                              - generic: Писюня
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Бетононасос
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79992145169
-                                - text: "+79992145169"
-                            - generic:
-                              - img
-                              - generic: 03.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Марина Кузнецова
-                              - generic: ЗАО ТехМонтаж
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Бульдозер
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79997001015
-                                - text: +7 (999) 700-10-15
-                            - generic:
-                              - img
-                              - generic: 01.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сергей Продажи
-                            - generic: 8 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Марина Кузнецова
-                              - generic: ЗАО ТехМонтаж
-                            - generic:
-                              - img
-                              - generic: MAX
-                          - generic:
-                            - generic:
-                              - img
-                              - text: Ждёт sourcing
-                          - generic: Бульдозер
-                          - generic:
-                            - generic:
-                              - img
-                              - link:
-                                - /url: tel:+79997001004
-                                - text: +7 (999) 700-10-04
-                            - generic:
-                              - img
-                              - generic: 02.05.2026
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Сергей Продажи
-                            - generic: 8 дн назад
+                              - generic: Manager User
+                            - generic: 12 дн назад
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Бронь
-                        - generic: "8"
+                        - generic: "12"
                     - generic:
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778012414014-959
+                              - generic: QA APIC038-1779189311957-9123 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1779189311957-9123 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79001401418
-                                - text: "+79001401418"
+                                - /url: tel:+79990381771779189
+                                - text: "+79990381771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 18 ч назад
+                            - generic: 3 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778011713468-393
+                              - generic: QA APIC038-1779189241056-6476 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1779189241056-6476 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79001346873
-                                - text: "+79001346873"
+                                - /url: tel:+79990381771779189
+                                - text: "+79990381771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 4 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778011392660-665
+                              - generic: QA APIC038-1779189180540-3138 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1779189180540-3138 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79009266032
-                                - text: "+79009266032"
+                                - /url: tel:+79990381771779189
+                                - text: "+79990381771779189"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 5 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778011266540-324
+                              - generic: QA APIC038-1779188952098-3345 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1779188952098-3345 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79006654022
-                                - text: "+79006654022"
+                                - /url: tel:+79990381771779188
+                                - text: "+79990381771779188"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 9 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778010717595-714
+                              - generic: QA APIC038-1779188872981-1084 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1779188872981-1084 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79001759565
-                                - text: "+79001759565"
+                                - /url: tel:+79990381771779188
+                                - text: "+79990381771779188"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 20.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 10 мин назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 006 006-1778010627950-533
+                              - generic: QA APIC038-1778762934890-2405 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1778762934890-2405 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79002795091
-                                - text: "+79002795091"
+                                - /url: tel:+79990381771778762
+                                - text: "+79990381771778762"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 4 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: E2E 004 004-1778010620538-104
+                              - generic: QA APIC038-1778762868403-548 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Экскаватор
+                          - generic: QA APIC038-1778762868403-548 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79002053886
-                                - text: "+79002053886"
+                                - /url: tel:+79990381771778762
+                                - text: "+79990381771778762"
                             - generic:
                               - img
-                              - generic: 07.05.2026
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 19 ч назад
+                            - generic: 4 дн назад
                       - generic:
                         - generic:
                           - generic:
                             - generic:
-                              - generic: Алексей Томин
-                              - generic: ООО Дорожник
+                              - generic: QA APIC038-1778759594664-9481 Lead
                             - generic:
                               - img
                               - generic: Ручной
-                          - generic: Кран
+                          - generic: QA APIC038-1778759594664-9481 Equipment
                           - generic:
                             - generic:
                               - img
                               - link:
-                                - /url: tel:+79997001005
-                                - text: +7 (999) 700-10-05
+                                - /url: tel:+79990381771778759
+                                - text: "+79990381771778759"
                             - generic:
                               - img
-                              - generic: 30.04.2026
-                              - generic: • 07:00-12:00
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
                           - generic:
                             - generic:
                               - img
                               - generic: Manager User
-                            - generic: 8 дн назад
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC038-1778758846517-1471 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic: QA APIC038-1778758846517-1471 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990381771778758
+                                - text: "+79990381771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC038-1778758796935-7978 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic: QA APIC038-1778758796935-7978 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990381771778758
+                                - text: "+79990381771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC038-1778758773577-1384 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic: QA APIC038-1778758773577-1384 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990381771778758
+                                - text: "+79990381771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: QA APIC038-1778758234253-2303 Lead
+                            - generic:
+                              - img
+                              - generic: Ручной
+                          - generic: QA APIC038-1778758234253-2303 Equipment
+                          - generic:
+                            - generic:
+                              - img
+                              - link:
+                                - /url: tel:+79990381771778758
+                                - text: "+79990381771778758"
+                            - generic:
+                              - img
+                              - generic: 15.05.2026
+                              - generic: • 09:00-18:00
+                          - generic:
+                            - generic:
+                              - img
+                              - generic: Manager User
+                            - generic: 4 дн назад
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Выезд
-                        - generic: "20"
+                        - generic: "0"
                     - generic:
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - generic: E2E 006 006-1778012425233-183
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Москва, Тестовая улица, 1
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - generic: E2E 006 006-1778011720058-402
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Москва, Тестовая улица, 1
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - generic: E2E 006 006-1778011399225-85
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Москва, Тестовая улица, 1
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - generic: E2E 006 006-1778011273043-743
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Москва, Тестовая улица, 1
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 07.05.2026
-                          - generic:
-                            - generic:
-                              - generic: E2E 006 006-1778010724306-803
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Москва, Тестовая улица, 1
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Manager User
-                            - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: Flow Test
-                              - generic: Flow LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 10.05.2026
-                          - generic:
-                            - generic:
-                              - generic: Stage7 Valid 6392ecf6
-                              - generic: Stage7 Invalid LLC 6392ecf6
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - img
-                            - generic: v
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - generic:
-                              - generic: RBAC Ownership Test
-                              - generic: RBAC LLC
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 30.04.2026
-                            - generic: • 08:00-20:00
-                          - generic:
-                            - generic:
-                              - generic: Павел Макаров
-                              - generic: ООО БетонИнвест
-                            - generic:
-                              - img
-                              - generic: Сайт
-                          - generic: Кран
-                          - generic:
-                            - img
-                            - generic: Москва, 1-й Грайвороновский проезд, 9
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ольга Операции
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 10.05.2026
-                          - generic:
-                            - generic:
-                              - generic: Кака
-                              - generic: кака
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: —
-                          - generic:
-                            - img
-                            - generic: М
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 03.05.2026
-                            - generic: • 09:00–18:00
-                          - generic:
-                            - generic:
-                              - generic: Писюня
-                              - generic: Писюня
-                            - generic:
-                              - img
-                              - generic: Ручной
-                          - generic: Бетононасос
-                          - generic:
-                            - img
-                            - generic: Москва
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Admin User
-                            - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 29.04.2026
-                            - generic: • 06:00-14:00
-                          - generic:
-                            - generic:
-                              - generic: Смирнов Андрей
-                            - generic:
-                              - img
-                              - generic: Mango
-                          - generic: Экскаватор
-                          - generic:
-                            - img
-                            - generic: Красногорск, ул. Ленина, 31
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ольга Операции
-                            - generic: 8 дн назад
-                      - generic:
-                        - generic:
-                          - generic:
-                            - img
-                            - generic: 28.04.2026
-                            - generic: • 06:00-12:00
-                          - generic:
-                            - generic:
-                              - generic: Виктор Громов
-                              - generic: ООО ЛогистикТранс
-                            - generic:
-                              - img
-                              - generic: seed_other
-                          - generic: Бульдозер
-                          - generic:
-                            - img
-                            - generic: Москва, ул. Нижние Поля, 31
-                          - generic:
-                            - generic:
-                              - img
-                              - generic: Ольга Операции
-                            - generic: 8 дн назад
+                      - generic: Нет записей
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Завершено
-                        - generic: "68"
+                        - generic: "32"
                     - generic:
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 016 016-1778080198119-30
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1779189313586-6060 Lead
+                              - generic: • QA APIC009-1779189313586-6060 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: только что
+                              - generic: 3 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT008-1778080096402-1417 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1779189313254-7847 Lead
+                              - generic: • QA APIC008-1779189313254-7847 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 3 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT007-1778080095991-7623 Lead
-                              - generic: • —
+                              - generic: QA APIC060-1779189311317-6655 Lead
+                              - generic: • QA APIC060-1779189311317-6655 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 3 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT006-1778080095585-1411 Lead
-                              - generic: • —
+                              - generic: QA APIC060-1779189246470-224 Lead
+                              - generic: • QA APIC060-1779189246470-224 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 4 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC009-1778080088284-501 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1779189242926-682 Lead
+                              - generic: • QA APIC009-1779189242926-682 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 4 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC008-1778080087716-1091 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1779189242521-7488 Lead
+                              - generic: • QA APIC008-1779189242521-7488 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 4 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT008-1778080073062-8572 Lead
-                              - generic: • —
+                              - generic: QA APIC060-1779189186279-7110 Lead
+                              - generic: • QA APIC060-1779189186279-7110 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 5 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT007-1778080072479-9196 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1779189182403-8912 Lead
+                              - generic: • QA APIC009-1779189182403-8912 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 5 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT006-1778080071820-3886 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1779189181998-5667 Lead
+                              - generic: • QA APIC008-1779189181998-5667 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 5 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC009-1778080050823-9950 Lead
-                              - generic: • —
+                              - generic: QA APIC060-1779188959020-7960 Lead
+                              - generic: • QA APIC060-1779188959020-7960 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 8 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC008-1778080049982-7439 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1779188953840-7073 Lead
+                              - generic: • QA APIC009-1779188953840-7073 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 9 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778012435845-220
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1779188953463-3917 Lead
+                              - generic: • QA APIC008-1779188953463-3917 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 18 ч назад
+                              - generic: 9 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778012431203-974
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1779188875117-5914 Lead
+                              - generic: • QA APIC009-1779188875117-5914 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 18 ч назад
+                              - generic: 10 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778011728026-804
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1779188874708-5094 Lead
+                              - generic: • QA APIC008-1779188874708-5094 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 10 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778011724187-87
-                              - generic: • Экскаватор
+                              - generic: QA APIC060-1779188872330-2481 Lead
+                              - generic: • QA APIC060-1779188872330-2481 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 10 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778011407425-206
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1778762936750-1413 Lead
+                              - generic: • QA APIC009-1778762936750-1413 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778011403421-635
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1778762936310-2704 Lead
+                              - generic: • QA APIC008-1778762936310-2704 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778011281065-379
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1778762870493-7546 Lead
+                              - generic: • QA APIC009-1778762870493-7546 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778011277143-630
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1778762870015-7303 Lead
+                              - generic: • QA APIC008-1778762870015-7303 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778010733146-638
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1778759596781-9843 Lead
+                              - generic: • QA APIC009-1778759596781-9843 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778010728857-431
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1778759596326-8110 Lead
+                              - generic: • QA APIC008-1778759596326-8110 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 008 008-1778010637614-688
-                              - generic: • Экскаватор
+                              - generic: QA APIC009-1778758848497-3781 Lead
+                              - generic: • QA APIC009-1778758848497-3781 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 007 007-1778010633005-288
-                              - generic: • Экскаватор
+                              - generic: QA APIC008-1778758848075-9989 Lead
+                              - generic: • QA APIC008-1778758848075-9989 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT008-1778008670137-350 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1778758799015-2954 Lead
+                              - generic: • QA APIC009-1778758799015-2954 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT007-1778008669671-6516 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1778758798552-3549 Lead
+                              - generic: • QA APIC008-1778758798552-3549 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT006-1778008669242-9931 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1778758775757-8923 Lead
+                              - generic: • QA APIC009-1778758775757-8923 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC009-1778008651649-9823 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1778758775255-9350 Lead
+                              - generic: • QA APIC008-1778758775255-9350 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC008-1778008651020-5476 Lead
-                              - generic: • —
+                              - generic: QA APIC009-1778758236647-5304 Lead
+                              - generic: • QA APIC009-1778758236647-5304 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC009-1778008417949-4092 Lead
-                              - generic: • —
+                              - generic: QA APIC008-1778758236092-5431 Lead
+                              - generic: • QA APIC008-1778758236092-5431 Equipment
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC008-1778008417234-8907 Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA APIC009-1778008362170-529 Lead
+                              - generic: QA INT008-1778069896946-4908 Lead
                               - generic: • —
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 12 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA APIC008-1778008361671-9738 Lead
+                              - generic: QA INT007-1778069896375-9613 Lead
                               - generic: • —
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 12 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Какашкин
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 1 день назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
+                              - generic: QA INT006-1778069895868-9866 Lead
                               - generic: • —
                             - generic:
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Станислав Левин
-                              - generic: • Кран
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Сергей Продажи
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: manager Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: admin Lead
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Flow Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage3 Test
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Писюня
-                              - generic: • Бетононасос
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Мистер Писюнчик
-                              - generic: • —
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Егор Климов
-                              - generic: • Кран
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Ольга Операции
-                              - generic: 11 дн назад
+                              - generic: 12 дн назад
                   - generic:
                     - generic:
                       - generic:
                         - heading [level=3]: Некачественный
-                        - generic: "35"
+                        - generic: "25"
                     - generic:
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 017 017-1778080205601-216
-                              - generic: • Экскаватор
-                            - generic:
-                              - img
-                              - generic: E2E-017 unqualified reason 017-unq-1778080209436-760
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: только что
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA INT009-1778080096824-4996 Lead
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: qa_int009_reason
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA APIC010-1778080088726-1443 Lead
-                              - generic: • —
+                              - generic: QA APIC010-1779189313826-4774 Lead
+                              - generic: • QA APIC010-1779189313826-4774 Equipment
                             - generic:
                               - img
                               - generic: qa_unqualified_completion
@@ -6535,7 +6272,7 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 3 мин назад
                       - generic:
                         - generic:
                           - img
@@ -6550,29 +6287,14 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 3 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: QA INT009-1778080073529-7524 Lead
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: qa_int009_reason
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 2 мин назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA APIC010-1778080052176-5675 Lead
-                              - generic: • —
+                              - generic: QA APIC010-1779189243218-683 Lead
+                              - generic: • QA APIC010-1779189243218-683 Equipment
                             - generic:
                               - img
                               - generic: qa_unqualified_completion
@@ -6580,7 +6302,7 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 4 мин назад
                       - generic:
                         - generic:
                           - img
@@ -6595,89 +6317,14 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 2 мин назад
+                              - generic: 4 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: E2E 009 009-1778012468358-109
-                              - generic: • Экскаватор
-                            - generic:
-                              - img
-                              - generic: E2E-009 unqualified reason 009-1778012468476-220
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 009-1778012230575-867
-                              - generic: • Экскаватор
-                            - generic:
-                              - img
-                              - generic: E2E-009 unqualified reason 009-1778012230702-89
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 18 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 009-1778011760331-964
-                              - generic: • Экскаватор
-                            - generic:
-                              - img
-                              - generic: E2E-009 unqualified reason 009-1778011760433-820
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: E2E 009 009-1778011411284-878
-                              - generic: • Экскаватор
-                            - generic:
-                              - img
-                              - generic: E2E-009 unqualified reason 009-1778011411362-215
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA INT009-1778008670547-2432 Lead
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: qa_int009_reason
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Manager User
-                              - generic: 19 ч назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: QA APIC010-1778008652198-3321 Lead
-                              - generic: • —
+                              - generic: QA APIC010-1779189182686-7722 Lead
+                              - generic: • QA APIC010-1779189182686-7722 Equipment
                             - generic:
                               - img
                               - generic: qa_unqualified_completion
@@ -6685,7 +6332,7 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 5 мин назад
                       - generic:
                         - generic:
                           - img
@@ -6700,322 +6347,292 @@ expect(received).toEqual(expected) // deep equality
                               - generic:
                                 - img
                                 - text: Manager User
-                              - generic: 19 ч назад
+                              - generic: 5 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Stage5 Unqualified Test
+                              - generic: QA APIC010-1779188954127-7212 Lead
+                              - generic: • QA APIC010-1779188954127-7212 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 9 мин назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: smoke policy
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 9 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Policy Stage3
+                              - generic: QA APIC010-1779188875406-6527 Lead
+                              - generic: • QA APIC010-1779188875406-6527 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 10 мин назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: policy_smoke
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 10 мин назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Stage5 Unqualified Test
+                              - generic: QA APIC010-1778762937051-1615 Lead
+                              - generic: • QA APIC010-1778762937051-1615 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: smoke policy
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Policy Stage3
+                              - generic: QA APIC010-1778762870822-958 Lead
+                              - generic: • QA APIC010-1778762870822-958 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: policy_smoke
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Stage5 Unqualified Test
+                              - generic: QA APIC010-1778759597142-7691 Lead
+                              - generic: • QA APIC010-1778759597142-7691 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: smoke policy
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Policy Stage3
+                              - generic: QA APIC010-1778758848837-5246 Lead
+                              - generic: • QA APIC010-1778758848837-5246 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: policy_smoke
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Unqual Test
+                              - generic: QA APIC010-1778758799387-1302 Lead
+                              - generic: • QA APIC010-1778758799387-1302 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: test reason
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Unqual Test
+                              - generic: QA APIC010-1778758776122-4960 Lead
+                              - generic: • QA APIC010-1778758776122-4960 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: test reason
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Unqual Test
+                              - generic: QA APIC010-1778758237037-9855 Lead
+                              - generic: • QA APIC010-1778758237037-9855 Equipment
+                            - generic:
+                              - img
+                              - generic: qa_unqualified_completion
+                            - generic:
+                              - generic:
+                                - img
+                                - text: Manager User
+                              - generic: 4 дн назад
+                      - generic:
+                        - generic:
+                          - img
+                          - generic:
+                            - generic:
+                              - generic: QA APIC-010 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: test reason
+                              - generic: qa_unqualified_lead
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
+                                - text: Manager User
+                              - generic: 4 дн назад
                       - generic:
                         - generic:
                           - img
                           - generic:
                             - generic:
-                              - generic: Stage5 Unqualified Test
+                              - generic: QA INT009-1778069897587-8915 Lead
                               - generic: • —
                             - generic:
                               - img
-                              - generic: smoke policy
+                              - generic: qa_int009_reason
                             - generic:
                               - generic:
                                 - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Policy Stage3
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: policy_smoke
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 5 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Unqualified Test
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: smoke policy
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Policy Stage3
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: policy_smoke
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Unqualified Test
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: smoke policy
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Policy Stage3
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: policy_smoke
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Unqualified Test
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: smoke policy
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Policy Stage3
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: policy_smoke
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Stage5 Unqualified Test
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: smoke policy
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Policy Stage3
-                              - generic: • —
-                            - generic:
-                              - img
-                              - generic: policy_smoke
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Admin User
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Смирнов Андрей
-                              - generic: • Самосвал
-                            - generic:
-                              - img
-                              - generic: "123"
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Сергей Продажи
-                              - generic: 6 дн назад
-                      - generic:
-                        - generic:
-                          - img
-                          - generic:
-                            - generic:
-                              - generic: Пётр Лунёв
-                              - generic: • Бетононасос
-                            - generic:
-                              - img
-                              - generic: Недостаточно подтверждённых данных по объекту
-                            - generic:
-                              - generic:
-                                - img
-                                - text: Сергей Продажи
-                              - generic: 9 дн назад
+                                - text: Manager User
+                              - generic: 12 дн назад
     - region "Notifications alt+T"
   - dialog [ref=e2]:
     - generic [ref=e3]:
@@ -7047,179 +6664,183 @@ expect(received).toEqual(expected) // deep equality
               - generic [ref=e48]: Лид
               - img [ref=e49]
             - generic [ref=e51]:
-              - heading "E2E Lead 001-1778080212826-632" [level=1] [ref=e52]
+              - heading "E2E Lead 001-1779189487651-684" [level=1] [ref=e52]
               - generic [ref=e53]:
                 - generic [ref=e54]:
                   - button "Перевести в заявку" [disabled]:
                     - text: Перевести в заявку
                     - img
                 - button "Пометить некачественным" [ref=e56]
-            - generic [ref=e57]:
-              - generic [ref=e59]:
-                - img [ref=e60]
-                - generic [ref=e63]: Manager User
-              - generic [ref=e65]:
-                - img [ref=e66]
-                - generic [ref=e68]: Dates
-              - generic [ref=e70]:
-                - img [ref=e71]
-                - generic [ref=e74]: Ручной
-          - generic [ref=e75]: "Для перевода в заявку не хватает: адрес, дата"
-          - generic [ref=e76]:
-            - heading "Основные данные" [level=3] [ref=e78]
-            - generic [ref=e80]:
-              - generic [ref=e81]:
-                - generic [ref=e82]:
-                  - img [ref=e84]
-                  - generic [ref=e87]: Клиент
-                - button "Имя контакта" [ref=e89]:
-                  - generic [ref=e90]: E2E Lead 001-1778080212826-632
-              - generic [ref=e91]:
-                - generic [ref=e92]:
-                  - img [ref=e94]
-                  - generic [ref=e97]: Менеджер
-                - generic [ref=e99]: Manager User
-              - generic [ref=e100]:
-                - generic [ref=e101]:
-                  - img [ref=e103]
-                  - generic [ref=e107]: Компания
-                - button "Компания" [ref=e109]:
-                  - generic [ref=e110]: физ. лицо
-              - generic [ref=e111]:
-                - generic [ref=e112]:
-                  - img [ref=e114]
-                  - generic [ref=e116]: Телефон
-                - button "Телефон" [ref=e118]:
-                  - generic [ref=e119]: "+79001935965"
-              - generic [ref=e120]:
-                - generic [ref=e121]:
-                  - img [ref=e123]
-                  - generic [ref=e128]: Тип техники
-                - button "Тип техники" [ref=e130]:
-                  - generic [ref=e131]: —
-              - generic [ref=e132]:
-                - generic [ref=e133]:
-                  - img [ref=e135]
-                  - generic [ref=e138]: Адрес
-                - button "Адрес" [ref=e140]:
-                  - generic [ref=e141]: Не заполнено · нужно для заявки
-              - generic [ref=e142]:
-                - generic [ref=e143]:
-                  - img [ref=e145]
-                  - generic [ref=e147]: Желаемая дата
-                - button "Желаемая дата" [ref=e149]:
-                  - generic [ref=e150]: Не заполнено · нужно для заявки
-              - generic [ref=e151]:
-                - generic [ref=e152]:
-                  - img [ref=e154]
-                  - generic [ref=e157]: Время
-                - button "Окно времени" [ref=e159]:
-                  - generic [ref=e160]: Empty
-              - generic [ref=e161]:
-                - generic [ref=e162]:
-                  - img [ref=e164]
-                  - generic [ref=e167]: Источник
-                - combobox "Источник" [ref=e170]:
+                - generic [ref=e58]:
+                  - button "Откатить стадию" [disabled]:
+                    - img
+                    - text: Откатить стадию
+            - generic [ref=e59]:
+              - generic [ref=e61]:
+                - img [ref=e62]
+                - generic [ref=e65]: Manager User
+              - generic [ref=e67]:
+                - img [ref=e68]
+                - generic [ref=e70]: Dates
+              - generic [ref=e72]:
+                - img [ref=e73]
+                - generic [ref=e76]: Ручной
+          - generic [ref=e77]: "Для перевода в заявку не хватает: адрес, дата"
+          - generic [ref=e78]:
+            - heading "Основные данные" [level=3] [ref=e80]
+            - generic [ref=e82]:
+              - generic [ref=e83]:
+                - generic [ref=e84]:
+                  - img [ref=e86]
+                  - generic [ref=e89]: Клиент
+                - button "Имя контакта" [ref=e91]:
+                  - generic [ref=e92]: E2E Lead 001-1779189487651-684
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - img [ref=e96]
+                  - generic [ref=e99]: Менеджер
+                - generic [ref=e101]: Manager User
+              - generic [ref=e102]:
+                - generic [ref=e103]:
+                  - img [ref=e105]
+                  - generic [ref=e109]: Компания
+                - button "Компания" [ref=e111]:
+                  - generic [ref=e112]: физ. лицо
+              - generic [ref=e113]:
+                - generic [ref=e114]:
+                  - img [ref=e116]
+                  - generic [ref=e118]: Телефон
+                - button "Телефон" [ref=e120]:
+                  - generic [ref=e121]: "+79009612486"
+              - generic [ref=e122]:
+                - generic [ref=e123]:
+                  - img [ref=e125]
+                  - generic [ref=e130]: Тип техники
+                - button "Тип техники" [ref=e132]:
+                  - generic [ref=e133]: —
+              - generic [ref=e134]:
+                - generic [ref=e135]:
+                  - img [ref=e137]
+                  - generic [ref=e140]: Адрес
+                - button "Адрес" [ref=e142]:
+                  - generic [ref=e144]: Не заполнено · нужно для заявки
+              - generic [ref=e145]:
+                - generic [ref=e146]:
+                  - img [ref=e148]
+                  - generic [ref=e150]: Желаемая дата
+                - button "Желаемая дата" [ref=e152]:
+                  - generic [ref=e153]: Не заполнено · нужно для заявки
+              - generic [ref=e154]:
+                - generic [ref=e155]:
+                  - img [ref=e157]
+                  - generic [ref=e160]: Время
+                - button "Окно времени" [ref=e162]:
+                  - generic [ref=e163]: Empty
+              - generic [ref=e164]:
+                - generic [ref=e165]:
+                  - img [ref=e167]
+                  - generic [ref=e170]: Источник
+                - combobox "Источник" [ref=e173]:
                   - generic:
                     - generic:
                       - generic: Ручной ввод
-          - generic [ref=e171]:
-            - heading "Комментарий" [level=3] [ref=e173]
-            - button "Комментарий" [ref=e175]:
-              - generic [ref=e176]: Нажмите, чтобы добавить…
-          - generic [ref=e177]:
-            - heading "Связанные действия" [level=3] [ref=e179]
-            - generic [ref=e181]:
-              - button "Создать клиента" [ref=e182]:
-                - img [ref=e184]
+          - generic [ref=e174]:
+            - heading "Комментарий" [level=3] [ref=e176]
+            - button "Комментарий" [ref=e178]:
+              - generic [ref=e179]: Нажмите, чтобы добавить…
+          - generic [ref=e180]:
+            - heading "Связанные действия" [level=3] [ref=e182]
+            - generic [ref=e184]:
+              - button "Создать клиента" [ref=e185]:
+                - img [ref=e187]
                 - text: Создать клиента
-              - button "Редактировать лид" [ref=e187]:
-                - img [ref=e189]
+              - button "Редактировать лид" [ref=e190]:
+                - img [ref=e192]
                 - text: Редактировать лид
-          - generic [ref=e191]:
-            - generic [ref=e192]:
-              - button "Комментарии 2" [ref=e193]:
-                - img [ref=e194]
-                - generic [ref=e196]: Комментарии
-                - generic [ref=e197]: "2"
-              - button "Журнал изменений" [ref=e198]:
-                - img [ref=e199]
-                - generic [ref=e201]: Журнал изменений
-            - generic [ref=e202]:
-              - generic [ref=e203]:
-                - generic [ref=e204]: А
-                - generic [ref=e205]:
-                  - generic [ref=e206]:
-                    - generic [ref=e207]: Анна Смирнова
-                    - generic [ref=e208]: 2 часа назад
-                  - generic [ref=e209]: Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.
-              - generic [ref=e210]:
-                - generic [ref=e211]: И
-                - generic [ref=e212]:
-                  - generic [ref=e213]:
-                    - generic [ref=e214]: Иван Петров
-                    - generic [ref=e215]: вчера, 18:22
-                  - generic [ref=e216]: Отправил КП, ждём подтверждение по позициям.
-        - complementary [ref=e217]:
-          - generic [ref=e218]:
-            - button "Статус и мета" [ref=e220]:
-              - img [ref=e221]
-              - generic [ref=e223]: Статус и мета
-            - generic [ref=e224]:
-              - generic [ref=e225]:
-                - generic [ref=e226]: Этап
-                - generic [ref=e228]: Лид
-              - generic [ref=e229]:
-                - generic [ref=e230]: Источник
-                - generic [ref=e232]:
-                  - img [ref=e233]
-                  - generic [ref=e236]: Ручной
-              - generic [ref=e237]:
-                - generic [ref=e238]: Создан
-                - generic [ref=e239]: 21.04.2026
+          - generic [ref=e194]:
+            - generic [ref=e195]:
+              - button "Комментарии 2" [ref=e196]:
+                - img [ref=e197]
+                - generic [ref=e199]: Комментарии
+                - generic [ref=e200]: "2"
+              - button "Журнал изменений" [ref=e201]:
+                - img [ref=e202]
+                - generic [ref=e204]: Журнал изменений
+            - generic [ref=e205]:
+              - generic [ref=e206]:
+                - generic [ref=e207]: А
+                - generic [ref=e208]:
+                  - generic [ref=e209]:
+                    - generic [ref=e210]: Анна Смирнова
+                    - generic [ref=e211]: 2 часа назад
+                  - generic [ref=e212]: Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.
+              - generic [ref=e213]:
+                - generic [ref=e214]: И
+                - generic [ref=e215]:
+                  - generic [ref=e216]:
+                    - generic [ref=e217]: Иван Петров
+                    - generic [ref=e218]: вчера, 18:22
+                  - generic [ref=e219]: Отправил КП, ждём подтверждение по позициям.
+        - complementary [ref=e220]:
+          - generic [ref=e221]:
+            - button "Статус и мета" [ref=e223]:
+              - img [ref=e224]
+              - generic [ref=e226]: Статус и мета
+            - generic [ref=e227]:
+              - generic [ref=e228]:
+                - generic [ref=e229]: Этап
+                - generic [ref=e231]: Лид
+              - generic [ref=e232]:
+                - generic [ref=e233]: Источник
+                - generic [ref=e235]:
+                  - img [ref=e236]
+                  - generic [ref=e239]: Ручной
               - generic [ref=e240]:
-                - generic [ref=e241]: Активность
-                - generic [ref=e242]: только что
+                - generic [ref=e241]: Создан
+                - generic [ref=e242]: 21.04.2026
               - generic [ref=e243]:
-                - generic [ref=e244]: Менеджер
-                - generic [ref=e245]: Manager User
-          - generic [ref=e246]:
-            - button "Готовность к заявке" [ref=e248]:
-              - img [ref=e249]
-              - generic [ref=e251]: Готовность к заявке
-            - generic [ref=e252]:
-              - generic [ref=e253]:
-                - generic [ref=e254]:
-                  - img [ref=e255]
+                - generic [ref=e244]: Активность
+                - generic [ref=e245]: только что
+              - generic [ref=e246]:
+                - generic [ref=e247]: Менеджер
+                - generic [ref=e248]: Manager User
+          - generic [ref=e249]:
+            - button "Готовность к заявке" [ref=e251]:
+              - img [ref=e252]
+              - generic [ref=e254]: Готовность к заявке
+            - generic [ref=e255]:
+              - generic [ref=e256]:
+                - generic [ref=e257]:
+                  - img [ref=e258]
                   - text: Не хватает данных
-                - generic [ref=e257]: "Заполните: адрес, дата"
-              - generic [ref=e258]:
+                - generic [ref=e260]: "Заполните: адрес, дата"
+              - generic [ref=e261]:
                 - button "Перевести в заявку" [disabled]
-          - generic [ref=e259]:
-            - button "Связанные записи" [ref=e261]:
-              - img [ref=e262]
-              - generic [ref=e264]: Связанные записи
-            - generic [ref=e265]:
-              - generic [ref=e266]:
-                - generic [ref=e267]: Лид
-                - button "LEAD-CMOU71YX" [ref=e269] [cursor=pointer]
-              - generic [ref=e270]:
-                - generic [ref=e271]: Контакт
-                - generic [ref=e272]: E2E Lead 001-1778080212826-632
-          - generic [ref=e273]:
-            - button "История" [ref=e275]:
-              - img [ref=e276]
-              - generic [ref=e278]: История
-            - generic [ref=e281]:
-              - img [ref=e282]
-              - generic [ref=e284]:
-                - generic [ref=e285]:
-                  - generic [ref=e286]: Manager User
-                  - generic [ref=e287]: только что
-                - generic [ref=e288]: создано · Создан лид E2E Lead 001-1778080212826-632
-          - button "Быстрые действия" [ref=e291]:
-            - img [ref=e292]
-            - generic [ref=e294]: Быстрые действия
+          - generic [ref=e262]:
+            - button "Связанные записи" [ref=e264]:
+              - img [ref=e265]
+              - generic [ref=e267]: Связанные записи
+            - generic [ref=e268]:
+              - generic [ref=e269]:
+                - generic [ref=e270]: Лид
+                - button "LEAD-CMPCJHLV" [ref=e272] [cursor=pointer]
+              - generic [ref=e273]:
+                - generic [ref=e274]: Контакт
+                - generic [ref=e275]: E2E Lead 001-1779189487651-684
+          - generic [ref=e276]:
+            - button "История" [ref=e278]:
+              - img [ref=e279]
+              - generic [ref=e281]: История
+            - generic [ref=e284]:
+              - img [ref=e285]
+              - generic [ref=e287]:
+                - generic [ref=e288]:
+                  - generic [ref=e289]: Manager User
+                  - generic [ref=e290]: только что
+                - generic [ref=e291]: создано · Создан лид E2E Lead 001-1779189487651-684
+          - button "Быстрые действия" [ref=e294]:
+            - img [ref=e295]
+            - generic [ref=e297]: Быстрые действия
 ```
 
 # Test source

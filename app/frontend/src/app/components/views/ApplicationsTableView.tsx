@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import {
-  computeGroup,
   countReservedPositions,
   dominantSourcing,
   equipmentSummary,
@@ -29,13 +28,14 @@ import {
   readyForDeparture,
   subcontractorSummary,
 } from '../shell/applicationHelpers';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 const STAGE_META: Record<ApplicationStage, { title: string; color: string }> = {
   application: { title: 'В работе', color: 'bg-[#4A90E2]' },
   reservation: { title: 'Бронь', color: 'bg-[#F5A623]' },
   departure: { title: 'Выезд', color: 'bg-[#50C878]' },
-  completed: { title: 'Завершена', color: 'bg-[#9B9B9B]' },
-  cancelled: { title: 'Отменена', color: 'bg-[#E74C3C]' },
+  completed: { title: IS_SALES_LITE ? 'Квалифицированный' : 'Завершена', color: 'bg-[#9B9B9B]' },
+  cancelled: { title: IS_SALES_LITE ? 'Не квалифицированный' : 'Отменена', color: 'bg-[#E74C3C]' },
 };
 
 function fmtDate(d?: string) {
@@ -55,7 +55,7 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
   const columns: DenseColumn<Application>[] = [
     {
       id: 'number',
-      header: 'Заявка / клиент',
+      header: IS_SALES_LITE ? 'В работе / клиент' : 'Заявка / клиент',
       width: 260,
       sortValue: (a) => a.number,
       cell: (a) => (
@@ -80,7 +80,7 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
     },
     {
       id: 'positionsCount',
-      header: 'Позиции',
+      header: IS_SALES_LITE ? 'Потребности' : 'Позиции',
       width: 150,
       sortValue: (a) => a.positions.length,
       cell: (a) => {
@@ -89,12 +89,14 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
         return (
           <span>
             <span className="text-foreground">{total}</span>
-            <span className="ml-1 text-muted-foreground">
-              ·{' '}
-              {reserved === total
-                ? 'все в брони'
-                : `${total - reserved} без брони`}
-            </span>
+            {!IS_SALES_LITE ? (
+              <span className="ml-1 text-muted-foreground">
+                ·{' '}
+                {reserved === total
+                  ? 'все в брони'
+                  : `${total - reserved} без брони`}
+              </span>
+            ) : null}
           </span>
         );
       },
@@ -106,74 +108,76 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
       sortValue: (a) => equipmentSummary(a),
       cell: (a) => <span className="truncate text-muted-foreground">{equipmentSummary(a)}</span>,
     },
-    {
-      id: 'sourcing',
-      header: 'Источник',
-      width: 130,
-      sortValue: (a) => dominantSourcing(a),
-      cell: (a) => {
-        const s = dominantSourcing(a);
-        if (s === 'own')
+    ...(!IS_SALES_LITE ? [
+      {
+        id: 'sourcing',
+        header: 'Источник',
+        width: 130,
+        sortValue: (a: Application) => dominantSourcing(a),
+        cell: (a: Application) => {
+          const s = dominantSourcing(a);
+          if (s === 'own')
+            return (
+              <span className={cn(badgeBase, badgeTones.muted)}>
+                <Building2 className="h-2.5 w-2.5" /> парк
+              </span>
+            );
+          if (s === 'subcontractor')
+            return (
+              <span className={cn(badgeBase, badgeTones.progress)}>
+                <Factory className="h-2.5 w-2.5" /> подр.
+              </span>
+            );
+          if (s === 'undecided')
+            return <span className={cn(badgeBase, badgeTones.caution)}>не выбран</span>;
+          return <span className={cn(badgeBase, badgeTones.muted)}>микс</span>;
+        },
+      },
+      {
+        id: 'subcontractor',
+        header: 'Подрядчик',
+        width: 160,
+        sortValue: (a: Application) => subcontractorSummary(a),
+        cell: (a: Application) => <span className="truncate text-muted-foreground">{subcontractorSummary(a)}</span>,
+      },
+      {
+        id: 'reservationReadiness',
+        header: 'К брони',
+        width: 140,
+        sortValue: (a: Application) => countReservedPositions(a) / Math.max(1, a.positions.length),
+        cell: (a: Application) => {
+          const total = a.positions.length;
+          const reserved = countReservedPositions(a);
+          const tone =
+            total === 0
+              ? badgeTones.muted
+              : reserved === total
+                ? badgeTones.success
+                : reserved === 0
+                  ? badgeTones.caution
+                  : badgeTones.progress;
           return (
-            <span className={cn(badgeBase, badgeTones.muted)}>
-              <Building2 className="h-2.5 w-2.5" /> парк
+            <span className={cn(badgeBase, tone)}>
+              {reserved}/{total}
             </span>
           );
-        if (s === 'subcontractor')
-          return (
-            <span className={cn(badgeBase, badgeTones.progress)}>
-              <Factory className="h-2.5 w-2.5" /> подр.
+        },
+      },
+      {
+        id: 'departureReadiness',
+        header: 'К выезду',
+        width: 120,
+        sortValue: (a: Application) => Number(readyForDeparture(a)),
+        cell: (a: Application) =>
+          readyForDeparture(a) ? (
+            <span className={cn(badgeBase, badgeTones.success)}>
+              <Truck className="h-2.5 w-2.5" /> готова
             </span>
-          );
-        if (s === 'undecided')
-          return <span className={cn(badgeBase, badgeTones.caution)}>не выбран</span>;
-        return <span className={cn(badgeBase, badgeTones.muted)}>микс</span>;
+          ) : (
+            <span className={cn(badgeBase, badgeTones.muted)}>—</span>
+          ),
       },
-    },
-    {
-      id: 'subcontractor',
-      header: 'Подрядчик',
-      width: 160,
-      sortValue: (a) => subcontractorSummary(a),
-      cell: (a) => <span className="truncate text-muted-foreground">{subcontractorSummary(a)}</span>,
-    },
-    {
-      id: 'reservationReadiness',
-      header: 'К брони',
-      width: 140,
-      sortValue: (a) => countReservedPositions(a) / Math.max(1, a.positions.length),
-      cell: (a) => {
-        const total = a.positions.length;
-        const reserved = countReservedPositions(a);
-        const tone =
-          total === 0
-            ? badgeTones.muted
-            : reserved === total
-              ? badgeTones.success
-              : reserved === 0
-                ? badgeTones.caution
-                : badgeTones.progress;
-        return (
-          <span className={cn(badgeBase, tone)}>
-            {reserved}/{total}
-          </span>
-        );
-      },
-    },
-    {
-      id: 'departureReadiness',
-      header: 'К выезду',
-      width: 120,
-      sortValue: (a) => Number(readyForDeparture(a)),
-      cell: (a) =>
-        readyForDeparture(a) ? (
-          <span className={cn(badgeBase, badgeTones.success)}>
-            <Truck className="h-2.5 w-2.5" /> готова
-          </span>
-        ) : (
-          <span className={cn(badgeBase, badgeTones.muted)}>—</span>
-        ),
-    },
+    ] : []),
     {
       id: 'date',
       header: 'Дата',
@@ -214,7 +218,7 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
               <Flame className="h-2.5 w-2.5" />
             </span>
           ) : null}
-          {hasAnyConflict(a) ? (
+          {!IS_SALES_LITE && hasAnyConflict(a) ? (
             <span className={cn(badgeBase, badgeTones.warning)} title="Конфликт брони">
               <AlertTriangle className="h-2.5 w-2.5" />
             </span>
@@ -292,25 +296,29 @@ export function ApplicationsTableView({ applications, onRowClick, isFiltered }: 
                 <MoreHorizontal className="h-3.5 w-3.5" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()} className="text-[12px]">
-                <DropdownMenuItem onSelect={() => onRowClick(a)}>Открыть заявку</DropdownMenuItem>
+                <DropdownMenuItem onSelect={() => onRowClick(a)}>{IS_SALES_LITE ? 'Открыть в работе' : 'Открыть заявку'}</DropdownMenuItem>
                 <DropdownMenuItem>
                   <Plus className="mr-1 h-3.5 w-3.5" /> Добавить позицию
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Copy className="mr-1 h-3.5 w-3.5" /> Дублировать позицию
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem disabled={reserved === total && total > 0}>
-                  Перейти к брони
-                </DropdownMenuItem>
-                <DropdownMenuItem disabled={!ready}>
-                  <Truck className="mr-1 h-3.5 w-3.5" /> Перевести в выезд
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  disabled={a.stage !== 'departure' && a.stage !== 'reservation'}
-                >
-                  <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Завершить
-                </DropdownMenuItem>
+                {!IS_SALES_LITE ? (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem disabled={reserved === total && total > 0}>
+                      Перейти к брони
+                    </DropdownMenuItem>
+                    <DropdownMenuItem disabled={!ready}>
+                      <Truck className="mr-1 h-3.5 w-3.5" /> Перевести в выезд
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      disabled={a.stage !== 'departure' && a.stage !== 'reservation'}
+                    >
+                      <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Завершить
+                    </DropdownMenuItem>
+                  </>
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

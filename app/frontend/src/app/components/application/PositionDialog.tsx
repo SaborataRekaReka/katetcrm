@@ -36,6 +36,7 @@ import {
   useUpdateApplicationItem,
 } from '../../hooks/useApplicationMutations';
 import { useEquipmentTypesQuery } from '../../hooks/useDirectoriesQuery';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 import type { ApplicationPosition, SourcingType } from '../../types/application';
 
 type PositionDialogMode = 'add' | 'edit';
@@ -212,7 +213,7 @@ export function PositionDialog({
       quantity: qty,
       shiftCount: shifts,
       sourcingType: form.sourcingType,
-      readyForReservation: reservationReady,
+      readyForReservation: !IS_SALES_LITE && reservationReady,
     };
     if (form.equipmentTypeId) body.equipmentTypeId = form.equipmentTypeId;
     if (form.plannedDate) body.plannedDate = form.plannedDate;
@@ -250,7 +251,7 @@ export function PositionDialog({
       <EntityModalShell>
         <EntityModalHeader
           entityIcon={<ClipboardList className="h-3 w-3 text-gray-500" />}
-          entityLabel="Позиция заявки"
+          entityLabel={IS_SALES_LITE ? 'Потребность' : 'Позиция заявки'}
           title={isEdit ? position?.equipmentType || 'Позиция' : 'Новая позиция'}
           subtitle={
             isEdit
@@ -341,30 +342,32 @@ export function PositionDialog({
                   />
                 }
               />
-              <PropertyRow
-                icon={<Truck className="h-3 w-3" />}
-                label="Источник для брони"
-                value={
-                  <div className="space-y-1">
-                    <FieldSelect
-                      value={form.sourcingType}
-                      onChange={(v) => set('sourcingType', v as SourcingType)}
-                      options={SOURCING_OPTIONS}
-                    />
-                    <div className="text-[10px] text-muted-foreground">
-                      Можно выбрать позже на стадии брони.
+              {!IS_SALES_LITE ? (
+                <PropertyRow
+                  icon={<Truck className="h-3 w-3" />}
+                  label="Источник для брони"
+                  value={
+                    <div className="space-y-1">
+                      <FieldSelect
+                        value={form.sourcingType}
+                        onChange={(v) => set('sourcingType', v as SourcingType)}
+                        options={SOURCING_OPTIONS}
+                      />
+                      <div className="text-[10px] text-muted-foreground">
+                        Можно выбрать позже на стадии брони.
+                      </div>
                     </div>
-                  </div>
-                }
-              />
+                  }
+                />
+              ) : null}
             </EntityMetaGrid>
           </EntitySection>
 
-          <EntitySection title="Расписание">
+          <EntitySection title={IS_SALES_LITE ? 'Параметры работ' : 'Расписание'}>
             <EntityMetaGrid>
               <PropertyRow
                 icon={<Calendar className="h-3 w-3" />}
-                label="Дата для брони *"
+                label={IS_SALES_LITE ? 'Желаемая дата *' : 'Дата для брони *'}
                 value={
                   <FieldInput
                     type="date"
@@ -379,7 +382,7 @@ export function PositionDialog({
               />
               <PropertyRow
                 icon={<MapPin className="h-3 w-3" />}
-                label="Адрес для брони *"
+                label={IS_SALES_LITE ? 'Адрес объекта *' : 'Адрес для брони *'}
                 value={
                   <FieldInput
                     value={form.address}
@@ -438,7 +441,7 @@ export function PositionDialog({
                 }
               >
                 {reservationReady
-                  ? 'Позиция готова к брони. Сохранение доступно.'
+                  ? (IS_SALES_LITE ? 'Потребность заполнена. Сохранение доступно.' : 'Позиция готова к брони. Сохранение доступно.')
                   : 'Для сохранения заполните все обязательные поля со звездочкой.'}
               </div>
               {!reservationReady && reservationMissing.length > 0 ? (

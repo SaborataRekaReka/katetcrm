@@ -464,6 +464,8 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       .send({
         contactName: 'QA Mango Routing Lead',
         contactPhone: phone,
+        requestedDate: '2026-05-20T09:00:00.000Z',
+        address: 'QA Mango Routing Address',
       })
       .expect(201);
 
@@ -610,7 +612,6 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       contactName: 'QA Site Routing First Lead',
       contactPhone: firstPhone,
       contactCompany: `QA Site ${seed} LLC`,
-      message: 'first site form',
     } as Record<string, unknown>;
 
     const firstResponse = await request(app.getHttpServer())

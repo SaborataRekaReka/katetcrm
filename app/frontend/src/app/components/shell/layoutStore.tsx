@@ -8,7 +8,7 @@ import {
   secondaryForPathname,
   writeRoute,
 } from './routeSync';
-import { getModuleMeta } from './navConfig';
+import { getModuleMeta, normalizeSecondaryForWorkflow } from './navConfig';
 
 export type ViewMode = string;
 export type UserRole = 'admin' | 'manager';
@@ -97,14 +97,17 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   // URL takes precedence over localStorage on first mount so deep links and
   // reloads behave predictably.
   const initialRoute = parseInitialRoute();
-  const initialSecondary = initialRoute.secondaryId ?? initial.activeSecondaryNav;
+  const initialSecondary = normalizeSecondaryForWorkflow(
+    initialRoute.secondaryId ?? initial.activeSecondaryNav,
+  );
+  const initialPrimary = getModuleMeta(initialSecondary).domain;
   const [sidebarExpanded, setSidebarExpanded] = useState(() => {
     if (typeof window !== 'undefined' && window.innerWidth < MOBILE_SIDEBAR_BREAKPOINT) {
       return false;
     }
     return initial.sidebarExpanded;
   });
-  const [activePrimaryNav, setActivePrimaryNav] = useState(initial.activePrimaryNav);
+  const [activePrimaryNav, setActivePrimaryNav] = useState(initialPrimary);
   const [activeSecondaryNavState, setActiveSecondaryNavState] = useState(initialSecondary);
   const [activeEntityType, setActiveEntityType] = useState<RouteEntityType | null>(
     initialRoute.entityType,
@@ -246,7 +249,15 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const moduleDomain = getModuleMeta(activeSecondaryNavState).domain;
+    const normalizedSecondary = normalizeSecondaryForWorkflow(activeSecondaryNavState);
+    if (normalizedSecondary !== activeSecondaryNavState) {
+      setActiveEntityType(null);
+      setActiveEntityId(null);
+      setActiveSecondaryNavState(normalizedSecondary);
+      return;
+    }
+
+    const moduleDomain = getModuleMeta(normalizedSecondary).domain;
     if (moduleDomain !== activePrimaryNav) {
       setActivePrimaryNav(moduleDomain);
     }
@@ -322,11 +333,12 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   };
 
   const setActiveSecondaryNav = (secondaryId: string) => {
-    const requestedView = viewBySecondary[secondaryId] ?? currentView;
-    const nextView = resolveViewForModule(secondaryId, requestedView) ?? requestedView;
-    if (pathnameForSecondary(secondaryId)) {
+    const targetSecondaryId = normalizeSecondaryForWorkflow(secondaryId);
+    const requestedView = viewBySecondary[targetSecondaryId] ?? currentView;
+    const nextView = resolveViewForModule(targetSecondaryId, requestedView) ?? requestedView;
+    if (pathnameForSecondary(targetSecondaryId)) {
       writeRoute(
-        secondaryId,
+        targetSecondaryId,
         {
           view: nextView || null,
           entityType: null,
@@ -335,11 +347,11 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
         { history: 'push' },
       );
     }
-    setActiveSecondaryNavState(secondaryId);
+    setActiveSecondaryNavState(targetSecondaryId);
     setCurrentViewState(nextView);
     setViewBySecondary((prev) => {
-      if (prev[secondaryId] === nextView) return prev;
-      return { ...prev, [secondaryId]: nextView };
+      if (prev[targetSecondaryId] === nextView) return prev;
+      return { ...prev, [targetSecondaryId]: nextView };
     });
     setActiveEntityType(null);
     setActiveEntityId(null);
@@ -352,7 +364,7 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
   ) => {
     // Keep users in the current workspace context and open linked entity as an overlay.
     // We still persist entityType/entityId in URL query so share links stay deterministic.
-    const targetSecondary = resolveWritableSecondary(secondaryId);
+    const targetSecondary = resolveWritableSecondary(normalizeSecondaryForWorkflow(secondaryId));
 
     if (targetSecondary) {
       writeRoute(
@@ -376,11 +388,11 @@ export function LayoutProvider({ children }: { children: ReactNode }) {
       const route = parseInitialRoute();
       const nextId = route.secondaryId;
       if (nextId) {
-        setActiveSecondaryNavState(nextId);
+        setActiveSecondaryNavState(normalizeSecondaryForWorkflow(nextId));
       }
       setActiveEntityType(route.entityType);
       setActiveEntityId(route.entityId);
-      const id = nextId ?? activeSecondaryNavState;
+      const id = normalizeSecondaryForWorkflow(nextId ?? activeSecondaryNavState);
       const requestedView = route.view ?? viewBySecondary[id];
       if (requestedView) {
         const valid = resolveViewForModule(id, requestedView);

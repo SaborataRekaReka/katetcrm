@@ -12,6 +12,7 @@ import {
 import { Capabilities } from '../../common/capabilities.decorator';
 import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
+import { FullWorkflowGuard } from '../../common/full-workflow.guard';
 import { RolesGuard } from '../../common/roles.guard';
 import { Roles } from '../../common/roles.decorator';
 import { CurrentUser } from '../../common/current-user.decorator';
@@ -107,6 +108,7 @@ export class DirectoriesController {
 
   // ---------- Equipment units ----------
   @Get('equipment-units')
+  @UseGuards(FullWorkflowGuard)
   listUnits(
     @Query('equipmentTypeId') equipmentTypeId?: string,
     @Query('status') status?: string,
@@ -124,12 +126,13 @@ export class DirectoriesController {
   }
 
   @Get('equipment-units/:id')
+  @UseGuards(FullWorkflowGuard)
   getUnit(@Param('id') id: string) {
     return this.svc.getUnit(id);
   }
 
   @Post('equipment-units')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createUnit(@Body() dto: CreateEquipmentUnitDto, @CurrentUser() user: JwtPayload) {
@@ -137,7 +140,7 @@ export class DirectoriesController {
   }
 
   @Patch('equipment-units/:id')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateUnit(
@@ -149,7 +152,7 @@ export class DirectoriesController {
   }
 
   @Delete('equipment-units/:id')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('catalogs.write')
   deleteUnit(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
@@ -158,6 +161,7 @@ export class DirectoriesController {
 
   // ---------- Subcontractors ----------
   @Get('subcontractors')
+  @UseGuards(FullWorkflowGuard)
   listSubcontractors(
     @Query('status') status?: string,
     @Query('query') query?: string,
@@ -175,12 +179,13 @@ export class DirectoriesController {
   }
 
   @Get('subcontractors/:id')
+  @UseGuards(FullWorkflowGuard)
   getSubcontractor(@Param('id') id: string) {
     return this.svc.getSubcontractor(id);
   }
 
   @Post('subcontractors')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   createSubcontractor(@Body() dto: CreateSubcontractorDto, @CurrentUser() user: JwtPayload) {
@@ -188,7 +193,7 @@ export class DirectoriesController {
   }
 
   @Patch('subcontractors/:id')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin', 'manager')
   @Capabilities('catalogs.write')
   updateSubcontractor(
@@ -200,7 +205,7 @@ export class DirectoriesController {
   }
 
   @Delete('subcontractors/:id')
-  @UseGuards(RolesGuard, CapabilitiesGuard)
+  @UseGuards(FullWorkflowGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('catalogs.write')
   deleteSubcontractor(@Param('id') id: string, @CurrentUser() user: JwtPayload) {

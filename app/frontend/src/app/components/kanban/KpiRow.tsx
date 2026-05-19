@@ -1,6 +1,7 @@
 import { Lead } from '../../types/kanban';
 import { Sparkles, PhoneOff, FileCheck, Calendar, Clock, Truck, Copy, AlertTriangle } from 'lucide-react';
 import { cn } from '../ui/utils';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 export type KpiCardId =
   | 'new_leads'
@@ -31,7 +32,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
     ).length,
   };
 
-  const cards = [
+  const fullCards = [
     { id: 'new_leads' as const, label: 'Новые лиды', value: stats.newLeads, icon: Sparkles, tone: 'blue' },
     { id: 'no_contact' as const, label: 'Без первого контакта', value: stats.noContact, icon: PhoneOff, tone: 'amber' },
     { id: 'awaiting_application' as const, label: 'Ждут перевода в заявку', value: stats.awaitingApplication, icon: FileCheck, tone: 'violet' },
@@ -42,9 +43,23 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
     { id: 'conflicts' as const, label: 'Конфликт брони', value: stats.conflicts, icon: AlertTriangle, tone: 'rose' },
   ] as const;
 
+  const salesLiteCards = [
+    { id: 'new_leads' as const, label: 'Не обработаны', value: stats.newLeads, icon: Sparkles, tone: 'blue' },
+    { id: 'no_contact' as const, label: 'Без первого контакта', value: stats.noContact, icon: PhoneOff, tone: 'amber' },
+    { id: 'awaiting_application' as const, label: 'К переводу в работу', value: stats.awaitingApplication, icon: FileCheck, tone: 'violet' },
+    { id: 'needs_reservation' as const, label: 'В работе', value: stats.needsReservation, icon: Calendar, tone: 'orange' },
+    { id: 'stale' as const, label: 'Зависшие', value: stats.stale, icon: Clock, tone: 'red' },
+    { id: 'duplicates' as const, label: 'Дубли', value: stats.duplicates, icon: Copy, tone: 'slate' },
+  ] as const;
+
+  const cards = IS_SALES_LITE ? salesLiteCards : fullCards;
+
   return (
     <div className="scroll-thin shrink-0 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-white px-4 py-2 [scrollbar-gutter:stable]">
-      <div className="grid w-max min-w-full grid-flow-col auto-cols-[minmax(136px,1fr)] gap-2 lg:w-full lg:grid-flow-row lg:grid-cols-8 lg:auto-cols-auto">
+      <div className={cn(
+        'grid w-max min-w-full grid-flow-col auto-cols-[minmax(136px,1fr)] gap-2 lg:w-full lg:grid-flow-row lg:auto-cols-auto',
+        IS_SALES_LITE ? 'lg:grid-cols-6' : 'lg:grid-cols-8',
+      )}>
       {cards.map((s) => {
         const Icon = s.icon;
         return (

@@ -11,6 +11,7 @@ import {
 import { Input } from '../ui/input';
 import { useLayout } from './layoutStore';
 import { getModuleMeta } from './navConfig';
+import { STAGE_LABEL, STAGE_ORDER } from '../../lib/stageTokens';
 import { DEFAULT_LEADS_FILTERS, LeadsFiltersState } from './filterTypes';
 import {
   LIST_TOOLBAR_BAR,
@@ -158,12 +159,9 @@ export function LeadsToolbar({
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">Все стадии</SelectItem>
-            <SelectItem value="lead">Лид</SelectItem>
-            <SelectItem value="application">Заявка</SelectItem>
-            <SelectItem value="reservation">Бронь</SelectItem>
-            <SelectItem value="departure">Выезд</SelectItem>
-            <SelectItem value="completed">Завершено</SelectItem>
-            <SelectItem value="unqualified">Некачественный</SelectItem>
+            {STAGE_ORDER.map((stage) => (
+              <SelectItem key={stage} value={stage}>{STAGE_LABEL[stage]}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       ) : null}

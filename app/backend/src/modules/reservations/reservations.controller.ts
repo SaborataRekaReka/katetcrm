@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
+import { FullWorkflowGuard } from '../../common/full-workflow.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import { ReservationsService } from './reservations.service';
@@ -24,7 +25,7 @@ import {
 } from '../../common/projections/reservation.projection';
 
 @Controller('reservations')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, FullWorkflowGuard)
 export class ReservationsController {
   constructor(private readonly svc: ReservationsService) {}
 

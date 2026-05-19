@@ -10,6 +10,7 @@ import {
 import { Input } from '../ui/input';
 import { useLayout } from './layoutStore';
 import { getModuleMeta } from './navConfig';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 import {
   DEFAULT_APPLICATIONS_FILTERS,
   ApplicationsFiltersState,
@@ -59,6 +60,7 @@ export function ApplicationsToolbar({
   const filters = filtersProp ?? localFilters;
   const query = queryProp ?? localQuery;
   const effectiveManagerOptions = managerOptions ?? DEFAULT_MANAGER_OPTIONS;
+  const showOperationalFilters = !IS_SALES_LITE;
 
   const updateFilters = (next: ApplicationsFiltersState) => {
     if (onFiltersChange) onFiltersChange(next);
@@ -77,10 +79,10 @@ export function ApplicationsToolbar({
     filters.scope !== 'all' ||
     filters.manager !== 'all' ||
     filters.status !== 'all' ||
-    filters.sourcing !== 'all' ||
     filters.equipment !== 'all' ||
-    filters.readinessReservation !== 'all' ||
-    filters.conflict ||
+    (showOperationalFilters && filters.sourcing !== 'all') ||
+    (showOperationalFilters && filters.readinessReservation !== 'all') ||
+    (showOperationalFilters && filters.conflict) ||
     query.length > 0;
 
   const reset = () => {
@@ -135,35 +137,39 @@ export function ApplicationsToolbar({
         </SelectContent>
       </Select>
 
-      <Select
-        value={filters.readinessReservation}
-        onValueChange={(v) =>
-          setField('readinessReservation', v as ApplicationsFiltersState['readinessReservation'])
-        }
-      >
-        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[160px]`}>
-          <SelectValue placeholder="Активность заявки" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Активность: все</SelectItem>
-          <SelectItem value="no_data">Требуют подготовки</SelectItem>
-        </SelectContent>
-      </Select>
+      {showOperationalFilters ? (
+        <>
+          <Select
+            value={filters.readinessReservation}
+            onValueChange={(v) =>
+              setField('readinessReservation', v as ApplicationsFiltersState['readinessReservation'])
+            }
+          >
+            <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[160px]`}>
+              <SelectValue placeholder="Активность заявки" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Активность: все</SelectItem>
+              <SelectItem value="no_data">Требуют подготовки</SelectItem>
+            </SelectContent>
+          </Select>
 
-      <Select
-        value={filters.sourcing}
-        onValueChange={(v) => setField('sourcing', v as ApplicationsFiltersState['sourcing'])}
-      >
-        <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[140px]`}>
-          <SelectValue placeholder="Источник техники" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">Парк + подрядчик</SelectItem>
-          <SelectItem value="own">Свой парк</SelectItem>
-          <SelectItem value="subcontractor">Подрядчик</SelectItem>
-          <SelectItem value="undecided">Не выбран</SelectItem>
-        </SelectContent>
-      </Select>
+          <Select
+            value={filters.sourcing}
+            onValueChange={(v) => setField('sourcing', v as ApplicationsFiltersState['sourcing'])}
+          >
+            <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[140px]`}>
+              <SelectValue placeholder="Источник техники" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Парк + подрядчик</SelectItem>
+              <SelectItem value="own">Свой парк</SelectItem>
+              <SelectItem value="subcontractor">Подрядчик</SelectItem>
+              <SelectItem value="undecided">Не выбран</SelectItem>
+            </SelectContent>
+          </Select>
+        </>
+      ) : null}
 
       <Select value={filters.equipment} onValueChange={(v) => setField('equipment', v)}>
         <SelectTrigger className={`${LIST_TOOLBAR_TRIGGER} w-[120px]`}>
@@ -178,13 +184,17 @@ export function ApplicationsToolbar({
         </SelectContent>
       </Select>
 
-      <ToolbarDivider />
+      {showOperationalFilters ? (
+        <>
+          <ToolbarDivider />
 
-      <ToolbarToggle
-        label="Конфликт"
-        active={filters.conflict}
-        onClick={() => setField('conflict', !filters.conflict)}
-      />
+          <ToolbarToggle
+            label="Конфликт"
+            active={filters.conflict}
+            onClick={() => setField('conflict', !filters.conflict)}
+          />
+        </>
+      ) : null}
 
       <div className={LIST_TOOLBAR_UTILITY_GROUP}>
         {hasActive && (

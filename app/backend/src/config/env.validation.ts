@@ -15,6 +15,11 @@ enum NodeEnv {
   test = 'test',
 }
 
+enum CrmWorkflowProfile {
+  full = 'full',
+  salesLite = 'sales-lite',
+}
+
 class EnvVars {
   @IsEnum(NodeEnv)
   NODE_ENV: NodeEnv = NodeEnv.development;
@@ -43,6 +48,10 @@ class EnvVars {
   @IsString()
   @IsOptional()
   CORS_ORIGINS = '';
+
+  @IsEnum(CrmWorkflowProfile)
+  @IsOptional()
+  CRM_WORKFLOW_PROFILE: CrmWorkflowProfile = CrmWorkflowProfile.full;
 
   @IsString()
   @IsOptional()

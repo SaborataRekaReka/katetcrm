@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { useUpdateApplication } from '../../hooks/useApplicationMutations';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 import type { Application } from '../../types/application';
 
 type EditApplicationDialogProps = {
@@ -87,7 +88,7 @@ export function EditApplicationDialog({ open, onOpenChange, application }: EditA
       await mutation.mutateAsync({ id: application.id, patch });
       onOpenChange(false);
     } catch (err) {
-      setSubmitError(err instanceof Error ? err.message : 'Не удалось сохранить заявку');
+      setSubmitError(err instanceof Error ? err.message : (IS_SALES_LITE ? 'Не удалось сохранить запись в работе' : 'Не удалось сохранить заявку'));
     }
   };
 
@@ -95,7 +96,7 @@ export function EditApplicationDialog({ open, onOpenChange, application }: EditA
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[560px]">
         <DialogHeader>
-          <DialogTitle>Редактировать заявку {application.number}</DialogTitle>
+          <DialogTitle>{IS_SALES_LITE ? 'Редактировать в работе' : 'Редактировать заявку'} {application.number}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">

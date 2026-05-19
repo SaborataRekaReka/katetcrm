@@ -12,6 +12,7 @@ import { ControlWorkspacePage } from './components/control/ControlWorkspacePage'
 import { AdminWorkspacePage } from './components/admin/AdminWorkspacePage';
 import { ModulePlaceholder } from './components/shell/ModulePlaceholder';
 import { useLayout } from './components/shell/layoutStore';
+import { isSecondaryAvailableInWorkflow } from './components/shell/navConfig';
 import { useAuth } from './auth/AuthProvider';
 import { LoginScreen } from './auth/LoginScreen';
 
@@ -89,6 +90,7 @@ function RouteOutlet() {
   ]);
   const ADMIN_IDS = new Set(['imports', 'integrations', 'settings', 'users', 'permissions']);
 
+  if (!isSecondaryAvailableInWorkflow(activeSecondaryNav)) return <LeadsKanbanPage />;
   if (LEADS_IDS.has(activeSecondaryNav)) return <LeadsKanbanPage />;
   if (APPLICATIONS_IDS.has(activeSecondaryNav)) return <ApplicationsWorkspacePage />;
   if (RESERVATIONS_IDS.has(activeSecondaryNav)) return <ReservationsWorkspacePage />;

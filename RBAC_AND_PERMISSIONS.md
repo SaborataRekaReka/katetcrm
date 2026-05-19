@@ -48,6 +48,7 @@ Manager cannot:
 1. Admin-only sections must be hidden for manager in navigation.
 2. Hidden UI is convenience only, not security.
 3. Route guards and API checks must enforce same policy.
+4. In `CRM_WORKFLOW_PROFILE=sales-lite`, operations and equipment/subcontractor UI surfaces are hidden, but backend workflow profile guards remain the authority.
 
 ## 4. Backend validation requirements
 
@@ -59,6 +60,7 @@ Backend must validate regardless of frontend state:
 4. Record scope access (own vs all where applicable).
 5. Transition rights for critical workflow actions.
 6. Mutation rights for directories/admin modules, where directory create/update is allowed for manager and delete remains admin-only.
+7. Workflow profile access: `/reservations`, `/departures`, `/completions`, `/equipment-units`, and `/subcontractors` are available only in `full` profile and return `403` in `sales-lite`.
 
 Runtime policy details:
 

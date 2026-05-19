@@ -240,6 +240,7 @@ export class ApplicationsService {
     plannedTimeFrom: string | null;
     plannedTimeTo: string | null;
     address: string | null;
+    sourcingType: string;
   }) {
     if (!input.readyForReservation) return;
 
@@ -248,6 +249,7 @@ export class ApplicationsService {
     if (!input.plannedDate) missing.push('plannedDate');
     if (!input.plannedTimeFrom || !input.plannedTimeTo) missing.push('plannedTimeFrom/plannedTimeTo');
     if (!input.address?.trim()) missing.push('address');
+    if (input.sourcingType === 'undecided') missing.push('sourcingType');
 
     if (missing.length > 0) {
       throw new BadRequestException(
@@ -277,6 +279,7 @@ export class ApplicationsService {
       plannedTimeFrom: dto.plannedTimeFrom ?? null,
       plannedTimeTo: dto.plannedTimeTo ?? null,
       address: dto.address ?? null,
+      sourcingType: nextSourcingType,
     });
 
     const item = await this.prisma.applicationItem.create({
@@ -349,6 +352,7 @@ export class ApplicationsService {
       plannedTimeFrom: nextPlannedTimeFrom,
       plannedTimeTo: nextPlannedTimeTo,
       address: nextAddress,
+      sourcingType: nextSourcingType,
     });
 
     const updated = await this.prisma.applicationItem.update({

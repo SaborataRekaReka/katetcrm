@@ -14,7 +14,7 @@ import { ApplicationsTableView } from '../views/ApplicationsTableView';
 import { Dialog, DialogContent } from '../ui/dialog';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
 import { ClientWorkspace } from '../client/ClientWorkspace';
-import { USE_API } from '../../lib/featureFlags';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 import { useApplicationQuery, useApplicationsQuery } from '../../hooks/useApplicationsQuery';
 import { toUiApplication } from '../../lib/applicationAdapter';
 import { useLeadQuery } from '../../hooks/useLeadsQuery';
@@ -39,7 +39,7 @@ function applicationToLead(a: Application): Lead {
     client: a.clientName,
     company: a.clientCompany,
     phone: a.clientPhone,
-    source: 'Заявка',
+    source: IS_SALES_LITE ? 'В работе' : 'Заявка',
     equipmentType: pos0?.equipmentType ?? '',
     date: a.requestedDate,
     timeWindow:
@@ -53,8 +53,8 @@ function applicationToLead(a: Application): Lead {
     ownOrSubcontractor: pos0?.sourcingType,
     subcontractor: pos0?.subcontractor,
     equipmentUnit: pos0?.unit,
-    hasConflict: pos0?.reservationState === 'conflict',
-    readyForDeparture: pos0?.status === 'reserved' && pos0?.readyForReservation,
+    hasConflict: !IS_SALES_LITE && pos0?.reservationState === 'conflict',
+    readyForDeparture: !IS_SALES_LITE && pos0?.status === 'reserved' && pos0?.readyForReservation,
   };
 }
 
@@ -109,7 +109,7 @@ export function ApplicationsWorkspacePage() {
       params.scope = 'mine';
     }
 
-    if (activeSecondaryNav === 'apps-no-reservation' || activeSecondaryNav === 'apps-ready') {
+    if (!IS_SALES_LITE && (activeSecondaryNav === 'apps-no-reservation' || activeSecondaryNav === 'apps-ready')) {
       params.readinessReservation = 'no_data';
     }
 
@@ -117,7 +117,7 @@ export function ApplicationsWorkspacePage() {
       params.managerId = filters.manager;
     }
 
-    if (filters.sourcing !== 'all') {
+    if (!IS_SALES_LITE && filters.sourcing !== 'all') {
       params.sourcing = filters.sourcing;
     }
 
@@ -125,11 +125,11 @@ export function ApplicationsWorkspacePage() {
       params.equipment = filters.equipment;
     }
 
-    if (filters.readinessReservation !== 'all') {
+    if (!IS_SALES_LITE && filters.readinessReservation !== 'all') {
       params.readinessReservation = filters.readinessReservation;
     }
 
-    if (filters.conflict) {
+    if (!IS_SALES_LITE && filters.conflict) {
       params.conflict = true;
     }
 
@@ -162,10 +162,10 @@ export function ApplicationsWorkspacePage() {
     filters.scope !== 'all' ||
     filters.manager !== 'all' ||
     filters.status !== 'all' ||
-    filters.sourcing !== 'all' ||
     filters.equipment !== 'all' ||
-    filters.readinessReservation !== 'all' ||
-    filters.conflict ||
+    (!IS_SALES_LITE && filters.sourcing !== 'all') ||
+    (!IS_SALES_LITE && filters.readinessReservation !== 'all') ||
+    (!IS_SALES_LITE && filters.conflict) ||
     query.length > 0;
 
   // Legacy route alias: /applications/ready is merged into Active Applications.
@@ -222,6 +222,7 @@ export function ApplicationsWorkspacePage() {
     target: 'application' | 'reservation',
     payload?: { leadId?: string; reservationId?: string },
   ) => {
+    if (IS_SALES_LITE && target === 'reservation') return;
     if (target === 'reservation' && payload?.reservationId) {
       setIsOpen(false);
       setSelected(null);

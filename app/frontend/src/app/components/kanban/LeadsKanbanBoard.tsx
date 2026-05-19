@@ -3,7 +3,7 @@ import { Lead, StageType, KanbanColumn } from '../../types/kanban';
 import { LeadsKanbanColumn } from './LeadsKanbanColumn';
 import { STAGE_ORDER, STAGE_LABEL, STAGE_BAR } from '../../lib/stageTokens';
 import { useChangeLeadStage } from '../../hooks/useLeadMutations';
-import { USE_API } from '../../lib/featureFlags';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 
 type Props = {
   leads: Lead[];
@@ -22,10 +22,19 @@ const COLUMNS: KanbanColumn[] = STAGE_ORDER.map((id) => ({
 // Допустимые переходы для drag-and-drop между колонками в канбане.
 // Терминальные исходы из departure проводим через completion flow,
 // поэтому прямой drop в completed/unqualified здесь отключён.
-const ALLOWED: Record<StageType, StageType[]> = {
+const FULL_ALLOWED: Record<StageType, StageType[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
   reservation: ['departure', 'unqualified'],
+  departure: [],
+  completed: [],
+  unqualified: [],
+};
+
+const SALES_LITE_ALLOWED: Record<StageType, StageType[]> = {
+  lead: ['application', 'unqualified'],
+  application: ['completed', 'unqualified'],
+  reservation: [],
   departure: [],
   completed: [],
   unqualified: [],
@@ -37,11 +46,12 @@ export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageD
   const [dragError, setDragError] = useState<string | null>(null);
 
   const byStage = (stage: StageType) => leads.filter((l) => l.stage === stage);
+  const allowed = IS_SALES_LITE ? SALES_LITE_ALLOWED : FULL_ALLOWED;
 
   const isStageTransitionAllowed = (target: StageType): boolean => {
     if (!dragging) return false;
     if (dragging.stage === target) return false;
-    return ALLOWED[dragging.stage]?.includes(target) ?? false;
+    return allowed[dragging.stage]?.includes(target) ?? false;
   };
 
   const showDragError = (message: string) => {

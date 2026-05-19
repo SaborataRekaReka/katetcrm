@@ -1,0 +1,5806 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: rbac-navigation.gwt.spec.ts >> RBAC and Navigation GWT (QA-REQ: 032..035) >> E2E-011 manager does not see admin or control navigation modules
+- Location: e2e\rbac-navigation.gwt.spec.ts:45:3
+
+# Error details
+
+```
+Error: Unexpected UI runtime issues:
+console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)
+
+expect(received).toEqual(expected) // deep equality
+
+- Expected  - 1
++ Received  + 3
+
+- Array []
++ Array [
++   "console.error http://localhost:3001/api/v1/settings/workspace:0:0 :: Failed to load resource: the server responded with a status of 403 (Forbidden)",
++ ]
+```
+
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - banner [ref=e4]:
+      - generic [ref=e5]:
+        - img "Логотип Катет CRM" [ref=e7]
+        - generic [ref=e8]: Катет CRM
+      - generic [ref=e10]:
+        - img
+        - textbox "Быстрый поиск" [ref=e11]:
+          - /placeholder: Поиск по лидам
+        - generic: Ctrl K
+      - generic [ref=e12]:
+        - button "Уведомления" [ref=e13]:
+          - img [ref=e14]
+        - button "Помощь" [ref=e17]:
+          - img [ref=e18]
+        - button "Профиль" [ref=e21]:
+          - generic [ref=e22]: MA
+          - img [ref=e23]
+    - generic [ref=e25]:
+      - complementary [ref=e26]:
+        - navigation [ref=e29]:
+          - button "Главная" [ref=e30]:
+            - img [ref=e31]
+          - button "Продажи" [pressed] [ref=e34]:
+            - img [ref=e35]
+          - button "Операции" [ref=e39]:
+            - img [ref=e40]
+          - button "Клиенты" [ref=e45]:
+            - img [ref=e46]
+          - button "Справочники" [ref=e51]:
+            - img [ref=e52]
+      - generic [ref=e56]:
+        - complementary [ref=e57]:
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e60]:
+                - img [ref=e61]
+                - heading "Продажи" [level=2] [ref=e64]
+              - generic [ref=e65]:
+                - button "Поиск по меню" [ref=e66]:
+                  - img [ref=e67]
+                - button "Свернуть меню" [ref=e70]:
+                  - img [ref=e71]
+            - generic [ref=e74]:
+              - generic [ref=e75]:
+                - button "Лиды" [ref=e76]:
+                  - img [ref=e77]
+                  - generic [ref=e79]: Лиды
+                - generic [ref=e80]:
+                  - button "Все лиды" [ref=e81]:
+                    - img [ref=e82]
+                    - generic [ref=e86]: Все лиды
+                  - button "Мои лиды" [ref=e87]:
+                    - img [ref=e88]
+                    - generic [ref=e92]: Мои лиды
+              - generic [ref=e93]:
+                - button "Заявки" [ref=e94]:
+                  - img [ref=e95]
+                  - generic [ref=e97]: Заявки
+                - generic [ref=e98]:
+                  - button "Все заявки" [ref=e99]:
+                    - img [ref=e100]
+                    - generic [ref=e103]: Все заявки
+                  - button "Мои заявки" [ref=e104]:
+                    - img [ref=e105]
+                    - generic [ref=e108]: Мои заявки
+                  - button "Активные заявки" [ref=e109]:
+                    - img [ref=e110]
+                    - generic [ref=e114]: Активные заявки
+              - generic [ref=e116]:
+                - button "Представления продаж" [ref=e117]:
+                  - img [ref=e118]
+                  - generic [ref=e120]: Представления продаж
+                - generic [ref=e121]:
+                  - button "Срочные лиды" [ref=e122]:
+                    - img [ref=e123]
+                    - generic [ref=e125]: Срочные лиды
+                  - button "Без первого контакта" [ref=e126]:
+                    - img [ref=e127]
+                    - generic [ref=e130]: Без первого контакта
+                  - button "Ждут перевода в заявку" [ref=e131]:
+                    - img [ref=e132]
+                    - generic [ref=e135]: Ждут перевода в заявку
+                  - button "Требуют брони" [ref=e136]:
+                    - img [ref=e137]
+                    - generic [ref=e140]: Требуют брони
+                  - button "Зависшие" [ref=e141]:
+                    - img [ref=e142]
+                    - generic [ref=e145]: Зависшие
+                  - button "Дубли" [ref=e146]:
+                    - img [ref=e147]
+                    - generic [ref=e150]: Дубли
+            - button "Сообщить о баге" [ref=e152]:
+              - img [ref=e153]
+              - generic [ref=e162]: Сообщить о баге
+        - main [ref=e163]:
+          - generic [ref=e164]:
+            - generic [ref=e165]:
+              - generic [ref=e166]:
+                - heading "Лиды" [level=1] [ref=e167]
+                - button "Новый лид" [ref=e168]:
+                  - img [ref=e169]
+                  - generic [ref=e170]: Новый лид
+              - generic [ref=e171]:
+                - button "Доска" [ref=e172]:
+                  - img [ref=e173]
+                  - generic [ref=e178]: Доска
+                - button "Список" [ref=e179]:
+                  - img [ref=e180]
+                  - generic [ref=e181]: Список
+                - button "Таблица" [ref=e182]:
+                  - img [ref=e183]
+                  - generic [ref=e185]: Таблица
+            - generic [ref=e186]:
+              - generic [ref=e187]:
+                - img
+                - textbox "Поиск по лидам" [ref=e188]
+              - combobox [ref=e189]:
+                - generic: Все
+                - img
+              - combobox [ref=e190]:
+                - generic: Все менеджеры
+                - img
+              - combobox [ref=e191]:
+                - generic: Все источники
+                - img
+              - combobox [ref=e192]:
+                - generic: Все типы
+                - img
+              - button "Срочные" [ref=e194]
+              - button "Дубли" [ref=e195]
+              - button "Зависшие" [ref=e196]
+              - button "Сохранить вид" [ref=e198]:
+                - img [ref=e199]
+                - generic [ref=e201]: Сохранить вид
+            - generic [ref=e203]:
+              - button "Новые лиды 0" [ref=e204]:
+                - img [ref=e206]
+                - generic [ref=e208]:
+                  - generic [ref=e209]: Новые лиды
+                  - generic [ref=e210]: "0"
+              - button "Без первого контакта 0" [ref=e211]:
+                - img [ref=e213]
+                - generic [ref=e216]:
+                  - generic [ref=e217]: Без первого контакта
+                  - generic [ref=e218]: "0"
+              - button "Ждут перевода в заявку 91" [ref=e219]:
+                - img [ref=e221]
+                - generic [ref=e225]:
+                  - generic [ref=e226]: Ждут перевода в заявку
+                  - generic [ref=e227]: "91"
+              - button "Требуют брони 114" [ref=e228]:
+                - img [ref=e230]
+                - generic [ref=e232]:
+                  - generic [ref=e233]: Требуют брони
+                  - generic [ref=e234]: "114"
+              - button "Выезды сегодня 0" [ref=e235]:
+                - img [ref=e237]
+                - generic [ref=e242]:
+                  - generic [ref=e243]: Выезды сегодня
+                  - generic [ref=e244]: "0"
+              - button "Зависшие 0" [ref=e245]:
+                - img [ref=e247]
+                - generic [ref=e250]:
+                  - generic [ref=e251]: Зависшие
+                  - generic [ref=e252]: "0"
+              - button "Дубли 85" [ref=e253]:
+                - img [ref=e255]
+                - generic [ref=e258]:
+                  - generic [ref=e259]: Дубли
+                  - generic [ref=e260]: "85"
+              - button "Конфликт брони 0" [ref=e261]:
+                - img [ref=e263]
+                - generic [ref=e265]:
+                  - generic [ref=e266]: Конфликт брони
+                  - generic [ref=e267]: "0"
+            - generic [ref=e269]:
+              - generic [ref=e270]:
+                - generic [ref=e272]:
+                  - heading "Лид" [level=3] [ref=e274]
+                  - generic [ref=e275]: "91"
+                - generic [ref=e276]:
+                  - generic [ref=e278] [cursor=pointer]:
+                    - generic [ref=e281]: E2E Manager 011-1779189509206-457
+                    - generic [ref=e283]:
+                      - img [ref=e284]
+                      - generic [ref=e287]: Ручной
+                    - generic [ref=e289]:
+                      - img [ref=e290]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e292]:
+                      - generic [ref=e293]:
+                        - img [ref=e294]
+                        - link "+79001174587" [ref=e296]:
+                          - /url: tel:+79001174587
+                      - generic [ref=e297]: —
+                    - generic [ref=e298]:
+                      - generic [ref=e299]:
+                        - img [ref=e300]
+                        - generic [ref=e303]: Manager User
+                      - generic [ref=e304]: только что
+                  - generic [ref=e306] [cursor=pointer]:
+                    - generic [ref=e309]: E2E Lead 001-1779189487651-684
+                    - generic [ref=e311]:
+                      - img [ref=e312]
+                      - generic [ref=e315]: Ручной
+                    - generic [ref=e317]:
+                      - img [ref=e318]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e320]:
+                      - generic [ref=e321]:
+                        - img [ref=e322]
+                        - link "+79009612486" [ref=e324]:
+                          - /url: tel:+79009612486
+                      - generic [ref=e325]: —
+                    - generic [ref=e326]:
+                      - generic [ref=e327]:
+                        - img [ref=e328]
+                        - generic [ref=e331]: Manager User
+                      - generic [ref=e332]: только что
+                  - generic [ref=e334] [cursor=pointer]:
+                    - generic [ref=e336]:
+                      - generic [ref=e337]: QA Site Routing First Lead Updated
+                      - generic [ref=e338]: QA Site 043-1779189312229-8031 LLC
+                    - generic [ref=e340]:
+                      - img [ref=e341]
+                      - generic [ref=e344]: Сайт
+                    - generic [ref=e346]:
+                      - img [ref=e347]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e349]:
+                      - generic [ref=e350]:
+                        - img [ref=e351]
+                        - link "+79990431177918931" [ref=e353]:
+                          - /url: tel:+79990431177918931
+                      - generic [ref=e354]: —
+                    - generic [ref=e355]:
+                      - generic [ref=e356]:
+                        - img [ref=e357]
+                        - generic [ref=e360]: Manager User
+                      - generic [ref=e361]: 3 мин назад
+                  - generic [ref=e363] [cursor=pointer]:
+                    - generic [ref=e365]:
+                      - generic [ref=e366]: QA Site Routing Second Lead
+                      - generic [ref=e367]: QA Site 043-1779189312229-8031 Second LLC
+                    - generic [ref=e369]:
+                      - img [ref=e370]
+                      - generic [ref=e373]: Сайт
+                    - generic [ref=e375]:
+                      - img [ref=e376]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e378]:
+                      - generic [ref=e379]:
+                        - img [ref=e380]
+                        - link "+79990432177918931" [ref=e382]:
+                          - /url: tel:+79990432177918931
+                      - generic [ref=e383]: —
+                    - generic [ref=e384]:
+                      - generic [ref=e385]:
+                        - img [ref=e386]
+                        - generic [ref=e389]: QA Site Routing Manager
+                      - generic [ref=e390]: 3 мин назад
+                  - generic [ref=e392] [cursor=pointer]:
+                    - generic [ref=e393]:
+                      - generic [ref=e395]: QA APIC037-1779189311629-4340 Lead
+                      - generic [ref=e396]: Дубль
+                    - generic [ref=e398]:
+                      - img [ref=e399]
+                      - generic [ref=e402]: Ручной
+                    - generic [ref=e404]:
+                      - img [ref=e405]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e407]:
+                      - generic [ref=e408]:
+                        - img [ref=e409]
+                        - link "+79990371779189311" [ref=e411]:
+                          - /url: tel:+79990371779189311
+                      - generic [ref=e412]: —
+                    - generic [ref=e413]:
+                      - generic [ref=e414]:
+                        - img [ref=e415]
+                        - generic [ref=e418]: Manager User
+                      - generic [ref=e419]: 3 мин назад
+                  - generic [ref=e421] [cursor=pointer]:
+                    - generic [ref=e424]: Интеграционный контакт
+                    - generic [ref=e426]:
+                      - img [ref=e427]
+                      - generic [ref=e429]: Mango
+                    - generic [ref=e431]:
+                      - img [ref=e432]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e434]:
+                      - generic [ref=e435]:
+                        - img [ref=e436]
+                        - link "+79990391779189311" [ref=e438]:
+                          - /url: tel:+79990391779189311
+                      - generic [ref=e439]: —
+                    - generic [ref=e440]:
+                      - generic [ref=e441]:
+                        - img [ref=e442]
+                        - generic [ref=e445]: Admin User
+                      - generic [ref=e446]: 3 мин назад
+                  - generic [ref=e448] [cursor=pointer]:
+                    - generic [ref=e451]: Интеграционный контакт
+                    - generic [ref=e453]:
+                      - img [ref=e454]
+                      - generic [ref=e456]: Mango
+                    - generic [ref=e458]:
+                      - img [ref=e459]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e461]:
+                      - generic [ref=e462]:
+                        - img [ref=e463]
+                        - link "+79990371779189311" [ref=e465]:
+                          - /url: tel:+79990371779189311
+                      - generic [ref=e466]: —
+                    - generic [ref=e467]:
+                      - generic [ref=e468]:
+                        - img [ref=e469]
+                        - generic [ref=e472]: Admin User
+                      - generic [ref=e473]: 3 мин назад
+                  - generic [ref=e475] [cursor=pointer]:
+                    - generic [ref=e476]:
+                      - generic [ref=e478]: QA APIC-003 Lead B
+                      - generic [ref=e479]: Дубль
+                    - generic [ref=e481]:
+                      - img [ref=e482]
+                      - generic [ref=e485]: Ручной
+                    - generic [ref=e487]:
+                      - img [ref=e488]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e490]:
+                      - generic [ref=e491]:
+                        - img [ref=e492]
+                        - link "+79990031779189311" [ref=e494]:
+                          - /url: tel:+79990031779189311
+                      - generic [ref=e495]: —
+                    - generic [ref=e496]:
+                      - generic [ref=e497]:
+                        - img [ref=e498]
+                        - generic [ref=e501]: Manager User
+                      - generic [ref=e502]: 3 мин назад
+                  - generic [ref=e504] [cursor=pointer]:
+                    - generic [ref=e507]: QA APIC-003 Lead A
+                    - generic [ref=e509]:
+                      - img [ref=e510]
+                      - generic [ref=e513]: Ручной
+                    - generic [ref=e515]:
+                      - img [ref=e516]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e518]:
+                      - generic [ref=e519]:
+                        - img [ref=e520]
+                        - link "+79990031779189311" [ref=e522]:
+                          - /url: tel:+79990031779189311
+                      - generic [ref=e523]: —
+                    - generic [ref=e524]:
+                      - generic [ref=e525]:
+                        - img [ref=e526]
+                        - generic [ref=e529]: Manager User
+                      - generic [ref=e530]: 3 мин назад
+                  - generic [ref=e532] [cursor=pointer]:
+                    - generic [ref=e535]: QA APIC-002 Lead
+                    - generic [ref=e537]:
+                      - img [ref=e538]
+                      - generic [ref=e541]: Ручной
+                    - generic [ref=e543]:
+                      - img [ref=e544]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e546]:
+                      - generic [ref=e547]:
+                        - img [ref=e548]
+                        - link "+79990021779189311" [ref=e550]:
+                          - /url: tel:+79990021779189311
+                      - generic [ref=e551]: —
+                    - generic [ref=e552]:
+                      - generic [ref=e553]:
+                        - img [ref=e554]
+                        - generic [ref=e557]: Manager User
+                      - generic [ref=e558]: 3 мин назад
+                  - generic [ref=e560] [cursor=pointer]:
+                    - generic [ref=e562]:
+                      - generic [ref=e563]: QA Site Routing First Lead Updated
+                      - generic [ref=e564]: QA Site 043-1779189249800-7297 LLC
+                    - generic [ref=e566]:
+                      - img [ref=e567]
+                      - generic [ref=e570]: Сайт
+                    - generic [ref=e572]:
+                      - img [ref=e573]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e575]:
+                      - generic [ref=e576]:
+                        - img [ref=e577]
+                        - link "+79990431177918924" [ref=e579]:
+                          - /url: tel:+79990431177918924
+                      - generic [ref=e580]: —
+                    - generic [ref=e581]:
+                      - generic [ref=e582]:
+                        - img [ref=e583]
+                        - generic [ref=e586]: Manager User
+                      - generic [ref=e587]: 4 мин назад
+                  - generic [ref=e589] [cursor=pointer]:
+                    - generic [ref=e591]:
+                      - generic [ref=e592]: QA Site Routing Second Lead
+                      - generic [ref=e593]: QA Site 043-1779189249800-7297 Second LLC
+                    - generic [ref=e595]:
+                      - img [ref=e596]
+                      - generic [ref=e599]: Сайт
+                    - generic [ref=e601]:
+                      - img [ref=e602]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e604]:
+                      - generic [ref=e605]:
+                        - img [ref=e606]
+                        - link "+79990432177918924" [ref=e608]:
+                          - /url: tel:+79990432177918924
+                      - generic [ref=e609]: —
+                    - generic [ref=e610]:
+                      - generic [ref=e611]:
+                        - img [ref=e612]
+                        - generic [ref=e615]: QA Site Routing Manager
+                      - generic [ref=e616]: 4 мин назад
+                  - generic [ref=e618] [cursor=pointer]:
+                    - generic [ref=e621]: Интеграционный контакт
+                    - generic [ref=e623]:
+                      - img [ref=e624]
+                      - generic [ref=e626]: Mango
+                    - generic [ref=e628]:
+                      - img [ref=e629]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e631]:
+                      - generic [ref=e632]:
+                        - img [ref=e633]
+                        - link "+79990391779189249" [ref=e635]:
+                          - /url: tel:+79990391779189249
+                      - generic [ref=e636]: —
+                    - generic [ref=e637]:
+                      - generic [ref=e638]:
+                        - img [ref=e639]
+                        - generic [ref=e642]: Admin User
+                      - generic [ref=e643]: 4 мин назад
+                  - generic [ref=e645] [cursor=pointer]:
+                    - generic [ref=e648]: Интеграционный контакт
+                    - generic [ref=e650]:
+                      - img [ref=e651]
+                      - generic [ref=e653]: Mango
+                    - generic [ref=e655]:
+                      - img [ref=e656]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e658]:
+                      - generic [ref=e659]:
+                        - img [ref=e660]
+                        - link "+79990371779189249" [ref=e662]:
+                          - /url: tel:+79990371779189249
+                      - generic [ref=e663]: —
+                    - generic [ref=e664]:
+                      - generic [ref=e665]:
+                        - img [ref=e666]
+                        - generic [ref=e669]: Admin User
+                      - generic [ref=e670]: 4 мин назад
+                  - generic [ref=e672] [cursor=pointer]:
+                    - generic [ref=e675]: QA APIC037-1779189240693-7654 Lead
+                    - generic [ref=e677]:
+                      - img [ref=e678]
+                      - generic [ref=e681]: Ручной
+                    - generic [ref=e683]:
+                      - img [ref=e684]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e686]:
+                      - generic [ref=e687]:
+                        - img [ref=e688]
+                        - link "+79990371779189240" [ref=e690]:
+                          - /url: tel:+79990371779189240
+                      - generic [ref=e691]: —
+                    - generic [ref=e692]:
+                      - generic [ref=e693]:
+                        - img [ref=e694]
+                        - generic [ref=e697]: Manager User
+                      - generic [ref=e698]: 4 мин назад
+                  - generic [ref=e700] [cursor=pointer]:
+                    - generic [ref=e701]:
+                      - generic [ref=e703]: QA APIC-003 Lead B
+                      - generic [ref=e704]: Дубль
+                    - generic [ref=e706]:
+                      - img [ref=e707]
+                      - generic [ref=e710]: Ручной
+                    - generic [ref=e712]:
+                      - img [ref=e713]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e715]:
+                      - generic [ref=e716]:
+                        - img [ref=e717]
+                        - link "+79990031779189240" [ref=e719]:
+                          - /url: tel:+79990031779189240
+                      - generic [ref=e720]: —
+                    - generic [ref=e721]:
+                      - generic [ref=e722]:
+                        - img [ref=e723]
+                        - generic [ref=e726]: Manager User
+                      - generic [ref=e727]: 4 мин назад
+                  - generic [ref=e729] [cursor=pointer]:
+                    - generic [ref=e732]: QA APIC-003 Lead A
+                    - generic [ref=e734]:
+                      - img [ref=e735]
+                      - generic [ref=e738]: Ручной
+                    - generic [ref=e740]:
+                      - img [ref=e741]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e743]:
+                      - generic [ref=e744]:
+                        - img [ref=e745]
+                        - link "+79990031779189240" [ref=e747]:
+                          - /url: tel:+79990031779189240
+                      - generic [ref=e748]: —
+                    - generic [ref=e749]:
+                      - generic [ref=e750]:
+                        - img [ref=e751]
+                        - generic [ref=e754]: Manager User
+                      - generic [ref=e755]: 4 мин назад
+                  - generic [ref=e757] [cursor=pointer]:
+                    - generic [ref=e760]: QA APIC-002 Lead
+                    - generic [ref=e762]:
+                      - img [ref=e763]
+                      - generic [ref=e766]: Ручной
+                    - generic [ref=e768]:
+                      - img [ref=e769]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e771]:
+                      - generic [ref=e772]:
+                        - img [ref=e773]
+                        - link "+79990021779189240" [ref=e775]:
+                          - /url: tel:+79990021779189240
+                      - generic [ref=e776]: —
+                    - generic [ref=e777]:
+                      - generic [ref=e778]:
+                        - img [ref=e779]
+                        - generic [ref=e782]: Manager User
+                      - generic [ref=e783]: 4 мин назад
+                  - generic [ref=e785] [cursor=pointer]:
+                    - generic [ref=e788]: QA APIC037-1779189180221-1734 Lead
+                    - generic [ref=e790]:
+                      - img [ref=e791]
+                      - generic [ref=e794]: Ручной
+                    - generic [ref=e796]:
+                      - img [ref=e797]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e799]:
+                      - generic [ref=e800]:
+                        - img [ref=e801]
+                        - link "+79990371779189180" [ref=e803]:
+                          - /url: tel:+79990371779189180
+                      - generic [ref=e804]: —
+                    - generic [ref=e805]:
+                      - generic [ref=e806]:
+                        - img [ref=e807]
+                        - generic [ref=e810]: Manager User
+                      - generic [ref=e811]: 5 мин назад
+                  - generic [ref=e813] [cursor=pointer]:
+                    - generic [ref=e814]:
+                      - generic [ref=e816]: QA APIC-003 Lead B
+                      - generic [ref=e817]: Дубль
+                    - generic [ref=e819]:
+                      - img [ref=e820]
+                      - generic [ref=e823]: Ручной
+                    - generic [ref=e825]:
+                      - img [ref=e826]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e828]:
+                      - generic [ref=e829]:
+                        - img [ref=e830]
+                        - link "+79990031779189180" [ref=e832]:
+                          - /url: tel:+79990031779189180
+                      - generic [ref=e833]: —
+                    - generic [ref=e834]:
+                      - generic [ref=e835]:
+                        - img [ref=e836]
+                        - generic [ref=e839]: Manager User
+                      - generic [ref=e840]: 5 мин назад
+                  - generic [ref=e842] [cursor=pointer]:
+                    - generic [ref=e845]: QA APIC-003 Lead A
+                    - generic [ref=e847]:
+                      - img [ref=e848]
+                      - generic [ref=e851]: Ручной
+                    - generic [ref=e853]:
+                      - img [ref=e854]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e856]:
+                      - generic [ref=e857]:
+                        - img [ref=e858]
+                        - link "+79990031779189180" [ref=e860]:
+                          - /url: tel:+79990031779189180
+                      - generic [ref=e861]: —
+                    - generic [ref=e862]:
+                      - generic [ref=e863]:
+                        - img [ref=e864]
+                        - generic [ref=e867]: Manager User
+                      - generic [ref=e868]: 5 мин назад
+                  - generic [ref=e870] [cursor=pointer]:
+                    - generic [ref=e873]: QA APIC-002 Lead
+                    - generic [ref=e875]:
+                      - img [ref=e876]
+                      - generic [ref=e879]: Ручной
+                    - generic [ref=e881]:
+                      - img [ref=e882]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e884]:
+                      - generic [ref=e885]:
+                        - img [ref=e886]
+                        - link "+79990021779189179" [ref=e888]:
+                          - /url: tel:+79990021779189179
+                      - generic [ref=e889]: —
+                    - generic [ref=e890]:
+                      - generic [ref=e891]:
+                        - img [ref=e892]
+                        - generic [ref=e895]: Manager User
+                      - generic [ref=e896]: 5 мин назад
+                  - generic [ref=e898] [cursor=pointer]:
+                    - generic [ref=e901]: QA Mango Routing Lead
+                    - generic [ref=e903]:
+                      - img [ref=e904]
+                      - generic [ref=e907]: Ручной
+                    - generic [ref=e909]:
+                      - img [ref=e910]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e912]:
+                      - generic [ref=e913]:
+                        - img [ref=e914]
+                        - link "+79990411779189017" [ref=e916]:
+                          - /url: tel:+79990411779189017
+                      - generic [ref=e917]: —
+                    - generic [ref=e918]:
+                      - generic [ref=e919]:
+                        - img [ref=e920]
+                        - generic [ref=e923]: Admin User
+                      - generic [ref=e924]: 8 мин назад
+                  - generic [ref=e926] [cursor=pointer]:
+                    - generic [ref=e929]: QA Mango Routing Lead
+                    - generic [ref=e931]:
+                      - img [ref=e932]
+                      - generic [ref=e935]: Ручной
+                    - generic [ref=e937]:
+                      - img [ref=e938]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e940]:
+                      - generic [ref=e941]:
+                        - img [ref=e942]
+                        - link "+79990411779189002" [ref=e944]:
+                          - /url: tel:+79990411779189002
+                      - generic [ref=e945]: —
+                    - generic [ref=e946]:
+                      - generic [ref=e947]:
+                        - img [ref=e948]
+                        - generic [ref=e951]: Admin User
+                      - generic [ref=e952]: 8 мин назад
+                  - generic [ref=e954] [cursor=pointer]:
+                    - generic [ref=e956]:
+                      - generic [ref=e957]: QA Site Routing First Lead Updated
+                      - generic [ref=e958]: QA Site 043-1779188956157-8862 LLC
+                    - generic [ref=e960]:
+                      - img [ref=e961]
+                      - generic [ref=e964]: Сайт
+                    - generic [ref=e966]:
+                      - img [ref=e967]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e969]:
+                      - generic [ref=e970]:
+                        - img [ref=e971]
+                        - link "+79990431177918895" [ref=e973]:
+                          - /url: tel:+79990431177918895
+                      - generic [ref=e974]: —
+                    - generic [ref=e975]:
+                      - generic [ref=e976]:
+                        - img [ref=e977]
+                        - generic [ref=e980]: Manager User
+                      - generic [ref=e981]: 9 мин назад
+                  - generic [ref=e983] [cursor=pointer]:
+                    - generic [ref=e985]:
+                      - generic [ref=e986]: QA Site Routing Second Lead
+                      - generic [ref=e987]: QA Site 043-1779188956157-8862 Second LLC
+                    - generic [ref=e989]:
+                      - img [ref=e990]
+                      - generic [ref=e993]: Сайт
+                    - generic [ref=e995]:
+                      - img [ref=e996]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e998]:
+                      - generic [ref=e999]:
+                        - img [ref=e1000]
+                        - link "+79990432177918895" [ref=e1002]:
+                          - /url: tel:+79990432177918895
+                      - generic [ref=e1003]: —
+                    - generic [ref=e1004]:
+                      - generic [ref=e1005]:
+                        - img [ref=e1006]
+                        - generic [ref=e1009]: QA Site Routing Manager
+                      - generic [ref=e1010]: 9 мин назад
+                  - generic [ref=e1012] [cursor=pointer]:
+                    - generic [ref=e1015]: QA Mango Routing Lead
+                    - generic [ref=e1017]:
+                      - img [ref=e1018]
+                      - generic [ref=e1021]: Ручной
+                    - generic [ref=e1023]:
+                      - img [ref=e1024]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1026]:
+                      - generic [ref=e1027]:
+                        - img [ref=e1028]
+                        - link "+79990411779188955" [ref=e1030]:
+                          - /url: tel:+79990411779188955
+                      - generic [ref=e1031]: —
+                    - generic [ref=e1032]:
+                      - generic [ref=e1033]:
+                        - img [ref=e1034]
+                        - generic [ref=e1037]: Admin User
+                      - generic [ref=e1038]: 9 мин назад
+                  - generic [ref=e1040] [cursor=pointer]:
+                    - generic [ref=e1043]: Интеграционный контакт
+                    - generic [ref=e1045]:
+                      - img [ref=e1046]
+                      - generic [ref=e1048]: Mango
+                    - generic [ref=e1050]:
+                      - img [ref=e1051]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1053]:
+                      - generic [ref=e1054]:
+                        - img [ref=e1055]
+                        - link "+79990391779188955" [ref=e1057]:
+                          - /url: tel:+79990391779188955
+                      - generic [ref=e1058]: —
+                    - generic [ref=e1059]:
+                      - generic [ref=e1060]:
+                        - img [ref=e1061]
+                        - generic [ref=e1064]: Admin User
+                      - generic [ref=e1065]: 9 мин назад
+                  - generic [ref=e1067] [cursor=pointer]:
+                    - generic [ref=e1070]: Интеграционный контакт
+                    - generic [ref=e1072]:
+                      - img [ref=e1073]
+                      - generic [ref=e1075]: Mango
+                    - generic [ref=e1077]:
+                      - img [ref=e1078]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1080]:
+                      - generic [ref=e1081]:
+                        - img [ref=e1082]
+                        - link "+79990371779188955" [ref=e1084]:
+                          - /url: tel:+79990371779188955
+                      - generic [ref=e1085]: —
+                    - generic [ref=e1086]:
+                      - generic [ref=e1087]:
+                        - img [ref=e1088]
+                        - generic [ref=e1091]: Admin User
+                      - generic [ref=e1092]: 9 мин назад
+                  - generic [ref=e1094] [cursor=pointer]:
+                    - generic [ref=e1097]: QA APIC037-1779188951796-6717 Lead
+                    - generic [ref=e1099]:
+                      - img [ref=e1100]
+                      - generic [ref=e1103]: Ручной
+                    - generic [ref=e1105]:
+                      - img [ref=e1106]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1108]:
+                      - generic [ref=e1109]:
+                        - img [ref=e1110]
+                        - link "+79990371779188951" [ref=e1112]:
+                          - /url: tel:+79990371779188951
+                      - generic [ref=e1113]: —
+                    - generic [ref=e1114]:
+                      - generic [ref=e1115]:
+                        - img [ref=e1116]
+                        - generic [ref=e1119]: Manager User
+                      - generic [ref=e1120]: 9 мин назад
+                  - generic [ref=e1122] [cursor=pointer]:
+                    - generic [ref=e1123]:
+                      - generic [ref=e1125]: QA APIC-003 Lead B
+                      - generic [ref=e1126]: Дубль
+                    - generic [ref=e1128]:
+                      - img [ref=e1129]
+                      - generic [ref=e1132]: Ручной
+                    - generic [ref=e1134]:
+                      - img [ref=e1135]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1137]:
+                      - generic [ref=e1138]:
+                        - img [ref=e1139]
+                        - link "+79990031779188951" [ref=e1141]:
+                          - /url: tel:+79990031779188951
+                      - generic [ref=e1142]: —
+                    - generic [ref=e1143]:
+                      - generic [ref=e1144]:
+                        - img [ref=e1145]
+                        - generic [ref=e1148]: Manager User
+                      - generic [ref=e1149]: 9 мин назад
+                  - generic [ref=e1151] [cursor=pointer]:
+                    - generic [ref=e1154]: QA APIC-003 Lead A
+                    - generic [ref=e1156]:
+                      - img [ref=e1157]
+                      - generic [ref=e1160]: Ручной
+                    - generic [ref=e1162]:
+                      - img [ref=e1163]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1165]:
+                      - generic [ref=e1166]:
+                        - img [ref=e1167]
+                        - link "+79990031779188951" [ref=e1169]:
+                          - /url: tel:+79990031779188951
+                      - generic [ref=e1170]: —
+                    - generic [ref=e1171]:
+                      - generic [ref=e1172]:
+                        - img [ref=e1173]
+                        - generic [ref=e1176]: Manager User
+                      - generic [ref=e1177]: 9 мин назад
+                  - generic [ref=e1179] [cursor=pointer]:
+                    - generic [ref=e1182]: QA APIC-002 Lead
+                    - generic [ref=e1184]:
+                      - img [ref=e1185]
+                      - generic [ref=e1188]: Ручной
+                    - generic [ref=e1190]:
+                      - img [ref=e1191]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1193]:
+                      - generic [ref=e1194]:
+                        - img [ref=e1195]
+                        - link "+79990021779188951" [ref=e1197]:
+                          - /url: tel:+79990021779188951
+                      - generic [ref=e1198]: —
+                    - generic [ref=e1199]:
+                      - generic [ref=e1200]:
+                        - img [ref=e1201]
+                        - generic [ref=e1204]: Manager User
+                      - generic [ref=e1205]: 9 мин назад
+                  - generic [ref=e1207] [cursor=pointer]:
+                    - generic [ref=e1209]:
+                      - generic [ref=e1210]: QA Site Routing First Lead Updated
+                      - generic [ref=e1211]: QA Site 043-1779188873242-7637 LLC
+                    - generic [ref=e1213]:
+                      - img [ref=e1214]
+                      - generic [ref=e1217]: Сайт
+                    - generic [ref=e1219]:
+                      - img [ref=e1220]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1222]:
+                      - generic [ref=e1223]:
+                        - img [ref=e1224]
+                        - link "+79990431177918887" [ref=e1226]:
+                          - /url: tel:+79990431177918887
+                      - generic [ref=e1227]: —
+                    - generic [ref=e1228]:
+                      - generic [ref=e1229]:
+                        - img [ref=e1230]
+                        - generic [ref=e1233]: Manager User
+                      - generic [ref=e1234]: 10 мин назад
+                  - generic [ref=e1236] [cursor=pointer]:
+                    - generic [ref=e1238]:
+                      - generic [ref=e1239]: QA Site Routing Second Lead
+                      - generic [ref=e1240]: QA Site 043-1779188873242-7637 Second LLC
+                    - generic [ref=e1242]:
+                      - img [ref=e1243]
+                      - generic [ref=e1246]: Сайт
+                    - generic [ref=e1248]:
+                      - img [ref=e1249]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1251]:
+                      - generic [ref=e1252]:
+                        - img [ref=e1253]
+                        - link "+79990432177918887" [ref=e1255]:
+                          - /url: tel:+79990432177918887
+                      - generic [ref=e1256]: —
+                    - generic [ref=e1257]:
+                      - generic [ref=e1258]:
+                        - img [ref=e1259]
+                        - generic [ref=e1262]: QA Site Routing Manager
+                      - generic [ref=e1263]: 10 мин назад
+                  - generic [ref=e1265] [cursor=pointer]:
+                    - generic [ref=e1268]: QA Mango Routing Lead
+                    - generic [ref=e1270]:
+                      - img [ref=e1271]
+                      - generic [ref=e1274]: Ручной
+                    - generic [ref=e1276]:
+                      - img [ref=e1277]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1279]:
+                      - generic [ref=e1280]:
+                        - img [ref=e1281]
+                        - link "+79990411779188872" [ref=e1283]:
+                          - /url: tel:+79990411779188872
+                      - generic [ref=e1284]: —
+                    - generic [ref=e1285]:
+                      - generic [ref=e1286]:
+                        - img [ref=e1287]
+                        - generic [ref=e1290]: Admin User
+                      - generic [ref=e1291]: 10 мин назад
+                  - generic [ref=e1293] [cursor=pointer]:
+                    - generic [ref=e1294]:
+                      - generic [ref=e1296]: QA APIC037-1779188872594-4884 Lead
+                      - generic [ref=e1297]: Дубль
+                    - generic [ref=e1299]:
+                      - img [ref=e1300]
+                      - generic [ref=e1303]: Ручной
+                    - generic [ref=e1305]:
+                      - img [ref=e1306]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1308]:
+                      - generic [ref=e1309]:
+                        - img [ref=e1310]
+                        - link "+79990371779188872" [ref=e1312]:
+                          - /url: tel:+79990371779188872
+                      - generic [ref=e1313]: —
+                    - generic [ref=e1314]:
+                      - generic [ref=e1315]:
+                        - img [ref=e1316]
+                        - generic [ref=e1319]: Manager User
+                      - generic [ref=e1320]: 10 мин назад
+                  - generic [ref=e1322] [cursor=pointer]:
+                    - generic [ref=e1325]: Интеграционный контакт
+                    - generic [ref=e1327]:
+                      - img [ref=e1328]
+                      - generic [ref=e1330]: Mango
+                    - generic [ref=e1332]:
+                      - img [ref=e1333]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1335]:
+                      - generic [ref=e1336]:
+                        - img [ref=e1337]
+                        - link "+79990391779188872" [ref=e1339]:
+                          - /url: tel:+79990391779188872
+                      - generic [ref=e1340]: —
+                    - generic [ref=e1341]:
+                      - generic [ref=e1342]:
+                        - img [ref=e1343]
+                        - generic [ref=e1346]: Admin User
+                      - generic [ref=e1347]: 10 мин назад
+                  - generic [ref=e1349] [cursor=pointer]:
+                    - generic [ref=e1352]: Интеграционный контакт
+                    - generic [ref=e1354]:
+                      - img [ref=e1355]
+                      - generic [ref=e1357]: Mango
+                    - generic [ref=e1359]:
+                      - img [ref=e1360]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1362]:
+                      - generic [ref=e1363]:
+                        - img [ref=e1364]
+                        - link "+79990371779188872" [ref=e1366]:
+                          - /url: tel:+79990371779188872
+                      - generic [ref=e1367]: —
+                    - generic [ref=e1368]:
+                      - generic [ref=e1369]:
+                        - img [ref=e1370]
+                        - generic [ref=e1373]: Admin User
+                      - generic [ref=e1374]: 10 мин назад
+                  - generic [ref=e1376] [cursor=pointer]:
+                    - generic [ref=e1377]:
+                      - generic [ref=e1379]: QA APIC-003 Lead B
+                      - generic [ref=e1380]: Дубль
+                    - generic [ref=e1382]:
+                      - img [ref=e1383]
+                      - generic [ref=e1386]: Ручной
+                    - generic [ref=e1388]:
+                      - img [ref=e1389]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1391]:
+                      - generic [ref=e1392]:
+                        - img [ref=e1393]
+                        - link "+79990031779188872" [ref=e1395]:
+                          - /url: tel:+79990031779188872
+                      - generic [ref=e1396]: —
+                    - generic [ref=e1397]:
+                      - generic [ref=e1398]:
+                        - img [ref=e1399]
+                        - generic [ref=e1402]: Manager User
+                      - generic [ref=e1403]: 10 мин назад
+                  - generic [ref=e1405] [cursor=pointer]:
+                    - generic [ref=e1408]: QA APIC-003 Lead A
+                    - generic [ref=e1410]:
+                      - img [ref=e1411]
+                      - generic [ref=e1414]: Ручной
+                    - generic [ref=e1416]:
+                      - img [ref=e1417]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1419]:
+                      - generic [ref=e1420]:
+                        - img [ref=e1421]
+                        - link "+79990031779188872" [ref=e1423]:
+                          - /url: tel:+79990031779188872
+                      - generic [ref=e1424]: —
+                    - generic [ref=e1425]:
+                      - generic [ref=e1426]:
+                        - img [ref=e1427]
+                        - generic [ref=e1430]: Manager User
+                      - generic [ref=e1431]: 10 мин назад
+                  - generic [ref=e1433] [cursor=pointer]:
+                    - generic [ref=e1436]: QA APIC-002 Lead
+                    - generic [ref=e1438]:
+                      - img [ref=e1439]
+                      - generic [ref=e1442]: Ручной
+                    - generic [ref=e1444]:
+                      - img [ref=e1445]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1447]:
+                      - generic [ref=e1448]:
+                        - img [ref=e1449]
+                        - link "+79990021779188872" [ref=e1451]:
+                          - /url: tel:+79990021779188872
+                      - generic [ref=e1452]: —
+                    - generic [ref=e1453]:
+                      - generic [ref=e1454]:
+                        - img [ref=e1455]
+                        - generic [ref=e1458]: Manager User
+                      - generic [ref=e1459]: 10 мин назад
+                  - generic [ref=e1461] [cursor=pointer]:
+                    - generic [ref=e1462]:
+                      - generic [ref=e1464]: QA APIC037-1778762934568-1386 Lead
+                      - generic [ref=e1465]: Дубль
+                    - generic [ref=e1467]:
+                      - img [ref=e1468]
+                      - generic [ref=e1471]: Ручной
+                    - generic [ref=e1473]:
+                      - img [ref=e1474]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1476]:
+                      - generic [ref=e1477]:
+                        - img [ref=e1478]
+                        - link "+79990371778762934" [ref=e1480]:
+                          - /url: tel:+79990371778762934
+                      - generic [ref=e1481]: —
+                    - generic [ref=e1482]:
+                      - generic [ref=e1483]:
+                        - img [ref=e1484]
+                        - generic [ref=e1487]: Manager User
+                      - generic [ref=e1488]: 4 дн назад
+                  - generic [ref=e1490] [cursor=pointer]:
+                    - generic [ref=e1493]: Интеграционный контакт
+                    - generic [ref=e1495]:
+                      - img [ref=e1496]
+                      - generic [ref=e1498]: Mango
+                    - generic [ref=e1500]:
+                      - img [ref=e1501]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1503]:
+                      - generic [ref=e1504]:
+                        - img [ref=e1505]
+                        - link "+79990391778762934" [ref=e1507]:
+                          - /url: tel:+79990391778762934
+                      - generic [ref=e1508]: —
+                    - generic [ref=e1509]:
+                      - generic [ref=e1510]:
+                        - img [ref=e1511]
+                        - generic [ref=e1514]: Admin User
+                      - generic [ref=e1515]: 4 дн назад
+                  - generic [ref=e1517] [cursor=pointer]:
+                    - generic [ref=e1520]: Интеграционный контакт
+                    - generic [ref=e1522]:
+                      - img [ref=e1523]
+                      - generic [ref=e1525]: Mango
+                    - generic [ref=e1527]:
+                      - img [ref=e1528]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1530]:
+                      - generic [ref=e1531]:
+                        - img [ref=e1532]
+                        - link "+79990371778762934" [ref=e1534]:
+                          - /url: tel:+79990371778762934
+                      - generic [ref=e1535]: —
+                    - generic [ref=e1536]:
+                      - generic [ref=e1537]:
+                        - img [ref=e1538]
+                        - generic [ref=e1541]: Admin User
+                      - generic [ref=e1542]: 4 дн назад
+                  - generic [ref=e1544] [cursor=pointer]:
+                    - generic [ref=e1545]:
+                      - generic [ref=e1547]: QA APIC-003 Lead B
+                      - generic [ref=e1548]: Дубль
+                    - generic [ref=e1550]:
+                      - img [ref=e1551]
+                      - generic [ref=e1554]: Ручной
+                    - generic [ref=e1556]:
+                      - img [ref=e1557]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1559]:
+                      - generic [ref=e1560]:
+                        - img [ref=e1561]
+                        - link "+79990031778762934" [ref=e1563]:
+                          - /url: tel:+79990031778762934
+                      - generic [ref=e1564]: —
+                    - generic [ref=e1565]:
+                      - generic [ref=e1566]:
+                        - img [ref=e1567]
+                        - generic [ref=e1570]: Manager User
+                      - generic [ref=e1571]: 4 дн назад
+                  - generic [ref=e1573] [cursor=pointer]:
+                    - generic [ref=e1576]: QA APIC-003 Lead A
+                    - generic [ref=e1578]:
+                      - img [ref=e1579]
+                      - generic [ref=e1582]: Ручной
+                    - generic [ref=e1584]:
+                      - img [ref=e1585]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1587]:
+                      - generic [ref=e1588]:
+                        - img [ref=e1589]
+                        - link "+79990031778762934" [ref=e1591]:
+                          - /url: tel:+79990031778762934
+                      - generic [ref=e1592]: —
+                    - generic [ref=e1593]:
+                      - generic [ref=e1594]:
+                        - img [ref=e1595]
+                        - generic [ref=e1598]: Manager User
+                      - generic [ref=e1599]: 4 дн назад
+                  - generic [ref=e1601] [cursor=pointer]:
+                    - generic [ref=e1604]: QA APIC-002 Lead
+                    - generic [ref=e1606]:
+                      - img [ref=e1607]
+                      - generic [ref=e1610]: Ручной
+                    - generic [ref=e1612]:
+                      - img [ref=e1613]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1615]:
+                      - generic [ref=e1616]:
+                        - img [ref=e1617]
+                        - link "+79990021778762934" [ref=e1619]:
+                          - /url: tel:+79990021778762934
+                      - generic [ref=e1620]: —
+                    - generic [ref=e1621]:
+                      - generic [ref=e1622]:
+                        - img [ref=e1623]
+                        - generic [ref=e1626]: Manager User
+                      - generic [ref=e1627]: 4 дн назад
+                  - generic [ref=e1629] [cursor=pointer]:
+                    - generic [ref=e1632]: QA APIC037-1778762868016-1039 Lead
+                    - generic [ref=e1634]:
+                      - img [ref=e1635]
+                      - generic [ref=e1638]: Ручной
+                    - generic [ref=e1640]:
+                      - img [ref=e1641]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1643]:
+                      - generic [ref=e1644]:
+                        - img [ref=e1645]
+                        - link "+79990371778762868" [ref=e1647]:
+                          - /url: tel:+79990371778762868
+                      - generic [ref=e1648]: —
+                    - generic [ref=e1649]:
+                      - generic [ref=e1650]:
+                        - img [ref=e1651]
+                        - generic [ref=e1654]: Manager User
+                      - generic [ref=e1655]: 4 дн назад
+                  - generic [ref=e1657] [cursor=pointer]:
+                    - generic [ref=e1660]: Интеграционный контакт
+                    - generic [ref=e1662]:
+                      - img [ref=e1663]
+                      - generic [ref=e1665]: Mango
+                    - generic [ref=e1667]:
+                      - img [ref=e1668]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1670]:
+                      - generic [ref=e1671]:
+                        - img [ref=e1672]
+                        - link "+79990391778762867" [ref=e1674]:
+                          - /url: tel:+79990391778762867
+                      - generic [ref=e1675]: —
+                    - generic [ref=e1676]:
+                      - generic [ref=e1677]:
+                        - img [ref=e1678]
+                        - generic [ref=e1681]: Admin User
+                      - generic [ref=e1682]: 4 дн назад
+                  - generic [ref=e1684] [cursor=pointer]:
+                    - generic [ref=e1687]: Интеграционный контакт
+                    - generic [ref=e1689]:
+                      - img [ref=e1690]
+                      - generic [ref=e1692]: Mango
+                    - generic [ref=e1694]:
+                      - img [ref=e1695]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1697]:
+                      - generic [ref=e1698]:
+                        - img [ref=e1699]
+                        - link "+79990371778762867" [ref=e1701]:
+                          - /url: tel:+79990371778762867
+                      - generic [ref=e1702]: —
+                    - generic [ref=e1703]:
+                      - generic [ref=e1704]:
+                        - img [ref=e1705]
+                        - generic [ref=e1708]: Admin User
+                      - generic [ref=e1709]: 4 дн назад
+                  - generic [ref=e1711] [cursor=pointer]:
+                    - generic [ref=e1712]:
+                      - generic [ref=e1714]: QA APIC-003 Lead B
+                      - generic [ref=e1715]: Дубль
+                    - generic [ref=e1717]:
+                      - img [ref=e1718]
+                      - generic [ref=e1721]: Ручной
+                    - generic [ref=e1723]:
+                      - img [ref=e1724]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1726]:
+                      - generic [ref=e1727]:
+                        - img [ref=e1728]
+                        - link "+79990031778762867" [ref=e1730]:
+                          - /url: tel:+79990031778762867
+                      - generic [ref=e1731]: —
+                    - generic [ref=e1732]:
+                      - generic [ref=e1733]:
+                        - img [ref=e1734]
+                        - generic [ref=e1737]: Manager User
+                      - generic [ref=e1738]: 4 дн назад
+                  - generic [ref=e1740] [cursor=pointer]:
+                    - generic [ref=e1743]: QA APIC-003 Lead A
+                    - generic [ref=e1745]:
+                      - img [ref=e1746]
+                      - generic [ref=e1749]: Ручной
+                    - generic [ref=e1751]:
+                      - img [ref=e1752]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1754]:
+                      - generic [ref=e1755]:
+                        - img [ref=e1756]
+                        - link "+79990031778762867" [ref=e1758]:
+                          - /url: tel:+79990031778762867
+                      - generic [ref=e1759]: —
+                    - generic [ref=e1760]:
+                      - generic [ref=e1761]:
+                        - img [ref=e1762]
+                        - generic [ref=e1765]: Manager User
+                      - generic [ref=e1766]: 4 дн назад
+                  - generic [ref=e1768] [cursor=pointer]:
+                    - generic [ref=e1771]: QA APIC-002 Lead
+                    - generic [ref=e1773]:
+                      - img [ref=e1774]
+                      - generic [ref=e1777]: Ручной
+                    - generic [ref=e1779]:
+                      - img [ref=e1780]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1782]:
+                      - generic [ref=e1783]:
+                        - img [ref=e1784]
+                        - link "+79990021778762867" [ref=e1786]:
+                          - /url: tel:+79990021778762867
+                      - generic [ref=e1787]: —
+                    - generic [ref=e1788]:
+                      - generic [ref=e1789]:
+                        - img [ref=e1790]
+                        - generic [ref=e1793]: Manager User
+                      - generic [ref=e1794]: 4 дн назад
+                  - generic [ref=e1796] [cursor=pointer]:
+                    - generic [ref=e1799]: Интеграционный контакт
+                    - generic [ref=e1801]:
+                      - img [ref=e1802]
+                      - generic [ref=e1804]: Mango
+                    - generic [ref=e1806]:
+                      - img [ref=e1807]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1809]:
+                      - generic [ref=e1810]:
+                        - img [ref=e1811]
+                        - link "+79990391778759629" [ref=e1813]:
+                          - /url: tel:+79990391778759629
+                      - generic [ref=e1814]: —
+                    - generic [ref=e1815]:
+                      - generic [ref=e1816]:
+                        - img [ref=e1817]
+                        - generic [ref=e1820]: Admin User
+                      - generic [ref=e1821]: 4 дн назад
+                  - generic [ref=e1823] [cursor=pointer]:
+                    - generic [ref=e1826]: Интеграционный контакт
+                    - generic [ref=e1828]:
+                      - img [ref=e1829]
+                      - generic [ref=e1831]: Mango
+                    - generic [ref=e1833]:
+                      - img [ref=e1834]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1836]:
+                      - generic [ref=e1837]:
+                        - img [ref=e1838]
+                        - link "+79990371778759629" [ref=e1840]:
+                          - /url: tel:+79990371778759629
+                      - generic [ref=e1841]: —
+                    - generic [ref=e1842]:
+                      - generic [ref=e1843]:
+                        - img [ref=e1844]
+                        - generic [ref=e1847]: Admin User
+                      - generic [ref=e1848]: 4 дн назад
+                  - generic [ref=e1850] [cursor=pointer]:
+                    - generic [ref=e1853]: Интеграционный контакт
+                    - generic [ref=e1855]:
+                      - img [ref=e1856]
+                      - generic [ref=e1858]: Mango
+                    - generic [ref=e1860]:
+                      - img [ref=e1861]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1863]:
+                      - generic [ref=e1864]:
+                        - img [ref=e1865]
+                        - link "+79990391778759601" [ref=e1867]:
+                          - /url: tel:+79990391778759601
+                      - generic [ref=e1868]: —
+                    - generic [ref=e1869]:
+                      - generic [ref=e1870]:
+                        - img [ref=e1871]
+                        - generic [ref=e1874]: Admin User
+                      - generic [ref=e1875]: 4 дн назад
+                  - generic [ref=e1877] [cursor=pointer]:
+                    - generic [ref=e1880]: Интеграционный контакт
+                    - generic [ref=e1882]:
+                      - img [ref=e1883]
+                      - generic [ref=e1885]: Mango
+                    - generic [ref=e1887]:
+                      - img [ref=e1888]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1890]:
+                      - generic [ref=e1891]:
+                        - img [ref=e1892]
+                        - link "+79990371778759601" [ref=e1894]:
+                          - /url: tel:+79990371778759601
+                      - generic [ref=e1895]: —
+                    - generic [ref=e1896]:
+                      - generic [ref=e1897]:
+                        - img [ref=e1898]
+                        - generic [ref=e1901]: Admin User
+                      - generic [ref=e1902]: 4 дн назад
+                  - generic [ref=e1904] [cursor=pointer]:
+                    - generic [ref=e1907]: QA APIC037-1778759594300-5761 Lead
+                    - generic [ref=e1909]:
+                      - img [ref=e1910]
+                      - generic [ref=e1913]: Ручной
+                    - generic [ref=e1915]:
+                      - img [ref=e1916]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1918]:
+                      - generic [ref=e1919]:
+                        - img [ref=e1920]
+                        - link "+79990371778759594" [ref=e1922]:
+                          - /url: tel:+79990371778759594
+                      - generic [ref=e1923]: —
+                    - generic [ref=e1924]:
+                      - generic [ref=e1925]:
+                        - img [ref=e1926]
+                        - generic [ref=e1929]: Manager User
+                      - generic [ref=e1930]: 4 дн назад
+                  - generic [ref=e1932] [cursor=pointer]:
+                    - generic [ref=e1933]:
+                      - generic [ref=e1935]: QA APIC-003 Lead B
+                      - generic [ref=e1936]: Дубль
+                    - generic [ref=e1938]:
+                      - img [ref=e1939]
+                      - generic [ref=e1942]: Ручной
+                    - generic [ref=e1944]:
+                      - img [ref=e1945]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1947]:
+                      - generic [ref=e1948]:
+                        - img [ref=e1949]
+                        - link "+79990031778759594" [ref=e1951]:
+                          - /url: tel:+79990031778759594
+                      - generic [ref=e1952]: —
+                    - generic [ref=e1953]:
+                      - generic [ref=e1954]:
+                        - img [ref=e1955]
+                        - generic [ref=e1958]: Manager User
+                      - generic [ref=e1959]: 4 дн назад
+                  - generic [ref=e1961] [cursor=pointer]:
+                    - generic [ref=e1964]: QA APIC-003 Lead A
+                    - generic [ref=e1966]:
+                      - img [ref=e1967]
+                      - generic [ref=e1970]: Ручной
+                    - generic [ref=e1972]:
+                      - img [ref=e1973]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e1975]:
+                      - generic [ref=e1976]:
+                        - img [ref=e1977]
+                        - link "+79990031778759594" [ref=e1979]:
+                          - /url: tel:+79990031778759594
+                      - generic [ref=e1980]: —
+                    - generic [ref=e1981]:
+                      - generic [ref=e1982]:
+                        - img [ref=e1983]
+                        - generic [ref=e1986]: Manager User
+                      - generic [ref=e1987]: 4 дн назад
+                  - generic [ref=e1989] [cursor=pointer]:
+                    - generic [ref=e1992]: QA APIC-002 Lead
+                    - generic [ref=e1994]:
+                      - img [ref=e1995]
+                      - generic [ref=e1998]: Ручной
+                    - generic [ref=e2000]:
+                      - img [ref=e2001]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2003]:
+                      - generic [ref=e2004]:
+                        - img [ref=e2005]
+                        - link "+79990021778759594" [ref=e2007]:
+                          - /url: tel:+79990021778759594
+                      - generic [ref=e2008]: —
+                    - generic [ref=e2009]:
+                      - generic [ref=e2010]:
+                        - img [ref=e2011]
+                        - generic [ref=e2014]: Manager User
+                      - generic [ref=e2015]: 4 дн назад
+                  - generic [ref=e2017] [cursor=pointer]:
+                    - generic [ref=e2020]: Интеграционный контакт
+                    - generic [ref=e2022]:
+                      - img [ref=e2023]
+                      - generic [ref=e2025]: Mango
+                    - generic [ref=e2027]:
+                      - img [ref=e2028]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2030]:
+                      - generic [ref=e2031]:
+                        - img [ref=e2032]
+                        - link "+79990391778758850" [ref=e2034]:
+                          - /url: tel:+79990391778758850
+                      - generic [ref=e2035]: —
+                    - generic [ref=e2036]:
+                      - generic [ref=e2037]:
+                        - img [ref=e2038]
+                        - generic [ref=e2041]: Admin User
+                      - generic [ref=e2042]: 4 дн назад
+                  - generic [ref=e2044] [cursor=pointer]:
+                    - generic [ref=e2047]: Интеграционный контакт
+                    - generic [ref=e2049]:
+                      - img [ref=e2050]
+                      - generic [ref=e2052]: Mango
+                    - generic [ref=e2054]:
+                      - img [ref=e2055]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2057]:
+                      - generic [ref=e2058]:
+                        - img [ref=e2059]
+                        - link "+79990371778758850" [ref=e2061]:
+                          - /url: tel:+79990371778758850
+                      - generic [ref=e2062]: —
+                    - generic [ref=e2063]:
+                      - generic [ref=e2064]:
+                        - img [ref=e2065]
+                        - generic [ref=e2068]: Admin User
+                      - generic [ref=e2069]: 4 дн назад
+                  - generic [ref=e2071] [cursor=pointer]:
+                    - generic [ref=e2074]: QA APIC037-1778758846155-906 Lead
+                    - generic [ref=e2076]:
+                      - img [ref=e2077]
+                      - generic [ref=e2080]: Ручной
+                    - generic [ref=e2082]:
+                      - img [ref=e2083]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2085]:
+                      - generic [ref=e2086]:
+                        - img [ref=e2087]
+                        - link "+79990371778758846" [ref=e2089]:
+                          - /url: tel:+79990371778758846
+                      - generic [ref=e2090]: —
+                    - generic [ref=e2091]:
+                      - generic [ref=e2092]:
+                        - img [ref=e2093]
+                        - generic [ref=e2096]: Manager User
+                      - generic [ref=e2097]: 4 дн назад
+                  - generic [ref=e2099] [cursor=pointer]:
+                    - generic [ref=e2100]:
+                      - generic [ref=e2102]: QA APIC-003 Lead B
+                      - generic [ref=e2103]: Дубль
+                    - generic [ref=e2105]:
+                      - img [ref=e2106]
+                      - generic [ref=e2109]: Ручной
+                    - generic [ref=e2111]:
+                      - img [ref=e2112]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2114]:
+                      - generic [ref=e2115]:
+                        - img [ref=e2116]
+                        - link "+79990031778758846" [ref=e2118]:
+                          - /url: tel:+79990031778758846
+                      - generic [ref=e2119]: —
+                    - generic [ref=e2120]:
+                      - generic [ref=e2121]:
+                        - img [ref=e2122]
+                        - generic [ref=e2125]: Manager User
+                      - generic [ref=e2126]: 4 дн назад
+                  - generic [ref=e2128] [cursor=pointer]:
+                    - generic [ref=e2131]: QA APIC-003 Lead A
+                    - generic [ref=e2133]:
+                      - img [ref=e2134]
+                      - generic [ref=e2137]: Ручной
+                    - generic [ref=e2139]:
+                      - img [ref=e2140]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2142]:
+                      - generic [ref=e2143]:
+                        - img [ref=e2144]
+                        - link "+79990031778758846" [ref=e2146]:
+                          - /url: tel:+79990031778758846
+                      - generic [ref=e2147]: —
+                    - generic [ref=e2148]:
+                      - generic [ref=e2149]:
+                        - img [ref=e2150]
+                        - generic [ref=e2153]: Manager User
+                      - generic [ref=e2154]: 4 дн назад
+                  - generic [ref=e2156] [cursor=pointer]:
+                    - generic [ref=e2159]: QA APIC-002 Lead
+                    - generic [ref=e2161]:
+                      - img [ref=e2162]
+                      - generic [ref=e2165]: Ручной
+                    - generic [ref=e2167]:
+                      - img [ref=e2168]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2170]:
+                      - generic [ref=e2171]:
+                        - img [ref=e2172]
+                        - link "+79990021778758845" [ref=e2174]:
+                          - /url: tel:+79990021778758845
+                      - generic [ref=e2175]: —
+                    - generic [ref=e2176]:
+                      - generic [ref=e2177]:
+                        - img [ref=e2178]
+                        - generic [ref=e2181]: Manager User
+                      - generic [ref=e2182]: 4 дн назад
+                  - generic [ref=e2184] [cursor=pointer]:
+                    - generic [ref=e2187]: Интеграционный контакт
+                    - generic [ref=e2189]:
+                      - img [ref=e2190]
+                      - generic [ref=e2192]: Mango
+                    - generic [ref=e2194]:
+                      - img [ref=e2195]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2197]:
+                      - generic [ref=e2198]:
+                        - img [ref=e2199]
+                        - link "+79990391778758801" [ref=e2201]:
+                          - /url: tel:+79990391778758801
+                      - generic [ref=e2202]: —
+                    - generic [ref=e2203]:
+                      - generic [ref=e2204]:
+                        - img [ref=e2205]
+                        - generic [ref=e2208]: Admin User
+                      - generic [ref=e2209]: 4 дн назад
+                  - generic [ref=e2211] [cursor=pointer]:
+                    - generic [ref=e2214]: Интеграционный контакт
+                    - generic [ref=e2216]:
+                      - img [ref=e2217]
+                      - generic [ref=e2219]: Mango
+                    - generic [ref=e2221]:
+                      - img [ref=e2222]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2224]:
+                      - generic [ref=e2225]:
+                        - img [ref=e2226]
+                        - link "+79990371778758801" [ref=e2228]:
+                          - /url: tel:+79990371778758801
+                      - generic [ref=e2229]: —
+                    - generic [ref=e2230]:
+                      - generic [ref=e2231]:
+                        - img [ref=e2232]
+                        - generic [ref=e2235]: Admin User
+                      - generic [ref=e2236]: 4 дн назад
+                  - generic [ref=e2238] [cursor=pointer]:
+                    - generic [ref=e2241]: QA APIC037-1778758796566-1555 Lead
+                    - generic [ref=e2243]:
+                      - img [ref=e2244]
+                      - generic [ref=e2247]: Ручной
+                    - generic [ref=e2249]:
+                      - img [ref=e2250]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2252]:
+                      - generic [ref=e2253]:
+                        - img [ref=e2254]
+                        - link "+79990371778758796" [ref=e2256]:
+                          - /url: tel:+79990371778758796
+                      - generic [ref=e2257]: —
+                    - generic [ref=e2258]:
+                      - generic [ref=e2259]:
+                        - img [ref=e2260]
+                        - generic [ref=e2263]: Manager User
+                      - generic [ref=e2264]: 4 дн назад
+                  - generic [ref=e2266] [cursor=pointer]:
+                    - generic [ref=e2267]:
+                      - generic [ref=e2269]: QA APIC-003 Lead B
+                      - generic [ref=e2270]: Дубль
+                    - generic [ref=e2272]:
+                      - img [ref=e2273]
+                      - generic [ref=e2276]: Ручной
+                    - generic [ref=e2278]:
+                      - img [ref=e2279]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2281]:
+                      - generic [ref=e2282]:
+                        - img [ref=e2283]
+                        - link "+79990031778758796" [ref=e2285]:
+                          - /url: tel:+79990031778758796
+                      - generic [ref=e2286]: —
+                    - generic [ref=e2287]:
+                      - generic [ref=e2288]:
+                        - img [ref=e2289]
+                        - generic [ref=e2292]: Manager User
+                      - generic [ref=e2293]: 4 дн назад
+                  - generic [ref=e2295] [cursor=pointer]:
+                    - generic [ref=e2298]: QA APIC-003 Lead A
+                    - generic [ref=e2300]:
+                      - img [ref=e2301]
+                      - generic [ref=e2304]: Ручной
+                    - generic [ref=e2306]:
+                      - img [ref=e2307]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2309]:
+                      - generic [ref=e2310]:
+                        - img [ref=e2311]
+                        - link "+79990031778758796" [ref=e2313]:
+                          - /url: tel:+79990031778758796
+                      - generic [ref=e2314]: —
+                    - generic [ref=e2315]:
+                      - generic [ref=e2316]:
+                        - img [ref=e2317]
+                        - generic [ref=e2320]: Manager User
+                      - generic [ref=e2321]: 4 дн назад
+                  - generic [ref=e2323] [cursor=pointer]:
+                    - generic [ref=e2326]: QA APIC-002 Lead
+                    - generic [ref=e2328]:
+                      - img [ref=e2329]
+                      - generic [ref=e2332]: Ручной
+                    - generic [ref=e2334]:
+                      - img [ref=e2335]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2337]:
+                      - generic [ref=e2338]:
+                        - img [ref=e2339]
+                        - link "+79990021778758796" [ref=e2341]:
+                          - /url: tel:+79990021778758796
+                      - generic [ref=e2342]: —
+                    - generic [ref=e2343]:
+                      - generic [ref=e2344]:
+                        - img [ref=e2345]
+                        - generic [ref=e2348]: Manager User
+                      - generic [ref=e2349]: 4 дн назад
+                  - generic [ref=e2351] [cursor=pointer]:
+                    - generic [ref=e2354]: QA APIC037-1778758773147-7010 Lead
+                    - generic [ref=e2356]:
+                      - img [ref=e2357]
+                      - generic [ref=e2360]: Ручной
+                    - generic [ref=e2362]:
+                      - img [ref=e2363]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2365]:
+                      - generic [ref=e2366]:
+                        - img [ref=e2367]
+                        - link "+79990371778758773" [ref=e2369]:
+                          - /url: tel:+79990371778758773
+                      - generic [ref=e2370]: —
+                    - generic [ref=e2371]:
+                      - generic [ref=e2372]:
+                        - img [ref=e2373]
+                        - generic [ref=e2376]: Manager User
+                      - generic [ref=e2377]: 4 дн назад
+                  - generic [ref=e2379] [cursor=pointer]:
+                    - generic [ref=e2380]:
+                      - generic [ref=e2382]: QA APIC-003 Lead B
+                      - generic [ref=e2383]: Дубль
+                    - generic [ref=e2385]:
+                      - img [ref=e2386]
+                      - generic [ref=e2389]: Ручной
+                    - generic [ref=e2391]:
+                      - img [ref=e2392]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2394]:
+                      - generic [ref=e2395]:
+                        - img [ref=e2396]
+                        - link "+79990031778758773" [ref=e2398]:
+                          - /url: tel:+79990031778758773
+                      - generic [ref=e2399]: —
+                    - generic [ref=e2400]:
+                      - generic [ref=e2401]:
+                        - img [ref=e2402]
+                        - generic [ref=e2405]: Manager User
+                      - generic [ref=e2406]: 4 дн назад
+                  - generic [ref=e2408] [cursor=pointer]:
+                    - generic [ref=e2411]: QA APIC-003 Lead A
+                    - generic [ref=e2413]:
+                      - img [ref=e2414]
+                      - generic [ref=e2417]: Ручной
+                    - generic [ref=e2419]:
+                      - img [ref=e2420]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2422]:
+                      - generic [ref=e2423]:
+                        - img [ref=e2424]
+                        - link "+79990031778758773" [ref=e2426]:
+                          - /url: tel:+79990031778758773
+                      - generic [ref=e2427]: —
+                    - generic [ref=e2428]:
+                      - generic [ref=e2429]:
+                        - img [ref=e2430]
+                        - generic [ref=e2433]: Manager User
+                      - generic [ref=e2434]: 4 дн назад
+                  - generic [ref=e2436] [cursor=pointer]:
+                    - generic [ref=e2439]: Интеграционный контакт
+                    - generic [ref=e2441]:
+                      - img [ref=e2442]
+                      - generic [ref=e2444]: Mango
+                    - generic [ref=e2446]:
+                      - img [ref=e2447]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2449]:
+                      - generic [ref=e2450]:
+                        - img [ref=e2451]
+                        - link "+79990391778758772" [ref=e2453]:
+                          - /url: tel:+79990391778758772
+                      - generic [ref=e2454]: —
+                    - generic [ref=e2455]:
+                      - generic [ref=e2456]:
+                        - img [ref=e2457]
+                        - generic [ref=e2460]: Admin User
+                      - generic [ref=e2461]: 4 дн назад
+                  - generic [ref=e2463] [cursor=pointer]:
+                    - generic [ref=e2466]: Интеграционный контакт
+                    - generic [ref=e2468]:
+                      - img [ref=e2469]
+                      - generic [ref=e2471]: Mango
+                    - generic [ref=e2473]:
+                      - img [ref=e2474]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2476]:
+                      - generic [ref=e2477]:
+                        - img [ref=e2478]
+                        - link "+79990371778758772" [ref=e2480]:
+                          - /url: tel:+79990371778758772
+                      - generic [ref=e2481]: —
+                    - generic [ref=e2482]:
+                      - generic [ref=e2483]:
+                        - img [ref=e2484]
+                        - generic [ref=e2487]: Admin User
+                      - generic [ref=e2488]: 4 дн назад
+                  - generic [ref=e2490] [cursor=pointer]:
+                    - generic [ref=e2493]: QA APIC-002 Lead
+                    - generic [ref=e2495]:
+                      - img [ref=e2496]
+                      - generic [ref=e2499]: Ручной
+                    - generic [ref=e2501]:
+                      - img [ref=e2502]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2504]:
+                      - generic [ref=e2505]:
+                        - img [ref=e2506]
+                        - link "+79990021778758772" [ref=e2508]:
+                          - /url: tel:+79990021778758772
+                      - generic [ref=e2509]: —
+                    - generic [ref=e2510]:
+                      - generic [ref=e2511]:
+                        - img [ref=e2512]
+                        - generic [ref=e2515]: Manager User
+                      - generic [ref=e2516]: 4 дн назад
+                  - generic [ref=e2518] [cursor=pointer]:
+                    - generic [ref=e2521]: Интеграционный контакт
+                    - generic [ref=e2523]:
+                      - img [ref=e2524]
+                      - generic [ref=e2526]: Mango
+                    - generic [ref=e2528]:
+                      - img [ref=e2529]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2531]:
+                      - generic [ref=e2532]:
+                        - img [ref=e2533]
+                        - link "+79990391778758728" [ref=e2535]:
+                          - /url: tel:+79990391778758728
+                      - generic [ref=e2536]: —
+                    - generic [ref=e2537]:
+                      - generic [ref=e2538]:
+                        - img [ref=e2539]
+                        - generic [ref=e2542]: Admin User
+                      - generic [ref=e2543]: 4 дн назад
+                  - generic [ref=e2545] [cursor=pointer]:
+                    - generic [ref=e2548]: Интеграционный контакт
+                    - generic [ref=e2550]:
+                      - img [ref=e2551]
+                      - generic [ref=e2553]: Mango
+                    - generic [ref=e2555]:
+                      - img [ref=e2556]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2558]:
+                      - generic [ref=e2559]:
+                        - img [ref=e2560]
+                        - link "+79990371778758728" [ref=e2562]:
+                          - /url: tel:+79990371778758728
+                      - generic [ref=e2563]: —
+                    - generic [ref=e2564]:
+                      - generic [ref=e2565]:
+                        - img [ref=e2566]
+                        - generic [ref=e2569]: Admin User
+                      - generic [ref=e2570]: 4 дн назад
+                  - generic [ref=e2572] [cursor=pointer]:
+                    - generic [ref=e2575]: Интеграционный контакт
+                    - generic [ref=e2577]:
+                      - img [ref=e2578]
+                      - generic [ref=e2580]: Mango
+                    - generic [ref=e2582]:
+                      - img [ref=e2583]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2585]:
+                      - generic [ref=e2586]:
+                        - img [ref=e2587]
+                        - link "+79990391778758703" [ref=e2589]:
+                          - /url: tel:+79990391778758703
+                      - generic [ref=e2590]: —
+                    - generic [ref=e2591]:
+                      - generic [ref=e2592]:
+                        - img [ref=e2593]
+                        - generic [ref=e2596]: Admin User
+                      - generic [ref=e2597]: 4 дн назад
+                  - generic [ref=e2599] [cursor=pointer]:
+                    - generic [ref=e2602]: Интеграционный контакт
+                    - generic [ref=e2604]:
+                      - img [ref=e2605]
+                      - generic [ref=e2607]: Mango
+                    - generic [ref=e2609]:
+                      - img [ref=e2610]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2612]:
+                      - generic [ref=e2613]:
+                        - img [ref=e2614]
+                        - link "+79990371778758703" [ref=e2616]:
+                          - /url: tel:+79990371778758703
+                      - generic [ref=e2617]: —
+                    - generic [ref=e2618]:
+                      - generic [ref=e2619]:
+                        - img [ref=e2620]
+                        - generic [ref=e2623]: Admin User
+                      - generic [ref=e2624]: 4 дн назад
+                  - generic [ref=e2626] [cursor=pointer]:
+                    - generic [ref=e2629]: Интеграционный контакт
+                    - generic [ref=e2631]:
+                      - img [ref=e2632]
+                      - generic [ref=e2634]: Mango
+                    - generic [ref=e2636]:
+                      - img [ref=e2637]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2639]:
+                      - generic [ref=e2640]:
+                        - img [ref=e2641]
+                        - link "+79990371778758489" [ref=e2643]:
+                          - /url: tel:+79990371778758489
+                      - generic [ref=e2644]: —
+                    - generic [ref=e2645]:
+                      - generic [ref=e2646]:
+                        - img [ref=e2647]
+                        - generic [ref=e2650]: Admin User
+                      - generic [ref=e2651]: 4 дн назад
+                  - generic [ref=e2653] [cursor=pointer]:
+                    - generic [ref=e2656]: Интеграционный контакт
+                    - generic [ref=e2658]:
+                      - img [ref=e2659]
+                      - generic [ref=e2661]: Mango
+                    - generic [ref=e2663]:
+                      - img [ref=e2664]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2666]:
+                      - generic [ref=e2667]:
+                        - img [ref=e2668]
+                        - link "+79990371778758241" [ref=e2670]:
+                          - /url: tel:+79990371778758241
+                      - generic [ref=e2671]: —
+                    - generic [ref=e2672]:
+                      - generic [ref=e2673]:
+                        - img [ref=e2674]
+                        - generic [ref=e2677]: Admin User
+                      - generic [ref=e2678]: 4 дн назад
+                  - generic [ref=e2680] [cursor=pointer]:
+                    - generic [ref=e2683]: QA APIC037-1778758233867-7109 Lead
+                    - generic [ref=e2685]:
+                      - img [ref=e2686]
+                      - generic [ref=e2689]: Ручной
+                    - generic [ref=e2691]:
+                      - img [ref=e2692]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2694]:
+                      - generic [ref=e2695]:
+                        - img [ref=e2696]
+                        - link "+79990371778758233" [ref=e2698]:
+                          - /url: tel:+79990371778758233
+                      - generic [ref=e2699]: —
+                    - generic [ref=e2700]:
+                      - generic [ref=e2701]:
+                        - img [ref=e2702]
+                        - generic [ref=e2705]: Manager User
+                      - generic [ref=e2706]: 4 дн назад
+                  - generic [ref=e2708] [cursor=pointer]:
+                    - generic [ref=e2709]:
+                      - generic [ref=e2711]: QA APIC-003 Lead B
+                      - generic [ref=e2712]: Дубль
+                    - generic [ref=e2714]:
+                      - img [ref=e2715]
+                      - generic [ref=e2718]: Ручной
+                    - generic [ref=e2720]:
+                      - img [ref=e2721]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2723]:
+                      - generic [ref=e2724]:
+                        - img [ref=e2725]
+                        - link "+79990031778758233" [ref=e2727]:
+                          - /url: tel:+79990031778758233
+                      - generic [ref=e2728]: —
+                    - generic [ref=e2729]:
+                      - generic [ref=e2730]:
+                        - img [ref=e2731]
+                        - generic [ref=e2734]: Manager User
+                      - generic [ref=e2735]: 4 дн назад
+                  - generic [ref=e2737] [cursor=pointer]:
+                    - generic [ref=e2740]: QA APIC-003 Lead A
+                    - generic [ref=e2742]:
+                      - img [ref=e2743]
+                      - generic [ref=e2746]: Ручной
+                    - generic [ref=e2748]:
+                      - img [ref=e2749]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2751]:
+                      - generic [ref=e2752]:
+                        - img [ref=e2753]
+                        - link "+79990031778758233" [ref=e2755]:
+                          - /url: tel:+79990031778758233
+                      - generic [ref=e2756]: —
+                    - generic [ref=e2757]:
+                      - generic [ref=e2758]:
+                        - img [ref=e2759]
+                        - generic [ref=e2762]: Manager User
+                      - generic [ref=e2763]: 4 дн назад
+                  - generic [ref=e2765] [cursor=pointer]:
+                    - generic [ref=e2768]: QA APIC-002 Lead
+                    - generic [ref=e2770]:
+                      - img [ref=e2771]
+                      - generic [ref=e2774]: Ручной
+                    - generic [ref=e2776]:
+                      - img [ref=e2777]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2779]:
+                      - generic [ref=e2780]:
+                        - img [ref=e2781]
+                        - link "+79990021778758233" [ref=e2783]:
+                          - /url: tel:+79990021778758233
+                      - generic [ref=e2784]: —
+                    - generic [ref=e2785]:
+                      - generic [ref=e2786]:
+                        - img [ref=e2787]
+                        - generic [ref=e2790]: Manager User
+                      - generic [ref=e2791]: 4 дн назад
+                  - generic [ref=e2793] [cursor=pointer]:
+                    - generic [ref=e2796]: QA INT-009 Lead
+                    - generic [ref=e2798]:
+                      - img [ref=e2799]
+                      - generic [ref=e2802]: Ручной
+                    - generic [ref=e2804]:
+                      - img [ref=e2805]
+                      - text: "Не хватает: адреса, даты…"
+                    - generic [ref=e2807]:
+                      - generic [ref=e2808]:
+                        - img [ref=e2809]
+                        - link "+790969897559" [ref=e2811]:
+                          - /url: tel:+790969897559
+                      - generic [ref=e2812]: —
+                    - generic [ref=e2813]:
+                      - generic [ref=e2814]:
+                        - img [ref=e2815]
+                        - generic [ref=e2818]: Manager User
+                      - generic [ref=e2819]: 12 дн назад
+                  - button "Добавить лид" [ref=e2820]:
+                    - img [ref=e2821]
+                    - generic [ref=e2822]: Добавить лид
+              - generic [ref=e2823]:
+                - generic [ref=e2825]:
+                  - heading "Заявка" [level=3] [ref=e2827]
+                  - generic [ref=e2828]: "114"
+                - generic [ref=e2829]:
+                  - generic [ref=e2831] [cursor=pointer]:
+                    - generic [ref=e2832]:
+                      - generic [ref=e2834]: E2E App 003-1779189499437-884
+                      - generic [ref=e2835]:
+                        - img [ref=e2836]
+                        - generic [ref=e2839]: Ручной
+                    - generic [ref=e2841]:
+                      - img [ref=e2842]
+                      - text: Ждёт sourcing
+                    - generic [ref=e2845]: Экскаватор
+                    - generic [ref=e2846]:
+                      - generic [ref=e2847]:
+                        - img [ref=e2848]
+                        - link "+79009943735" [ref=e2850]:
+                          - /url: tel:+79009943735
+                      - generic [ref=e2851]:
+                        - img [ref=e2852]
+                        - generic [ref=e2854]: 20.05.2026
+                    - generic [ref=e2855]:
+                      - generic [ref=e2856]:
+                        - img [ref=e2857]
+                        - generic [ref=e2860]: Manager User
+                      - generic [ref=e2861]: только что
+                  - generic [ref=e2863] [cursor=pointer]:
+                    - generic [ref=e2864]:
+                      - generic [ref=e2866]: QA APIC012-1779189314124-3821 Lead
+                      - generic [ref=e2867]:
+                        - img [ref=e2868]
+                        - generic [ref=e2871]: Ручной
+                    - generic [ref=e2873]:
+                      - img [ref=e2874]
+                      - text: Ждёт sourcing
+                    - generic [ref=e2877]: QA APIC012-1779189314124-3821 Equipment
+                    - generic [ref=e2878]:
+                      - generic [ref=e2879]:
+                        - img [ref=e2880]
+                        - link "+79990121771779189" [ref=e2882]:
+                          - /url: tel:+79990121771779189
+                      - generic [ref=e2883]:
+                        - img [ref=e2884]
+                        - generic [ref=e2886]: 20.05.2026
+                    - generic [ref=e2887]:
+                      - generic [ref=e2888]:
+                        - img [ref=e2889]
+                        - generic [ref=e2892]: Manager User
+                      - generic [ref=e2893]: 3 мин назад
+                  - generic [ref=e2895] [cursor=pointer]:
+                    - generic [ref=e2896]:
+                      - generic [ref=e2898]: QA APIC008CANCEL-1779189313417-5447 Lead
+                      - generic [ref=e2899]:
+                        - img [ref=e2900]
+                        - generic [ref=e2903]: Ручной
+                    - generic [ref=e2905]:
+                      - img [ref=e2906]
+                      - text: Ждёт sourcing
+                    - generic [ref=e2909]: QA APIC008CANCEL-1779189313417-5447 Equipment
+                    - generic [ref=e2910]:
+                      - generic [ref=e2911]:
+                        - img [ref=e2912]
+                        - link "+79990081771779189" [ref=e2914]:
+                          - /url: tel:+79990081771779189
+                      - generic [ref=e2915]:
+                        - img [ref=e2916]
+                        - generic [ref=e2918]: 20.05.2026
+                    - generic [ref=e2919]:
+                      - generic [ref=e2920]:
+                        - img [ref=e2921]
+                        - generic [ref=e2924]: Manager User
+                      - generic [ref=e2925]: 3 мин назад
+                  - generic [ref=e2927] [cursor=pointer]:
+                    - generic [ref=e2928]:
+                      - generic [ref=e2930]: QA APIC007-1779189313061-9597 Lead
+                      - generic [ref=e2931]:
+                        - img [ref=e2932]
+                        - generic [ref=e2935]: Ручной
+                    - generic [ref=e2937]:
+                      - img [ref=e2938]
+                      - text: Ждёт sourcing
+                    - generic [ref=e2941]: QA APIC007-1779189313061-9597 Equipment
+                    - generic [ref=e2942]:
+                      - generic [ref=e2943]:
+                        - img [ref=e2944]
+                        - link "+79990071771779189" [ref=e2946]:
+                          - /url: tel:+79990071771779189
+                      - generic [ref=e2947]:
+                        - img [ref=e2948]
+                        - generic [ref=e2950]: 20.05.2026
+                    - generic [ref=e2951]:
+                      - generic [ref=e2952]:
+                        - img [ref=e2953]
+                        - generic [ref=e2956]: Manager User
+                      - generic [ref=e2957]: 3 мин назад
+                  - generic [ref=e2959] [cursor=pointer]:
+                    - generic [ref=e2960]:
+                      - generic [ref=e2962]: QA APIC006-1779189312876-7093 Lead
+                      - generic [ref=e2963]:
+                        - img [ref=e2964]
+                        - generic [ref=e2967]: Ручной
+                    - generic [ref=e2969]:
+                      - img [ref=e2970]
+                      - text: Ждёт sourcing
+                    - generic [ref=e2973]: QA APIC006-1779189312876-7093 Equipment
+                    - generic [ref=e2974]:
+                      - generic [ref=e2975]:
+                        - img [ref=e2976]
+                        - link "+79990061771779189" [ref=e2978]:
+                          - /url: tel:+79990061771779189
+                      - generic [ref=e2979]:
+                        - img [ref=e2980]
+                        - generic [ref=e2982]: 20.05.2026
+                    - generic [ref=e2983]:
+                      - generic [ref=e2984]:
+                        - img [ref=e2985]
+                        - generic [ref=e2988]: Manager User
+                      - generic [ref=e2989]: 3 мин назад
+                  - generic [ref=e2991] [cursor=pointer]:
+                    - generic [ref=e2992]:
+                      - generic [ref=e2994]: QA APIC005-1779189312724-3176 Lead
+                      - generic [ref=e2995]:
+                        - img [ref=e2996]
+                        - generic [ref=e2999]: Ручной
+                    - generic [ref=e3001]:
+                      - img [ref=e3002]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3005]: QA APIC005-1779189312724-3176 Equipment
+                    - generic [ref=e3006]:
+                      - generic [ref=e3007]:
+                        - img [ref=e3008]
+                        - link "+79990051771779189" [ref=e3010]:
+                          - /url: tel:+79990051771779189
+                      - generic [ref=e3011]:
+                        - img [ref=e3012]
+                        - generic [ref=e3014]: 20.05.2026
+                    - generic [ref=e3015]:
+                      - generic [ref=e3016]:
+                        - img [ref=e3017]
+                        - generic [ref=e3020]: Manager User
+                      - generic [ref=e3021]: 3 мин назад
+                  - generic [ref=e3023] [cursor=pointer]:
+                    - generic [ref=e3024]:
+                      - generic [ref=e3026]: QA APIC040-1779189312481-261 Lead
+                      - generic [ref=e3027]:
+                        - img [ref=e3028]
+                        - generic [ref=e3031]: Ручной
+                    - generic [ref=e3033]:
+                      - img [ref=e3034]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3037]: QA APIC040-1779189312481-261 Equipment
+                    - generic [ref=e3038]:
+                      - generic [ref=e3039]:
+                        - img [ref=e3040]
+                        - link "+79990401771779189" [ref=e3042]:
+                          - /url: tel:+79990401771779189
+                      - generic [ref=e3043]:
+                        - img [ref=e3044]
+                        - generic [ref=e3046]: 20.05.2026
+                    - generic [ref=e3047]:
+                      - generic [ref=e3048]:
+                        - img [ref=e3049]
+                        - generic [ref=e3052]: Manager User
+                      - generic [ref=e3053]: 3 мин назад
+                  - generic [ref=e3055] [cursor=pointer]:
+                    - generic [ref=e3056]:
+                      - generic [ref=e3058]: QA APIC039-1779189312240-6156 Lead
+                      - generic [ref=e3059]:
+                        - img [ref=e3060]
+                        - generic [ref=e3063]: Ручной
+                    - generic [ref=e3065]:
+                      - img [ref=e3066]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3069]: QA APIC039-1779189312240-6156 Equipment
+                    - generic [ref=e3070]:
+                      - generic [ref=e3071]:
+                        - img [ref=e3072]
+                        - link "+79990391771779189" [ref=e3074]:
+                          - /url: tel:+79990391771779189
+                      - generic [ref=e3075]:
+                        - img [ref=e3076]
+                        - generic [ref=e3078]: 20.05.2026
+                    - generic [ref=e3079]:
+                      - generic [ref=e3080]:
+                        - img [ref=e3081]
+                        - generic [ref=e3084]: Manager User
+                      - generic [ref=e3085]: 3 мин назад
+                  - generic [ref=e3087] [cursor=pointer]:
+                    - generic [ref=e3088]:
+                      - generic [ref=e3090]: QA Mango Routing Lead
+                      - generic [ref=e3091]:
+                        - img [ref=e3092]
+                        - generic [ref=e3095]: Ручной
+                    - generic [ref=e3097]:
+                      - img [ref=e3098]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3101]: —
+                    - generic [ref=e3102]:
+                      - generic [ref=e3103]:
+                        - img [ref=e3104]
+                        - link "+79990411779189311" [ref=e3106]:
+                          - /url: tel:+79990411779189311
+                      - generic [ref=e3107]:
+                        - img [ref=e3108]
+                        - generic [ref=e3110]: 13.05.2026
+                    - generic [ref=e3111]:
+                      - generic [ref=e3112]:
+                        - img [ref=e3113]
+                        - generic [ref=e3116]: Manager User
+                      - generic [ref=e3117]: 3 мин назад
+                  - generic [ref=e3119] [cursor=pointer]:
+                    - generic [ref=e3120]:
+                      - generic [ref=e3122]: QA APIC004-1779189311751-2527 Lead
+                      - generic [ref=e3123]:
+                        - img [ref=e3124]
+                        - generic [ref=e3127]: Ручной
+                    - generic [ref=e3129]:
+                      - img [ref=e3130]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3133]: QA APIC004-1779189311751-2527 Equipment
+                    - generic [ref=e3134]:
+                      - generic [ref=e3135]:
+                        - img [ref=e3136]
+                        - link "+79990041771779189" [ref=e3138]:
+                          - /url: tel:+79990041771779189
+                      - generic [ref=e3139]:
+                        - img [ref=e3140]
+                        - generic [ref=e3142]: 20.05.2026
+                    - generic [ref=e3143]:
+                      - generic [ref=e3144]:
+                        - img [ref=e3145]
+                        - generic [ref=e3148]: Manager User
+                      - generic [ref=e3149]: 3 мин назад
+                  - generic [ref=e3151] [cursor=pointer]:
+                    - generic [ref=e3152]:
+                      - generic [ref=e3153]:
+                        - generic [ref=e3154]: QA Mango APIC 036
+                        - generic [ref=e3155]: QA APIC 036 036-1779189311216-1641 LLC
+                      - generic [ref=e3156]:
+                        - img [ref=e3157]
+                        - generic [ref=e3159]: Mango
+                    - generic [ref=e3161]:
+                      - img [ref=e3162]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3165]: —
+                    - generic [ref=e3166]:
+                      - generic [ref=e3167]:
+                        - img [ref=e3168]
+                        - link "+79990361779189311" [ref=e3170]:
+                          - /url: tel:+79990361779189311
+                      - generic [ref=e3171]:
+                        - img [ref=e3172]
+                        - generic [ref=e3174]: 13.05.2026
+                    - generic [ref=e3175]:
+                      - generic [ref=e3176]:
+                        - img [ref=e3177]
+                        - generic [ref=e3180]: Admin User
+                      - generic [ref=e3181]: 3 мин назад
+                  - generic [ref=e3183] [cursor=pointer]:
+                    - generic [ref=e3184]:
+                      - generic [ref=e3186]: QA Mango Routing Lead
+                      - generic [ref=e3187]:
+                        - img [ref=e3188]
+                        - generic [ref=e3191]: Ручной
+                    - generic [ref=e3193]:
+                      - img [ref=e3194]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3197]: —
+                    - generic [ref=e3198]:
+                      - generic [ref=e3199]:
+                        - img [ref=e3200]
+                        - link "+79990411779189249" [ref=e3202]:
+                          - /url: tel:+79990411779189249
+                      - generic [ref=e3203]:
+                        - img [ref=e3204]
+                        - generic [ref=e3206]: 13.05.2026
+                    - generic [ref=e3207]:
+                      - generic [ref=e3208]:
+                        - img [ref=e3209]
+                        - generic [ref=e3212]: Manager User
+                      - generic [ref=e3213]: 4 мин назад
+                  - generic [ref=e3215] [cursor=pointer]:
+                    - generic [ref=e3216]:
+                      - generic [ref=e3217]:
+                        - generic [ref=e3218]: QA Mango APIC 036
+                        - generic [ref=e3219]: QA APIC 036 036-1779189248932-379 LLC
+                      - generic [ref=e3220]:
+                        - img [ref=e3221]
+                        - generic [ref=e3223]: Mango
+                    - generic [ref=e3225]:
+                      - img [ref=e3226]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3229]: —
+                    - generic [ref=e3230]:
+                      - generic [ref=e3231]:
+                        - img [ref=e3232]
+                        - link "+79990361779189248" [ref=e3234]:
+                          - /url: tel:+79990361779189248
+                      - generic [ref=e3235]:
+                        - img [ref=e3236]
+                        - generic [ref=e3238]: 13.05.2026
+                    - generic [ref=e3239]:
+                      - generic [ref=e3240]:
+                        - img [ref=e3241]
+                        - generic [ref=e3244]: Admin User
+                      - generic [ref=e3245]: 4 мин назад
+                  - generic [ref=e3247] [cursor=pointer]:
+                    - generic [ref=e3248]:
+                      - generic [ref=e3250]: QA APIC012-1779189243582-4553 Lead
+                      - generic [ref=e3251]:
+                        - img [ref=e3252]
+                        - generic [ref=e3255]: Ручной
+                    - generic [ref=e3257]:
+                      - img [ref=e3258]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3261]: QA APIC012-1779189243582-4553 Equipment
+                    - generic [ref=e3262]:
+                      - generic [ref=e3263]:
+                        - img [ref=e3264]
+                        - link "+79990121771779189" [ref=e3266]:
+                          - /url: tel:+79990121771779189
+                      - generic [ref=e3267]:
+                        - img [ref=e3268]
+                        - generic [ref=e3270]: 20.05.2026
+                    - generic [ref=e3271]:
+                      - generic [ref=e3272]:
+                        - img [ref=e3273]
+                        - generic [ref=e3276]: Manager User
+                      - generic [ref=e3277]: 4 мин назад
+                  - generic [ref=e3279] [cursor=pointer]:
+                    - generic [ref=e3280]:
+                      - generic [ref=e3282]: QA APIC008CANCEL-1779189242714-6935 Lead
+                      - generic [ref=e3283]:
+                        - img [ref=e3284]
+                        - generic [ref=e3287]: Ручной
+                    - generic [ref=e3289]:
+                      - img [ref=e3290]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3293]: QA APIC008CANCEL-1779189242714-6935 Equipment
+                    - generic [ref=e3294]:
+                      - generic [ref=e3295]:
+                        - img [ref=e3296]
+                        - link "+79990081771779189" [ref=e3298]:
+                          - /url: tel:+79990081771779189
+                      - generic [ref=e3299]:
+                        - img [ref=e3300]
+                        - generic [ref=e3302]: 20.05.2026
+                    - generic [ref=e3303]:
+                      - generic [ref=e3304]:
+                        - img [ref=e3305]
+                        - generic [ref=e3308]: Manager User
+                      - generic [ref=e3309]: 4 мин назад
+                  - generic [ref=e3311] [cursor=pointer]:
+                    - generic [ref=e3312]:
+                      - generic [ref=e3314]: QA APIC007-1779189242303-3782 Lead
+                      - generic [ref=e3315]:
+                        - img [ref=e3316]
+                        - generic [ref=e3319]: Ручной
+                    - generic [ref=e3321]:
+                      - img [ref=e3322]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3325]: QA APIC007-1779189242303-3782 Equipment
+                    - generic [ref=e3326]:
+                      - generic [ref=e3327]:
+                        - img [ref=e3328]
+                        - link "+79990071771779189" [ref=e3330]:
+                          - /url: tel:+79990071771779189
+                      - generic [ref=e3331]:
+                        - img [ref=e3332]
+                        - generic [ref=e3334]: 20.05.2026
+                    - generic [ref=e3335]:
+                      - generic [ref=e3336]:
+                        - img [ref=e3337]
+                        - generic [ref=e3340]: Manager User
+                      - generic [ref=e3341]: 4 мин назад
+                  - generic [ref=e3343] [cursor=pointer]:
+                    - generic [ref=e3344]:
+                      - generic [ref=e3346]: QA APIC006-1779189242093-5070 Lead
+                      - generic [ref=e3347]:
+                        - img [ref=e3348]
+                        - generic [ref=e3351]: Ручной
+                    - generic [ref=e3353]:
+                      - img [ref=e3354]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3357]: QA APIC006-1779189242093-5070 Equipment
+                    - generic [ref=e3358]:
+                      - generic [ref=e3359]:
+                        - img [ref=e3360]
+                        - link "+79990061771779189" [ref=e3362]:
+                          - /url: tel:+79990061771779189
+                      - generic [ref=e3363]:
+                        - img [ref=e3364]
+                        - generic [ref=e3366]: 20.05.2026
+                    - generic [ref=e3367]:
+                      - generic [ref=e3368]:
+                        - img [ref=e3369]
+                        - generic [ref=e3372]: Manager User
+                      - generic [ref=e3373]: 4 мин назад
+                  - generic [ref=e3375] [cursor=pointer]:
+                    - generic [ref=e3376]:
+                      - generic [ref=e3378]: QA APIC005-1779189241918-3119 Lead
+                      - generic [ref=e3379]:
+                        - img [ref=e3380]
+                        - generic [ref=e3383]: Ручной
+                    - generic [ref=e3385]:
+                      - img [ref=e3386]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3389]: QA APIC005-1779189241918-3119 Equipment
+                    - generic [ref=e3390]:
+                      - generic [ref=e3391]:
+                        - img [ref=e3392]
+                        - link "+79990051771779189" [ref=e3394]:
+                          - /url: tel:+79990051771779189
+                      - generic [ref=e3395]:
+                        - img [ref=e3396]
+                        - generic [ref=e3398]: 20.05.2026
+                    - generic [ref=e3399]:
+                      - generic [ref=e3400]:
+                        - img [ref=e3401]
+                        - generic [ref=e3404]: Manager User
+                      - generic [ref=e3405]: 4 мин назад
+                  - generic [ref=e3407] [cursor=pointer]:
+                    - generic [ref=e3408]:
+                      - generic [ref=e3410]: QA APIC040-1779189241608-2142 Lead
+                      - generic [ref=e3411]:
+                        - img [ref=e3412]
+                        - generic [ref=e3415]: Ручной
+                    - generic [ref=e3417]:
+                      - img [ref=e3418]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3421]: QA APIC040-1779189241608-2142 Equipment
+                    - generic [ref=e3422]:
+                      - generic [ref=e3423]:
+                        - img [ref=e3424]
+                        - link "+79990401771779189" [ref=e3426]:
+                          - /url: tel:+79990401771779189
+                      - generic [ref=e3427]:
+                        - img [ref=e3428]
+                        - generic [ref=e3430]: 20.05.2026
+                    - generic [ref=e3431]:
+                      - generic [ref=e3432]:
+                        - img [ref=e3433]
+                        - generic [ref=e3436]: Manager User
+                      - generic [ref=e3437]: 4 мин назад
+                  - generic [ref=e3439] [cursor=pointer]:
+                    - generic [ref=e3440]:
+                      - generic [ref=e3442]: QA APIC039-1779189241344-9747 Lead
+                      - generic [ref=e3443]:
+                        - img [ref=e3444]
+                        - generic [ref=e3447]: Ручной
+                    - generic [ref=e3449]:
+                      - img [ref=e3450]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3453]: QA APIC039-1779189241344-9747 Equipment
+                    - generic [ref=e3454]:
+                      - generic [ref=e3455]:
+                        - img [ref=e3456]
+                        - link "+79990391771779189" [ref=e3458]:
+                          - /url: tel:+79990391771779189
+                      - generic [ref=e3459]:
+                        - img [ref=e3460]
+                        - generic [ref=e3462]: 20.05.2026
+                    - generic [ref=e3463]:
+                      - generic [ref=e3464]:
+                        - img [ref=e3465]
+                        - generic [ref=e3468]: Manager User
+                      - generic [ref=e3469]: 4 мин назад
+                  - generic [ref=e3471] [cursor=pointer]:
+                    - generic [ref=e3472]:
+                      - generic [ref=e3474]: QA APIC004-1779189240842-4631 Lead
+                      - generic [ref=e3475]:
+                        - img [ref=e3476]
+                        - generic [ref=e3479]: Ручной
+                    - generic [ref=e3481]:
+                      - img [ref=e3482]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3485]: QA APIC004-1779189240842-4631 Equipment
+                    - generic [ref=e3486]:
+                      - generic [ref=e3487]:
+                        - img [ref=e3488]
+                        - link "+79990041771779189" [ref=e3490]:
+                          - /url: tel:+79990041771779189
+                      - generic [ref=e3491]:
+                        - img [ref=e3492]
+                        - generic [ref=e3494]: 20.05.2026
+                    - generic [ref=e3495]:
+                      - generic [ref=e3496]:
+                        - img [ref=e3497]
+                        - generic [ref=e3500]: Manager User
+                      - generic [ref=e3501]: 4 мин назад
+                  - generic [ref=e3503] [cursor=pointer]:
+                    - generic [ref=e3504]:
+                      - generic [ref=e3506]: QA APIC012-1779189183021-1260 Lead
+                      - generic [ref=e3507]:
+                        - img [ref=e3508]
+                        - generic [ref=e3511]: Ручной
+                    - generic [ref=e3513]:
+                      - img [ref=e3514]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3517]: QA APIC012-1779189183021-1260 Equipment
+                    - generic [ref=e3518]:
+                      - generic [ref=e3519]:
+                        - img [ref=e3520]
+                        - link "+79990121771779189" [ref=e3522]:
+                          - /url: tel:+79990121771779189
+                      - generic [ref=e3523]:
+                        - img [ref=e3524]
+                        - generic [ref=e3526]: 20.05.2026
+                    - generic [ref=e3527]:
+                      - generic [ref=e3528]:
+                        - img [ref=e3529]
+                        - generic [ref=e3532]: Manager User
+                      - generic [ref=e3533]: 5 мин назад
+                  - generic [ref=e3535] [cursor=pointer]:
+                    - generic [ref=e3536]:
+                      - generic [ref=e3538]: QA APIC008CANCEL-1779189182191-1214 Lead
+                      - generic [ref=e3539]:
+                        - img [ref=e3540]
+                        - generic [ref=e3543]: Ручной
+                    - generic [ref=e3545]:
+                      - img [ref=e3546]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3549]: QA APIC008CANCEL-1779189182191-1214 Equipment
+                    - generic [ref=e3550]:
+                      - generic [ref=e3551]:
+                        - img [ref=e3552]
+                        - link "+79990081771779189" [ref=e3554]:
+                          - /url: tel:+79990081771779189
+                      - generic [ref=e3555]:
+                        - img [ref=e3556]
+                        - generic [ref=e3558]: 20.05.2026
+                    - generic [ref=e3559]:
+                      - generic [ref=e3560]:
+                        - img [ref=e3561]
+                        - generic [ref=e3564]: Manager User
+                      - generic [ref=e3565]: 5 мин назад
+                  - generic [ref=e3567] [cursor=pointer]:
+                    - generic [ref=e3568]:
+                      - generic [ref=e3570]: QA APIC007-1779189181747-1354 Lead
+                      - generic [ref=e3571]:
+                        - img [ref=e3572]
+                        - generic [ref=e3575]: Ручной
+                    - generic [ref=e3577]:
+                      - img [ref=e3578]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3581]: QA APIC007-1779189181747-1354 Equipment
+                    - generic [ref=e3582]:
+                      - generic [ref=e3583]:
+                        - img [ref=e3584]
+                        - link "+79990071771779189" [ref=e3586]:
+                          - /url: tel:+79990071771779189
+                      - generic [ref=e3587]:
+                        - img [ref=e3588]
+                        - generic [ref=e3590]: 20.05.2026
+                    - generic [ref=e3591]:
+                      - generic [ref=e3592]:
+                        - img [ref=e3593]
+                        - generic [ref=e3596]: Manager User
+                      - generic [ref=e3597]: 5 мин назад
+                  - generic [ref=e3599] [cursor=pointer]:
+                    - generic [ref=e3600]:
+                      - generic [ref=e3602]: QA APIC006-1779189181536-989 Lead
+                      - generic [ref=e3603]:
+                        - img [ref=e3604]
+                        - generic [ref=e3607]: Ручной
+                    - generic [ref=e3609]:
+                      - img [ref=e3610]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3613]: QA APIC006-1779189181536-989 Equipment
+                    - generic [ref=e3614]:
+                      - generic [ref=e3615]:
+                        - img [ref=e3616]
+                        - link "+79990061771779189" [ref=e3618]:
+                          - /url: tel:+79990061771779189
+                      - generic [ref=e3619]:
+                        - img [ref=e3620]
+                        - generic [ref=e3622]: 20.05.2026
+                    - generic [ref=e3623]:
+                      - generic [ref=e3624]:
+                        - img [ref=e3625]
+                        - generic [ref=e3628]: Manager User
+                      - generic [ref=e3629]: 5 мин назад
+                  - generic [ref=e3631] [cursor=pointer]:
+                    - generic [ref=e3632]:
+                      - generic [ref=e3634]: QA APIC005-1779189181357-567 Lead
+                      - generic [ref=e3635]:
+                        - img [ref=e3636]
+                        - generic [ref=e3639]: Ручной
+                    - generic [ref=e3641]:
+                      - img [ref=e3642]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3645]: QA APIC005-1779189181357-567 Equipment
+                    - generic [ref=e3646]:
+                      - generic [ref=e3647]:
+                        - img [ref=e3648]
+                        - link "+79990051771779189" [ref=e3650]:
+                          - /url: tel:+79990051771779189
+                      - generic [ref=e3651]:
+                        - img [ref=e3652]
+                        - generic [ref=e3654]: 20.05.2026
+                    - generic [ref=e3655]:
+                      - generic [ref=e3656]:
+                        - img [ref=e3657]
+                        - generic [ref=e3660]: Manager User
+                      - generic [ref=e3661]: 5 мин назад
+                  - generic [ref=e3663] [cursor=pointer]:
+                    - generic [ref=e3664]:
+                      - generic [ref=e3666]: QA APIC040-1779189181066-3414 Lead
+                      - generic [ref=e3667]:
+                        - img [ref=e3668]
+                        - generic [ref=e3671]: Ручной
+                    - generic [ref=e3673]:
+                      - img [ref=e3674]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3677]: QA APIC040-1779189181066-3414 Equipment
+                    - generic [ref=e3678]:
+                      - generic [ref=e3679]:
+                        - img [ref=e3680]
+                        - link "+79990401771779189" [ref=e3682]:
+                          - /url: tel:+79990401771779189
+                      - generic [ref=e3683]:
+                        - img [ref=e3684]
+                        - generic [ref=e3686]: 20.05.2026
+                    - generic [ref=e3687]:
+                      - generic [ref=e3688]:
+                        - img [ref=e3689]
+                        - generic [ref=e3692]: Manager User
+                      - generic [ref=e3693]: 5 мин назад
+                  - generic [ref=e3695] [cursor=pointer]:
+                    - generic [ref=e3696]:
+                      - generic [ref=e3698]: QA APIC039-1779189180811-1552 Lead
+                      - generic [ref=e3699]:
+                        - img [ref=e3700]
+                        - generic [ref=e3703]: Ручной
+                    - generic [ref=e3705]:
+                      - img [ref=e3706]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3709]: QA APIC039-1779189180811-1552 Equipment
+                    - generic [ref=e3710]:
+                      - generic [ref=e3711]:
+                        - img [ref=e3712]
+                        - link "+79990391771779189" [ref=e3714]:
+                          - /url: tel:+79990391771779189
+                      - generic [ref=e3715]:
+                        - img [ref=e3716]
+                        - generic [ref=e3718]: 20.05.2026
+                    - generic [ref=e3719]:
+                      - generic [ref=e3720]:
+                        - img [ref=e3721]
+                        - generic [ref=e3724]: Manager User
+                      - generic [ref=e3725]: 5 мин назад
+                  - generic [ref=e3727] [cursor=pointer]:
+                    - generic [ref=e3728]:
+                      - generic [ref=e3730]: QA APIC004-1779189180352-6437 Lead
+                      - generic [ref=e3731]:
+                        - img [ref=e3732]
+                        - generic [ref=e3735]: Ручной
+                    - generic [ref=e3737]:
+                      - img [ref=e3738]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3741]: QA APIC004-1779189180352-6437 Equipment
+                    - generic [ref=e3742]:
+                      - generic [ref=e3743]:
+                        - img [ref=e3744]
+                        - link "+79990041771779189" [ref=e3746]:
+                          - /url: tel:+79990041771779189
+                      - generic [ref=e3747]:
+                        - img [ref=e3748]
+                        - generic [ref=e3750]: 20.05.2026
+                    - generic [ref=e3751]:
+                      - generic [ref=e3752]:
+                        - img [ref=e3753]
+                        - generic [ref=e3756]: Manager User
+                      - generic [ref=e3757]: 5 мин назад
+                  - generic [ref=e3759] [cursor=pointer]:
+                    - generic [ref=e3760]:
+                      - generic [ref=e3761]:
+                        - generic [ref=e3762]: QA Mango APIC 036
+                        - generic [ref=e3763]: QA APIC 036 036-1779188955373-5264 LLC
+                      - generic [ref=e3764]:
+                        - img [ref=e3765]
+                        - generic [ref=e3767]: Mango
+                    - generic [ref=e3769]:
+                      - img [ref=e3770]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3773]: —
+                    - generic [ref=e3774]:
+                      - generic [ref=e3775]:
+                        - img [ref=e3776]
+                        - link "+79990361779188955" [ref=e3778]:
+                          - /url: tel:+79990361779188955
+                      - generic [ref=e3779]:
+                        - img [ref=e3780]
+                        - generic [ref=e3782]: 13.05.2026
+                    - generic [ref=e3783]:
+                      - generic [ref=e3784]:
+                        - img [ref=e3785]
+                        - generic [ref=e3788]: Admin User
+                      - generic [ref=e3789]: 9 мин назад
+                  - generic [ref=e3791] [cursor=pointer]:
+                    - generic [ref=e3792]:
+                      - generic [ref=e3794]: QA APIC012-1779188954492-5163 Lead
+                      - generic [ref=e3795]:
+                        - img [ref=e3796]
+                        - generic [ref=e3799]: Ручной
+                    - generic [ref=e3801]:
+                      - img [ref=e3802]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3805]: QA APIC012-1779188954492-5163 Equipment
+                    - generic [ref=e3806]:
+                      - generic [ref=e3807]:
+                        - img [ref=e3808]
+                        - link "+79990121771779188" [ref=e3810]:
+                          - /url: tel:+79990121771779188
+                      - generic [ref=e3811]:
+                        - img [ref=e3812]
+                        - generic [ref=e3814]: 20.05.2026
+                    - generic [ref=e3815]:
+                      - generic [ref=e3816]:
+                        - img [ref=e3817]
+                        - generic [ref=e3820]: Manager User
+                      - generic [ref=e3821]: 9 мин назад
+                  - generic [ref=e3823] [cursor=pointer]:
+                    - generic [ref=e3824]:
+                      - generic [ref=e3826]: QA APIC008CANCEL-1779188953652-4024 Lead
+                      - generic [ref=e3827]:
+                        - img [ref=e3828]
+                        - generic [ref=e3831]: Ручной
+                    - generic [ref=e3833]:
+                      - img [ref=e3834]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3837]: QA APIC008CANCEL-1779188953652-4024 Equipment
+                    - generic [ref=e3838]:
+                      - generic [ref=e3839]:
+                        - img [ref=e3840]
+                        - link "+79990081771779188" [ref=e3842]:
+                          - /url: tel:+79990081771779188
+                      - generic [ref=e3843]:
+                        - img [ref=e3844]
+                        - generic [ref=e3846]: 20.05.2026
+                    - generic [ref=e3847]:
+                      - generic [ref=e3848]:
+                        - img [ref=e3849]
+                        - generic [ref=e3852]: Manager User
+                      - generic [ref=e3853]: 9 мин назад
+                  - generic [ref=e3855] [cursor=pointer]:
+                    - generic [ref=e3856]:
+                      - generic [ref=e3858]: QA APIC007-1779188953254-3471 Lead
+                      - generic [ref=e3859]:
+                        - img [ref=e3860]
+                        - generic [ref=e3863]: Ручной
+                    - generic [ref=e3865]:
+                      - img [ref=e3866]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3869]: QA APIC007-1779188953254-3471 Equipment
+                    - generic [ref=e3870]:
+                      - generic [ref=e3871]:
+                        - img [ref=e3872]
+                        - link "+79990071771779188" [ref=e3874]:
+                          - /url: tel:+79990071771779188
+                      - generic [ref=e3875]:
+                        - img [ref=e3876]
+                        - generic [ref=e3878]: 20.05.2026
+                    - generic [ref=e3879]:
+                      - generic [ref=e3880]:
+                        - img [ref=e3881]
+                        - generic [ref=e3884]: Manager User
+                      - generic [ref=e3885]: 9 мин назад
+                  - generic [ref=e3887] [cursor=pointer]:
+                    - generic [ref=e3888]:
+                      - generic [ref=e3890]: QA APIC006-1779188953053-8446 Lead
+                      - generic [ref=e3891]:
+                        - img [ref=e3892]
+                        - generic [ref=e3895]: Ручной
+                    - generic [ref=e3897]:
+                      - img [ref=e3898]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3901]: QA APIC006-1779188953053-8446 Equipment
+                    - generic [ref=e3902]:
+                      - generic [ref=e3903]:
+                        - img [ref=e3904]
+                        - link "+79990061771779188" [ref=e3906]:
+                          - /url: tel:+79990061771779188
+                      - generic [ref=e3907]:
+                        - img [ref=e3908]
+                        - generic [ref=e3910]: 20.05.2026
+                    - generic [ref=e3911]:
+                      - generic [ref=e3912]:
+                        - img [ref=e3913]
+                        - generic [ref=e3916]: Manager User
+                      - generic [ref=e3917]: 9 мин назад
+                  - generic [ref=e3919] [cursor=pointer]:
+                    - generic [ref=e3920]:
+                      - generic [ref=e3922]: QA APIC005-1779188952865-2579 Lead
+                      - generic [ref=e3923]:
+                        - img [ref=e3924]
+                        - generic [ref=e3927]: Ручной
+                    - generic [ref=e3929]:
+                      - img [ref=e3930]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3933]: QA APIC005-1779188952865-2579 Equipment
+                    - generic [ref=e3934]:
+                      - generic [ref=e3935]:
+                        - img [ref=e3936]
+                        - link "+79990051771779188" [ref=e3938]:
+                          - /url: tel:+79990051771779188
+                      - generic [ref=e3939]:
+                        - img [ref=e3940]
+                        - generic [ref=e3942]: 20.05.2026
+                    - generic [ref=e3943]:
+                      - generic [ref=e3944]:
+                        - img [ref=e3945]
+                        - generic [ref=e3948]: Manager User
+                      - generic [ref=e3949]: 9 мин назад
+                  - generic [ref=e3951] [cursor=pointer]:
+                    - generic [ref=e3952]:
+                      - generic [ref=e3954]: QA APIC040-1779188952609-2994 Lead
+                      - generic [ref=e3955]:
+                        - img [ref=e3956]
+                        - generic [ref=e3959]: Ручной
+                    - generic [ref=e3961]:
+                      - img [ref=e3962]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3965]: QA APIC040-1779188952609-2994 Equipment
+                    - generic [ref=e3966]:
+                      - generic [ref=e3967]:
+                        - img [ref=e3968]
+                        - link "+79990401771779188" [ref=e3970]:
+                          - /url: tel:+79990401771779188
+                      - generic [ref=e3971]:
+                        - img [ref=e3972]
+                        - generic [ref=e3974]: 20.05.2026
+                    - generic [ref=e3975]:
+                      - generic [ref=e3976]:
+                        - img [ref=e3977]
+                        - generic [ref=e3980]: Manager User
+                      - generic [ref=e3981]: 9 мин назад
+                  - generic [ref=e3983] [cursor=pointer]:
+                    - generic [ref=e3984]:
+                      - generic [ref=e3986]: QA APIC039-1779188952345-8118 Lead
+                      - generic [ref=e3987]:
+                        - img [ref=e3988]
+                        - generic [ref=e3991]: Ручной
+                    - generic [ref=e3993]:
+                      - img [ref=e3994]
+                      - text: Ждёт sourcing
+                    - generic [ref=e3997]: QA APIC039-1779188952345-8118 Equipment
+                    - generic [ref=e3998]:
+                      - generic [ref=e3999]:
+                        - img [ref=e4000]
+                        - link "+79990391771779188" [ref=e4002]:
+                          - /url: tel:+79990391771779188
+                      - generic [ref=e4003]:
+                        - img [ref=e4004]
+                        - generic [ref=e4006]: 20.05.2026
+                    - generic [ref=e4007]:
+                      - generic [ref=e4008]:
+                        - img [ref=e4009]
+                        - generic [ref=e4012]: Manager User
+                      - generic [ref=e4013]: 9 мин назад
+                  - generic [ref=e4015] [cursor=pointer]:
+                    - generic [ref=e4016]:
+                      - generic [ref=e4018]: QA APIC004-1779188951917-2874 Lead
+                      - generic [ref=e4019]:
+                        - img [ref=e4020]
+                        - generic [ref=e4023]: Ручной
+                    - generic [ref=e4025]:
+                      - img [ref=e4026]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4029]: QA APIC004-1779188951917-2874 Equipment
+                    - generic [ref=e4030]:
+                      - generic [ref=e4031]:
+                        - img [ref=e4032]
+                        - link "+79990041771779188" [ref=e4034]:
+                          - /url: tel:+79990041771779188
+                      - generic [ref=e4035]:
+                        - img [ref=e4036]
+                        - generic [ref=e4038]: 20.05.2026
+                    - generic [ref=e4039]:
+                      - generic [ref=e4040]:
+                        - img [ref=e4041]
+                        - generic [ref=e4044]: Manager User
+                      - generic [ref=e4045]: 9 мин назад
+                  - generic [ref=e4047] [cursor=pointer]:
+                    - generic [ref=e4048]:
+                      - generic [ref=e4050]: QA APIC012-1779188875752-4050 Lead
+                      - generic [ref=e4051]:
+                        - img [ref=e4052]
+                        - generic [ref=e4055]: Ручной
+                    - generic [ref=e4057]:
+                      - img [ref=e4058]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4061]: QA APIC012-1779188875752-4050 Equipment
+                    - generic [ref=e4062]:
+                      - generic [ref=e4063]:
+                        - img [ref=e4064]
+                        - link "+79990121771779188" [ref=e4066]:
+                          - /url: tel:+79990121771779188
+                      - generic [ref=e4067]:
+                        - img [ref=e4068]
+                        - generic [ref=e4070]: 20.05.2026
+                    - generic [ref=e4071]:
+                      - generic [ref=e4072]:
+                        - img [ref=e4073]
+                        - generic [ref=e4076]: Manager User
+                      - generic [ref=e4077]: 10 мин назад
+                  - generic [ref=e4079] [cursor=pointer]:
+                    - generic [ref=e4080]:
+                      - generic [ref=e4082]: QA APIC008CANCEL-1779188874925-2377 Lead
+                      - generic [ref=e4083]:
+                        - img [ref=e4084]
+                        - generic [ref=e4087]: Ручной
+                    - generic [ref=e4089]:
+                      - img [ref=e4090]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4093]: QA APIC008CANCEL-1779188874925-2377 Equipment
+                    - generic [ref=e4094]:
+                      - generic [ref=e4095]:
+                        - img [ref=e4096]
+                        - link "+79990081771779188" [ref=e4098]:
+                          - /url: tel:+79990081771779188
+                      - generic [ref=e4099]:
+                        - img [ref=e4100]
+                        - generic [ref=e4102]: 20.05.2026
+                    - generic [ref=e4103]:
+                      - generic [ref=e4104]:
+                        - img [ref=e4105]
+                        - generic [ref=e4108]: Manager User
+                      - generic [ref=e4109]: 10 мин назад
+                  - generic [ref=e4111] [cursor=pointer]:
+                    - generic [ref=e4112]:
+                      - generic [ref=e4114]: QA APIC007-1779188874467-7071 Lead
+                      - generic [ref=e4115]:
+                        - img [ref=e4116]
+                        - generic [ref=e4119]: Ручной
+                    - generic [ref=e4121]:
+                      - img [ref=e4122]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4125]: QA APIC007-1779188874467-7071 Equipment
+                    - generic [ref=e4126]:
+                      - generic [ref=e4127]:
+                        - img [ref=e4128]
+                        - link "+79990071771779188" [ref=e4130]:
+                          - /url: tel:+79990071771779188
+                      - generic [ref=e4131]:
+                        - img [ref=e4132]
+                        - generic [ref=e4134]: 20.05.2026
+                    - generic [ref=e4135]:
+                      - generic [ref=e4136]:
+                        - img [ref=e4137]
+                        - generic [ref=e4140]: Manager User
+                      - generic [ref=e4141]: 10 мин назад
+                  - generic [ref=e4143] [cursor=pointer]:
+                    - generic [ref=e4144]:
+                      - generic [ref=e4146]: QA APIC006-1779188874225-9838 Lead
+                      - generic [ref=e4147]:
+                        - img [ref=e4148]
+                        - generic [ref=e4151]: Ручной
+                    - generic [ref=e4153]:
+                      - img [ref=e4154]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4157]: QA APIC006-1779188874225-9838 Equipment
+                    - generic [ref=e4158]:
+                      - generic [ref=e4159]:
+                        - img [ref=e4160]
+                        - link "+79990061771779188" [ref=e4162]:
+                          - /url: tel:+79990061771779188
+                      - generic [ref=e4163]:
+                        - img [ref=e4164]
+                        - generic [ref=e4166]: 20.05.2026
+                    - generic [ref=e4167]:
+                      - generic [ref=e4168]:
+                        - img [ref=e4169]
+                        - generic [ref=e4172]: Manager User
+                      - generic [ref=e4173]: 10 мин назад
+                  - generic [ref=e4175] [cursor=pointer]:
+                    - generic [ref=e4176]:
+                      - generic [ref=e4178]: QA APIC005-1779188873939-1698 Lead
+                      - generic [ref=e4179]:
+                        - img [ref=e4180]
+                        - generic [ref=e4183]: Ручной
+                    - generic [ref=e4185]:
+                      - img [ref=e4186]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4189]: QA APIC005-1779188873939-1698 Equipment
+                    - generic [ref=e4190]:
+                      - generic [ref=e4191]:
+                        - img [ref=e4192]
+                        - link "+79990051771779188" [ref=e4194]:
+                          - /url: tel:+79990051771779188
+                      - generic [ref=e4195]:
+                        - img [ref=e4196]
+                        - generic [ref=e4198]: 20.05.2026
+                    - generic [ref=e4199]:
+                      - generic [ref=e4200]:
+                        - img [ref=e4201]
+                        - generic [ref=e4204]: Manager User
+                      - generic [ref=e4205]: 10 мин назад
+                  - generic [ref=e4207] [cursor=pointer]:
+                    - generic [ref=e4208]:
+                      - generic [ref=e4210]: QA APIC040-1779188873629-8901 Lead
+                      - generic [ref=e4211]:
+                        - img [ref=e4212]
+                        - generic [ref=e4215]: Ручной
+                    - generic [ref=e4217]:
+                      - img [ref=e4218]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4221]: QA APIC040-1779188873629-8901 Equipment
+                    - generic [ref=e4222]:
+                      - generic [ref=e4223]:
+                        - img [ref=e4224]
+                        - link "+79990401771779188" [ref=e4226]:
+                          - /url: tel:+79990401771779188
+                      - generic [ref=e4227]:
+                        - img [ref=e4228]
+                        - generic [ref=e4230]: 20.05.2026
+                    - generic [ref=e4231]:
+                      - generic [ref=e4232]:
+                        - img [ref=e4233]
+                        - generic [ref=e4236]: Manager User
+                      - generic [ref=e4237]: 10 мин назад
+                  - generic [ref=e4239] [cursor=pointer]:
+                    - generic [ref=e4240]:
+                      - generic [ref=e4242]: QA APIC039-1779188873314-8313 Lead
+                      - generic [ref=e4243]:
+                        - img [ref=e4244]
+                        - generic [ref=e4247]: Ручной
+                    - generic [ref=e4249]:
+                      - img [ref=e4250]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4253]: QA APIC039-1779188873314-8313 Equipment
+                    - generic [ref=e4254]:
+                      - generic [ref=e4255]:
+                        - img [ref=e4256]
+                        - link "+79990391771779188" [ref=e4258]:
+                          - /url: tel:+79990391771779188
+                      - generic [ref=e4259]:
+                        - img [ref=e4260]
+                        - generic [ref=e4262]: 20.05.2026
+                    - generic [ref=e4263]:
+                      - generic [ref=e4264]:
+                        - img [ref=e4265]
+                        - generic [ref=e4268]: Manager User
+                      - generic [ref=e4269]: 10 мин назад
+                  - generic [ref=e4271] [cursor=pointer]:
+                    - generic [ref=e4272]:
+                      - generic [ref=e4274]: QA APIC004-1779188872750-1824 Lead
+                      - generic [ref=e4275]:
+                        - img [ref=e4276]
+                        - generic [ref=e4279]: Ручной
+                    - generic [ref=e4281]:
+                      - img [ref=e4282]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4285]: QA APIC004-1779188872750-1824 Equipment
+                    - generic [ref=e4286]:
+                      - generic [ref=e4287]:
+                        - img [ref=e4288]
+                        - link "+79990041771779188" [ref=e4290]:
+                          - /url: tel:+79990041771779188
+                      - generic [ref=e4291]:
+                        - img [ref=e4292]
+                        - generic [ref=e4294]: 20.05.2026
+                    - generic [ref=e4295]:
+                      - generic [ref=e4296]:
+                        - img [ref=e4297]
+                        - generic [ref=e4300]: Manager User
+                      - generic [ref=e4301]: 10 мин назад
+                  - generic [ref=e4303] [cursor=pointer]:
+                    - generic [ref=e4304]:
+                      - generic [ref=e4305]:
+                        - generic [ref=e4306]: QA Mango APIC 036
+                        - generic [ref=e4307]: QA APIC 036 036-1779188872043-8814 LLC
+                      - generic [ref=e4308]:
+                        - img [ref=e4309]
+                        - generic [ref=e4311]: Mango
+                    - generic [ref=e4313]:
+                      - img [ref=e4314]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4317]: —
+                    - generic [ref=e4318]:
+                      - generic [ref=e4319]:
+                        - img [ref=e4320]
+                        - link "+79990361779188872" [ref=e4322]:
+                          - /url: tel:+79990361779188872
+                      - generic [ref=e4323]:
+                        - img [ref=e4324]
+                        - generic [ref=e4326]: 13.05.2026
+                    - generic [ref=e4327]:
+                      - generic [ref=e4328]:
+                        - img [ref=e4329]
+                        - generic [ref=e4332]: Admin User
+                      - generic [ref=e4333]: 10 мин назад
+                  - generic [ref=e4335] [cursor=pointer]:
+                    - generic [ref=e4336]:
+                      - generic [ref=e4338]: QA APIC012-1778762937406-7913 Lead
+                      - generic [ref=e4339]:
+                        - img [ref=e4340]
+                        - generic [ref=e4343]: Ручной
+                    - generic [ref=e4345]:
+                      - img [ref=e4346]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4349]: QA APIC012-1778762937406-7913 Equipment
+                    - generic [ref=e4350]:
+                      - generic [ref=e4351]:
+                        - img [ref=e4352]
+                        - link "+79990121771778762" [ref=e4354]:
+                          - /url: tel:+79990121771778762
+                      - generic [ref=e4355]:
+                        - img [ref=e4356]
+                        - generic [ref=e4358]: 15.05.2026
+                    - generic [ref=e4359]:
+                      - generic [ref=e4360]:
+                        - img [ref=e4361]
+                        - generic [ref=e4364]: Manager User
+                      - generic [ref=e4365]: 4 дн назад
+                  - generic [ref=e4367] [cursor=pointer]:
+                    - generic [ref=e4368]:
+                      - generic [ref=e4370]: QA APIC008CANCEL-1778762936552-3688 Lead
+                      - generic [ref=e4371]:
+                        - img [ref=e4372]
+                        - generic [ref=e4375]: Ручной
+                    - generic [ref=e4377]:
+                      - img [ref=e4378]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4381]: QA APIC008CANCEL-1778762936552-3688 Equipment
+                    - generic [ref=e4382]:
+                      - generic [ref=e4383]:
+                        - img [ref=e4384]
+                        - link "+79990081771778762" [ref=e4386]:
+                          - /url: tel:+79990081771778762
+                      - generic [ref=e4387]:
+                        - img [ref=e4388]
+                        - generic [ref=e4390]: 15.05.2026
+                    - generic [ref=e4391]:
+                      - generic [ref=e4392]:
+                        - img [ref=e4393]
+                        - generic [ref=e4396]: Manager User
+                      - generic [ref=e4397]: 4 дн назад
+                  - generic [ref=e4399] [cursor=pointer]:
+                    - generic [ref=e4400]:
+                      - generic [ref=e4402]: QA APIC007-1778762936058-6587 Lead
+                      - generic [ref=e4403]:
+                        - img [ref=e4404]
+                        - generic [ref=e4407]: Ручной
+                    - generic [ref=e4409]:
+                      - img [ref=e4410]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4413]: QA APIC007-1778762936058-6587 Equipment
+                    - generic [ref=e4414]:
+                      - generic [ref=e4415]:
+                        - img [ref=e4416]
+                        - link "+79990071771778762" [ref=e4418]:
+                          - /url: tel:+79990071771778762
+                      - generic [ref=e4419]:
+                        - img [ref=e4420]
+                        - generic [ref=e4422]: 15.05.2026
+                    - generic [ref=e4423]:
+                      - generic [ref=e4424]:
+                        - img [ref=e4425]
+                        - generic [ref=e4428]: Manager User
+                      - generic [ref=e4429]: 4 дн назад
+                  - generic [ref=e4431] [cursor=pointer]:
+                    - generic [ref=e4432]:
+                      - generic [ref=e4434]: QA APIC006-1778762935835-1763 Lead
+                      - generic [ref=e4435]:
+                        - img [ref=e4436]
+                        - generic [ref=e4439]: Ручной
+                    - generic [ref=e4441]:
+                      - img [ref=e4442]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4445]: QA APIC006-1778762935835-1763 Equipment
+                    - generic [ref=e4446]:
+                      - generic [ref=e4447]:
+                        - img [ref=e4448]
+                        - link "+79990061771778762" [ref=e4450]:
+                          - /url: tel:+79990061771778762
+                      - generic [ref=e4451]:
+                        - img [ref=e4452]
+                        - generic [ref=e4454]: 15.05.2026
+                    - generic [ref=e4455]:
+                      - generic [ref=e4456]:
+                        - img [ref=e4457]
+                        - generic [ref=e4460]: Manager User
+                      - generic [ref=e4461]: 4 дн назад
+                  - generic [ref=e4463] [cursor=pointer]:
+                    - generic [ref=e4464]:
+                      - generic [ref=e4466]: QA APIC005-1778762935654-9989 Lead
+                      - generic [ref=e4467]:
+                        - img [ref=e4468]
+                        - generic [ref=e4471]: Ручной
+                    - generic [ref=e4473]:
+                      - img [ref=e4474]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4477]: QA APIC005-1778762935654-9989 Equipment
+                    - generic [ref=e4478]:
+                      - generic [ref=e4479]:
+                        - img [ref=e4480]
+                        - link "+79990051771778762" [ref=e4482]:
+                          - /url: tel:+79990051771778762
+                      - generic [ref=e4483]:
+                        - img [ref=e4484]
+                        - generic [ref=e4486]: 15.05.2026
+                    - generic [ref=e4487]:
+                      - generic [ref=e4488]:
+                        - img [ref=e4489]
+                        - generic [ref=e4492]: Manager User
+                      - generic [ref=e4493]: 4 дн назад
+                  - generic [ref=e4495] [cursor=pointer]:
+                    - generic [ref=e4496]:
+                      - generic [ref=e4498]: QA APIC040-1778762935379-3467 Lead
+                      - generic [ref=e4499]:
+                        - img [ref=e4500]
+                        - generic [ref=e4503]: Ручной
+                    - generic [ref=e4505]:
+                      - img [ref=e4506]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4509]: QA APIC040-1778762935379-3467 Equipment
+                    - generic [ref=e4510]:
+                      - generic [ref=e4511]:
+                        - img [ref=e4512]
+                        - link "+79990401771778762" [ref=e4514]:
+                          - /url: tel:+79990401771778762
+                      - generic [ref=e4515]:
+                        - img [ref=e4516]
+                        - generic [ref=e4518]: 15.05.2026
+                    - generic [ref=e4519]:
+                      - generic [ref=e4520]:
+                        - img [ref=e4521]
+                        - generic [ref=e4524]: Manager User
+                      - generic [ref=e4525]: 4 дн назад
+                  - generic [ref=e4527] [cursor=pointer]:
+                    - generic [ref=e4528]:
+                      - generic [ref=e4530]: QA APIC039-1778762935155-8787 Lead
+                      - generic [ref=e4531]:
+                        - img [ref=e4532]
+                        - generic [ref=e4535]: Ручной
+                    - generic [ref=e4537]:
+                      - img [ref=e4538]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4541]: QA APIC039-1778762935155-8787 Equipment
+                    - generic [ref=e4542]:
+                      - generic [ref=e4543]:
+                        - img [ref=e4544]
+                        - link "+79990391771778762" [ref=e4546]:
+                          - /url: tel:+79990391771778762
+                      - generic [ref=e4547]:
+                        - img [ref=e4548]
+                        - generic [ref=e4550]: 15.05.2026
+                    - generic [ref=e4551]:
+                      - generic [ref=e4552]:
+                        - img [ref=e4553]
+                        - generic [ref=e4556]: Manager User
+                      - generic [ref=e4557]: 4 дн назад
+                  - generic [ref=e4559] [cursor=pointer]:
+                    - generic [ref=e4560]:
+                      - generic [ref=e4562]: QA APIC004-1778762934698-2295 Lead
+                      - generic [ref=e4563]:
+                        - img [ref=e4564]
+                        - generic [ref=e4567]: Ручной
+                    - generic [ref=e4569]:
+                      - img [ref=e4570]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4573]: QA APIC004-1778762934698-2295 Equipment
+                    - generic [ref=e4574]:
+                      - generic [ref=e4575]:
+                        - img [ref=e4576]
+                        - link "+79990041771778762" [ref=e4578]:
+                          - /url: tel:+79990041771778762
+                      - generic [ref=e4579]:
+                        - img [ref=e4580]
+                        - generic [ref=e4582]: 15.05.2026
+                    - generic [ref=e4583]:
+                      - generic [ref=e4584]:
+                        - img [ref=e4585]
+                        - generic [ref=e4588]: Manager User
+                      - generic [ref=e4589]: 4 дн назад
+                  - generic [ref=e4591] [cursor=pointer]:
+                    - generic [ref=e4592]:
+                      - generic [ref=e4593]:
+                        - generic [ref=e4594]: QA Mango APIC 036
+                        - generic [ref=e4595]: QA APIC 036 036-1778762934175-4615 LLC
+                      - generic [ref=e4596]:
+                        - img [ref=e4597]
+                        - generic [ref=e4599]: Mango
+                    - generic [ref=e4601]:
+                      - img [ref=e4602]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4605]: —
+                    - generic [ref=e4606]:
+                      - generic [ref=e4607]:
+                        - img [ref=e4608]
+                        - link "+79990361778762934" [ref=e4610]:
+                          - /url: tel:+79990361778762934
+                      - generic [ref=e4611]:
+                        - img [ref=e4612]
+                        - generic [ref=e4614]: 13.05.2026
+                    - generic [ref=e4615]:
+                      - generic [ref=e4616]:
+                        - img [ref=e4617]
+                        - generic [ref=e4620]: Admin User
+                      - generic [ref=e4621]: 4 дн назад
+                  - generic [ref=e4623] [cursor=pointer]:
+                    - generic [ref=e4624]:
+                      - generic [ref=e4626]: QA APIC012-1778762871192-9960 Lead
+                      - generic [ref=e4627]:
+                        - img [ref=e4628]
+                        - generic [ref=e4631]: Ручной
+                    - generic [ref=e4633]:
+                      - img [ref=e4634]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4637]: QA APIC012-1778762871192-9960 Equipment
+                    - generic [ref=e4638]:
+                      - generic [ref=e4639]:
+                        - img [ref=e4640]
+                        - link "+79990121771778762" [ref=e4642]:
+                          - /url: tel:+79990121771778762
+                      - generic [ref=e4643]:
+                        - img [ref=e4644]
+                        - generic [ref=e4646]: 15.05.2026
+                    - generic [ref=e4647]:
+                      - generic [ref=e4648]:
+                        - img [ref=e4649]
+                        - generic [ref=e4652]: Manager User
+                      - generic [ref=e4653]: 4 дн назад
+                  - generic [ref=e4655] [cursor=pointer]:
+                    - generic [ref=e4656]:
+                      - generic [ref=e4658]: QA APIC008CANCEL-1778762870258-4986 Lead
+                      - generic [ref=e4659]:
+                        - img [ref=e4660]
+                        - generic [ref=e4663]: Ручной
+                    - generic [ref=e4665]:
+                      - img [ref=e4666]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4669]: QA APIC008CANCEL-1778762870258-4986 Equipment
+                    - generic [ref=e4670]:
+                      - generic [ref=e4671]:
+                        - img [ref=e4672]
+                        - link "+79990081771778762" [ref=e4674]:
+                          - /url: tel:+79990081771778762
+                      - generic [ref=e4675]:
+                        - img [ref=e4676]
+                        - generic [ref=e4678]: 15.05.2026
+                    - generic [ref=e4679]:
+                      - generic [ref=e4680]:
+                        - img [ref=e4681]
+                        - generic [ref=e4684]: Manager User
+                      - generic [ref=e4685]: 4 дн назад
+                  - generic [ref=e4687] [cursor=pointer]:
+                    - generic [ref=e4688]:
+                      - generic [ref=e4690]: QA APIC007-1778762869755-1931 Lead
+                      - generic [ref=e4691]:
+                        - img [ref=e4692]
+                        - generic [ref=e4695]: Ручной
+                    - generic [ref=e4697]:
+                      - img [ref=e4698]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4701]: QA APIC007-1778762869755-1931 Equipment
+                    - generic [ref=e4702]:
+                      - generic [ref=e4703]:
+                        - img [ref=e4704]
+                        - link "+79990071771778762" [ref=e4706]:
+                          - /url: tel:+79990071771778762
+                      - generic [ref=e4707]:
+                        - img [ref=e4708]
+                        - generic [ref=e4710]: 15.05.2026
+                    - generic [ref=e4711]:
+                      - generic [ref=e4712]:
+                        - img [ref=e4713]
+                        - generic [ref=e4716]: Manager User
+                      - generic [ref=e4717]: 4 дн назад
+                  - generic [ref=e4719] [cursor=pointer]:
+                    - generic [ref=e4720]:
+                      - generic [ref=e4722]: QA APIC006-1778762869525-8079 Lead
+                      - generic [ref=e4723]:
+                        - img [ref=e4724]
+                        - generic [ref=e4727]: Ручной
+                    - generic [ref=e4729]:
+                      - img [ref=e4730]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4733]: QA APIC006-1778762869525-8079 Equipment
+                    - generic [ref=e4734]:
+                      - generic [ref=e4735]:
+                        - img [ref=e4736]
+                        - link "+79990061771778762" [ref=e4738]:
+                          - /url: tel:+79990061771778762
+                      - generic [ref=e4739]:
+                        - img [ref=e4740]
+                        - generic [ref=e4742]: 15.05.2026
+                    - generic [ref=e4743]:
+                      - generic [ref=e4744]:
+                        - img [ref=e4745]
+                        - generic [ref=e4748]: Manager User
+                      - generic [ref=e4749]: 4 дн назад
+                  - generic [ref=e4751] [cursor=pointer]:
+                    - generic [ref=e4752]:
+                      - generic [ref=e4754]: QA APIC005-1778762869300-5233 Lead
+                      - generic [ref=e4755]:
+                        - img [ref=e4756]
+                        - generic [ref=e4759]: Ручной
+                    - generic [ref=e4761]:
+                      - img [ref=e4762]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4765]: QA APIC005-1778762869300-5233 Equipment
+                    - generic [ref=e4766]:
+                      - generic [ref=e4767]:
+                        - img [ref=e4768]
+                        - link "+79990051771778762" [ref=e4770]:
+                          - /url: tel:+79990051771778762
+                      - generic [ref=e4771]:
+                        - img [ref=e4772]
+                        - generic [ref=e4774]: 15.05.2026
+                    - generic [ref=e4775]:
+                      - generic [ref=e4776]:
+                        - img [ref=e4777]
+                        - generic [ref=e4780]: Manager User
+                      - generic [ref=e4781]: 4 дн назад
+                  - generic [ref=e4783] [cursor=pointer]:
+                    - generic [ref=e4784]:
+                      - generic [ref=e4786]: QA APIC040-1778762869017-2770 Lead
+                      - generic [ref=e4787]:
+                        - img [ref=e4788]
+                        - generic [ref=e4791]: Ручной
+                    - generic [ref=e4793]:
+                      - img [ref=e4794]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4797]: QA APIC040-1778762869017-2770 Equipment
+                    - generic [ref=e4798]:
+                      - generic [ref=e4799]:
+                        - img [ref=e4800]
+                        - link "+79990401771778762" [ref=e4802]:
+                          - /url: tel:+79990401771778762
+                      - generic [ref=e4803]:
+                        - img [ref=e4804]
+                        - generic [ref=e4806]: 15.05.2026
+                    - generic [ref=e4807]:
+                      - generic [ref=e4808]:
+                        - img [ref=e4809]
+                        - generic [ref=e4812]: Manager User
+                      - generic [ref=e4813]: 4 дн назад
+                  - generic [ref=e4815] [cursor=pointer]:
+                    - generic [ref=e4816]:
+                      - generic [ref=e4818]: QA APIC039-1778762868716-4042 Lead
+                      - generic [ref=e4819]:
+                        - img [ref=e4820]
+                        - generic [ref=e4823]: Ручной
+                    - generic [ref=e4825]:
+                      - img [ref=e4826]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4829]: QA APIC039-1778762868716-4042 Equipment
+                    - generic [ref=e4830]:
+                      - generic [ref=e4831]:
+                        - img [ref=e4832]
+                        - link "+79990391771778762" [ref=e4834]:
+                          - /url: tel:+79990391771778762
+                      - generic [ref=e4835]:
+                        - img [ref=e4836]
+                        - generic [ref=e4838]: 15.05.2026
+                    - generic [ref=e4839]:
+                      - generic [ref=e4840]:
+                        - img [ref=e4841]
+                        - generic [ref=e4844]: Manager User
+                      - generic [ref=e4845]: 4 дн назад
+                  - generic [ref=e4847] [cursor=pointer]:
+                    - generic [ref=e4848]:
+                      - generic [ref=e4850]: QA APIC004-1778762868176-5500 Lead
+                      - generic [ref=e4851]:
+                        - img [ref=e4852]
+                        - generic [ref=e4855]: Ручной
+                    - generic [ref=e4857]:
+                      - img [ref=e4858]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4861]: QA APIC004-1778762868176-5500 Equipment
+                    - generic [ref=e4862]:
+                      - generic [ref=e4863]:
+                        - img [ref=e4864]
+                        - link "+79990041771778762" [ref=e4866]:
+                          - /url: tel:+79990041771778762
+                      - generic [ref=e4867]:
+                        - img [ref=e4868]
+                        - generic [ref=e4870]: 15.05.2026
+                    - generic [ref=e4871]:
+                      - generic [ref=e4872]:
+                        - img [ref=e4873]
+                        - generic [ref=e4876]: Manager User
+                      - generic [ref=e4877]: 4 дн назад
+                  - generic [ref=e4879] [cursor=pointer]:
+                    - generic [ref=e4880]:
+                      - generic [ref=e4881]:
+                        - generic [ref=e4882]: QA Mango APIC 036
+                        - generic [ref=e4883]: QA APIC 036 036-1778762867558-3622 LLC
+                      - generic [ref=e4884]:
+                        - img [ref=e4885]
+                        - generic [ref=e4887]: Mango
+                    - generic [ref=e4889]:
+                      - img [ref=e4890]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4893]: —
+                    - generic [ref=e4894]:
+                      - generic [ref=e4895]:
+                        - img [ref=e4896]
+                        - link "+79990361778762867" [ref=e4898]:
+                          - /url: tel:+79990361778762867
+                      - generic [ref=e4899]:
+                        - img [ref=e4900]
+                        - generic [ref=e4902]: 13.05.2026
+                    - generic [ref=e4903]:
+                      - generic [ref=e4904]:
+                        - img [ref=e4905]
+                        - generic [ref=e4908]: Admin User
+                      - generic [ref=e4909]: 4 дн назад
+                  - generic [ref=e4911] [cursor=pointer]:
+                    - generic [ref=e4912]:
+                      - generic [ref=e4913]:
+                        - generic [ref=e4914]: QA Mango APIC 036
+                        - generic [ref=e4915]: QA APIC 036 036-1778759629329-714 LLC
+                      - generic [ref=e4916]:
+                        - img [ref=e4917]
+                        - generic [ref=e4919]: Mango
+                    - generic [ref=e4921]:
+                      - img [ref=e4922]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4925]: —
+                    - generic [ref=e4926]:
+                      - generic [ref=e4927]:
+                        - img [ref=e4928]
+                        - link "+79990361778759629" [ref=e4930]:
+                          - /url: tel:+79990361778759629
+                      - generic [ref=e4931]:
+                        - img [ref=e4932]
+                        - generic [ref=e4934]: 13.05.2026
+                    - generic [ref=e4935]:
+                      - generic [ref=e4936]:
+                        - img [ref=e4937]
+                        - generic [ref=e4940]: Admin User
+                      - generic [ref=e4941]: 4 дн назад
+                  - generic [ref=e4943] [cursor=pointer]:
+                    - generic [ref=e4944]:
+                      - generic [ref=e4945]:
+                        - generic [ref=e4946]: QA Mango APIC 036
+                        - generic [ref=e4947]: QA APIC 036 036-1778759601259-5755 LLC
+                      - generic [ref=e4948]:
+                        - img [ref=e4949]
+                        - generic [ref=e4951]: Mango
+                    - generic [ref=e4953]:
+                      - img [ref=e4954]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4957]: —
+                    - generic [ref=e4958]:
+                      - generic [ref=e4959]:
+                        - img [ref=e4960]
+                        - link "+79990361778759601" [ref=e4962]:
+                          - /url: tel:+79990361778759601
+                      - generic [ref=e4963]:
+                        - img [ref=e4964]
+                        - generic [ref=e4966]: 13.05.2026
+                    - generic [ref=e4967]:
+                      - generic [ref=e4968]:
+                        - img [ref=e4969]
+                        - generic [ref=e4972]: Admin User
+                      - generic [ref=e4973]: 4 дн назад
+                  - generic [ref=e4975] [cursor=pointer]:
+                    - generic [ref=e4976]:
+                      - generic [ref=e4978]: QA APIC012-1778759597576-4570 Lead
+                      - generic [ref=e4979]:
+                        - img [ref=e4980]
+                        - generic [ref=e4983]: Ручной
+                    - generic [ref=e4985]:
+                      - img [ref=e4986]
+                      - text: Ждёт sourcing
+                    - generic [ref=e4989]: QA APIC012-1778759597576-4570 Equipment
+                    - generic [ref=e4990]:
+                      - generic [ref=e4991]:
+                        - img [ref=e4992]
+                        - link "+79990121771778759" [ref=e4994]:
+                          - /url: tel:+79990121771778759
+                      - generic [ref=e4995]:
+                        - img [ref=e4996]
+                        - generic [ref=e4998]: 15.05.2026
+                    - generic [ref=e4999]:
+                      - generic [ref=e5000]:
+                        - img [ref=e5001]
+                        - generic [ref=e5004]: Manager User
+                      - generic [ref=e5005]: 4 дн назад
+                  - generic [ref=e5007] [cursor=pointer]:
+                    - generic [ref=e5008]:
+                      - generic [ref=e5010]: QA APIC008CANCEL-1778759596548-8034 Lead
+                      - generic [ref=e5011]:
+                        - img [ref=e5012]
+                        - generic [ref=e5015]: Ручной
+                    - generic [ref=e5017]:
+                      - img [ref=e5018]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5021]: QA APIC008CANCEL-1778759596548-8034 Equipment
+                    - generic [ref=e5022]:
+                      - generic [ref=e5023]:
+                        - img [ref=e5024]
+                        - link "+79990081771778759" [ref=e5026]:
+                          - /url: tel:+79990081771778759
+                      - generic [ref=e5027]:
+                        - img [ref=e5028]
+                        - generic [ref=e5030]: 15.05.2026
+                    - generic [ref=e5031]:
+                      - generic [ref=e5032]:
+                        - img [ref=e5033]
+                        - generic [ref=e5036]: Manager User
+                      - generic [ref=e5037]: 4 дн назад
+                  - generic [ref=e5039] [cursor=pointer]:
+                    - generic [ref=e5040]:
+                      - generic [ref=e5042]: QA APIC007-1778759596054-5075 Lead
+                      - generic [ref=e5043]:
+                        - img [ref=e5044]
+                        - generic [ref=e5047]: Ручной
+                    - generic [ref=e5049]:
+                      - img [ref=e5050]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5053]: QA APIC007-1778759596054-5075 Equipment
+                    - generic [ref=e5054]:
+                      - generic [ref=e5055]:
+                        - img [ref=e5056]
+                        - link "+79990071771778759" [ref=e5058]:
+                          - /url: tel:+79990071771778759
+                      - generic [ref=e5059]:
+                        - img [ref=e5060]
+                        - generic [ref=e5062]: 15.05.2026
+                    - generic [ref=e5063]:
+                      - generic [ref=e5064]:
+                        - img [ref=e5065]
+                        - generic [ref=e5068]: Manager User
+                      - generic [ref=e5069]: 4 дн назад
+                  - generic [ref=e5071] [cursor=pointer]:
+                    - generic [ref=e5072]:
+                      - generic [ref=e5074]: QA APIC006-1778759595801-5300 Lead
+                      - generic [ref=e5075]:
+                        - img [ref=e5076]
+                        - generic [ref=e5079]: Ручной
+                    - generic [ref=e5081]:
+                      - img [ref=e5082]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5085]: QA APIC006-1778759595801-5300 Equipment
+                    - generic [ref=e5086]:
+                      - generic [ref=e5087]:
+                        - img [ref=e5088]
+                        - link "+79990061771778759" [ref=e5090]:
+                          - /url: tel:+79990061771778759
+                      - generic [ref=e5091]:
+                        - img [ref=e5092]
+                        - generic [ref=e5094]: 15.05.2026
+                    - generic [ref=e5095]:
+                      - generic [ref=e5096]:
+                        - img [ref=e5097]
+                        - generic [ref=e5100]: Manager User
+                      - generic [ref=e5101]: 4 дн назад
+                  - generic [ref=e5103] [cursor=pointer]:
+                    - generic [ref=e5104]:
+                      - generic [ref=e5106]: QA APIC005-1778759595573-2683 Lead
+                      - generic [ref=e5107]:
+                        - img [ref=e5108]
+                        - generic [ref=e5111]: Ручной
+                    - generic [ref=e5113]:
+                      - img [ref=e5114]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5117]: QA APIC005-1778759595573-2683 Equipment
+                    - generic [ref=e5118]:
+                      - generic [ref=e5119]:
+                        - img [ref=e5120]
+                        - link "+79990051771778759" [ref=e5122]:
+                          - /url: tel:+79990051771778759
+                      - generic [ref=e5123]:
+                        - img [ref=e5124]
+                        - generic [ref=e5126]: 15.05.2026
+                    - generic [ref=e5127]:
+                      - generic [ref=e5128]:
+                        - img [ref=e5129]
+                        - generic [ref=e5132]: Manager User
+                      - generic [ref=e5133]: 4 дн назад
+                  - generic [ref=e5135] [cursor=pointer]:
+                    - generic [ref=e5136]:
+                      - generic [ref=e5138]: QA APIC040-1778759595243-8078 Lead
+                      - generic [ref=e5139]:
+                        - img [ref=e5140]
+                        - generic [ref=e5143]: Ручной
+                    - generic [ref=e5145]:
+                      - img [ref=e5146]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5149]: QA APIC040-1778759595243-8078 Equipment
+                    - generic [ref=e5150]:
+                      - generic [ref=e5151]:
+                        - img [ref=e5152]
+                        - link "+79990401771778759" [ref=e5154]:
+                          - /url: tel:+79990401771778759
+                      - generic [ref=e5155]:
+                        - img [ref=e5156]
+                        - generic [ref=e5158]: 15.05.2026
+                    - generic [ref=e5159]:
+                      - generic [ref=e5160]:
+                        - img [ref=e5161]
+                        - generic [ref=e5164]: Manager User
+                      - generic [ref=e5165]: 4 дн назад
+                  - generic [ref=e5167] [cursor=pointer]:
+                    - generic [ref=e5168]:
+                      - generic [ref=e5170]: QA APIC039-1778759594965-4274 Lead
+                      - generic [ref=e5171]:
+                        - img [ref=e5172]
+                        - generic [ref=e5175]: Ручной
+                    - generic [ref=e5177]:
+                      - img [ref=e5178]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5181]: QA APIC039-1778759594965-4274 Equipment
+                    - generic [ref=e5182]:
+                      - generic [ref=e5183]:
+                        - img [ref=e5184]
+                        - link "+79990391771778759" [ref=e5186]:
+                          - /url: tel:+79990391771778759
+                      - generic [ref=e5187]:
+                        - img [ref=e5188]
+                        - generic [ref=e5190]: 15.05.2026
+                    - generic [ref=e5191]:
+                      - generic [ref=e5192]:
+                        - img [ref=e5193]
+                        - generic [ref=e5196]: Manager User
+                      - generic [ref=e5197]: 4 дн назад
+                  - generic [ref=e5199] [cursor=pointer]:
+                    - generic [ref=e5200]:
+                      - generic [ref=e5202]: QA APIC004-1778759594441-8904 Lead
+                      - generic [ref=e5203]:
+                        - img [ref=e5204]
+                        - generic [ref=e5207]: Ручной
+                    - generic [ref=e5209]:
+                      - img [ref=e5210]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5213]: QA APIC004-1778759594441-8904 Equipment
+                    - generic [ref=e5214]:
+                      - generic [ref=e5215]:
+                        - img [ref=e5216]
+                        - link "+79990041771778759" [ref=e5218]:
+                          - /url: tel:+79990041771778759
+                      - generic [ref=e5219]:
+                        - img [ref=e5220]
+                        - generic [ref=e5222]: 15.05.2026
+                    - generic [ref=e5223]:
+                      - generic [ref=e5224]:
+                        - img [ref=e5225]
+                        - generic [ref=e5228]: Manager User
+                      - generic [ref=e5229]: 4 дн назад
+                  - generic [ref=e5231] [cursor=pointer]:
+                    - generic [ref=e5232]:
+                      - generic [ref=e5233]:
+                        - generic [ref=e5234]: QA Mango APIC 036
+                        - generic [ref=e5235]: QA APIC 036 036-1778758850429-9630 LLC
+                      - generic [ref=e5236]:
+                        - img [ref=e5237]
+                        - generic [ref=e5239]: Mango
+                    - generic [ref=e5241]:
+                      - img [ref=e5242]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5245]: —
+                    - generic [ref=e5246]:
+                      - generic [ref=e5247]:
+                        - img [ref=e5248]
+                        - link "+79990361778758850" [ref=e5250]:
+                          - /url: tel:+79990361778758850
+                      - generic [ref=e5251]:
+                        - img [ref=e5252]
+                        - generic [ref=e5254]: 13.05.2026
+                    - generic [ref=e5255]:
+                      - generic [ref=e5256]:
+                        - img [ref=e5257]
+                        - generic [ref=e5260]: Admin User
+                      - generic [ref=e5261]: 4 дн назад
+                  - generic [ref=e5263] [cursor=pointer]:
+                    - generic [ref=e5264]:
+                      - generic [ref=e5266]: QA APIC012-1778758849260-9103 Lead
+                      - generic [ref=e5267]:
+                        - img [ref=e5268]
+                        - generic [ref=e5271]: Ручной
+                    - generic [ref=e5273]:
+                      - img [ref=e5274]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5277]: QA APIC012-1778758849260-9103 Equipment
+                    - generic [ref=e5278]:
+                      - generic [ref=e5279]:
+                        - img [ref=e5280]
+                        - link "+79990121771778758" [ref=e5282]:
+                          - /url: tel:+79990121771778758
+                      - generic [ref=e5283]:
+                        - img [ref=e5284]
+                        - generic [ref=e5286]: 15.05.2026
+                    - generic [ref=e5287]:
+                      - generic [ref=e5288]:
+                        - img [ref=e5289]
+                        - generic [ref=e5292]: Manager User
+                      - generic [ref=e5293]: 4 дн назад
+                  - generic [ref=e5295] [cursor=pointer]:
+                    - generic [ref=e5296]:
+                      - generic [ref=e5298]: QA APIC008CANCEL-1778758848285-5070 Lead
+                      - generic [ref=e5299]:
+                        - img [ref=e5300]
+                        - generic [ref=e5303]: Ручной
+                    - generic [ref=e5305]:
+                      - img [ref=e5306]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5309]: QA APIC008CANCEL-1778758848285-5070 Equipment
+                    - generic [ref=e5310]:
+                      - generic [ref=e5311]:
+                        - img [ref=e5312]
+                        - link "+79990081771778758" [ref=e5314]:
+                          - /url: tel:+79990081771778758
+                      - generic [ref=e5315]:
+                        - img [ref=e5316]
+                        - generic [ref=e5318]: 15.05.2026
+                    - generic [ref=e5319]:
+                      - generic [ref=e5320]:
+                        - img [ref=e5321]
+                        - generic [ref=e5324]: Manager User
+                      - generic [ref=e5325]: 4 дн назад
+                  - generic [ref=e5327] [cursor=pointer]:
+                    - generic [ref=e5328]:
+                      - generic [ref=e5330]: QA APIC007-1778758847851-42 Lead
+                      - generic [ref=e5331]:
+                        - img [ref=e5332]
+                        - generic [ref=e5335]: Ручной
+                    - generic [ref=e5337]:
+                      - img [ref=e5338]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5341]: QA APIC007-1778758847851-42 Equipment
+                    - generic [ref=e5342]:
+                      - generic [ref=e5343]:
+                        - img [ref=e5344]
+                        - link "+79990071771778758" [ref=e5346]:
+                          - /url: tel:+79990071771778758
+                      - generic [ref=e5347]:
+                        - img [ref=e5348]
+                        - generic [ref=e5350]: 15.05.2026
+                    - generic [ref=e5351]:
+                      - generic [ref=e5352]:
+                        - img [ref=e5353]
+                        - generic [ref=e5356]: Manager User
+                      - generic [ref=e5357]: 4 дн назад
+                  - generic [ref=e5359] [cursor=pointer]:
+                    - generic [ref=e5360]:
+                      - generic [ref=e5362]: QA APIC006-1778758847626-6656 Lead
+                      - generic [ref=e5363]:
+                        - img [ref=e5364]
+                        - generic [ref=e5367]: Ручной
+                    - generic [ref=e5369]:
+                      - img [ref=e5370]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5373]: QA APIC006-1778758847626-6656 Equipment
+                    - generic [ref=e5374]:
+                      - generic [ref=e5375]:
+                        - img [ref=e5376]
+                        - link "+79990061771778758" [ref=e5378]:
+                          - /url: tel:+79990061771778758
+                      - generic [ref=e5379]:
+                        - img [ref=e5380]
+                        - generic [ref=e5382]: 15.05.2026
+                    - generic [ref=e5383]:
+                      - generic [ref=e5384]:
+                        - img [ref=e5385]
+                        - generic [ref=e5388]: Manager User
+                      - generic [ref=e5389]: 4 дн назад
+                  - generic [ref=e5391] [cursor=pointer]:
+                    - generic [ref=e5392]:
+                      - generic [ref=e5394]: QA APIC005-1778758847409-7979 Lead
+                      - generic [ref=e5395]:
+                        - img [ref=e5396]
+                        - generic [ref=e5399]: Ручной
+                    - generic [ref=e5401]:
+                      - img [ref=e5402]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5405]: QA APIC005-1778758847409-7979 Equipment
+                    - generic [ref=e5406]:
+                      - generic [ref=e5407]:
+                        - img [ref=e5408]
+                        - link "+79990051771778758" [ref=e5410]:
+                          - /url: tel:+79990051771778758
+                      - generic [ref=e5411]:
+                        - img [ref=e5412]
+                        - generic [ref=e5414]: 15.05.2026
+                    - generic [ref=e5415]:
+                      - generic [ref=e5416]:
+                        - img [ref=e5417]
+                        - generic [ref=e5420]: Manager User
+                      - generic [ref=e5421]: 4 дн назад
+                  - generic [ref=e5423] [cursor=pointer]:
+                    - generic [ref=e5424]:
+                      - generic [ref=e5426]: QA APIC040-1778758847111-4068 Lead
+                      - generic [ref=e5427]:
+                        - img [ref=e5428]
+                        - generic [ref=e5431]: Ручной
+                    - generic [ref=e5433]:
+                      - img [ref=e5434]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5437]: QA APIC040-1778758847111-4068 Equipment
+                    - generic [ref=e5438]:
+                      - generic [ref=e5439]:
+                        - img [ref=e5440]
+                        - link "+79990401771778758" [ref=e5442]:
+                          - /url: tel:+79990401771778758
+                      - generic [ref=e5443]:
+                        - img [ref=e5444]
+                        - generic [ref=e5446]: 15.05.2026
+                    - generic [ref=e5447]:
+                      - generic [ref=e5448]:
+                        - img [ref=e5449]
+                        - generic [ref=e5452]: Manager User
+                      - generic [ref=e5453]: 4 дн назад
+                  - generic [ref=e5455] [cursor=pointer]:
+                    - generic [ref=e5456]:
+                      - generic [ref=e5458]: QA APIC039-1778758846835-5020 Lead
+                      - generic [ref=e5459]:
+                        - img [ref=e5460]
+                        - generic [ref=e5463]: Ручной
+                    - generic [ref=e5465]:
+                      - img [ref=e5466]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5469]: QA APIC039-1778758846835-5020 Equipment
+                    - generic [ref=e5470]:
+                      - generic [ref=e5471]:
+                        - img [ref=e5472]
+                        - link "+79990391771778758" [ref=e5474]:
+                          - /url: tel:+79990391771778758
+                      - generic [ref=e5475]:
+                        - img [ref=e5476]
+                        - generic [ref=e5478]: 15.05.2026
+                    - generic [ref=e5479]:
+                      - generic [ref=e5480]:
+                        - img [ref=e5481]
+                        - generic [ref=e5484]: Manager User
+                      - generic [ref=e5485]: 4 дн назад
+                  - generic [ref=e5487] [cursor=pointer]:
+                    - generic [ref=e5488]:
+                      - generic [ref=e5490]: QA APIC004-1778758846287-617 Lead
+                      - generic [ref=e5491]:
+                        - img [ref=e5492]
+                        - generic [ref=e5495]: Ручной
+                    - generic [ref=e5497]:
+                      - img [ref=e5498]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5501]: QA APIC004-1778758846287-617 Equipment
+                    - generic [ref=e5502]:
+                      - generic [ref=e5503]:
+                        - img [ref=e5504]
+                        - link "+79990041771778758" [ref=e5506]:
+                          - /url: tel:+79990041771778758
+                      - generic [ref=e5507]:
+                        - img [ref=e5508]
+                        - generic [ref=e5510]: 15.05.2026
+                    - generic [ref=e5511]:
+                      - generic [ref=e5512]:
+                        - img [ref=e5513]
+                        - generic [ref=e5516]: Manager User
+                      - generic [ref=e5517]: 4 дн назад
+                  - generic [ref=e5519] [cursor=pointer]:
+                    - generic [ref=e5520]:
+                      - generic [ref=e5521]:
+                        - generic [ref=e5522]: QA Mango APIC 036
+                        - generic [ref=e5523]: QA APIC 036 LLC
+                      - generic [ref=e5524]:
+                        - img [ref=e5525]
+                        - generic [ref=e5527]: Mango
+                    - generic [ref=e5529]:
+                      - img [ref=e5530]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5533]: —
+                    - generic [ref=e5534]:
+                      - generic [ref=e5535]:
+                        - img [ref=e5536]
+                        - link "+79990361778758800" [ref=e5538]:
+                          - /url: tel:+79990361778758800
+                      - generic [ref=e5539]:
+                        - img [ref=e5540]
+                        - generic [ref=e5542]: 13.05.2026
+                    - generic [ref=e5543]:
+                      - generic [ref=e5544]:
+                        - img [ref=e5545]
+                        - generic [ref=e5548]: Admin User
+                      - generic [ref=e5549]: 4 дн назад
+                  - generic [ref=e5551] [cursor=pointer]:
+                    - generic [ref=e5552]:
+                      - generic [ref=e5554]: QA APIC012-1778758799801-4371 Lead
+                      - generic [ref=e5555]:
+                        - img [ref=e5556]
+                        - generic [ref=e5559]: Ручной
+                    - generic [ref=e5561]:
+                      - img [ref=e5562]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5565]: QA APIC012-1778758799801-4371 Equipment
+                    - generic [ref=e5566]:
+                      - generic [ref=e5567]:
+                        - img [ref=e5568]
+                        - link "+79990121771778758" [ref=e5570]:
+                          - /url: tel:+79990121771778758
+                      - generic [ref=e5571]:
+                        - img [ref=e5572]
+                        - generic [ref=e5574]: 15.05.2026
+                    - generic [ref=e5575]:
+                      - generic [ref=e5576]:
+                        - img [ref=e5577]
+                        - generic [ref=e5580]: Manager User
+                      - generic [ref=e5581]: 4 дн назад
+                  - generic [ref=e5583] [cursor=pointer]:
+                    - generic [ref=e5584]:
+                      - generic [ref=e5586]: QA APIC008CANCEL-1778758798775-6991 Lead
+                      - generic [ref=e5587]:
+                        - img [ref=e5588]
+                        - generic [ref=e5591]: Ручной
+                    - generic [ref=e5593]:
+                      - img [ref=e5594]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5597]: QA APIC008CANCEL-1778758798775-6991 Equipment
+                    - generic [ref=e5598]:
+                      - generic [ref=e5599]:
+                        - img [ref=e5600]
+                        - link "+79990081771778758" [ref=e5602]:
+                          - /url: tel:+79990081771778758
+                      - generic [ref=e5603]:
+                        - img [ref=e5604]
+                        - generic [ref=e5606]: 15.05.2026
+                    - generic [ref=e5607]:
+                      - generic [ref=e5608]:
+                        - img [ref=e5609]
+                        - generic [ref=e5612]: Manager User
+                      - generic [ref=e5613]: 4 дн назад
+                  - generic [ref=e5615] [cursor=pointer]:
+                    - generic [ref=e5616]:
+                      - generic [ref=e5618]: QA APIC007-1778758798295-8188 Lead
+                      - generic [ref=e5619]:
+                        - img [ref=e5620]
+                        - generic [ref=e5623]: Ручной
+                    - generic [ref=e5625]:
+                      - img [ref=e5626]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5629]: QA APIC007-1778758798295-8188 Equipment
+                    - generic [ref=e5630]:
+                      - generic [ref=e5631]:
+                        - img [ref=e5632]
+                        - link "+79990071771778758" [ref=e5634]:
+                          - /url: tel:+79990071771778758
+                      - generic [ref=e5635]:
+                        - img [ref=e5636]
+                        - generic [ref=e5638]: 15.05.2026
+                    - generic [ref=e5639]:
+                      - generic [ref=e5640]:
+                        - img [ref=e5641]
+                        - generic [ref=e5644]: Manager User
+                      - generic [ref=e5645]: 4 дн назад
+                  - generic [ref=e5647] [cursor=pointer]:
+                    - generic [ref=e5648]:
+                      - generic [ref=e5650]: QA APIC006-1778758798043-2779 Lead
+                      - generic [ref=e5651]:
+                        - img [ref=e5652]
+                        - generic [ref=e5655]: Ручной
+                    - generic [ref=e5657]:
+                      - img [ref=e5658]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5661]: QA APIC006-1778758798043-2779 Equipment
+                    - generic [ref=e5662]:
+                      - generic [ref=e5663]:
+                        - img [ref=e5664]
+                        - link "+79990061771778758" [ref=e5666]:
+                          - /url: tel:+79990061771778758
+                      - generic [ref=e5667]:
+                        - img [ref=e5668]
+                        - generic [ref=e5670]: 15.05.2026
+                    - generic [ref=e5671]:
+                      - generic [ref=e5672]:
+                        - img [ref=e5673]
+                        - generic [ref=e5676]: Manager User
+                      - generic [ref=e5677]: 4 дн назад
+                  - generic [ref=e5679] [cursor=pointer]:
+                    - generic [ref=e5680]:
+                      - generic [ref=e5682]: QA APIC005-1778758797828-1399 Lead
+                      - generic [ref=e5683]:
+                        - img [ref=e5684]
+                        - generic [ref=e5687]: Ручной
+                    - generic [ref=e5689]:
+                      - img [ref=e5690]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5693]: QA APIC005-1778758797828-1399 Equipment
+                    - generic [ref=e5694]:
+                      - generic [ref=e5695]:
+                        - img [ref=e5696]
+                        - link "+79990051771778758" [ref=e5698]:
+                          - /url: tel:+79990051771778758
+                      - generic [ref=e5699]:
+                        - img [ref=e5700]
+                        - generic [ref=e5702]: 15.05.2026
+                    - generic [ref=e5703]:
+                      - generic [ref=e5704]:
+                        - img [ref=e5705]
+                        - generic [ref=e5708]: Manager User
+                      - generic [ref=e5709]: 4 дн назад
+                  - generic [ref=e5711] [cursor=pointer]:
+                    - generic [ref=e5712]:
+                      - generic [ref=e5714]: QA APIC040-1778758797529-6014 Lead
+                      - generic [ref=e5715]:
+                        - img [ref=e5716]
+                        - generic [ref=e5719]: Ручной
+                    - generic [ref=e5721]:
+                      - img [ref=e5722]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5725]: QA APIC040-1778758797529-6014 Equipment
+                    - generic [ref=e5726]:
+                      - generic [ref=e5727]:
+                        - img [ref=e5728]
+                        - link "+79990401771778758" [ref=e5730]:
+                          - /url: tel:+79990401771778758
+                      - generic [ref=e5731]:
+                        - img [ref=e5732]
+                        - generic [ref=e5734]: 15.05.2026
+                    - generic [ref=e5735]:
+                      - generic [ref=e5736]:
+                        - img [ref=e5737]
+                        - generic [ref=e5740]: Manager User
+                      - generic [ref=e5741]: 4 дн назад
+                  - generic [ref=e5743] [cursor=pointer]:
+                    - generic [ref=e5744]:
+                      - generic [ref=e5746]: QA APIC039-1778758797252-4372 Lead
+                      - generic [ref=e5747]:
+                        - img [ref=e5748]
+                        - generic [ref=e5751]: Ручной
+                    - generic [ref=e5753]:
+                      - img [ref=e5754]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5757]: QA APIC039-1778758797252-4372 Equipment
+                    - generic [ref=e5758]:
+                      - generic [ref=e5759]:
+                        - img [ref=e5760]
+                        - link "+79990391771778758" [ref=e5762]:
+                          - /url: tel:+79990391771778758
+                      - generic [ref=e5763]:
+                        - img [ref=e5764]
+                        - generic [ref=e5766]: 15.05.2026
+                    - generic [ref=e5767]:
+                      - generic [ref=e5768]:
+                        - img [ref=e5769]
+                        - generic [ref=e5772]: Manager User
+                      - generic [ref=e5773]: 4 дн назад
+                  - generic [ref=e5775] [cursor=pointer]:
+                    - generic [ref=e5776]:
+                      - generic [ref=e5778]: QA APIC004-1778758796714-1475 Lead
+                      - generic [ref=e5779]:
+                        - img [ref=e5780]
+                        - generic [ref=e5783]: Ручной
+                    - generic [ref=e5785]:
+                      - img [ref=e5786]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5789]: QA APIC004-1778758796714-1475 Equipment
+                    - generic [ref=e5790]:
+                      - generic [ref=e5791]:
+                        - img [ref=e5792]
+                        - link "+79990041771778758" [ref=e5794]:
+                          - /url: tel:+79990041771778758
+                      - generic [ref=e5795]:
+                        - img [ref=e5796]
+                        - generic [ref=e5798]: 15.05.2026
+                    - generic [ref=e5799]:
+                      - generic [ref=e5800]:
+                        - img [ref=e5801]
+                        - generic [ref=e5804]: Manager User
+                      - generic [ref=e5805]: 4 дн назад
+                  - generic [ref=e5807] [cursor=pointer]:
+                    - generic [ref=e5808]:
+                      - generic [ref=e5810]: QA APIC012-1778758776558-797 Lead
+                      - generic [ref=e5811]:
+                        - img [ref=e5812]
+                        - generic [ref=e5815]: Ручной
+                    - generic [ref=e5817]:
+                      - img [ref=e5818]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5821]: QA APIC012-1778758776558-797 Equipment
+                    - generic [ref=e5822]:
+                      - generic [ref=e5823]:
+                        - img [ref=e5824]
+                        - link "+79990121771778758" [ref=e5826]:
+                          - /url: tel:+79990121771778758
+                      - generic [ref=e5827]:
+                        - img [ref=e5828]
+                        - generic [ref=e5830]: 15.05.2026
+                    - generic [ref=e5831]:
+                      - generic [ref=e5832]:
+                        - img [ref=e5833]
+                        - generic [ref=e5836]: Manager User
+                      - generic [ref=e5837]: 4 дн назад
+                  - generic [ref=e5839] [cursor=pointer]:
+                    - generic [ref=e5840]:
+                      - generic [ref=e5842]: QA APIC008CANCEL-1778758775495-1995 Lead
+                      - generic [ref=e5843]:
+                        - img [ref=e5844]
+                        - generic [ref=e5847]: Ручной
+                    - generic [ref=e5849]:
+                      - img [ref=e5850]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5853]: QA APIC008CANCEL-1778758775495-1995 Equipment
+                    - generic [ref=e5854]:
+                      - generic [ref=e5855]:
+                        - img [ref=e5856]
+                        - link "+79990081771778758" [ref=e5858]:
+                          - /url: tel:+79990081771778758
+                      - generic [ref=e5859]:
+                        - img [ref=e5860]
+                        - generic [ref=e5862]: 15.05.2026
+                    - generic [ref=e5863]:
+                      - generic [ref=e5864]:
+                        - img [ref=e5865]
+                        - generic [ref=e5868]: Manager User
+                      - generic [ref=e5869]: 4 дн назад
+                  - generic [ref=e5871] [cursor=pointer]:
+                    - generic [ref=e5872]:
+                      - generic [ref=e5874]: QA APIC007-1778758774995-5265 Lead
+                      - generic [ref=e5875]:
+                        - img [ref=e5876]
+                        - generic [ref=e5879]: Ручной
+                    - generic [ref=e5881]:
+                      - img [ref=e5882]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5885]: QA APIC007-1778758774995-5265 Equipment
+                    - generic [ref=e5886]:
+                      - generic [ref=e5887]:
+                        - img [ref=e5888]
+                        - link "+79990071771778758" [ref=e5890]:
+                          - /url: tel:+79990071771778758
+                      - generic [ref=e5891]:
+                        - img [ref=e5892]
+                        - generic [ref=e5894]: 15.05.2026
+                    - generic [ref=e5895]:
+                      - generic [ref=e5896]:
+                        - img [ref=e5897]
+                        - generic [ref=e5900]: Manager User
+                      - generic [ref=e5901]: 4 дн назад
+                  - generic [ref=e5903] [cursor=pointer]:
+                    - generic [ref=e5904]:
+                      - generic [ref=e5906]: QA APIC006-1778758774726-7034 Lead
+                      - generic [ref=e5907]:
+                        - img [ref=e5908]
+                        - generic [ref=e5911]: Ручной
+                    - generic [ref=e5913]:
+                      - img [ref=e5914]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5917]: QA APIC006-1778758774726-7034 Equipment
+                    - generic [ref=e5918]:
+                      - generic [ref=e5919]:
+                        - img [ref=e5920]
+                        - link "+79990061771778758" [ref=e5922]:
+                          - /url: tel:+79990061771778758
+                      - generic [ref=e5923]:
+                        - img [ref=e5924]
+                        - generic [ref=e5926]: 15.05.2026
+                    - generic [ref=e5927]:
+                      - generic [ref=e5928]:
+                        - img [ref=e5929]
+                        - generic [ref=e5932]: Manager User
+                      - generic [ref=e5933]: 4 дн назад
+                  - generic [ref=e5935] [cursor=pointer]:
+                    - generic [ref=e5936]:
+                      - generic [ref=e5938]: QA APIC005-1778758774496-3920 Lead
+                      - generic [ref=e5939]:
+                        - img [ref=e5940]
+                        - generic [ref=e5943]: Ручной
+                    - generic [ref=e5945]:
+                      - img [ref=e5946]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5949]: QA APIC005-1778758774496-3920 Equipment
+                    - generic [ref=e5950]:
+                      - generic [ref=e5951]:
+                        - img [ref=e5952]
+                        - link "+79990051771778758" [ref=e5954]:
+                          - /url: tel:+79990051771778758
+                      - generic [ref=e5955]:
+                        - img [ref=e5956]
+                        - generic [ref=e5958]: 15.05.2026
+                    - generic [ref=e5959]:
+                      - generic [ref=e5960]:
+                        - img [ref=e5961]
+                        - generic [ref=e5964]: Manager User
+                      - generic [ref=e5965]: 4 дн назад
+                  - generic [ref=e5967] [cursor=pointer]:
+                    - generic [ref=e5968]:
+                      - generic [ref=e5970]: QA APIC040-1778758774168-8246 Lead
+                      - generic [ref=e5971]:
+                        - img [ref=e5972]
+                        - generic [ref=e5975]: Ручной
+                    - generic [ref=e5977]:
+                      - img [ref=e5978]
+                      - text: Ждёт sourcing
+                    - generic [ref=e5981]: QA APIC040-1778758774168-8246 Equipment
+                    - generic [ref=e5982]:
+                      - generic [ref=e5983]:
+                        - img [ref=e5984]
+                        - link "+79990401771778758" [ref=e5986]:
+                          - /url: tel:+79990401771778758
+                      - generic [ref=e5987]:
+                        - img [ref=e5988]
+                        - generic [ref=e5990]: 15.05.2026
+                    - generic [ref=e5991]:
+                      - generic [ref=e5992]:
+                        - img [ref=e5993]
+                        - generic [ref=e5996]: Manager User
+                      - generic [ref=e5997]: 4 дн назад
+                  - generic [ref=e5999] [cursor=pointer]:
+                    - generic [ref=e6000]:
+                      - generic [ref=e6002]: QA APIC039-1778758773882-888 Lead
+                      - generic [ref=e6003]:
+                        - img [ref=e6004]
+                        - generic [ref=e6007]: Ручной
+                    - generic [ref=e6009]:
+                      - img [ref=e6010]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6013]: QA APIC039-1778758773882-888 Equipment
+                    - generic [ref=e6014]:
+                      - generic [ref=e6015]:
+                        - img [ref=e6016]
+                        - link "+79990391771778758" [ref=e6018]:
+                          - /url: tel:+79990391771778758
+                      - generic [ref=e6019]:
+                        - img [ref=e6020]
+                        - generic [ref=e6022]: 15.05.2026
+                    - generic [ref=e6023]:
+                      - generic [ref=e6024]:
+                        - img [ref=e6025]
+                        - generic [ref=e6028]: Manager User
+                      - generic [ref=e6029]: 4 дн назад
+                  - generic [ref=e6031] [cursor=pointer]:
+                    - generic [ref=e6032]:
+                      - generic [ref=e6034]: QA APIC004-1778758773333-5958 Lead
+                      - generic [ref=e6035]:
+                        - img [ref=e6036]
+                        - generic [ref=e6039]: Ручной
+                    - generic [ref=e6041]:
+                      - img [ref=e6042]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6045]: QA APIC004-1778758773333-5958 Equipment
+                    - generic [ref=e6046]:
+                      - generic [ref=e6047]:
+                        - img [ref=e6048]
+                        - link "+79990041771778758" [ref=e6050]:
+                          - /url: tel:+79990041771778758
+                      - generic [ref=e6051]:
+                        - img [ref=e6052]
+                        - generic [ref=e6054]: 15.05.2026
+                    - generic [ref=e6055]:
+                      - generic [ref=e6056]:
+                        - img [ref=e6057]
+                        - generic [ref=e6060]: Manager User
+                      - generic [ref=e6061]: 4 дн назад
+                  - generic [ref=e6063] [cursor=pointer]:
+                    - generic [ref=e6064]:
+                      - generic [ref=e6066]: QA APIC012-1778758237529-1272 Lead
+                      - generic [ref=e6067]:
+                        - img [ref=e6068]
+                        - generic [ref=e6071]: Ручной
+                    - generic [ref=e6073]:
+                      - img [ref=e6074]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6077]: QA APIC012-1778758237529-1272 Equipment
+                    - generic [ref=e6078]:
+                      - generic [ref=e6079]:
+                        - img [ref=e6080]
+                        - link "+79990121771778758" [ref=e6082]:
+                          - /url: tel:+79990121771778758
+                      - generic [ref=e6083]:
+                        - img [ref=e6084]
+                        - generic [ref=e6086]: 15.05.2026
+                    - generic [ref=e6087]:
+                      - generic [ref=e6088]:
+                        - img [ref=e6089]
+                        - generic [ref=e6092]: Manager User
+                      - generic [ref=e6093]: 4 дн назад
+                  - generic [ref=e6095] [cursor=pointer]:
+                    - generic [ref=e6096]:
+                      - generic [ref=e6098]: QA APIC008CANCEL-1778758236363-1995 Lead
+                      - generic [ref=e6099]:
+                        - img [ref=e6100]
+                        - generic [ref=e6103]: Ручной
+                    - generic [ref=e6105]:
+                      - img [ref=e6106]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6109]: QA APIC008CANCEL-1778758236363-1995 Equipment
+                    - generic [ref=e6110]:
+                      - generic [ref=e6111]:
+                        - img [ref=e6112]
+                        - link "+79990081771778758" [ref=e6114]:
+                          - /url: tel:+79990081771778758
+                      - generic [ref=e6115]:
+                        - img [ref=e6116]
+                        - generic [ref=e6118]: 15.05.2026
+                    - generic [ref=e6119]:
+                      - generic [ref=e6120]:
+                        - img [ref=e6121]
+                        - generic [ref=e6124]: Manager User
+                      - generic [ref=e6125]: 4 дн назад
+                  - generic [ref=e6127] [cursor=pointer]:
+                    - generic [ref=e6128]:
+                      - generic [ref=e6130]: QA APIC007-1778758235794-4607 Lead
+                      - generic [ref=e6131]:
+                        - img [ref=e6132]
+                        - generic [ref=e6135]: Ручной
+                    - generic [ref=e6137]:
+                      - img [ref=e6138]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6141]: QA APIC007-1778758235794-4607 Equipment
+                    - generic [ref=e6142]:
+                      - generic [ref=e6143]:
+                        - img [ref=e6144]
+                        - link "+79990071771778758" [ref=e6146]:
+                          - /url: tel:+79990071771778758
+                      - generic [ref=e6147]:
+                        - img [ref=e6148]
+                        - generic [ref=e6150]: 15.05.2026
+                    - generic [ref=e6151]:
+                      - generic [ref=e6152]:
+                        - img [ref=e6153]
+                        - generic [ref=e6156]: Manager User
+                      - generic [ref=e6157]: 4 дн назад
+                  - generic [ref=e6159] [cursor=pointer]:
+                    - generic [ref=e6160]:
+                      - generic [ref=e6162]: QA APIC006-1778758235503-888 Lead
+                      - generic [ref=e6163]:
+                        - img [ref=e6164]
+                        - generic [ref=e6167]: Ручной
+                    - generic [ref=e6169]:
+                      - img [ref=e6170]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6173]: QA APIC006-1778758235503-888 Equipment
+                    - generic [ref=e6174]:
+                      - generic [ref=e6175]:
+                        - img [ref=e6176]
+                        - link "+79990061771778758" [ref=e6178]:
+                          - /url: tel:+79990061771778758
+                      - generic [ref=e6179]:
+                        - img [ref=e6180]
+                        - generic [ref=e6182]: 15.05.2026
+                    - generic [ref=e6183]:
+                      - generic [ref=e6184]:
+                        - img [ref=e6185]
+                        - generic [ref=e6188]: Manager User
+                      - generic [ref=e6189]: 4 дн назад
+                  - generic [ref=e6191] [cursor=pointer]:
+                    - generic [ref=e6192]:
+                      - generic [ref=e6194]: QA APIC005-1778758235240-1321 Lead
+                      - generic [ref=e6195]:
+                        - img [ref=e6196]
+                        - generic [ref=e6199]: Ручной
+                    - generic [ref=e6201]:
+                      - img [ref=e6202]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6205]: QA APIC005-1778758235240-1321 Equipment
+                    - generic [ref=e6206]:
+                      - generic [ref=e6207]:
+                        - img [ref=e6208]
+                        - link "+79990051771778758" [ref=e6210]:
+                          - /url: tel:+79990051771778758
+                      - generic [ref=e6211]:
+                        - img [ref=e6212]
+                        - generic [ref=e6214]: 15.05.2026
+                    - generic [ref=e6215]:
+                      - generic [ref=e6216]:
+                        - img [ref=e6217]
+                        - generic [ref=e6220]: Manager User
+                      - generic [ref=e6221]: 4 дн назад
+                  - generic [ref=e6223] [cursor=pointer]:
+                    - generic [ref=e6224]:
+                      - generic [ref=e6226]: QA APIC040-1778758234865-7030 Lead
+                      - generic [ref=e6227]:
+                        - img [ref=e6228]
+                        - generic [ref=e6231]: Ручной
+                    - generic [ref=e6233]:
+                      - img [ref=e6234]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6237]: QA APIC040-1778758234865-7030 Equipment
+                    - generic [ref=e6238]:
+                      - generic [ref=e6239]:
+                        - img [ref=e6240]
+                        - link "+79990401771778758" [ref=e6242]:
+                          - /url: tel:+79990401771778758
+                      - generic [ref=e6243]:
+                        - img [ref=e6244]
+                        - generic [ref=e6246]: 15.05.2026
+                    - generic [ref=e6247]:
+                      - generic [ref=e6248]:
+                        - img [ref=e6249]
+                        - generic [ref=e6252]: Manager User
+                      - generic [ref=e6253]: 4 дн назад
+                  - generic [ref=e6255] [cursor=pointer]:
+                    - generic [ref=e6256]:
+                      - generic [ref=e6258]: QA APIC039-1778758234547-4387 Lead
+                      - generic [ref=e6259]:
+                        - img [ref=e6260]
+                        - generic [ref=e6263]: Ручной
+                    - generic [ref=e6265]:
+                      - img [ref=e6266]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6269]: QA APIC039-1778758234547-4387 Equipment
+                    - generic [ref=e6270]:
+                      - generic [ref=e6271]:
+                        - img [ref=e6272]
+                        - link "+79990391771778758" [ref=e6274]:
+                          - /url: tel:+79990391771778758
+                      - generic [ref=e6275]:
+                        - img [ref=e6276]
+                        - generic [ref=e6278]: 15.05.2026
+                    - generic [ref=e6279]:
+                      - generic [ref=e6280]:
+                        - img [ref=e6281]
+                        - generic [ref=e6284]: Manager User
+                      - generic [ref=e6285]: 4 дн назад
+                  - generic [ref=e6287] [cursor=pointer]:
+                    - generic [ref=e6288]:
+                      - generic [ref=e6290]: QA APIC004-1778758234011-697 Lead
+                      - generic [ref=e6291]:
+                        - img [ref=e6292]
+                        - generic [ref=e6295]: Ручной
+                    - generic [ref=e6297]:
+                      - img [ref=e6298]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6301]: QA APIC004-1778758234011-697 Equipment
+                    - generic [ref=e6302]:
+                      - generic [ref=e6303]:
+                        - img [ref=e6304]
+                        - link "+79990041771778758" [ref=e6306]:
+                          - /url: tel:+79990041771778758
+                      - generic [ref=e6307]:
+                        - img [ref=e6308]
+                        - generic [ref=e6310]: 15.05.2026
+                    - generic [ref=e6311]:
+                      - generic [ref=e6312]:
+                        - img [ref=e6313]
+                        - generic [ref=e6316]: Manager User
+                      - generic [ref=e6317]: 4 дн назад
+                  - generic [ref=e6319] [cursor=pointer]:
+                    - generic [ref=e6320]:
+                      - generic [ref=e6322]: QA INT005-1778069895475-2699 Lead
+                      - generic [ref=e6323]:
+                        - img [ref=e6324]
+                        - generic [ref=e6327]: Ручной
+                    - generic [ref=e6329]:
+                      - img [ref=e6330]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6333]: —
+                    - generic [ref=e6334]:
+                      - generic [ref=e6335]:
+                        - img [ref=e6336]
+                        - link "+79990051771778069" [ref=e6338]:
+                          - /url: tel:+79990051771778069
+                      - generic [ref=e6339]:
+                        - img [ref=e6340]
+                        - generic [ref=e6342]: 15.05.2026
+                    - generic [ref=e6343]:
+                      - generic [ref=e6344]:
+                        - img [ref=e6345]
+                        - generic [ref=e6348]: Manager User
+                      - generic [ref=e6349]: 5 дн назад
+                  - generic [ref=e6351] [cursor=pointer]:
+                    - generic [ref=e6352]:
+                      - generic [ref=e6354]: QA INT004-1778069895078-4627 Lead
+                      - generic [ref=e6355]:
+                        - img [ref=e6356]
+                        - generic [ref=e6359]: Ручной
+                    - generic [ref=e6361]:
+                      - img [ref=e6362]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6365]: —
+                    - generic [ref=e6367]:
+                      - img [ref=e6368]
+                      - link "+79990041771778069" [ref=e6370]:
+                        - /url: tel:+79990041771778069
+                    - generic [ref=e6371]:
+                      - generic [ref=e6372]:
+                        - img [ref=e6373]
+                        - generic [ref=e6376]: Manager User
+                      - generic [ref=e6377]: 12 дн назад
+                  - generic [ref=e6379] [cursor=pointer]:
+                    - generic [ref=e6380]:
+                      - generic [ref=e6382]: QA INT003-1778069894745-4112 Lead
+                      - generic [ref=e6383]:
+                        - img [ref=e6384]
+                        - generic [ref=e6387]: Ручной
+                    - generic [ref=e6389]:
+                      - img [ref=e6390]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6393]: —
+                    - generic [ref=e6395]:
+                      - img [ref=e6396]
+                      - link "+79990031771778069" [ref=e6398]:
+                        - /url: tel:+79990031771778069
+                    - generic [ref=e6399]:
+                      - generic [ref=e6400]:
+                        - img [ref=e6401]
+                        - generic [ref=e6404]: Manager User
+                      - generic [ref=e6405]: 12 дн назад
+                  - generic [ref=e6407] [cursor=pointer]:
+                    - generic [ref=e6408]:
+                      - generic [ref=e6410]: QA INT002-1778069894396-1427 Lead
+                      - generic [ref=e6411]:
+                        - img [ref=e6412]
+                        - generic [ref=e6415]: Ручной
+                    - generic [ref=e6417]:
+                      - img [ref=e6418]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6421]: —
+                    - generic [ref=e6423]:
+                      - img [ref=e6424]
+                      - link "+79990021771778069" [ref=e6426]:
+                        - /url: tel:+79990021771778069
+                    - generic [ref=e6427]:
+                      - generic [ref=e6428]:
+                        - img [ref=e6429]
+                        - generic [ref=e6432]: Manager User
+                      - generic [ref=e6433]: 12 дн назад
+                  - generic [ref=e6435] [cursor=pointer]:
+                    - generic [ref=e6436]:
+                      - generic [ref=e6438]: QA INT001-1778069893979-841 Lead
+                      - generic [ref=e6439]:
+                        - img [ref=e6440]
+                        - generic [ref=e6443]: Ручной
+                    - generic [ref=e6445]:
+                      - img [ref=e6446]
+                      - text: Ждёт sourcing
+                    - generic [ref=e6449]: —
+                    - generic [ref=e6451]:
+                      - img [ref=e6452]
+                      - link "+79990011771778069" [ref=e6454]:
+                        - /url: tel:+79990011771778069
+                    - generic [ref=e6455]:
+                      - generic [ref=e6456]:
+                        - img [ref=e6457]
+                        - generic [ref=e6460]: Manager User
+                      - generic [ref=e6461]: 12 дн назад
+              - generic [ref=e6462]:
+                - generic [ref=e6464]:
+                  - heading "Бронь" [level=3] [ref=e6466]
+                  - generic [ref=e6467]: "12"
+                - generic [ref=e6468]:
+                  - generic [ref=e6470] [cursor=pointer]:
+                    - generic [ref=e6471]:
+                      - generic [ref=e6473]: QA APIC038-1779189311957-9123 Lead
+                      - generic [ref=e6474]:
+                        - img [ref=e6475]
+                        - generic [ref=e6478]: Ручной
+                    - generic [ref=e6479]: QA APIC038-1779189311957-9123 Equipment
+                    - generic [ref=e6480]:
+                      - generic [ref=e6481]:
+                        - img [ref=e6482]
+                        - link "+79990381771779189" [ref=e6484]:
+                          - /url: tel:+79990381771779189
+                      - generic [ref=e6485]:
+                        - img [ref=e6486]
+                        - generic [ref=e6488]: 20.05.2026
+                        - generic [ref=e6489]: • 09:00-18:00
+                    - generic [ref=e6490]:
+                      - generic [ref=e6491]:
+                        - img [ref=e6492]
+                        - generic [ref=e6495]: Manager User
+                      - generic [ref=e6496]: 3 мин назад
+                  - generic [ref=e6498] [cursor=pointer]:
+                    - generic [ref=e6499]:
+                      - generic [ref=e6501]: QA APIC038-1779189241056-6476 Lead
+                      - generic [ref=e6502]:
+                        - img [ref=e6503]
+                        - generic [ref=e6506]: Ручной
+                    - generic [ref=e6507]: QA APIC038-1779189241056-6476 Equipment
+                    - generic [ref=e6508]:
+                      - generic [ref=e6509]:
+                        - img [ref=e6510]
+                        - link "+79990381771779189" [ref=e6512]:
+                          - /url: tel:+79990381771779189
+                      - generic [ref=e6513]:
+                        - img [ref=e6514]
+                        - generic [ref=e6516]: 20.05.2026
+                        - generic [ref=e6517]: • 09:00-18:00
+                    - generic [ref=e6518]:
+                      - generic [ref=e6519]:
+                        - img [ref=e6520]
+                        - generic [ref=e6523]: Manager User
+                      - generic [ref=e6524]: 4 мин назад
+                  - generic [ref=e6526] [cursor=pointer]:
+                    - generic [ref=e6527]:
+                      - generic [ref=e6529]: QA APIC038-1779189180540-3138 Lead
+                      - generic [ref=e6530]:
+                        - img [ref=e6531]
+                        - generic [ref=e6534]: Ручной
+                    - generic [ref=e6535]: QA APIC038-1779189180540-3138 Equipment
+                    - generic [ref=e6536]:
+                      - generic [ref=e6537]:
+                        - img [ref=e6538]
+                        - link "+79990381771779189" [ref=e6540]:
+                          - /url: tel:+79990381771779189
+                      - generic [ref=e6541]:
+                        - img [ref=e6542]
+                        - generic [ref=e6544]: 20.05.2026
+                        - generic [ref=e6545]: • 09:00-18:00
+                    - generic [ref=e6546]:
+                      - generic [ref=e6547]:
+                        - img [ref=e6548]
+                        - generic [ref=e6551]: Manager User
+                      - generic [ref=e6552]: 5 мин назад
+                  - generic [ref=e6554] [cursor=pointer]:
+                    - generic [ref=e6555]:
+                      - generic [ref=e6557]: QA APIC038-1779188952098-3345 Lead
+                      - generic [ref=e6558]:
+                        - img [ref=e6559]
+                        - generic [ref=e6562]: Ручной
+                    - generic [ref=e6563]: QA APIC038-1779188952098-3345 Equipment
+                    - generic [ref=e6564]:
+                      - generic [ref=e6565]:
+                        - img [ref=e6566]
+                        - link "+79990381771779188" [ref=e6568]:
+                          - /url: tel:+79990381771779188
+                      - generic [ref=e6569]:
+                        - img [ref=e6570]
+                        - generic [ref=e6572]: 20.05.2026
+                        - generic [ref=e6573]: • 09:00-18:00
+                    - generic [ref=e6574]:
+                      - generic [ref=e6575]:
+                        - img [ref=e6576]
+                        - generic [ref=e6579]: Manager User
+                      - generic [ref=e6580]: 9 мин назад
+                  - generic [ref=e6582] [cursor=pointer]:
+                    - generic [ref=e6583]:
+                      - generic [ref=e6585]: QA APIC038-1779188872981-1084 Lead
+                      - generic [ref=e6586]:
+                        - img [ref=e6587]
+                        - generic [ref=e6590]: Ручной
+                    - generic [ref=e6591]: QA APIC038-1779188872981-1084 Equipment
+                    - generic [ref=e6592]:
+                      - generic [ref=e6593]:
+                        - img [ref=e6594]
+                        - link "+79990381771779188" [ref=e6596]:
+                          - /url: tel:+79990381771779188
+                      - generic [ref=e6597]:
+                        - img [ref=e6598]
+                        - generic [ref=e6600]: 20.05.2026
+                        - generic [ref=e6601]: • 09:00-18:00
+                    - generic [ref=e6602]:
+                      - generic [ref=e6603]:
+                        - img [ref=e6604]
+                        - generic [ref=e6607]: Manager User
+                      - generic [ref=e6608]: 10 мин назад
+                  - generic [ref=e6610] [cursor=pointer]:
+                    - generic [ref=e6611]:
+                      - generic [ref=e6613]: QA APIC038-1778762934890-2405 Lead
+                      - generic [ref=e6614]:
+                        - img [ref=e6615]
+                        - generic [ref=e6618]: Ручной
+                    - generic [ref=e6619]: QA APIC038-1778762934890-2405 Equipment
+                    - generic [ref=e6620]:
+                      - generic [ref=e6621]:
+                        - img [ref=e6622]
+                        - link "+79990381771778762" [ref=e6624]:
+                          - /url: tel:+79990381771778762
+                      - generic [ref=e6625]:
+                        - img [ref=e6626]
+                        - generic [ref=e6628]: 15.05.2026
+                        - generic [ref=e6629]: • 09:00-18:00
+                    - generic [ref=e6630]:
+                      - generic [ref=e6631]:
+                        - img [ref=e6632]
+                        - generic [ref=e6635]: Manager User
+                      - generic [ref=e6636]: 4 дн назад
+                  - generic [ref=e6638] [cursor=pointer]:
+                    - generic [ref=e6639]:
+                      - generic [ref=e6641]: QA APIC038-1778762868403-548 Lead
+                      - generic [ref=e6642]:
+                        - img [ref=e6643]
+                        - generic [ref=e6646]: Ручной
+                    - generic [ref=e6647]: QA APIC038-1778762868403-548 Equipment
+                    - generic [ref=e6648]:
+                      - generic [ref=e6649]:
+                        - img [ref=e6650]
+                        - link "+79990381771778762" [ref=e6652]:
+                          - /url: tel:+79990381771778762
+                      - generic [ref=e6653]:
+                        - img [ref=e6654]
+                        - generic [ref=e6656]: 15.05.2026
+                        - generic [ref=e6657]: • 09:00-18:00
+                    - generic [ref=e6658]:
+                      - generic [ref=e6659]:
+                        - img [ref=e6660]
+                        - generic [ref=e6663]: Manager User
+                      - generic [ref=e6664]: 4 дн назад
+                  - generic [ref=e6666] [cursor=pointer]:
+                    - generic [ref=e6667]:
+                      - generic [ref=e6669]: QA APIC038-1778759594664-9481 Lead
+                      - generic [ref=e6670]:
+                        - img [ref=e6671]
+                        - generic [ref=e6674]: Ручной
+                    - generic [ref=e6675]: QA APIC038-1778759594664-9481 Equipment
+                    - generic [ref=e6676]:
+                      - generic [ref=e6677]:
+                        - img [ref=e6678]
+                        - link "+79990381771778759" [ref=e6680]:
+                          - /url: tel:+79990381771778759
+                      - generic [ref=e6681]:
+                        - img [ref=e6682]
+                        - generic [ref=e6684]: 15.05.2026
+                        - generic [ref=e6685]: • 09:00-18:00
+                    - generic [ref=e6686]:
+                      - generic [ref=e6687]:
+                        - img [ref=e6688]
+                        - generic [ref=e6691]: Manager User
+                      - generic [ref=e6692]: 4 дн назад
+                  - generic [ref=e6694] [cursor=pointer]:
+                    - generic [ref=e6695]:
+                      - generic [ref=e6697]: QA APIC038-1778758846517-1471 Lead
+                      - generic [ref=e6698]:
+                        - img [ref=e6699]
+                        - generic [ref=e6702]: Ручной
+                    - generic [ref=e6703]: QA APIC038-1778758846517-1471 Equipment
+                    - generic [ref=e6704]:
+                      - generic [ref=e6705]:
+                        - img [ref=e6706]
+                        - link "+79990381771778758" [ref=e6708]:
+                          - /url: tel:+79990381771778758
+                      - generic [ref=e6709]:
+                        - img [ref=e6710]
+                        - generic [ref=e6712]: 15.05.2026
+                        - generic [ref=e6713]: • 09:00-18:00
+                    - generic [ref=e6714]:
+                      - generic [ref=e6715]:
+                        - img [ref=e6716]
+                        - generic [ref=e6719]: Manager User
+                      - generic [ref=e6720]: 4 дн назад
+                  - generic [ref=e6722] [cursor=pointer]:
+                    - generic [ref=e6723]:
+                      - generic [ref=e6725]: QA APIC038-1778758796935-7978 Lead
+                      - generic [ref=e6726]:
+                        - img [ref=e6727]
+                        - generic [ref=e6730]: Ручной
+                    - generic [ref=e6731]: QA APIC038-1778758796935-7978 Equipment
+                    - generic [ref=e6732]:
+                      - generic [ref=e6733]:
+                        - img [ref=e6734]
+                        - link "+79990381771778758" [ref=e6736]:
+                          - /url: tel:+79990381771778758
+                      - generic [ref=e6737]:
+                        - img [ref=e6738]
+                        - generic [ref=e6740]: 15.05.2026
+                        - generic [ref=e6741]: • 09:00-18:00
+                    - generic [ref=e6742]:
+                      - generic [ref=e6743]:
+                        - img [ref=e6744]
+                        - generic [ref=e6747]: Manager User
+                      - generic [ref=e6748]: 4 дн назад
+                  - generic [ref=e6750] [cursor=pointer]:
+                    - generic [ref=e6751]:
+                      - generic [ref=e6753]: QA APIC038-1778758773577-1384 Lead
+                      - generic [ref=e6754]:
+                        - img [ref=e6755]
+                        - generic [ref=e6758]: Ручной
+                    - generic [ref=e6759]: QA APIC038-1778758773577-1384 Equipment
+                    - generic [ref=e6760]:
+                      - generic [ref=e6761]:
+                        - img [ref=e6762]
+                        - link "+79990381771778758" [ref=e6764]:
+                          - /url: tel:+79990381771778758
+                      - generic [ref=e6765]:
+                        - img [ref=e6766]
+                        - generic [ref=e6768]: 15.05.2026
+                        - generic [ref=e6769]: • 09:00-18:00
+                    - generic [ref=e6770]:
+                      - generic [ref=e6771]:
+                        - img [ref=e6772]
+                        - generic [ref=e6775]: Manager User
+                      - generic [ref=e6776]: 4 дн назад
+                  - generic [ref=e6778] [cursor=pointer]:
+                    - generic [ref=e6779]:
+                      - generic [ref=e6781]: QA APIC038-1778758234253-2303 Lead
+                      - generic [ref=e6782]:
+                        - img [ref=e6783]
+                        - generic [ref=e6786]: Ручной
+                    - generic [ref=e6787]: QA APIC038-1778758234253-2303 Equipment
+                    - generic [ref=e6788]:
+                      - generic [ref=e6789]:
+                        - img [ref=e6790]
+                        - link "+79990381771778758" [ref=e6792]:
+                          - /url: tel:+79990381771778758
+                      - generic [ref=e6793]:
+                        - img [ref=e6794]
+                        - generic [ref=e6796]: 15.05.2026
+                        - generic [ref=e6797]: • 09:00-18:00
+                    - generic [ref=e6798]:
+                      - generic [ref=e6799]:
+                        - img [ref=e6800]
+                        - generic [ref=e6803]: Manager User
+                      - generic [ref=e6804]: 4 дн назад
+              - generic [ref=e6805]:
+                - generic [ref=e6807]:
+                  - heading "Выезд" [level=3] [ref=e6809]
+                  - generic [ref=e6810]: "0"
+                - generic [ref=e6812]: Нет записей
+              - generic [ref=e6813]:
+                - generic [ref=e6815]:
+                  - heading "Завершено" [level=3] [ref=e6817]
+                  - generic [ref=e6818]: "32"
+                - generic [ref=e6819]:
+                  - generic [ref=e6821] [cursor=pointer]:
+                    - img [ref=e6822]
+                    - generic [ref=e6825]:
+                      - generic [ref=e6826]:
+                        - generic [ref=e6827]: QA APIC009-1779189313586-6060 Lead
+                        - generic [ref=e6828]: • QA APIC009-1779189313586-6060 Equipment
+                      - generic [ref=e6829]:
+                        - generic [ref=e6830]:
+                          - img [ref=e6831]
+                          - text: Manager User
+                        - generic [ref=e6834]: 3 мин назад
+                  - generic [ref=e6836] [cursor=pointer]:
+                    - img [ref=e6837]
+                    - generic [ref=e6840]:
+                      - generic [ref=e6841]:
+                        - generic [ref=e6842]: QA APIC008-1779189313254-7847 Lead
+                        - generic [ref=e6843]: • QA APIC008-1779189313254-7847 Equipment
+                      - generic [ref=e6844]:
+                        - generic [ref=e6845]:
+                          - img [ref=e6846]
+                          - text: Manager User
+                        - generic [ref=e6849]: 3 мин назад
+                  - generic [ref=e6851] [cursor=pointer]:
+                    - img [ref=e6852]
+                    - generic [ref=e6855]:
+                      - generic [ref=e6856]:
+                        - generic [ref=e6857]: QA APIC060-1779189311317-6655 Lead
+                        - generic [ref=e6858]: • QA APIC060-1779189311317-6655 Equipment
+                      - generic [ref=e6859]:
+                        - generic [ref=e6860]:
+                          - img [ref=e6861]
+                          - text: Manager User
+                        - generic [ref=e6864]: 3 мин назад
+                  - generic [ref=e6866] [cursor=pointer]:
+                    - img [ref=e6867]
+                    - generic [ref=e6870]:
+                      - generic [ref=e6871]:
+                        - generic [ref=e6872]: QA APIC060-1779189246470-224 Lead
+                        - generic [ref=e6873]: • QA APIC060-1779189246470-224 Equipment
+                      - generic [ref=e6874]:
+                        - generic [ref=e6875]:
+                          - img [ref=e6876]
+                          - text: Manager User
+                        - generic [ref=e6879]: 4 мин назад
+                  - generic [ref=e6881] [cursor=pointer]:
+                    - img [ref=e6882]
+                    - generic [ref=e6885]:
+                      - generic [ref=e6886]:
+                        - generic [ref=e6887]: QA APIC009-1779189242926-682 Lead
+                        - generic [ref=e6888]: • QA APIC009-1779189242926-682 Equipment
+                      - generic [ref=e6889]:
+                        - generic [ref=e6890]:
+                          - img [ref=e6891]
+                          - text: Manager User
+                        - generic [ref=e6894]: 4 мин назад
+                  - generic [ref=e6896] [cursor=pointer]:
+                    - img [ref=e6897]
+                    - generic [ref=e6900]:
+                      - generic [ref=e6901]:
+                        - generic [ref=e6902]: QA APIC008-1779189242521-7488 Lead
+                        - generic [ref=e6903]: • QA APIC008-1779189242521-7488 Equipment
+                      - generic [ref=e6904]:
+                        - generic [ref=e6905]:
+                          - img [ref=e6906]
+                          - text: Manager User
+                        - generic [ref=e6909]: 4 мин назад
+                  - generic [ref=e6911] [cursor=pointer]:
+                    - img [ref=e6912]
+                    - generic [ref=e6915]:
+                      - generic [ref=e6916]:
+                        - generic [ref=e6917]: QA APIC060-1779189186279-7110 Lead
+                        - generic [ref=e6918]: • QA APIC060-1779189186279-7110 Equipment
+                      - generic [ref=e6919]:
+                        - generic [ref=e6920]:
+                          - img [ref=e6921]
+                          - text: Manager User
+                        - generic [ref=e6924]: 5 мин назад
+                  - generic [ref=e6926] [cursor=pointer]:
+                    - img [ref=e6927]
+                    - generic [ref=e6930]:
+                      - generic [ref=e6931]:
+                        - generic [ref=e6932]: QA APIC009-1779189182403-8912 Lead
+                        - generic [ref=e6933]: • QA APIC009-1779189182403-8912 Equipment
+                      - generic [ref=e6934]:
+                        - generic [ref=e6935]:
+                          - img [ref=e6936]
+                          - text: Manager User
+                        - generic [ref=e6939]: 5 мин назад
+                  - generic [ref=e6941] [cursor=pointer]:
+                    - img [ref=e6942]
+                    - generic [ref=e6945]:
+                      - generic [ref=e6946]:
+                        - generic [ref=e6947]: QA APIC008-1779189181998-5667 Lead
+                        - generic [ref=e6948]: • QA APIC008-1779189181998-5667 Equipment
+                      - generic [ref=e6949]:
+                        - generic [ref=e6950]:
+                          - img [ref=e6951]
+                          - text: Manager User
+                        - generic [ref=e6954]: 5 мин назад
+                  - generic [ref=e6956] [cursor=pointer]:
+                    - img [ref=e6957]
+                    - generic [ref=e6960]:
+                      - generic [ref=e6961]:
+                        - generic [ref=e6962]: QA APIC060-1779188959020-7960 Lead
+                        - generic [ref=e6963]: • QA APIC060-1779188959020-7960 Equipment
+                      - generic [ref=e6964]:
+                        - generic [ref=e6965]:
+                          - img [ref=e6966]
+                          - text: Manager User
+                        - generic [ref=e6969]: 9 мин назад
+                  - generic [ref=e6971] [cursor=pointer]:
+                    - img [ref=e6972]
+                    - generic [ref=e6975]:
+                      - generic [ref=e6976]:
+                        - generic [ref=e6977]: QA APIC009-1779188953840-7073 Lead
+                        - generic [ref=e6978]: • QA APIC009-1779188953840-7073 Equipment
+                      - generic [ref=e6979]:
+                        - generic [ref=e6980]:
+                          - img [ref=e6981]
+                          - text: Manager User
+                        - generic [ref=e6984]: 9 мин назад
+                  - generic [ref=e6986] [cursor=pointer]:
+                    - img [ref=e6987]
+                    - generic [ref=e6990]:
+                      - generic [ref=e6991]:
+                        - generic [ref=e6992]: QA APIC008-1779188953463-3917 Lead
+                        - generic [ref=e6993]: • QA APIC008-1779188953463-3917 Equipment
+                      - generic [ref=e6994]:
+                        - generic [ref=e6995]:
+                          - img [ref=e6996]
+                          - text: Manager User
+                        - generic [ref=e6999]: 9 мин назад
+                  - generic [ref=e7001] [cursor=pointer]:
+                    - img [ref=e7002]
+                    - generic [ref=e7005]:
+                      - generic [ref=e7006]:
+                        - generic [ref=e7007]: QA APIC009-1779188875117-5914 Lead
+                        - generic [ref=e7008]: • QA APIC009-1779188875117-5914 Equipment
+                      - generic [ref=e7009]:
+                        - generic [ref=e7010]:
+                          - img [ref=e7011]
+                          - text: Manager User
+                        - generic [ref=e7014]: 10 мин назад
+                  - generic [ref=e7016] [cursor=pointer]:
+                    - img [ref=e7017]
+                    - generic [ref=e7020]:
+                      - generic [ref=e7021]:
+                        - generic [ref=e7022]: QA APIC008-1779188874708-5094 Lead
+                        - generic [ref=e7023]: • QA APIC008-1779188874708-5094 Equipment
+                      - generic [ref=e7024]:
+                        - generic [ref=e7025]:
+                          - img [ref=e7026]
+                          - text: Manager User
+                        - generic [ref=e7029]: 10 мин назад
+                  - generic [ref=e7031] [cursor=pointer]:
+                    - img [ref=e7032]
+                    - generic [ref=e7035]:
+                      - generic [ref=e7036]:
+                        - generic [ref=e7037]: QA APIC060-1779188872330-2481 Lead
+                        - generic [ref=e7038]: • QA APIC060-1779188872330-2481 Equipment
+                      - generic [ref=e7039]:
+                        - generic [ref=e7040]:
+                          - img [ref=e7041]
+                          - text: Manager User
+                        - generic [ref=e7044]: 10 мин назад
+                  - generic [ref=e7046] [cursor=pointer]:
+                    - img [ref=e7047]
+                    - generic [ref=e7050]:
+                      - generic [ref=e7051]:
+                        - generic [ref=e7052]: QA APIC009-1778762936750-1413 Lead
+                        - generic [ref=e7053]: • QA APIC009-1778762936750-1413 Equipment
+                      - generic [ref=e7054]:
+                        - generic [ref=e7055]:
+                          - img [ref=e7056]
+                          - text: Manager User
+                        - generic [ref=e7059]: 4 дн назад
+                  - generic [ref=e7061] [cursor=pointer]:
+                    - img [ref=e7062]
+                    - generic [ref=e7065]:
+                      - generic [ref=e7066]:
+                        - generic [ref=e7067]: QA APIC008-1778762936310-2704 Lead
+                        - generic [ref=e7068]: • QA APIC008-1778762936310-2704 Equipment
+                      - generic [ref=e7069]:
+                        - generic [ref=e7070]:
+                          - img [ref=e7071]
+                          - text: Manager User
+                        - generic [ref=e7074]: 4 дн назад
+                  - generic [ref=e7076] [cursor=pointer]:
+                    - img [ref=e7077]
+                    - generic [ref=e7080]:
+                      - generic [ref=e7081]:
+                        - generic [ref=e7082]: QA APIC009-1778762870493-7546 Lead
+                        - generic [ref=e7083]: • QA APIC009-1778762870493-7546 Equipment
+                      - generic [ref=e7084]:
+                        - generic [ref=e7085]:
+                          - img [ref=e7086]
+                          - text: Manager User
+                        - generic [ref=e7089]: 4 дн назад
+                  - generic [ref=e7091] [cursor=pointer]:
+                    - img [ref=e7092]
+                    - generic [ref=e7095]:
+                      - generic [ref=e7096]:
+                        - generic [ref=e7097]: QA APIC008-1778762870015-7303 Lead
+                        - generic [ref=e7098]: • QA APIC008-1778762870015-7303 Equipment
+                      - generic [ref=e7099]:
+                        - generic [ref=e7100]:
+                          - img [ref=e7101]
+                          - text: Manager User
+                        - generic [ref=e7104]: 4 дн назад
+                  - generic [ref=e7106] [cursor=pointer]:
+                    - img [ref=e7107]
+                    - generic [ref=e7110]:
+                      - generic [ref=e7111]:
+                        - generic [ref=e7112]: QA APIC009-1778759596781-9843 Lead
+                        - generic [ref=e7113]: • QA APIC009-1778759596781-9843 Equipment
+                      - generic [ref=e7114]:
+                        - generic [ref=e7115]:
+                          - img [ref=e7116]
+                          - text: Manager User
+                        - generic [ref=e7119]: 4 дн назад
+                  - generic [ref=e7121] [cursor=pointer]:
+                    - img [ref=e7122]
+                    - generic [ref=e7125]:
+                      - generic [ref=e7126]:
+                        - generic [ref=e7127]: QA APIC008-1778759596326-8110 Lead
+                        - generic [ref=e7128]: • QA APIC008-1778759596326-8110 Equipment
+                      - generic [ref=e7129]:
+                        - generic [ref=e7130]:
+                          - img [ref=e7131]
+                          - text: Manager User
+                        - generic [ref=e7134]: 4 дн назад
+                  - generic [ref=e7136] [cursor=pointer]:
+                    - img [ref=e7137]
+                    - generic [ref=e7140]:
+                      - generic [ref=e7141]:
+                        - generic [ref=e7142]: QA APIC009-1778758848497-3781 Lead
+                        - generic [ref=e7143]: • QA APIC009-1778758848497-3781 Equipment
+                      - generic [ref=e7144]:
+                        - generic [ref=e7145]:
+                          - img [ref=e7146]
+                          - text: Manager User
+                        - generic [ref=e7149]: 4 дн назад
+                  - generic [ref=e7151] [cursor=pointer]:
+                    - img [ref=e7152]
+                    - generic [ref=e7155]:
+                      - generic [ref=e7156]:
+                        - generic [ref=e7157]: QA APIC008-1778758848075-9989 Lead
+                        - generic [ref=e7158]: • QA APIC008-1778758848075-9989 Equipment
+                      - generic [ref=e7159]:
+                        - generic [ref=e7160]:
+                          - img [ref=e7161]
+                          - text: Manager User
+                        - generic [ref=e7164]: 4 дн назад
+                  - generic [ref=e7166] [cursor=pointer]:
+                    - img [ref=e7167]
+                    - generic [ref=e7170]:
+                      - generic [ref=e7171]:
+                        - generic [ref=e7172]: QA APIC009-1778758799015-2954 Lead
+                        - generic [ref=e7173]: • QA APIC009-1778758799015-2954 Equipment
+                      - generic [ref=e7174]:
+                        - generic [ref=e7175]:
+                          - img [ref=e7176]
+                          - text: Manager User
+                        - generic [ref=e7179]: 4 дн назад
+                  - generic [ref=e7181] [cursor=pointer]:
+                    - img [ref=e7182]
+                    - generic [ref=e7185]:
+                      - generic [ref=e7186]:
+                        - generic [ref=e7187]: QA APIC008-1778758798552-3549 Lead
+                        - generic [ref=e7188]: • QA APIC008-1778758798552-3549 Equipment
+                      - generic [ref=e7189]:
+                        - generic [ref=e7190]:
+                          - img [ref=e7191]
+                          - text: Manager User
+                        - generic [ref=e7194]: 4 дн назад
+                  - generic [ref=e7196] [cursor=pointer]:
+                    - img [ref=e7197]
+                    - generic [ref=e7200]:
+                      - generic [ref=e7201]:
+                        - generic [ref=e7202]: QA APIC009-1778758775757-8923 Lead
+                        - generic [ref=e7203]: • QA APIC009-1778758775757-8923 Equipment
+                      - generic [ref=e7204]:
+                        - generic [ref=e7205]:
+                          - img [ref=e7206]
+                          - text: Manager User
+                        - generic [ref=e7209]: 4 дн назад
+                  - generic [ref=e7211] [cursor=pointer]:
+                    - img [ref=e7212]
+                    - generic [ref=e7215]:
+                      - generic [ref=e7216]:
+                        - generic [ref=e7217]: QA APIC008-1778758775255-9350 Lead
+                        - generic [ref=e7218]: • QA APIC008-1778758775255-9350 Equipment
+                      - generic [ref=e7219]:
+                        - generic [ref=e7220]:
+                          - img [ref=e7221]
+                          - text: Manager User
+                        - generic [ref=e7224]: 4 дн назад
+                  - generic [ref=e7226] [cursor=pointer]:
+                    - img [ref=e7227]
+                    - generic [ref=e7230]:
+                      - generic [ref=e7231]:
+                        - generic [ref=e7232]: QA APIC009-1778758236647-5304 Lead
+                        - generic [ref=e7233]: • QA APIC009-1778758236647-5304 Equipment
+                      - generic [ref=e7234]:
+                        - generic [ref=e7235]:
+                          - img [ref=e7236]
+                          - text: Manager User
+                        - generic [ref=e7239]: 4 дн назад
+                  - generic [ref=e7241] [cursor=pointer]:
+                    - img [ref=e7242]
+                    - generic [ref=e7245]:
+                      - generic [ref=e7246]:
+                        - generic [ref=e7247]: QA APIC008-1778758236092-5431 Lead
+                        - generic [ref=e7248]: • QA APIC008-1778758236092-5431 Equipment
+                      - generic [ref=e7249]:
+                        - generic [ref=e7250]:
+                          - img [ref=e7251]
+                          - text: Manager User
+                        - generic [ref=e7254]: 4 дн назад
+                  - generic [ref=e7256] [cursor=pointer]:
+                    - img [ref=e7257]
+                    - generic [ref=e7260]:
+                      - generic [ref=e7261]:
+                        - generic [ref=e7262]: QA INT008-1778069896946-4908 Lead
+                        - generic [ref=e7263]: • —
+                      - generic [ref=e7264]:
+                        - generic [ref=e7265]:
+                          - img [ref=e7266]
+                          - text: Manager User
+                        - generic [ref=e7269]: 12 дн назад
+                  - generic [ref=e7271] [cursor=pointer]:
+                    - img [ref=e7272]
+                    - generic [ref=e7275]:
+                      - generic [ref=e7276]:
+                        - generic [ref=e7277]: QA INT007-1778069896375-9613 Lead
+                        - generic [ref=e7278]: • —
+                      - generic [ref=e7279]:
+                        - generic [ref=e7280]:
+                          - img [ref=e7281]
+                          - text: Manager User
+                        - generic [ref=e7284]: 12 дн назад
+                  - generic [ref=e7286] [cursor=pointer]:
+                    - img [ref=e7287]
+                    - generic [ref=e7290]:
+                      - generic [ref=e7291]:
+                        - generic [ref=e7292]: QA INT006-1778069895868-9866 Lead
+                        - generic [ref=e7293]: • —
+                      - generic [ref=e7294]:
+                        - generic [ref=e7295]:
+                          - img [ref=e7296]
+                          - text: Manager User
+                        - generic [ref=e7299]: 12 дн назад
+              - generic [ref=e7300]:
+                - generic [ref=e7302]:
+                  - heading "Некачественный" [level=3] [ref=e7304]
+                  - generic [ref=e7305]: "25"
+                - generic [ref=e7306]:
+                  - generic [ref=e7308] [cursor=pointer]:
+                    - img [ref=e7309]
+                    - generic [ref=e7313]:
+                      - generic [ref=e7314]:
+                        - generic [ref=e7315]: QA APIC010-1779189313826-4774 Lead
+                        - generic [ref=e7316]: • QA APIC010-1779189313826-4774 Equipment
+                      - generic [ref=e7317]:
+                        - img [ref=e7318]
+                        - generic [ref=e7320]: qa_unqualified_completion
+                      - generic [ref=e7321]:
+                        - generic [ref=e7322]:
+                          - img [ref=e7323]
+                          - text: Manager User
+                        - generic [ref=e7326]: 3 мин назад
+                  - generic [ref=e7328] [cursor=pointer]:
+                    - img [ref=e7329]
+                    - generic [ref=e7333]:
+                      - generic [ref=e7334]:
+                        - generic [ref=e7335]: QA APIC-010 Lead
+                        - generic [ref=e7336]: • —
+                      - generic [ref=e7337]:
+                        - img [ref=e7338]
+                        - generic [ref=e7340]: qa_unqualified_lead
+                      - generic [ref=e7341]:
+                        - generic [ref=e7342]:
+                          - img [ref=e7343]
+                          - text: Manager User
+                        - generic [ref=e7346]: 3 мин назад
+                  - generic [ref=e7348] [cursor=pointer]:
+                    - img [ref=e7349]
+                    - generic [ref=e7353]:
+                      - generic [ref=e7354]:
+                        - generic [ref=e7355]: QA APIC010-1779189243218-683 Lead
+                        - generic [ref=e7356]: • QA APIC010-1779189243218-683 Equipment
+                      - generic [ref=e7357]:
+                        - img [ref=e7358]
+                        - generic [ref=e7360]: qa_unqualified_completion
+                      - generic [ref=e7361]:
+                        - generic [ref=e7362]:
+                          - img [ref=e7363]
+                          - text: Manager User
+                        - generic [ref=e7366]: 4 мин назад
+                  - generic [ref=e7368] [cursor=pointer]:
+                    - img [ref=e7369]
+                    - generic [ref=e7373]:
+                      - generic [ref=e7374]:
+                        - generic [ref=e7375]: QA APIC-010 Lead
+                        - generic [ref=e7376]: • —
+                      - generic [ref=e7377]:
+                        - img [ref=e7378]
+                        - generic [ref=e7380]: qa_unqualified_lead
+                      - generic [ref=e7381]:
+                        - generic [ref=e7382]:
+                          - img [ref=e7383]
+                          - text: Manager User
+                        - generic [ref=e7386]: 4 мин назад
+                  - generic [ref=e7388] [cursor=pointer]:
+                    - img [ref=e7389]
+                    - generic [ref=e7393]:
+                      - generic [ref=e7394]:
+                        - generic [ref=e7395]: QA APIC010-1779189182686-7722 Lead
+                        - generic [ref=e7396]: • QA APIC010-1779189182686-7722 Equipment
+                      - generic [ref=e7397]:
+                        - img [ref=e7398]
+                        - generic [ref=e7400]: qa_unqualified_completion
+                      - generic [ref=e7401]:
+                        - generic [ref=e7402]:
+                          - img [ref=e7403]
+                          - text: Manager User
+                        - generic [ref=e7406]: 5 мин назад
+                  - generic [ref=e7408] [cursor=pointer]:
+                    - img [ref=e7409]
+                    - generic [ref=e7413]:
+                      - generic [ref=e7414]:
+                        - generic [ref=e7415]: QA APIC-010 Lead
+                        - generic [ref=e7416]: • —
+                      - generic [ref=e7417]:
+                        - img [ref=e7418]
+                        - generic [ref=e7420]: qa_unqualified_lead
+                      - generic [ref=e7421]:
+                        - generic [ref=e7422]:
+                          - img [ref=e7423]
+                          - text: Manager User
+                        - generic [ref=e7426]: 5 мин назад
+                  - generic [ref=e7428] [cursor=pointer]:
+                    - img [ref=e7429]
+                    - generic [ref=e7433]:
+                      - generic [ref=e7434]:
+                        - generic [ref=e7435]: QA APIC010-1779188954127-7212 Lead
+                        - generic [ref=e7436]: • QA APIC010-1779188954127-7212 Equipment
+                      - generic [ref=e7437]:
+                        - img [ref=e7438]
+                        - generic [ref=e7440]: qa_unqualified_completion
+                      - generic [ref=e7441]:
+                        - generic [ref=e7442]:
+                          - img [ref=e7443]
+                          - text: Manager User
+                        - generic [ref=e7446]: 9 мин назад
+                  - generic [ref=e7448] [cursor=pointer]:
+                    - img [ref=e7449]
+                    - generic [ref=e7453]:
+                      - generic [ref=e7454]:
+                        - generic [ref=e7455]: QA APIC-010 Lead
+                        - generic [ref=e7456]: • —
+                      - generic [ref=e7457]:
+                        - img [ref=e7458]
+                        - generic [ref=e7460]: qa_unqualified_lead
+                      - generic [ref=e7461]:
+                        - generic [ref=e7462]:
+                          - img [ref=e7463]
+                          - text: Manager User
+                        - generic [ref=e7466]: 9 мин назад
+                  - generic [ref=e7468] [cursor=pointer]:
+                    - img [ref=e7469]
+                    - generic [ref=e7473]:
+                      - generic [ref=e7474]:
+                        - generic [ref=e7475]: QA APIC010-1779188875406-6527 Lead
+                        - generic [ref=e7476]: • QA APIC010-1779188875406-6527 Equipment
+                      - generic [ref=e7477]:
+                        - img [ref=e7478]
+                        - generic [ref=e7480]: qa_unqualified_completion
+                      - generic [ref=e7481]:
+                        - generic [ref=e7482]:
+                          - img [ref=e7483]
+                          - text: Manager User
+                        - generic [ref=e7486]: 10 мин назад
+                  - generic [ref=e7488] [cursor=pointer]:
+                    - img [ref=e7489]
+                    - generic [ref=e7493]:
+                      - generic [ref=e7494]:
+                        - generic [ref=e7495]: QA APIC-010 Lead
+                        - generic [ref=e7496]: • —
+                      - generic [ref=e7497]:
+                        - img [ref=e7498]
+                        - generic [ref=e7500]: qa_unqualified_lead
+                      - generic [ref=e7501]:
+                        - generic [ref=e7502]:
+                          - img [ref=e7503]
+                          - text: Manager User
+                        - generic [ref=e7506]: 10 мин назад
+                  - generic [ref=e7508] [cursor=pointer]:
+                    - img [ref=e7509]
+                    - generic [ref=e7513]:
+                      - generic [ref=e7514]:
+                        - generic [ref=e7515]: QA APIC010-1778762937051-1615 Lead
+                        - generic [ref=e7516]: • QA APIC010-1778762937051-1615 Equipment
+                      - generic [ref=e7517]:
+                        - img [ref=e7518]
+                        - generic [ref=e7520]: qa_unqualified_completion
+                      - generic [ref=e7521]:
+                        - generic [ref=e7522]:
+                          - img [ref=e7523]
+                          - text: Manager User
+                        - generic [ref=e7526]: 4 дн назад
+                  - generic [ref=e7528] [cursor=pointer]:
+                    - img [ref=e7529]
+                    - generic [ref=e7533]:
+                      - generic [ref=e7534]:
+                        - generic [ref=e7535]: QA APIC-010 Lead
+                        - generic [ref=e7536]: • —
+                      - generic [ref=e7537]:
+                        - img [ref=e7538]
+                        - generic [ref=e7540]: qa_unqualified_lead
+                      - generic [ref=e7541]:
+                        - generic [ref=e7542]:
+                          - img [ref=e7543]
+                          - text: Manager User
+                        - generic [ref=e7546]: 4 дн назад
+                  - generic [ref=e7548] [cursor=pointer]:
+                    - img [ref=e7549]
+                    - generic [ref=e7553]:
+                      - generic [ref=e7554]:
+                        - generic [ref=e7555]: QA APIC010-1778762870822-958 Lead
+                        - generic [ref=e7556]: • QA APIC010-1778762870822-958 Equipment
+                      - generic [ref=e7557]:
+                        - img [ref=e7558]
+                        - generic [ref=e7560]: qa_unqualified_completion
+                      - generic [ref=e7561]:
+                        - generic [ref=e7562]:
+                          - img [ref=e7563]
+                          - text: Manager User
+                        - generic [ref=e7566]: 4 дн назад
+                  - generic [ref=e7568] [cursor=pointer]:
+                    - img [ref=e7569]
+                    - generic [ref=e7573]:
+                      - generic [ref=e7574]:
+                        - generic [ref=e7575]: QA APIC-010 Lead
+                        - generic [ref=e7576]: • —
+                      - generic [ref=e7577]:
+                        - img [ref=e7578]
+                        - generic [ref=e7580]: qa_unqualified_lead
+                      - generic [ref=e7581]:
+                        - generic [ref=e7582]:
+                          - img [ref=e7583]
+                          - text: Manager User
+                        - generic [ref=e7586]: 4 дн назад
+                  - generic [ref=e7588] [cursor=pointer]:
+                    - img [ref=e7589]
+                    - generic [ref=e7593]:
+                      - generic [ref=e7594]:
+                        - generic [ref=e7595]: QA APIC010-1778759597142-7691 Lead
+                        - generic [ref=e7596]: • QA APIC010-1778759597142-7691 Equipment
+                      - generic [ref=e7597]:
+                        - img [ref=e7598]
+                        - generic [ref=e7600]: qa_unqualified_completion
+                      - generic [ref=e7601]:
+                        - generic [ref=e7602]:
+                          - img [ref=e7603]
+                          - text: Manager User
+                        - generic [ref=e7606]: 4 дн назад
+                  - generic [ref=e7608] [cursor=pointer]:
+                    - img [ref=e7609]
+                    - generic [ref=e7613]:
+                      - generic [ref=e7614]:
+                        - generic [ref=e7615]: QA APIC-010 Lead
+                        - generic [ref=e7616]: • —
+                      - generic [ref=e7617]:
+                        - img [ref=e7618]
+                        - generic [ref=e7620]: qa_unqualified_lead
+                      - generic [ref=e7621]:
+                        - generic [ref=e7622]:
+                          - img [ref=e7623]
+                          - text: Manager User
+                        - generic [ref=e7626]: 4 дн назад
+                  - generic [ref=e7628] [cursor=pointer]:
+                    - img [ref=e7629]
+                    - generic [ref=e7633]:
+                      - generic [ref=e7634]:
+                        - generic [ref=e7635]: QA APIC010-1778758848837-5246 Lead
+                        - generic [ref=e7636]: • QA APIC010-1778758848837-5246 Equipment
+                      - generic [ref=e7637]:
+                        - img [ref=e7638]
+                        - generic [ref=e7640]: qa_unqualified_completion
+                      - generic [ref=e7641]:
+                        - generic [ref=e7642]:
+                          - img [ref=e7643]
+                          - text: Manager User
+                        - generic [ref=e7646]: 4 дн назад
+                  - generic [ref=e7648] [cursor=pointer]:
+                    - img [ref=e7649]
+                    - generic [ref=e7653]:
+                      - generic [ref=e7654]:
+                        - generic [ref=e7655]: QA APIC-010 Lead
+                        - generic [ref=e7656]: • —
+                      - generic [ref=e7657]:
+                        - img [ref=e7658]
+                        - generic [ref=e7660]: qa_unqualified_lead
+                      - generic [ref=e7661]:
+                        - generic [ref=e7662]:
+                          - img [ref=e7663]
+                          - text: Manager User
+                        - generic [ref=e7666]: 4 дн назад
+                  - generic [ref=e7668] [cursor=pointer]:
+                    - img [ref=e7669]
+                    - generic [ref=e7673]:
+                      - generic [ref=e7674]:
+                        - generic [ref=e7675]: QA APIC010-1778758799387-1302 Lead
+                        - generic [ref=e7676]: • QA APIC010-1778758799387-1302 Equipment
+                      - generic [ref=e7677]:
+                        - img [ref=e7678]
+                        - generic [ref=e7680]: qa_unqualified_completion
+                      - generic [ref=e7681]:
+                        - generic [ref=e7682]:
+                          - img [ref=e7683]
+                          - text: Manager User
+                        - generic [ref=e7686]: 4 дн назад
+                  - generic [ref=e7688] [cursor=pointer]:
+                    - img [ref=e7689]
+                    - generic [ref=e7693]:
+                      - generic [ref=e7694]:
+                        - generic [ref=e7695]: QA APIC-010 Lead
+                        - generic [ref=e7696]: • —
+                      - generic [ref=e7697]:
+                        - img [ref=e7698]
+                        - generic [ref=e7700]: qa_unqualified_lead
+                      - generic [ref=e7701]:
+                        - generic [ref=e7702]:
+                          - img [ref=e7703]
+                          - text: Manager User
+                        - generic [ref=e7706]: 4 дн назад
+                  - generic [ref=e7708] [cursor=pointer]:
+                    - img [ref=e7709]
+                    - generic [ref=e7713]:
+                      - generic [ref=e7714]:
+                        - generic [ref=e7715]: QA APIC010-1778758776122-4960 Lead
+                        - generic [ref=e7716]: • QA APIC010-1778758776122-4960 Equipment
+                      - generic [ref=e7717]:
+                        - img [ref=e7718]
+                        - generic [ref=e7720]: qa_unqualified_completion
+                      - generic [ref=e7721]:
+                        - generic [ref=e7722]:
+                          - img [ref=e7723]
+                          - text: Manager User
+                        - generic [ref=e7726]: 4 дн назад
+                  - generic [ref=e7728] [cursor=pointer]:
+                    - img [ref=e7729]
+                    - generic [ref=e7733]:
+                      - generic [ref=e7734]:
+                        - generic [ref=e7735]: QA APIC-010 Lead
+                        - generic [ref=e7736]: • —
+                      - generic [ref=e7737]:
+                        - img [ref=e7738]
+                        - generic [ref=e7740]: qa_unqualified_lead
+                      - generic [ref=e7741]:
+                        - generic [ref=e7742]:
+                          - img [ref=e7743]
+                          - text: Manager User
+                        - generic [ref=e7746]: 4 дн назад
+                  - generic [ref=e7748] [cursor=pointer]:
+                    - img [ref=e7749]
+                    - generic [ref=e7753]:
+                      - generic [ref=e7754]:
+                        - generic [ref=e7755]: QA APIC010-1778758237037-9855 Lead
+                        - generic [ref=e7756]: • QA APIC010-1778758237037-9855 Equipment
+                      - generic [ref=e7757]:
+                        - img [ref=e7758]
+                        - generic [ref=e7760]: qa_unqualified_completion
+                      - generic [ref=e7761]:
+                        - generic [ref=e7762]:
+                          - img [ref=e7763]
+                          - text: Manager User
+                        - generic [ref=e7766]: 4 дн назад
+                  - generic [ref=e7768] [cursor=pointer]:
+                    - img [ref=e7769]
+                    - generic [ref=e7773]:
+                      - generic [ref=e7774]:
+                        - generic [ref=e7775]: QA APIC-010 Lead
+                        - generic [ref=e7776]: • —
+                      - generic [ref=e7777]:
+                        - img [ref=e7778]
+                        - generic [ref=e7780]: qa_unqualified_lead
+                      - generic [ref=e7781]:
+                        - generic [ref=e7782]:
+                          - img [ref=e7783]
+                          - text: Manager User
+                        - generic [ref=e7786]: 4 дн назад
+                  - generic [ref=e7788] [cursor=pointer]:
+                    - img [ref=e7789]
+                    - generic [ref=e7793]:
+                      - generic [ref=e7794]:
+                        - generic [ref=e7795]: QA INT009-1778069897587-8915 Lead
+                        - generic [ref=e7796]: • —
+                      - generic [ref=e7797]:
+                        - img [ref=e7798]
+                        - generic [ref=e7800]: qa_int009_reason
+                      - generic [ref=e7801]:
+                        - generic [ref=e7802]:
+                          - img [ref=e7803]
+                          - text: Manager User
+                        - generic [ref=e7806]: 12 дн назад
+  - region "Notifications alt+T"
+```
+
+# Test source
+
+```ts
+  49  |   refreshToken: string
+  50  |   user: {
+  51  |     id: string
+  52  |     email: string
+  53  |     role: TestRole
+  54  |     fullName: string
+  55  |   }
+  56  | }
+  57  | 
+  58  | type LeadPayload = {
+  59  |   id: string
+  60  |   contactName: string
+  61  | }
+  62  | 
+  63  | type CreateLeadResult = {
+  64  |   lead: LeadPayload
+  65  | }
+  66  | 
+  67  | type ApplicationsListResult = {
+  68  |   items: Array<{ id: string }>
+  69  | }
+  70  | 
+  71  | function apiUrl(path: string): string {
+  72  |   const cleanBase = API_BASE_URL.replace(/\/+$/, '')
+  73  |   const cleanPath = path.replace(/^\/+/, '')
+  74  |   return `${cleanBase}/${cleanPath}`
+  75  | }
+  76  | 
+  77  | export function enableUiFailureGuards(page: Page): void {
+  78  |   if (uiFailureGuards.has(page)) {
+  79  |     return
+  80  |   }
+  81  | 
+  82  |   const consoleErrors: string[] = []
+  83  |   const failedApiRequests: string[] = []
+  84  |   const allowedConsoleErrorPatterns: RegExp[] = []
+  85  |   const apiBase = API_BASE_URL.replace(/\/+$/, '')
+  86  | 
+  87  |   const onConsole: UiFailureGuardState['onConsole'] = (message) => {
+  88  |     if (message.type() !== 'error') {
+  89  |       return
+  90  |     }
+  91  | 
+  92  |     const text = message.text()
+  93  |     if (isKnownConsoleBaselineError(text)) {
+  94  |       return
+  95  |     }
+  96  |     if (allowedConsoleErrorPatterns.some((pattern) => pattern.test(text))) {
+  97  |       return
+  98  |     }
+  99  | 
+  100 |     const location = message.location()
+  101 |     const source = location.url ? `${location.url}:${location.lineNumber ?? 0}:${location.columnNumber ?? 0}` : 'unknown'
+  102 |     consoleErrors.push(`${source} :: ${text}`)
+  103 |   }
+  104 | 
+  105 |   const onRequestFailed: UiFailureGuardState['onRequestFailed'] = (request) => {
+  106 |     const url = request.url()
+  107 |     if (!url.startsWith(apiBase)) {
+  108 |       return
+  109 |     }
+  110 | 
+  111 |     const errorText = request.failure()?.errorText ?? 'unknown-error'
+  112 |     if (errorText.includes('ERR_ABORTED')) {
+  113 |       return
+  114 |     }
+  115 | 
+  116 |     failedApiRequests.push(`${request.method()} ${url} :: ${errorText}`)
+  117 |   }
+  118 | 
+  119 |   page.on('console', onConsole)
+  120 |   page.on('requestfailed', onRequestFailed)
+  121 |   uiFailureGuards.set(page, {
+  122 |     consoleErrors,
+  123 |     failedApiRequests,
+  124 |     allowedConsoleErrorPatterns,
+  125 |     onConsole,
+  126 |     onRequestFailed,
+  127 |   })
+  128 | }
+  129 | 
+  130 | export async function assertUiFailureGuards(page: Page, options: { failOnIssues?: boolean } = {}): Promise<void> {
+  131 |   const state = uiFailureGuards.get(page)
+  132 |   if (!state) {
+  133 |     return
+  134 |   }
+  135 | 
+  136 |   page.off('console', state.onConsole)
+  137 |   page.off('requestfailed', state.onRequestFailed)
+  138 |   uiFailureGuards.delete(page)
+  139 | 
+  140 |   const issues = [
+  141 |     ...state.consoleErrors.map((entry) => `console.error ${entry}`),
+  142 |     ...state.failedApiRequests.map((entry) => `requestfailed ${entry}`),
+  143 |   ]
+  144 | 
+  145 |   if (issues.length === 0 || options.failOnIssues === false) {
+  146 |     return
+  147 |   }
+  148 | 
+> 149 |   expect(issues, `Unexpected UI runtime issues:\n${issues.join('\n')}`).toEqual([])
+      |                                                                         ^ Error: Unexpected UI runtime issues:
+  150 | }
+  151 | 
+  152 | export async function sendApiRequest<T>(
+  153 |   request: APIRequestContext,
+  154 |   path: string,
+  155 |   options: {
+  156 |     method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'
+  157 |     token?: string
+  158 |     body?: unknown
+  159 |     expectedStatus?: number
+  160 |   } = {},
+  161 | ): Promise<T> {
+  162 |   const headers: Record<string, string> = { Accept: 'application/json' }
+  163 |   if (options.token) {
+  164 |     headers.Authorization = `Bearer ${options.token}`
+  165 |   }
+  166 |   if (options.body !== undefined) {
+  167 |     headers['Content-Type'] = 'application/json'
+  168 |   }
+  169 | 
+  170 |   const response = await request.fetch(apiUrl(path), {
+  171 |     method: options.method ?? 'GET',
+  172 |     headers,
+  173 |     data: options.body,
+  174 |   })
+  175 |   const status = response.status()
+  176 | 
+  177 |   const raw = await response.text()
+  178 |   const payload = raw
+  179 |     ? (() => {
+  180 |         try {
+  181 |           return JSON.parse(raw)
+  182 |         } catch {
+  183 |           return raw
+  184 |         }
+  185 |       })()
+  186 |     : null
+  187 | 
+  188 |   if (options.expectedStatus !== undefined && status !== options.expectedStatus) {
+  189 |     throw new Error(
+  190 |       `API ${options.method ?? 'GET'} ${path} expected ${options.expectedStatus}, got ${status}: ${JSON.stringify(payload)}`,
+  191 |     )
+  192 |   }
+  193 | 
+  194 |   if (options.expectedStatus === undefined && !response.ok()) {
+  195 |     throw new Error(
+  196 |       `API ${options.method ?? 'GET'} ${path} failed with ${status}: ${JSON.stringify(payload)}`,
+  197 |     )
+  198 |   }
+  199 | 
+  200 |   return payload as T
+  201 | }
+  202 | 
+  203 | export function uniqueSeed(prefix: string): string {
+  204 |   return `${prefix}-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+  205 | }
+  206 | 
+  207 | export function uniquePhone(): string {
+  208 |   const tail = `${Date.now().toString().slice(-5)}${Math.floor(Math.random() * 90 + 10)}`
+  209 |   return `+7900${tail}`
+  210 | }
+  211 | 
+  212 | export async function apiLogin(request: APIRequestContext, role: TestRole): Promise<AuthPayload> {
+  213 |   const credentials = ROLE_CREDENTIALS[role]
+  214 |   return sendApiRequest<AuthPayload>(request, 'auth/login', {
+  215 |     method: 'POST',
+  216 |     body: credentials,
+  217 |   })
+  218 | }
+  219 | 
+  220 | export async function createLeadViaApi(
+  221 |   request: APIRequestContext,
+  222 |   token: string,
+  223 |   overrides: Partial<{
+  224 |     contactName: string
+  225 |     contactPhone: string
+  226 |     equipmentTypeHint: string
+  227 |     address: string
+  228 |     requestedDate: string
+  229 |   }> = {},
+  230 | ): Promise<LeadPayload> {
+  231 |   const oneDayAhead = new Date(Date.now() + 24 * 60 * 60 * 1000)
+  232 | 
+  233 |   const response = await sendApiRequest<CreateLeadResult>(request, 'leads', {
+  234 |     method: 'POST',
+  235 |     token,
+  236 |     body: {
+  237 |       contactName: overrides.contactName ?? `E2E ${uniqueSeed('lead')}`,
+  238 |       contactPhone: overrides.contactPhone ?? uniquePhone(),
+  239 |       source: 'manual',
+  240 |       equipmentTypeHint: overrides.equipmentTypeHint ?? 'Экскаватор',
+  241 |       requestedDate: overrides.requestedDate ?? oneDayAhead.toISOString(),
+  242 |       address: overrides.address ?? 'Москва, Тестовая улица, 1',
+  243 |       comment: 'Created by Playwright e2e',
+  244 |     },
+  245 |   })
+  246 | 
+  247 |   return response.lead
+  248 | }
+  249 | 
+```

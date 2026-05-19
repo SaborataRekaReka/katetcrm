@@ -29,6 +29,7 @@ Read these first for planning and implementation decisions:
 
 Use these for current status and gaps, but verify against code/config before treating them as implementation facts:
 
+- [SALES_LITE_WORKFLOW_PLAN.md](./SALES_LITE_WORKFLOW_PLAN.md): migration plan for the new sales-lite CRM workflow profile while preserving the current full operations profile.
 - [IMPLEMENTATION_ROADMAP.md](../IMPLEMENTATION_ROADMAP.md): delivery status and next priorities.
 - [FRONTEND_API_WIRING.md](../FRONTEND_API_WIRING.md): frontend API wiring status.
 - [TEST_EXECUTION_REPORT.md](./TEST_EXECUTION_REPORT.md): run log, bugs found during testing, latest coverage snapshot.

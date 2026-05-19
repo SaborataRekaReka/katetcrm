@@ -7,7 +7,7 @@
  *   - `?preset=<id>` for saved-view / preset state inside an entity module
  */
 
-import { getModuleMeta } from './navConfig';
+import { getModuleMeta, isSecondaryAvailableInWorkflow } from './navConfig';
 
 export type ViewMode = 'board' | 'list' | 'table' | 'cards' | string;
 
@@ -121,12 +121,15 @@ const ID_BY_PATHNAME: Record<string, string> = Object.fromEntries(
 );
 
 export function pathnameForSecondary(id: string): string | null {
+  if (!isSecondaryAvailableInWorkflow(id)) return null;
   return PATHNAME_BY_ID[id] ?? null;
 }
 
 export function secondaryForPathname(pathname: string): string | null {
   const normalized = pathname.replace(/\/+$/, '') || '/';
-  return ID_BY_PATHNAME[normalized] ?? null;
+  const secondaryId = ID_BY_PATHNAME[normalized] ?? null;
+  if (!secondaryId || !isSecondaryAvailableInWorkflow(secondaryId)) return null;
+  return secondaryId;
 }
 
 export interface InitialRoute {

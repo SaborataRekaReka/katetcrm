@@ -35,6 +35,7 @@ import {
 } from 'lucide-react';
 import type { ComponentType } from 'react';
 import type { UserRole } from './layoutStore';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 type IconType = ComponentType<{ className?: string }>;
 
@@ -80,7 +81,7 @@ export type ModuleMeta = {
   tabs?: { id: string; label: string }[];
 };
 
-export const PRIMARY_DOMAINS: DomainConfig[] = [
+const BASE_PRIMARY_DOMAINS: DomainConfig[] = [
   {
     id: 'home',
     label: 'Главная',
@@ -249,6 +250,102 @@ export const PRIMARY_DOMAINS: DomainConfig[] = [
     ],
   },
 ];
+
+const SALES_LITE_HIDDEN_SECONDARY_IDS = new Set<string>([
+  'apps-no-reservation',
+  'apps-ready',
+  'view-needs-reservation',
+  'reservations',
+  'departures',
+  'completion',
+  'view-conflict',
+  'view-need-confirm',
+  'view-no-unit',
+  'view-no-subcontractor',
+  'view-ready-departure',
+  'view-released',
+  'view-departures-today',
+  'view-overdue-departures',
+  'view-no-completion',
+  'equipment-types',
+  'equipment-units',
+  'subcontractors',
+  'equipment-categories',
+  'view-active-reservations',
+]);
+
+export const DEFAULT_WORKFLOW_SECONDARY = 'leads';
+
+function isSalesLiteHiddenSecondary(secondaryId: string): boolean {
+  return IS_SALES_LITE && SALES_LITE_HIDDEN_SECONDARY_IDS.has(secondaryId);
+}
+
+export function isSecondaryAvailableInWorkflow(secondaryId: string): boolean {
+  return !isSalesLiteHiddenSecondary(secondaryId);
+}
+
+export function normalizeSecondaryForWorkflow(secondaryId: string | null | undefined): string {
+  if (secondaryId && isSecondaryAvailableInWorkflow(secondaryId)) return secondaryId;
+  return DEFAULT_WORKFLOW_SECONDARY;
+}
+
+function filterSalesLiteItems(items: NavLeaf[]): NavLeaf[] {
+  return items.filter((item) => !isSalesLiteHiddenSecondary(item.id));
+}
+
+function toSalesLiteDomain(domain: DomainConfig): DomainConfig {
+  if (domain.id === 'sales') {
+    return {
+      ...domain,
+      searchPlaceholder: 'Поиск по лидам, работе и клиентам',
+      groups: domain.groups.map((group) => {
+        if (group.id === 'sales-apps') {
+          return {
+            ...group,
+            title: 'В работе',
+            items: filterSalesLiteItems(group.items).map((item) => {
+              if (item.id === 'applications') return { ...item, label: 'Все в работе' };
+              if (item.id === 'my-applications') return { ...item, label: 'Мои в работе' };
+              return item;
+            }),
+          };
+        }
+        return { ...group, items: filterSalesLiteItems(group.items) };
+      }),
+      savedViewsTitle: 'Представления продаж',
+      savedViews: domain.savedViews
+        ?.filter((view) => !isSalesLiteHiddenSecondary(view.id))
+        .map((view) => {
+          if (view.id === 'view-to-application') {
+            return { ...view, label: 'К переводу в работу' };
+          }
+          return view;
+        }),
+    };
+  }
+
+  if (domain.id === 'control') {
+    return {
+      ...domain,
+      savedViews: domain.savedViews?.filter((view) => !isSalesLiteHiddenSecondary(view.id)),
+    };
+  }
+
+  return {
+    ...domain,
+    groups: domain.groups.map((group) => ({ ...group, items: filterSalesLiteItems(group.items) })),
+    savedViews: domain.savedViews?.filter((view) => !isSalesLiteHiddenSecondary(view.id)),
+  };
+}
+
+function buildPrimaryDomains(): DomainConfig[] {
+  if (!IS_SALES_LITE) return BASE_PRIMARY_DOMAINS;
+  return BASE_PRIMARY_DOMAINS
+    .filter((domain) => domain.id !== 'ops' && domain.id !== 'catalogs')
+    .map(toSalesLiteDomain);
+}
+
+export const PRIMARY_DOMAINS: DomainConfig[] = buildPrimaryDomains();
 
 /**
  * Meta for each secondary nav id — used to drive page title, search placeholder,
@@ -534,6 +631,33 @@ Object.assign(MODULE_META, {
   'view-duplicates': { ...LEADS_VIEW_BASE, title: 'Лиды · Дубли' },
 });
 
+if (IS_SALES_LITE) {
+  Object.assign(MODULE_META, {
+    applications: {
+      domain: 'sales' as const,
+      title: 'В работе',
+      searchPlaceholder: 'Поиск по обращениям в работе',
+      tabs: [
+        { id: 'list', label: 'Список' },
+        { id: 'table', label: 'Таблица' },
+      ],
+    },
+    'my-applications': {
+      domain: 'sales' as const,
+      title: 'Мои в работе',
+      searchPlaceholder: 'Поиск по моим обращениям в работе',
+      tabs: [
+        { id: 'list', label: 'Список' },
+        { id: 'table', label: 'Таблица' },
+      ],
+    },
+    'view-to-application': {
+      ...LEADS_VIEW_BASE,
+      title: 'Лиды · К переводу в работу',
+    },
+  });
+}
+
 // Saved-view aliases that render the Reservations workspace with a pre-applied
 // filter. All share the same tab set (list/table) and the ops domain.
 const RESERVATIONS_VIEW_BASE = {
@@ -577,8 +701,9 @@ export function getDomainConfig(domain: string): DomainConfig | undefined {
 }
 
 export function getModuleMeta(secondaryId: string): ModuleMeta {
+  const safeSecondaryId = normalizeSecondaryForWorkflow(secondaryId);
   return (
-    MODULE_META[secondaryId] ?? {
+    MODULE_META[safeSecondaryId] ?? {
       domain: 'home',
       title: 'Модуль',
       searchPlaceholder: 'Поиск',

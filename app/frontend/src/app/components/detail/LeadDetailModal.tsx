@@ -67,7 +67,7 @@ import {
 import { getEntityDisplayId } from '../../lib/entityDisplayId';
 import { toKanbanLead } from '../../lib/leadAdapter';
 import { toUiApplication } from '../../lib/applicationAdapter';
-import { USE_API } from '../../lib/featureFlags';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 import { EditLeadDialog } from '../leads/EditLeadDialog';
 import { UnqualifyLeadDialog } from '../leads/UnqualifyLeadDialog';
 import { EditApplicationDialog } from '../application/EditApplicationDialog';
@@ -184,9 +184,19 @@ function getPrimaryCTA(
     const canMarkUnqualified =
       stage !== 'completed' && stage !== 'unqualified' && stage !== 'cancelled';
     return {
-      label: hasLinkedApplication ? 'Открыть заявку' : 'Перевести в заявку',
-      secondary: canMarkUnqualified ? 'Пометить некачественным' : undefined,
+      label: hasLinkedApplication
+        ? (IS_SALES_LITE ? 'Открыть в работе' : 'Открыть заявку')
+        : (IS_SALES_LITE ? 'Перевести в работу' : 'Перевести в заявку'),
+      secondary: canMarkUnqualified
+        ? (IS_SALES_LITE ? 'Не квалифицированный' : 'Пометить некачественным')
+        : undefined,
     };
+  }
+
+  if (IS_SALES_LITE) {
+    if (stage === 'application') return { label: 'Квалифицировать', secondary: 'Не квалифицировать' };
+    if (stage === 'completed') return { label: 'Квалифицированный' };
+    if (stage === 'cancelled' || stage === 'unqualified') return { label: 'Не квалифицированный' };
   }
 
   switch (stage) {
@@ -206,6 +216,11 @@ function getPrimaryCTA(
 function deriveAppReadiness(app: Application) {
   const total = app.positions.length;
   const inReservation = app.positions.filter((p) => p.status && p.status !== 'no_reservation').length;
+
+  if (IS_SALES_LITE) {
+    if (total === 0) return { label: 'Потребность не заполнена', tone: badgeTones.warning, Icon: AlertCircle };
+    return { label: `В работе: ${total} поз.`, tone: badgeTones.progress, Icon: Package };
+  }
 
   if (total === 0) return { label: 'Нет данных', tone: badgeTones.warning, Icon: AlertCircle };
   if (inReservation === total) return { label: 'Передано в бронирование', tone: badgeTones.success, Icon: CheckCircle2 };
@@ -320,19 +335,21 @@ function PositionCard({
   const src = sourcingMeta[pos.sourcingType];
   const SrcIcon = src.Icon;
   const status = pos.status ?? 'no_reservation';
-  const st = positionStatusMeta[status];
+  const st = IS_SALES_LITE && status === 'no_reservation'
+    ? { label: 'Потребность', tone: badgeTones.progress, Icon: Package }
+    : positionStatusMeta[status];
   const StIcon = st.Icon;
 
   let nextStep: string | null;
   if (status === 'reserved') nextStep = null;
   else if (status === 'conflict') nextStep = 'Разрешить конфликт';
-  else if (status === 'no_reservation') nextStep = 'Создать бронь';
+  else if (status === 'no_reservation') nextStep = IS_SALES_LITE ? null : 'Создать бронь';
   else if (pos.sourcingType === 'undecided') nextStep = 'Выбрать sourcing';
   else nextStep = 'Продолжить обработку';
 
   const reservationExists =
-    status === 'reserved' || status === 'conflict' || status === 'unit_selected';
-  const readyForBooking = status === 'no_reservation';
+    !IS_SALES_LITE && (status === 'reserved' || status === 'conflict' || status === 'unit_selected');
+  const readyForBooking = !IS_SALES_LITE && status === 'no_reservation';
 
   return (
     <div className="border border-gray-200 rounded-md bg-white p-2.5 space-y-2">
@@ -475,7 +492,7 @@ export function LeadDetailModal({
   );
   const activeReservationsQuery = useReservationsQuery(
     { applicationId: application?.id, isActive: 'true' },
-    USE_API && !isLead && !!application?.id,
+    USE_API && !IS_SALES_LITE && !isLead && !!application?.id,
   );
   const existingReservationId = activeReservationsQuery.data?.items?.[0]?.id ?? null;
 
@@ -531,8 +548,14 @@ export function LeadDetailModal({
       await updateAppMutation.mutateAsync({ id: application.id, patch: apply(next) });
     };
   };
-  const entityType = isLead ? 'Лид' : 'Заявка';
-  const listName = isLead ? 'Лиды' : 'Заявки';
+  const applicationEntityLabel = IS_SALES_LITE ? 'В работе' : 'Заявка';
+  const applicationListLabel = IS_SALES_LITE ? 'В работе' : 'Заявки';
+  const promoteTargetLabel = IS_SALES_LITE ? 'работу' : 'заявку';
+  const promoteActionLabel = IS_SALES_LITE ? 'Перевести в работу' : 'Перевести в заявку';
+  const openApplicationLabel = IS_SALES_LITE ? 'Открыть в работе' : 'Открыть заявку';
+  const missingFieldHint = IS_SALES_LITE ? 'нужно для работы' : 'нужно для заявки';
+  const entityType = isLead ? 'Лид' : applicationEntityLabel;
+  const listName = isLead ? 'Лиды' : applicationListLabel;
   const title = isLead ? lead.client : application!.number;
   const appReadiness = !isLead ? deriveAppReadiness(application!) : null;
   const activeSwitcherEntityType = activeEntityType ?? (isLead ? 'lead' : 'application');
@@ -598,6 +621,10 @@ export function LeadDetailModal({
 
   const openLeadLifecycleStage = (fresh: LeadApi) => {
     const ids = fresh.linkedIds;
+    if (IS_SALES_LITE && (fresh.stage === 'completed' || fresh.stage === 'unqualified')) {
+      openEntitySecondary('leads', 'lead', fresh.id);
+      return;
+    }
     if (fresh.stage === 'application' && ids.applicationId) {
       openEntitySecondary('applications', 'application', ids.applicationId);
       return;
@@ -704,33 +731,37 @@ export function LeadDetailModal({
       onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
     },
     {
-      label: 'Заявка',
+      label: applicationEntityLabel,
       text: formatEntityLink('application', applicationEntityId),
       onClick: applicationEntityId
         ? () => openEntitySecondary('applications', 'application', applicationEntityId)
         : null,
     },
-    {
-      label: 'Бронь',
-      text: formatEntityLink('reservation', reservationEntityId),
-      onClick: reservationEntityId
-        ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
-        : null,
-    },
-    {
-      label: 'Выезд',
-      text: formatEntityLink('departure', departureEntityId),
-      onClick: departureEntityId
-        ? () => openEntitySecondary('departures', 'departure', departureEntityId)
-        : null,
-    },
-    {
-      label: 'Завершение',
-      text: formatEntityLink('completion', completionEntityId),
-      onClick: completionEntityId
-        ? () => openEntitySecondary('completion', 'completion', completionEntityId)
-        : null,
-    },
+    ...(!IS_SALES_LITE
+      ? [
+          {
+            label: 'Бронь',
+            text: formatEntityLink('reservation', reservationEntityId),
+            onClick: reservationEntityId
+              ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
+              : null,
+          },
+          {
+            label: 'Выезд',
+            text: formatEntityLink('departure', departureEntityId),
+            onClick: departureEntityId
+              ? () => openEntitySecondary('departures', 'departure', departureEntityId)
+              : null,
+          },
+          {
+            label: 'Завершение',
+            text: formatEntityLink('completion', completionEntityId),
+            onClick: completionEntityId
+              ? () => openEntitySecondary('completion', 'completion', completionEntityId)
+              : null,
+          },
+        ]
+      : []),
     {
       label: clientRecordLabel,
       text: leadClientPrimaryText,
@@ -753,33 +784,37 @@ export function LeadDetailModal({
       onClick: leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : null,
     },
     {
-      label: 'Заявка',
+      label: applicationEntityLabel,
       text: application?.number ?? null,
       onClick: applicationEntityId
         ? () => openEntitySecondary('applications', 'application', applicationEntityId)
         : null,
     },
-    {
-      label: 'Бронь',
-      text: formatEntityLink('reservation', reservationEntityId),
-      onClick: reservationEntityId
-        ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
-        : null,
-    },
-    {
-      label: 'Выезд',
-      text: formatEntityLink('departure', departureEntityId),
-      onClick: departureEntityId
-        ? () => openEntitySecondary('departures', 'departure', departureEntityId)
-        : null,
-    },
-    {
-      label: 'Завершение',
-      text: formatEntityLink('completion', completionEntityId),
-      onClick: completionEntityId
-        ? () => openEntitySecondary('completion', 'completion', completionEntityId)
-        : null,
-    },
+    ...(!IS_SALES_LITE
+      ? [
+          {
+            label: 'Бронь',
+            text: formatEntityLink('reservation', reservationEntityId),
+            onClick: reservationEntityId
+              ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId)
+              : null,
+          },
+          {
+            label: 'Выезд',
+            text: formatEntityLink('departure', departureEntityId),
+            onClick: departureEntityId
+              ? () => openEntitySecondary('departures', 'departure', departureEntityId)
+              : null,
+          },
+          {
+            label: 'Завершение',
+            text: formatEntityLink('completion', completionEntityId),
+            onClick: completionEntityId
+              ? () => openEntitySecondary('completion', 'completion', completionEntityId)
+              : null,
+          },
+        ]
+      : []),
     {
       label: clientRecordLabel,
       text: applicationClientPrimaryText,
@@ -814,32 +849,36 @@ export function LeadDetailModal({
     },
     {
       id: 'application',
-      label: 'Заявка',
+      label: applicationEntityLabel,
       active: activeSwitcherEntityType === 'application',
       onSelect: applicationEntityId ? () => openEntitySecondary('applications', 'application', applicationEntityId) : undefined,
       disabled: !applicationEntityId,
     },
-    {
-      id: 'reservation',
-      label: 'Бронь',
-      active: activeSwitcherEntityType === 'reservation',
-      onSelect: reservationEntityId ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId) : undefined,
-      disabled: !reservationEntityId,
-    },
-    {
-      id: 'departure',
-      label: 'Выезд',
-      active: activeSwitcherEntityType === 'departure',
-      onSelect: departureEntityId ? () => openEntitySecondary('departures', 'departure', departureEntityId) : undefined,
-      disabled: !departureEntityId,
-    },
-    {
-      id: 'completed',
-      label: 'Завершение',
-      active: activeSwitcherEntityType === 'completion',
-      onSelect: completionEntityId ? () => openEntitySecondary('completion', 'completion', completionEntityId) : undefined,
-      disabled: !completionEntityId,
-    },
+    ...(!IS_SALES_LITE
+      ? [
+          {
+            id: 'reservation',
+            label: 'Бронь',
+            active: activeSwitcherEntityType === 'reservation',
+            onSelect: reservationEntityId ? () => openEntitySecondary('reservations', 'reservation', reservationEntityId) : undefined,
+            disabled: !reservationEntityId,
+          },
+          {
+            id: 'departure',
+            label: 'Выезд',
+            active: activeSwitcherEntityType === 'departure',
+            onSelect: departureEntityId ? () => openEntitySecondary('departures', 'departure', departureEntityId) : undefined,
+            disabled: !departureEntityId,
+          },
+          {
+            id: 'completed',
+            label: 'Завершение',
+            active: activeSwitcherEntityType === 'completion',
+            onSelect: completionEntityId ? () => openEntitySecondary('completion', 'completion', completionEntityId) : undefined,
+            disabled: !completionEntityId,
+          },
+        ]
+      : []),
   ];
 
   // Готовность лида к переводу в заявку: адрес, дата, телефон.
@@ -862,13 +901,34 @@ export function LeadDetailModal({
       }
       onClose();
     } catch (err) {
-      setStageError(err instanceof Error ? err.message : 'Не удалось перевести в заявку');
+      setStageError(err instanceof Error ? err.message : `Не удалось перевести в ${promoteTargetLabel}`);
+    }
+  };
+
+  const canQualifyApplication =
+    !isLead
+    && IS_SALES_LITE
+    && USE_API
+    && !!application?.leadId
+    && application.stage === 'application'
+    && isCurrentStageTail;
+
+  const handleQualifyApplication = async () => {
+    if (!application?.leadId || !canQualifyApplication) return;
+    setStageError(null);
+    try {
+      const fresh = await changeStage.mutateAsync({ id: application.leadId, stage: 'completed' });
+      openLeadLifecycleStage(fresh);
+    } catch (err) {
+      setStageError(err instanceof Error ? err.message : 'Не удалось квалифицировать');
     }
   };
 
   const handleOpenUnqualify = () => {
     if (!canMarkChainUnqualified || !targetLeadIdForUnqualify) {
-      setStageError('Нельзя закрыть как некачественный: действие доступно только на последней актуальной стадии цепочки.');
+      setStageError(IS_SALES_LITE
+        ? 'Нельзя отметить как не квалифицированный: действие доступно только на текущей последней стадии.'
+        : 'Нельзя закрыть как некачественный: действие доступно только на последней актуальной стадии цепочки.');
       return;
     }
     setStageError(null);
@@ -916,6 +976,7 @@ export function LeadDetailModal({
   const canPrepareReservation =
     !!application
     && USE_API
+    && !IS_SALES_LITE
     && application.stage !== 'departure'
     && application.stage !== 'completed'
     && application.stage !== 'cancelled';
@@ -923,6 +984,7 @@ export function LeadDetailModal({
   const canMoveLeadToReservation =
     !!application?.leadId
     && USE_API
+    && !IS_SALES_LITE
     && application.stage !== 'reservation'
     && application.stage !== 'departure'
     && application.stage !== 'completed'
@@ -1055,11 +1117,11 @@ export function LeadDetailModal({
       {USE_API ? (
         <ActionButton
           icon={<Edit3 className="w-3.5 h-3.5" />}
-          label="Редактировать заявку"
+          label={IS_SALES_LITE ? 'Редактировать в работе' : 'Редактировать заявку'}
           onClick={() => setIsEditAppOpen(true)}
         />
       ) : onEditApplication ? (
-        <ActionButton icon={<Edit3 className="w-3.5 h-3.5" />} label="Редактировать заявку" onClick={onEditApplication} />
+        <ActionButton icon={<Edit3 className="w-3.5 h-3.5" />} label={IS_SALES_LITE ? 'Редактировать в работе' : 'Редактировать заявку'} onClick={onEditApplication} />
       ) : null}
     </>
   );
@@ -1111,7 +1173,13 @@ export function LeadDetailModal({
                     ? handlePromoteToApplication
                     : undefined,
               }
-            : undefined
+            : canQualifyApplication
+              ? {
+                  label: changeStage.isPending ? 'Квалифицируем…' : cta.label,
+                  icon: <CheckCircle2 className="w-3 h-3" />,
+                  onClick: () => void handleQualifyApplication(),
+                }
+              : undefined
         }
         secondaryAction={
           isLead && canMarkUnqualified && cta.secondary
@@ -1127,12 +1195,12 @@ export function LeadDetailModal({
                 ...(!isLead && canMarkChainUnqualified
                   ? [
                       {
-                        label: 'Закрыть как некачественный',
+                        label: IS_SALES_LITE ? 'Не квалифицировать' : 'Закрыть как некачественный',
                         onClick: handleOpenUnqualify,
                       },
                     ]
                   : []),
-                ...(!isLead && application!.stage !== 'cancelled'
+                ...(!isLead && !IS_SALES_LITE && application!.stage !== 'cancelled'
                   ? [
                       {
                         label: 'Отменить заявку',
@@ -1172,7 +1240,7 @@ export function LeadDetailModal({
 
       {isLead && !hasLinkedApplication && !canPromoteToApplication && USE_API && leadMissingFields.length > 0 ? (
         <div className="-mt-2 text-[11px] text-amber-600">
-          Для перевода в заявку не хватает: {leadMissingFields.join(', ')}
+          Для перевода в {promoteTargetLabel} не хватает: {leadMissingFields.join(', ')}
         </div>
       ) : null}
 
@@ -1261,7 +1329,7 @@ export function LeadDetailModal({
                         required
                         disabled={disabledInline}
                         emptyDisplay={
-                          <span className="text-[11px] text-amber-600">Не заполнено · нужно для заявки</span>
+                          <span className="text-[11px] text-amber-600">Не заполнено · {missingFieldHint}</span>
                         }
                       />
                     }
@@ -1295,7 +1363,7 @@ export function LeadDetailModal({
                         maxLength={500}
                         disabled={disabledInline}
                         emptyDisplay={
-                          <span className="text-[11px] text-amber-600">Не заполнено · нужно для заявки</span>
+                          <span className="text-[11px] text-amber-600">Не заполнено · {missingFieldHint}</span>
                         }
                       />
                     }
@@ -1312,7 +1380,7 @@ export function LeadDetailModal({
                         ariaLabel="Желаемая дата"
                         disabled={disabledInline}
                         emptyDisplay={
-                          <span className="text-[11px] text-amber-600">Не заполнено · нужно для заявки</span>
+                          <span className="text-[11px] text-amber-600">Не заполнено · {missingFieldHint}</span>
                         }
                       />
                     }
@@ -1481,7 +1549,7 @@ export function LeadDetailModal({
 
       {!isLead && (
         <EntitySection
-          title="Позиции заявки"
+          title={IS_SALES_LITE ? 'Потребности' : 'Позиции заявки'}
           action={
             canInlineEditApp ? (
               <button
@@ -1512,7 +1580,7 @@ export function LeadDetailModal({
             </div>
           ) : (
             <div className="text-[12px] text-gray-500 border border-dashed border-gray-200 rounded-md py-4 text-center">
-              В заявке пока нет позиций
+              {IS_SALES_LITE ? 'Потребность пока не заполнена' : 'В заявке пока нет позиций'}
             </div>
           )}
         </EntitySection>
@@ -1583,7 +1651,7 @@ export function LeadDetailModal({
       ),
     },
     {
-      title: 'Готовность к заявке',
+      title: IS_SALES_LITE ? 'Готовность к работе' : 'Готовность к заявке',
       content: (
         <>
           {(() => {
@@ -1594,7 +1662,7 @@ export function LeadDetailModal({
 
             return missing.length === 0 ? (
               <div className={`${sidebarStatusBadgeClass} ${badgeTones.success}`}>
-                <CheckCircle2 className="w-3 h-3" /> Готов к заявке
+                <CheckCircle2 className="w-3 h-3" /> {IS_SALES_LITE ? 'Готов к работе' : 'Готов к заявке'}
               </div>
             ) : (
               <div className="space-y-1">
@@ -1629,10 +1697,10 @@ export function LeadDetailModal({
               disabled={hasLinkedApplication ? false : !canPromoteToApplication || changeStage.isPending}
             >
               {hasLinkedApplication
-                ? 'Открыть заявку'
+                ? openApplicationLabel
                 : changeStage.isPending
                   ? 'Переводим…'
-                  : 'Перевести в заявку'}
+                  : promoteActionLabel}
             </Button>
           </div>
         </>
@@ -1655,7 +1723,7 @@ export function LeadDetailModal({
       title: 'Статус и мета',
       content: (
         <>
-          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.progress}`}>Заявка</span>} />
+          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.progress}`}>{applicationEntityLabel}</span>} />
           <SidebarField label="Номер" value={application!.number} />
           <SidebarField label="Обновлено" value={application!.lastActivity} />
           <SidebarField label="Менеджер" value={application!.responsibleManager} />
@@ -1664,33 +1732,50 @@ export function LeadDetailModal({
       ),
     },
     {
-      title: 'Готовность к брони',
+      title: IS_SALES_LITE ? 'Квалификация' : 'Готовность к брони',
       content: appReadiness ? (
         <>
           <div className={`${sidebarStatusBadgeClass} ${appReadiness.tone}`}>
             <appReadiness.Icon className="w-3 h-3" />
             {appReadiness.label}
           </div>
-          <div className="text-[11px] text-gray-500 mt-1">
-            {application!.positions.filter((p) => p.status && p.status !== 'no_reservation').length} из {application!.positions.length} позиций в бронировании
-          </div>
+          {IS_SALES_LITE ? (
+            <div className="text-[11px] text-gray-500 mt-1">
+              {application!.positions.length} поз. в работе
+            </div>
+          ) : (
+            <div className="text-[11px] text-gray-500 mt-1">
+              {application!.positions.filter((p) => p.status && p.status !== 'no_reservation').length} из {application!.positions.length} позиций в бронировании
+            </div>
+          )}
           <div className="pt-2">
-            <Button
-              size="sm"
-              className="h-7 w-full text-[11px]"
-              onClick={
-                hasLinkedReservation
-                  ? () => navigateToReservation(reservationEntityId)
-                  : () => void handlePrepareReservation()
-              }
-              disabled={
-                hasLinkedReservation
-                  ? false
-                  : !canPrepareReservation || changeStage.isPending || createReservation.isPending
-              }
-            >
-              {hasLinkedReservation ? 'Открыть бронь' : 'Подготовить к брони'}
-            </Button>
+            {IS_SALES_LITE ? (
+              <Button
+                size="sm"
+                className="h-7 w-full text-[11px]"
+                onClick={() => void handleQualifyApplication()}
+                disabled={!canQualifyApplication || changeStage.isPending}
+              >
+                {changeStage.isPending ? 'Квалифицируем…' : 'Квалифицировать'}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                className="h-7 w-full text-[11px]"
+                onClick={
+                  hasLinkedReservation
+                    ? () => navigateToReservation(reservationEntityId)
+                    : () => void handlePrepareReservation()
+                }
+                disabled={
+                  hasLinkedReservation
+                    ? false
+                    : !canPrepareReservation || changeStage.isPending || createReservation.isPending
+                }
+              >
+                {hasLinkedReservation ? 'Открыть бронь' : 'Подготовить к брони'}
+              </Button>
+            )}
           </div>
         </>
       ) : (
@@ -1755,7 +1840,7 @@ export function LeadDetailModal({
               onClick={handleOpenUnqualify}
               disabled={!USE_API}
             >
-              Пометить некачественным
+              {IS_SALES_LITE ? 'Не квалифицировать' : 'Пометить некачественным'}
             </Button>
           ) : null}
         </div>
@@ -1773,7 +1858,7 @@ export function LeadDetailModal({
             className="h-6 w-full justify-start text-[11px]"
             onClick={() => openSecondary('applications')}
           >
-            Открыть список заявок
+            {IS_SALES_LITE ? 'Открыть список в работе' : 'Открыть список заявок'}
           </Button>
           {canMarkChainUnqualified ? (
             <Button
@@ -1782,18 +1867,20 @@ export function LeadDetailModal({
               className="h-6 w-full justify-start text-[11px]"
               onClick={handleOpenUnqualify}
             >
-              Закрыть как некачественный
+              {IS_SALES_LITE ? 'Не квалифицировать' : 'Закрыть как некачественный'}
             </Button>
           ) : null}
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-6 w-full justify-start text-[11px]"
-            onClick={USE_API && application!.stage !== 'cancelled' ? () => setIsCancelAppOpen(true) : undefined}
-            disabled={!USE_API || application!.stage === 'cancelled'}
-          >
-            Отменить заявку
-          </Button>
+          {!IS_SALES_LITE ? (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-6 w-full justify-start text-[11px]"
+              onClick={USE_API && application!.stage !== 'cancelled' ? () => setIsCancelAppOpen(true) : undefined}
+              disabled={!USE_API || application!.stage === 'cancelled'}
+            >
+              Отменить заявку
+            </Button>
+          ) : null}
         </div>
       }
     />

@@ -29,6 +29,15 @@ Primary groups (current):
 18. `/settings/*`
 19. `/navigation/*`
 
+## 2.1 Workflow profile overlay
+
+Runtime env `CRM_WORKFLOW_PROFILE` controls which API surface is active:
+
+- `full` is the default and keeps the current full operations API surface.
+- `sales-lite` is the simplified sales CRM profile. It keeps Leads, Applications-as-"В работе", Clients, activity, imports, integrations, users/settings/admin surfaces, and allows equipment categories/types as lookup hints when needed.
+- In `sales-lite`, operational endpoints for `/reservations`, `/departures`, `/completions`, `/equipment-units`, and `/subcontractors` are full-profile only and return `403` through the workflow profile guard.
+- Full-profile tables and modules are not deleted; they remain available when `CRM_WORKFLOW_PROFILE=full`.
+
 ## 3. Domain contract notes
 
 ### 3.1 Auth
@@ -60,7 +69,7 @@ Contract expectations:
 2. Dedupe-related flags are returned for UI signaling.
 3. Repeat-order flow is canonical via `POST /api/v1/leads` with `source=manual`, `sourceLabel=repeat_order`, and `clientId` from client workspace context.
 4. `GET /api/v1/leads` supports list filters used by analytics views (`stage`, `managerId`, `query`, `isUrgent`, `isStale`).
-5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites: `lead -> application` requires contact, requested date, and address, and `application -> reservation` requires an existing active Reservation for the active Application.
+5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites and the active workflow profile: `lead -> application` requires contact, requested date, and address. In `full`, `application -> reservation` requires an existing active Reservation for the active Application. In `sales-lite`, `application -> completed` is the qualified terminal outcome and `application -> reservation` is rejected.
 6. `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` are server-owned one-step lifecycle rollback operations. They hard-delete only the current representation, restore the previous stage, and write audit snapshot payloads.
 7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
 8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
@@ -82,7 +91,7 @@ Contract expectations:
 1. One active application per lead is guarded by DB/business rules.
 2. Item-level statuses remain consistent with reservation lifecycle.
 3. Item readiness follows `QA-REQ-009`: equipment type, quantity, planned date/time, address, and non-undecided source.
-4. Moving an Application out of Sales scope to Reservation must be tied to a real active Reservation entity, not a stage-only Lead update.
+4. In `full`, moving an Application out of Sales scope to Reservation must be tied to a real active Reservation entity, not a stage-only Lead update. In `sales-lite`, Application remains the `В работе` representation and can close through Lead stage `completed`/`unqualified` without creating Reservation, Departure, or Completion records.
 
 ### 3.4 Reservations
 

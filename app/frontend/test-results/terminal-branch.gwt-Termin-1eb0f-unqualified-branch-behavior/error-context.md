@@ -34,7 +34,8 @@ expect(received).toEqual(expected) // deep equality
     - generic:
       - banner:
         - generic:
-          - generic: К
+          - generic:
+            - img
           - generic: Катет CRM
         - generic:
           - generic:
@@ -43,7 +44,6 @@ expect(received).toEqual(expected) // deep equality
               - /placeholder: Поиск по выездам
             - generic: Ctrl K
         - generic:
-          - button: Менеджер
           - button:
             - img
           - button:
@@ -55,8 +55,6 @@ expect(received).toEqual(expected) // deep equality
         - complementary:
           - generic:
             - navigation:
-              - button:
-                - img
               - button:
                 - img
               - button:
@@ -125,7 +123,7 @@ expect(received).toEqual(expected) // deep equality
               - generic:
                 - button:
                   - img
-                  - generic: Черновик
+                  - generic: Сообщить о баге
           - main:
             - generic:
               - generic:
@@ -157,968 +155,877 @@ expect(received).toEqual(expected) // deep equality
                   - generic:
                     - generic:
                       - text: Просроченные
-                      - generic: "6"
+                      - generic: "8"
                     - table:
                       - rowgroup:
                         - row:
                           - cell:
-                            - generic: DEP-cmot09s1b002r588g462g9ccg
-                            - generic: QA APIC007-1778008361306-5789 Lead
+                            - generic: DEP-cmou0wo4h002zopdi25s8r5c6
+                            - generic: QA INT005-1778069895475-2699 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA APIC007-1778008361306-5789 Type
-                          - cell: 2026-05-05 · 23:12-01:12
+                          - cell: QA INT005-1778069895475-2699 Type
+                          - cell: 2026-05-06 · 17:18-19:18
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 5 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0aywo002r149l8sb0u8bu
-                            - generic: QA APIC007-1778008416880-7627 Lead
+                            - generic: DEP-cmp5eq6us00561pfpii3x9g8a
+                            - generic: QA APIC007-1778758235794-4607 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA APIC007-1778008416880-7627 Type
-                          - cell: 2026-05-05 · 23:13-01:13
+                          - cell: QA APIC007-1778758235794-4607 Type
+                          - cell: 2026-05-14 · 15:30-17:30
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0fzaq002rp9pfekm0lfme
-                            - generic: QA APIC007-1778008650682-4099 Lead
+                            - generic: DEP-cmp5f1qw70056959abocxs46p
+                            - generic: QA APIC007-1778758774995-5265 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA APIC007-1778008650682-4099 Type
-                          - cell: 2026-05-05 · 23:17-01:17
+                          - cell: QA APIC007-1778758774995-5265 Type
+                          - cell: 2026-05-14 · 15:39-17:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0a4od002zntp0uhwfydgf
-                            - generic: QA INT005-1778008377739-9308 Lead
+                            - generic: DEP-cmp5f28vg0056twchb1vhswdv
+                            - generic: QA APIC007-1778758798295-8188 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA INT005-1778008377739-9308 Type
-                          - cell: 2026-05-06 · 00:12-02:12
+                          - cell: QA APIC007-1778758798295-8188 Type
+                          - cell: 2026-05-14 · 15:39-17:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0becv002z10n1dvl67i42
-                            - generic: QA INT005-1778008436889-2557 Lead
+                            - generic: DEP-cmp5f3b3b005614jbk7udfks5
+                            - generic: QA APIC007-1778758847851-42 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA INT005-1778008436889-2557 Type
-                          - cell: 2026-05-06 · 00:13-02:13
+                          - cell: QA APIC007-1778758847851-42 Type
+                          - cell: 2026-05-14 · 15:40-17:40
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0gdd4002zla1crqfqlpxk
-                            - generic: QA INT005-1778008668902-896 Lead
+                            - generic: DEP-cmp5fjcfh0056dpp9v8a581to
+                            - generic: QA APIC007-1778759596054-5075 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Просрочен
-                          - cell: QA INT005-1778008668902-896 Type
-                          - cell: 2026-05-06 · 00:17-02:17
+                          - cell: QA APIC007-1778759596054-5075 Type
+                          - cell: 2026-05-14 · 15:53-17:53
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hhifk00567ojela3aw4zp
+                            - generic: QA APIC007-1778762869755-1931 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Просрочен
+                          - cell: QA APIC007-1778762869755-1931 Type
+                          - cell: 2026-05-14 · 16:47-18:47
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hixl00056d2p4n0spx6ig
+                            - generic: QA APIC007-1778762936058-6587 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Просрочен
+                          - cell: QA APIC007-1778762936058-6587 Type
+                          - cell: 2026-05-14 · 16:48-18:48
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
                   - generic:
                     - generic:
                       - text: Скоро
-                      - generic: "4"
+                      - generic: "5"
                     - table:
                       - rowgroup:
                         - row:
                           - cell:
-                            - generic: DEP-cmou6yb3l002rzg8a4gv8kljd
-                            - generic: QA APIC007-1778080049584-9066 Lead
+                            - generic: DEP-cmpcj49re00568pgxmncvvzqg
+                            - generic: QA APIC007-1779188874467-7071 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Скоро
-                          - cell: QA APIC007-1778080049584-9066 Type
-                          - cell: 2026-05-06 · 19:07-21:07
+                          - cell: QA APIC007-1779188874467-7071 Type
+                          - cell: 2026-05-19 · 15:07-17:07
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 10 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj5yjb0056rbohv9quuwwv
+                            - generic: QA APIC007-1779188953254-3471 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Скоро
+                          - cell: QA APIC007-1779188953254-3471 Type
+                          - cell: 2026-05-19 · 15:09-17:09
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 9 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjauvh00521mmf33sumal1
+                            - generic: QA APIC007-1779189181747-1354 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Скоро
+                          - cell: QA APIC007-1779189181747-1354 Type
+                          - cell: 2026-05-19 · 15:13-17:13
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 5 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjc5kq0052qzen87yixg6s
+                            - generic: QA APIC007-1779189242303-3782 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Скоро
+                          - cell: QA APIC007-1779189242303-3782 Type
+                          - cell: 2026-05-19 · 15:14-17:14
                           - cell: —
                           - cell: Manager User
                           - cell: 4 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6z48x002ryitkpiyclwbh
-                            - generic: QA APIC007-1778080087448-4144 Lead
+                            - generic: DEP-cmpcjdo5k005213xeqlja5p78
+                            - generic: QA APIC007-1779189313061-9597 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Скоро
-                          - cell: QA APIC007-1778080087448-4144 Type
-                          - cell: 2026-05-06 · 19:08-21:08
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 3 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6yrxn002ztkwt5mm5nhyc
-                            - generic: QA INT005-1778080071419-8697 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Скоро
-                          - cell: QA INT005-1778080071419-8697 Type
-                          - cell: 2026-05-06 · 20:07-22:07
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 4 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6zaal00aayitkt8r2kjvk
-                            - generic: QA INT005-1778080095267-9319 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Скоро
-                          - cell: QA INT005-1778080095267-9319 Type
-                          - cell: 2026-05-06 · 20:08-22:08
+                          - cell: QA APIC007-1779189313061-9597 Type
+                          - cell: 2026-05-19 · 15:15-17:15
                           - cell: —
                           - cell: Manager User
                           - cell: 3 мин назад
                   - generic:
                     - generic:
                       - text: Ожидается
-                      - generic: "63"
+                      - generic: "53"
                     - table:
                       - rowgroup:
                         - row:
                           - cell:
-                            - generic: DEP-cmolb8o290080nmht8mpbut2a
-                            - generic: manager LLC
+                            - generic: DEP-cmou0wodt003popdi5hk9mzls
+                            - generic: QA INT006-1778069895868-9866 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-04 · 09:57-17:57
+                          - cell: QA INT006-1778069895868-9866 Type
+                          - cell: 2026-05-06 · 18:18-20:18
                           - cell: —
                           - cell: Manager User
-                          - cell: 6 дн назад
+                          - cell: 12 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmolbnlwa00ienmhtaes9juys
-                            - generic: manager LLC
+                            - generic: DEP-cmou0wotn004wopdifwzt93hf
+                            - generic: QA INT007-1778069896375-9613 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: RBAC Type 00bafafd updated
-                          - cell: 2026-05-04 · 10:09-18:09
+                          - cell: QA INT007-1778069896375-9613 Type
+                          - cell: 2026-05-06 · 19:18-21:18
                           - cell: —
                           - cell: Manager User
-                          - cell: 6 дн назад
+                          - cell: 12 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmolbr04l00sdnmhts4h5wus4
-                            - generic: manager LLC
+                            - generic: DEP-cmou0wpb4005vopdijliuwx5k
+                            - generic: QA INT008-1778069896946-4908 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: RBAC Type 00bafafd updated
-                          - cell: 2026-05-04 · 10:11-18:11
+                          - cell: QA INT008-1778069896946-4908 Type
+                          - cell: 2026-05-06 · 20:38-22:38
                           - cell: —
                           - cell: Manager User
-                          - cell: 6 дн назад
+                          - cell: 12 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmolf2u91007ybd33kzxgvrok
-                            - generic: manager LLC
+                            - generic: DEP-cmou0wppb006yopdii3nz75rb
+                            - generic: QA INT009-1778069897587-8915 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: RBAC Type 00bafafd updated
-                          - cell: 2026-05-04 · 11:45-19:45
+                          - cell: QA INT009-1778069897587-8915 Type
+                          - cell: 2026-05-06 · 21:38-23:58
                           - cell: —
                           - cell: Manager User
-                          - cell: 6 дн назад
+                          - cell: 12 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmolpn4ef007yp93r3dfxeg21
-                            - generic: manager LLC
+                            - generic: DEP-cmp5eq72b005w1pfp30zo38qz
+                            - generic: QA APIC008-1778758236092-5431 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: RBAC Type 00bafafd updated
-                          - cell: 2026-05-04 · 16:40-00:40
+                          - cell: QA APIC008-1778758236092-5431 Type
+                          - cell: 2026-05-14 · 16:30-18:30
                           - cell: —
                           - cell: Manager User
-                          - cell: 5 дн назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmolqevjo00m7p93rtikn6jk1
-                            - generic: manager LLC
+                            - generic: DEP-cmp5f1r2f005w959a4brbu4gg
+                            - generic: QA APIC008-1778758775255-9350 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: RBAC Type 00bafafd updated
-                          - cell: 2026-05-04 · 17:02-01:02
+                          - cell: QA APIC008-1778758775255-9350 Type
+                          - cell: 2026-05-14 · 16:39-18:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 5 дн назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot09s9r003h588gppmc1rr1
-                            - generic: QA APIC008-1778008361671-9738 Lead
+                            - generic: DEP-cmp5f291f005wtwchq8dmyctz
+                            - generic: QA APIC008-1778758798552-3549 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008-1778008361671-9738 Type
-                          - cell: 2026-05-06 · 00:12-02:12
+                          - cell: QA APIC008-1778758798552-3549 Type
+                          - cell: 2026-05-14 · 16:39-18:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0az5o003h149l1k2aiqgz
-                            - generic: QA APIC008-1778008417234-8907 Lead
+                            - generic: DEP-cmp5f3b8s005w14jb2p9f6ti4
+                            - generic: QA APIC008-1778758848075-9989 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008-1778008417234-8907 Type
-                          - cell: 2026-05-06 · 00:13-02:13
+                          - cell: QA APIC008-1778758848075-9989 Type
+                          - cell: 2026-05-14 · 16:40-18:40
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0fzix003hp9pfv3nese7j
-                            - generic: QA APIC008-1778008651020-5476 Lead
+                            - generic: DEP-cmp5fjclo005wdpp9pgno12mu
+                            - generic: QA APIC008-1778759596326-8110 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008-1778008651020-5476 Type
-                          - cell: 2026-05-06 · 00:17-02:17
+                          - cell: QA APIC008-1778759596326-8110 Type
+                          - cell: 2026-05-14 · 16:53-18:53
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot09snd004g588guyd0jln6
-                            - generic: QA APIC009-1778008362170-529 Lead
+                            - generic: DEP-cmp5eq7he007n1pfpble7krtk
+                            - generic: QA APIC009-1778758236647-5304 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC009-1778008362170-529 Type
-                          - cell: 2026-05-06 · 01:12-03:12
+                          - cell: QA APIC009-1778758236647-5304 Type
+                          - cell: 2026-05-14 · 17:30-19:30
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0azot0058149lkzwphoar
-                            - generic: QA APIC009-1778008417949-4092 Lead
+                            - generic: DEP-cmp5f1rgd007n959a8azbom5r
+                            - generic: QA APIC009-1778758775757-8923 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC009-1778008417949-4092 Type
-                          - cell: 2026-05-06 · 01:13-03:13
+                          - cell: QA APIC009-1778758775757-8923 Type
+                          - cell: 2026-05-14 · 17:39-19:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0g00c0058p9pfofg3h2r3
-                            - generic: QA APIC009-1778008651649-9823 Lead
+                            - generic: DEP-cmp5f29e7007ntwchakfq2yy4
+                            - generic: QA APIC009-1778758799015-2954 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC009-1778008651649-9823 Type
-                          - cell: 2026-05-06 · 01:17-03:17
+                          - cell: QA APIC009-1778758799015-2954 Type
+                          - cell: 2026-05-14 · 17:39-19:39
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0gdl8003pla1ccm876ass
-                            - generic: QA INT006-1778008669242-9931 Lead
+                            - generic: DEP-cmp5f3bkb007n14jb9pozzvad
+                            - generic: QA APIC009-1778758848497-3781 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT006-1778008669242-9931 Type
-                          - cell: 2026-05-06 · 01:17-03:17
+                          - cell: QA APIC009-1778758848497-3781 Type
+                          - cell: 2026-05-14 · 17:40-19:40
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0g0vk006ep9pfesvslgc0
-                            - generic: QA APIC010-1778008652198-3321 Lead
+                            - generic: DEP-cmp5hhilv005w7ojet3jzqp44
+                            - generic: QA APIC008-1778762870015-7303 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC010-1778008652198-3321 Type
-                          - cell: 2026-05-06 · 02:17-04:37
+                          - cell: QA APIC008-1778762870015-7303 Type
+                          - cell: 2026-05-14 · 17:47-19:47
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0gdym004wla1c7rvdf7gs
-                            - generic: QA INT007-1778008669671-6516 Lead
+                            - generic: DEP-cmp5hixrg005wd2p4t7jhxc4l
+                            - generic: QA APIC008-1778762936310-2704 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT007-1778008669671-6516 Type
-                          - cell: 2026-05-06 · 02:17-04:17
+                          - cell: QA APIC008-1778762936310-2704 Type
+                          - cell: 2026-05-14 · 17:48-19:48
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0azfs004g149lt7ylzko6
-                            - generic: QA APIC008CANCEL-1778008417588-9816 Lead
+                            - generic: DEP-cmp5fjcyi007ndpp9h5sjk0oi
+                            - generic: QA APIC009-1778759596781-9843 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008CANCEL-1778008417588-9816 Type
-                          - cell: 2026-05-06 · 03:33-05:33
+                          - cell: QA APIC009-1778759596781-9843 Type
+                          - cell: 2026-05-14 · 17:53-19:53
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0fzri004gp9pf7u0pis84
-                            - generic: QA APIC008CANCEL-1778008651326-4386 Lead
+                            - generic: DEP-cmp5eq7sw008t1pfpuzdgys6b
+                            - generic: QA APIC010-1778758237037-9855 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008CANCEL-1778008651326-4386 Type
-                          - cell: 2026-05-06 · 03:37-05:37
+                          - cell: QA APIC010-1778758237037-9855 Type
+                          - cell: 2026-05-14 · 18:30-20:50
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0ge9q005vla1ccyekrmp4
-                            - generic: QA INT008-1778008670137-350 Lead
+                            - generic: DEP-cmp5f1rqc008t959asixql59t
+                            - generic: QA APIC010-1778758776122-4960 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT008-1778008670137-350 Type
-                          - cell: 2026-05-06 · 03:37-05:37
+                          - cell: QA APIC010-1778758776122-4960 Type
+                          - cell: 2026-05-14 · 18:39-20:59
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmot0geky006yla1cmzbsj6yp
-                            - generic: QA INT009-1778008670547-2432 Lead
+                            - generic: DEP-cmp5f29ol008ttwcheznsyd9c
+                            - generic: QA APIC010-1778758799387-1302 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT009-1778008670547-2432 Type
-                          - cell: 2026-05-06 · 04:37-06:57
+                          - cell: QA APIC010-1778758799387-1302 Type
+                          - cell: 2026-05-14 · 18:39-20:59
                           - cell: —
                           - cell: Manager User
-                          - cell: 19 ч назад
+                          - cell: 4 дн назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6ybc7003hzg8a9jwqnb7v
-                            - generic: QA APIC008-1778080049982-7439 Lead
+                            - generic: DEP-cmp5f3bu8008t14jbbmdspxte
+                            - generic: QA APIC010-1778758848837-5246 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008-1778080049982-7439 Type
-                          - cell: 2026-05-06 · 20:07-22:07
+                          - cell: QA APIC010-1778758848837-5246 Type
+                          - cell: 2026-05-14 · 18:40-21:00
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hhiyp007n7ojepo6t2fk2
+                            - generic: QA APIC009-1778762870493-7546 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC009-1778762870493-7546 Type
+                          - cell: 2026-05-14 · 18:47-20:47
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hiy2v007nd2p4ussa5exs
+                            - generic: QA APIC009-1778762936750-1413 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC009-1778762936750-1413 Type
+                          - cell: 2026-05-14 · 18:48-20:48
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5fjd8b008tdpp9b9pf7j9o
+                            - generic: QA APIC010-1778759597142-7691 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1778759597142-7691 Type
+                          - cell: 2026-05-14 · 18:53-21:13
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5eq79n006v1pfpxy8nmkhf
+                            - generic: QA APIC008CANCEL-1778758236363-1995 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778758236363-1995 Type
+                          - cell: 2026-05-14 · 19:50-21:50
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hhj7y008t7ojehmnmh1wb
+                            - generic: QA APIC010-1778762870822-958 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1778762870822-958 Type
+                          - cell: 2026-05-14 · 19:47-22:07
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hiyba008td2p4d5rkuwif
+                            - generic: QA APIC010-1778762937051-1615 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1778762937051-1615 Type
+                          - cell: 2026-05-14 · 19:48-22:08
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5f1r9e006v959a7jc0gz3r
+                            - generic: QA APIC008CANCEL-1778758775495-1995 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778758775495-1995 Type
+                          - cell: 2026-05-14 · 19:59-21:59
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5f297k006vtwchvoomv5ag
+                            - generic: QA APIC008CANCEL-1778758798775-6991 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778758798775-6991 Type
+                          - cell: 2026-05-14 · 19:59-21:59
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5f3beq006v14jb7ev3ac97
+                            - generic: QA APIC008CANCEL-1778758848285-5070 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778758848285-5070 Type
+                          - cell: 2026-05-14 · 20:00-22:00
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5fjcrv006vdpp9a7el14iy
+                            - generic: QA APIC008CANCEL-1778759596548-8034 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778759596548-8034 Type
+                          - cell: 2026-05-14 · 20:13-22:13
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hhis7006v7ojernv09g2f
+                            - generic: QA APIC008CANCEL-1778762870258-4986 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778762870258-4986 Type
+                          - cell: 2026-05-14 · 21:07-23:07
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmp5hixxj006vd2p4fn54x2va
+                            - generic: QA APIC008CANCEL-1778762936552-3688 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1778762936552-3688 Type
+                          - cell: 2026-05-14 · 21:08-23:08
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 4 дн назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj49x6005w8pgxypb0u23b
+                            - generic: QA APIC008-1779188874708-5094 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008-1779188874708-5094 Type
+                          - cell: 2026-05-19 · 16:07-18:07
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 10 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj5yog005wrbohtuiiqomq
+                            - generic: QA APIC008-1779188953463-3917 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008-1779188953463-3917 Type
+                          - cell: 2026-05-19 · 16:09-18:09
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 9 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjav0n005s1mmf5qk8m5ho
+                            - generic: QA APIC008-1779189181998-5667 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008-1779189181998-5667 Type
+                          - cell: 2026-05-19 · 16:13-18:13
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 5 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjc5ps005sqzenqf8jd92l
+                            - generic: QA APIC008-1779189242521-7488 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008-1779189242521-7488 Type
+                          - cell: 2026-05-19 · 16:14-18:14
                           - cell: —
                           - cell: Manager User
                           - cell: 4 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6z4gm003hyitkql4bcrp8
-                            - generic: QA APIC008-1778080087716-1091 Lead
+                            - generic: DEP-cmpcjdoae005s13xevvgj05d8
+                            - generic: QA APIC008-1779189313254-7847 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC008-1778080087716-1091 Type
-                          - cell: 2026-05-06 · 20:08-22:08
+                          - cell: QA APIC008-1779189313254-7847 Type
+                          - cell: 2026-05-19 · 16:15-18:15
                           - cell: —
                           - cell: Manager User
                           - cell: 3 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6ycfc0058zg8aw80aflle
-                            - generic: QA APIC009-1778080050823-9950 Lead
+                            - generic: DEP-cmpcj4a81007n8pgxxa90gj1t
+                            - generic: QA APIC009-1779188875117-5914 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC009-1778080050823-9950 Type
-                          - cell: 2026-05-06 · 21:07-23:07
+                          - cell: QA APIC009-1779188875117-5914 Type
+                          - cell: 2026-05-19 · 17:07-19:07
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 10 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj5yyq007nrbohugy4zhi0
+                            - generic: QA APIC009-1779188953840-7073 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC009-1779188953840-7073 Type
+                          - cell: 2026-05-19 · 17:09-19:09
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 9 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjavbo007j1mmftgsmy4te
+                            - generic: QA APIC009-1779189182403-8912 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC009-1779189182403-8912 Type
+                          - cell: 2026-05-19 · 17:13-19:13
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 5 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjc60z007jqzeng2btp1g4
+                            - generic: QA APIC009-1779189242926-682 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC009-1779189242926-682 Type
+                          - cell: 2026-05-19 · 17:14-19:14
                           - cell: —
                           - cell: Manager User
                           - cell: 4 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6ys8t003ptkwtwyb6dx3f
-                            - generic: QA INT006-1778080071820-3886 Lead
+                            - generic: DEP-cmpcjdoj9007j13xeriruido6
+                            - generic: QA APIC009-1779189313586-6060 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT006-1778080071820-3886 Type
-                          - cell: 2026-05-06 · 21:07-23:07
+                          - cell: QA APIC009-1779189313586-6060 Type
+                          - cell: 2026-05-19 · 17:15-19:15
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 3 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj4ag1008t8pgx0fd9fblc
+                            - generic: QA APIC010-1779188875406-6527 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1779188875406-6527 Type
+                          - cell: 2026-05-19 · 18:07-20:27
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 10 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcj5z6o008trbohr6pbvcmx
+                            - generic: QA APIC010-1779188954127-7212 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1779188954127-7212 Type
+                          - cell: 2026-05-19 · 18:09-20:29
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 9 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjavjj008p1mmfn6jsmezl
+                            - generic: QA APIC010-1779189182686-7722 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1779189182686-7722 Type
+                          - cell: 2026-05-19 · 18:13-20:33
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 5 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjc692008pqzenp2lv2v76
+                            - generic: QA APIC010-1779189243218-683 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC010-1779189243218-683 Type
+                          - cell: 2026-05-19 · 18:14-20:34
                           - cell: —
                           - cell: Manager User
                           - cell: 4 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6z4v50058yitkv2xvm4mw
-                            - generic: QA APIC009-1778080088284-501 Lead
+                            - generic: DEP-cmpcjdopy008p13xe1fvjug2o
+                            - generic: QA APIC010-1779189313826-4774 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC009-1778080088284-501 Type
-                          - cell: 2026-05-06 · 21:08-23:08
+                          - cell: QA APIC010-1779189313826-4774 Type
+                          - cell: 2026-05-19 · 18:15-20:35
                           - cell: —
                           - cell: Manager User
                           - cell: 3 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6zai500b0yitk3vc3bqaw
-                            - generic: QA INT006-1778080095585-1411 Lead
+                            - generic: DEP-cmpcj4a2p006v8pgxqny7zic8
+                            - generic: QA APIC008CANCEL-1779188874925-2377 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT006-1778080095585-1411 Type
-                          - cell: 2026-05-06 · 21:08-23:08
+                          - cell: QA APIC008CANCEL-1779188874925-2377 Type
+                          - cell: 2026-05-19 · 19:27-21:27
                           - cell: —
                           - cell: Manager User
-                          - cell: 3 мин назад
+                          - cell: 10 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6yd2q006ezg8a578ycwhq
-                            - generic: QA APIC010-1778080052176-5675 Lead
+                            - generic: DEP-cmpcj5ytk006vrboh1adrq6vl
+                            - generic: QA APIC008CANCEL-1779188953652-4024 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA APIC010-1778080052176-5675 Type
-                          - cell: 2026-05-06 · 22:07-00:27
+                          - cell: QA APIC008CANCEL-1779188953652-4024 Type
+                          - cell: 2026-05-19 · 19:29-21:29
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 9 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjav64006r1mmfwe4ggnnm
+                            - generic: QA APIC008CANCEL-1779189182191-1214 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1779189182191-1214 Type
+                          - cell: 2026-05-19 · 19:33-21:33
+                          - cell: —
+                          - cell: Manager User
+                          - cell: 5 мин назад
+                        - row:
+                          - cell:
+                            - generic: DEP-cmpcjc5vh006rqzenwn207b49
+                            - generic: QA APIC008CANCEL-1779189242714-6935 Lead
+                          - cell:
+                            - generic:
+                              - img
+                              - text: Ожидается
+                          - cell: QA APIC008CANCEL-1779189242714-6935 Type
+                          - cell: 2026-05-19 · 19:34-21:34
                           - cell: —
                           - cell: Manager User
                           - cell: 4 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6ysri004wtkwtn95pqafu
-                            - generic: QA INT007-1778080072479-9196 Lead
+                            - generic: DEP-cmpcjdoeo006r13xevs1d2pb8
+                            - generic: QA APIC008CANCEL-1779189313417-5447 Lead
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT007-1778080072479-9196 Type
-                          - cell: 2026-05-06 · 22:07-00:07
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 4 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6z56l006eyitk1bu3vxxu
-                            - generic: QA APIC010-1778080088726-1443 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA APIC010-1778080088726-1443 Type
-                          - cell: 2026-05-06 · 22:08-00:28
+                          - cell: QA APIC008CANCEL-1779189313417-5447 Type
+                          - cell: 2026-05-19 · 19:35-21:35
                           - cell: —
                           - cell: Manager User
                           - cell: 3 мин назад
                         - row:
                           - cell:
-                            - generic: DEP-cmou6zatj00c7yitkmvtapyfp
-                            - generic: QA INT007-1778080095991-7623 Lead
+                            - generic: DEP-cmpcjiaee001aaj8zqdku5l29
+                            - generic: E2E 009 009-1779189525924-406
                           - cell:
                             - generic:
                               - img
                               - text: Ожидается
-                          - cell: QA INT007-1778080095991-7623 Type
-                          - cell: 2026-05-06 · 22:08-00:08
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 3 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6ybp4004gzg8abff4pp3a
-                            - generic: QA APIC008CANCEL-1778080050358-9220 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA APIC008CANCEL-1778080050358-9220 Type
-                          - cell: 2026-05-06 · 23:27-01:27
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 4 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6z4ne004gyitk6yu8rjoc
-                            - generic: QA APIC008CANCEL-1778080088035-5005 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA APIC008CANCEL-1778080088035-5005 Type
-                          - cell: 2026-05-06 · 23:28-01:28
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 3 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6yt56005vtkwtwydkpeko
-                            - generic: QA INT008-1778080073062-8572 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA INT008-1778080073062-8572 Type
-                          - cell: 2026-05-06 · 23:27-01:27
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 4 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6zb5k00d6yitk9xid2f8k
-                            - generic: QA INT008-1778080096402-1417 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA INT008-1778080096402-1417 Type
-                          - cell: 2026-05-06 · 23:28-01:28
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 3 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6ythp006ytkwtw110tunm
-                            - generic: QA INT009-1778080073529-7524 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA INT009-1778080073529-7524 Type
-                          - cell: 2026-05-07 · 00:27-02:47
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 4 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou6zbge00e9yitk1l8u6p7t
-                            - generic: QA INT009-1778080096824-4996 Lead
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: QA INT009-1778080096824-4996 Type
-                          - cell: 2026-05-07 · 00:28-02:48
-                          - cell: —
-                          - cell: Manager User
-                          - cell: 3 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou71ah60020dd4ba7ju1x9p
-                            - generic: E2E 015 015-1778080188534-336
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 37
-                          - cell: Manager User
-                          - cell: 2 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou71hr6002rdd4bqpn7xbjk
-                            - generic: E2E 016 016-1778080198119-30
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 12
-                          - cell: Manager User
-                          - cell: 1 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou71noq003tdd4b09y4p3ky
-                            - generic: E2E 017 017-1778080205601-216
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 73
-                          - cell: Manager User
-                          - cell: 1 мин назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot1oi3b009hrcnu15ewbw45
-                            - generic: E2E 006 006-1778010724306-803
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
+                          - cell: QA APIC006-1778758235503-888 Type
+                          - cell: 2026-05-20 · 10:00-14:00
                           - cell: Москва, Тестовая улица, 66
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2093e002ykcyd2iesnxtj
-                            - generic: E2E 006 006-1778011273043-743
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 56
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot22ym4002yfnob64mql1jv
-                            - generic: E2E 006 006-1778011399225-85
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 51
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot29u2e002yizc0nx8bvm7p
-                            - generic: E2E 006 006-1778011720058-402
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 10
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2ozei002y2ux0jq4cq7kl
-                            - generic: E2E 006 006-1778012425233-183
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 90
-                          - cell: Manager User
-                          - cell: 18 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou72zh3006zdd4bryd4b6d6
-                            - generic: E2E 006 006-1778080263574-992
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 39
-                          - cell: Manager User
-                          - cell: только что
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot1mgwl0053rcnu1o6xy6mh
-                            - generic: E2E 007 007-1778010633005-288
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 76
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot1oitf00a6rcnu44o9hwbg
-                            - generic: E2E 007 007-1778010728857-431
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 49
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot209vm003nkcyd45dx5hbm
-                            - generic: E2E 007 007-1778011277143-630
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 11
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot22zc1003nfnobklhz096c
-                            - generic: E2E 007 007-1778011403421-635
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 83
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot29ute003nizc0yurmuibd
-                            - generic: E2E 007 007-1778011724187-87
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 50
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2p0f1003n2ux0tf83hkxa
-                            - generic: E2E 007 007-1778012431203-974
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 47
-                          - cell: Manager User
-                          - cell: 18 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou731kf007odd4busz4wrr8
-                            - generic: E2E 007 007-1778080270577-546
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 74
-                          - cell: Manager User
-                          - cell: только что
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot1mke7005zrcnuc7i5nems
-                            - generic: E2E 008 008-1778010637614-688
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 55
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot1om6900b2rcnuvlstcr21
-                            - generic: E2E 008 008-1778010733146-638
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 84
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot20cw1004jkcydl0fehu0s
-                            - generic: E2E 008 008-1778011281065-379
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 88
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot232eh004jfnobhshahch4
-                            - generic: E2E 008 008-1778011407425-206
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 17
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot29xrh004jizc0awgoe5wk
-                            - generic: E2E 008 008-1778011728026-804
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 88
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2p3ze004j2ux05303tcdc
-                            - generic: E2E 008 008-1778012435845-220
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 12
-                          - cell: Manager User
-                          - cell: 18 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou735nd008kdd4br47sskm1
-                            - generic: E2E 008 008-1778080275898-298
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 78
-                          - cell: Manager User
-                          - cell: только что
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot238av005mfnobfjaw0h07
-                            - generic: E2E 009 009-1778011411284-878
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 12
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2apbr005uizc002vx6ccu
-                            - generic: E2E 009 009-1778011760331-964
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 77
-                          - cell: Manager User
-                          - cell: 19 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2ksp9001a12gv5qq1watm
-                            - generic: E2E 009 009-1778012230575-867
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 96
-                          - cell: Manager User
-                          - cell: 18 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmot2pxpg005u2ux0ut5u9ymj
-                            - generic: E2E 009 009-1778012468358-109
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-06 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 66
-                          - cell: Manager User
-                          - cell: 18 ч назад
-                        - row:
-                          - cell:
-                            - generic: DEP-cmou741im009vdd4bgryg2r1b
-                            - generic: E2E 009 009-1778080313994-207
-                          - cell:
-                            - generic:
-                              - img
-                              - text: Ожидается
-                          - cell: Бетононасос
-                          - cell: 2026-05-07 · 10:00-14:00
-                          - cell: Москва, Тестовая улица, 87
                           - cell: Manager User
                           - cell: только что
     - region "Notifications alt+T"
@@ -1157,7 +1064,7 @@ expect(received).toEqual(expected) // deep equality
                   - generic: Выезд
                   - img
                 - generic:
-                  - heading [level=1]: DEP-CMOU741I
+                  - heading [level=1]: DEP-CMPCJIAE
                   - generic:
                     - generic:
                       - button [disabled]:
@@ -1165,10 +1072,15 @@ expect(received).toEqual(expected) // deep equality
                         - img
                     - generic:
                       - button [disabled]: Отменить выезд
+                    - generic:
+                      - generic:
+                        - button:
+                          - img
+                          - text: Откатить стадию
                 - generic:
-                  - button: APP-000226
+                  - button: APP-000172
                   - text: ·
-                  - button: E2E 009 009-1778080313994-207
+                  - button: E2E 009 009-1779189525924-406
                   - text: · E2E 009-item
                 - generic:
                   - generic:
@@ -1176,7 +1088,7 @@ expect(received).toEqual(expected) // deep equality
                   - generic:
                     - generic:
                       - img
-                      - generic: 13.05.2026
+                      - generic: 26.05.2026
                   - generic:
                     - generic:
                       - img
@@ -1184,7 +1096,7 @@ expect(received).toEqual(expected) // deep equality
               - generic:
                 - img
                 - generic: "Следующий шаг: Выезд отменен"
-                - generic: · E2E-009 unqualified reason 009-1778080314089-68
+                - generic: · E2E-009 unqualified reason 009-1779189525996-18
               - generic:
                 - generic:
                   - heading [level=3]: План и факт
@@ -1196,7 +1108,7 @@ expect(received).toEqual(expected) // deep equality
                           - img
                         - generic: Клиент
                       - generic:
-                        - button: E2E 009 009-1778080313994-207
+                        - button: E2E 009 009-1779189525924-406
                     - generic:
                       - generic:
                         - generic:
@@ -1214,19 +1126,19 @@ expect(received).toEqual(expected) // deep equality
                         - generic:
                           - img
                         - generic: Техника
-                      - generic: Бетононасос
+                      - generic: QA APIC006-1778758235503-888 Type
                     - generic:
                       - generic:
                         - generic:
                           - img
                         - generic: Адрес
-                      - generic: Москва, Тестовая улица, 87
+                      - generic: Москва, Тестовая улица, 66
                     - generic:
                       - generic:
                         - generic:
                           - img
                         - generic: План дата
-                      - generic: 2026-05-07T15:11:56.357Z
+                      - generic: 2026-05-20T11:18:47.976Z
                     - generic:
                       - generic:
                         - generic:
@@ -1256,13 +1168,13 @@ expect(received).toEqual(expected) // deep equality
                         - generic:
                           - img
                         - generic: Отмена
-                      - generic: 06.05.2026, 20:11
+                      - generic: 19.05.2026, 16:18
                     - generic:
                       - generic:
                         - generic:
                           - img
                         - generic: Причина отмены
-                      - generic: E2E-009 unqualified reason 009-1778080314089-68
+                      - generic: E2E-009 unqualified reason 009-1779189525996-18
               - generic:
                 - generic:
                   - heading [level=3]: Управление этапом
@@ -1293,7 +1205,7 @@ expect(received).toEqual(expected) // deep equality
                             - generic: Выезд отменен. Новые переходы по этапу недоступны.
                             - generic:
                               - img
-                              - text: E2E-009 unqualified reason 009-1778080314089-68
+                              - text: E2E-009 unqualified reason 009-1779189525996-18
                       - generic:
                         - generic:
                           - generic:
@@ -1302,7 +1214,7 @@ expect(received).toEqual(expected) // deep equality
                           - button:
                             - img
                             - text: Открыть
-                        - generic: "Завершение уже создано: некачественно · 06.05.2026, 20:11"
+                        - generic: "Завершение уже создано: некачественно · 19.05.2026, 16:18"
               - generic:
                 - button:
                   - generic:
@@ -1333,7 +1245,7 @@ expect(received).toEqual(expected) // deep equality
                   - generic: Отменен
               - generic:
                 - generic: План
-                - generic: 13.05.2026, 21:11
+                - generic: 26.05.2026, 17:18
               - generic:
                 - generic: Старт
                 - generic: —
@@ -1355,23 +1267,23 @@ expect(received).toEqual(expected) // deep equality
               - generic:
                 - generic: Лид
                 - generic:
-                  - button: LEAD-CMOU73YX
+                  - button: LEAD-CMPCJI8B
               - generic:
                 - generic: Заявка
                 - generic:
-                  - button: APP-000226
+                  - button: APP-000172
               - generic:
                 - generic: Бронь
                 - generic:
-                  - button: RSV-CMOU740S
+                  - button: RSV-CMPCJI9X
               - generic:
                 - generic: Выезд
                 - generic:
-                  - button: DEP-CMOU741I
+                  - button: DEP-CMPCJIAE
               - generic:
                 - generic: Завершение
                 - generic:
-                  - button: CMP-CMOU7422
+                  - button: CMP-CMPCJIAV
           - generic:
             - generic:
               - button:
@@ -1408,133 +1320,137 @@ expect(received).toEqual(expected) // deep equality
               - generic [ref=e52]: Завершение
               - img [ref=e53]
             - generic [ref=e55]:
-              - heading "CMP-CMOU7422" [level=1] [ref=e56]
-              - button "Открыть выезд" [ref=e59]:
-                - img
-                - text: Открыть выезд
-            - generic [ref=e60]:
-              - button "DEP-CMOU741I" [ref=e61]
+              - heading "CMP-CMPCJIAV" [level=1] [ref=e56]
+              - generic [ref=e57]:
+                - button "Открыть выезд" [ref=e59]:
+                  - img
+                  - text: Открыть выезд
+                - button "Откатить стадию" [ref=e62]:
+                  - img
+                  - text: Откатить стадию
+            - generic [ref=e63]:
+              - button "DEP-CMPCJIAE" [ref=e64]
               - text: ·
-              - button "APP-000226" [ref=e62]
+              - button "APP-000172" [ref=e65]
               - text: ·
-              - button "E2E 009 009-1778080313994-207" [ref=e63]
-            - generic [ref=e64]:
-              - generic [ref=e66]:
-                - img [ref=e67]
-                - generic [ref=e70]: Manager User
-              - generic [ref=e72]:
-                - img [ref=e73]
-                - generic [ref=e76]: E2E 009-item
-          - generic [ref=e77]:
-            - img [ref=e78]
-            - generic [ref=e80]: "Следующий шаг: Сохранить комментарий"
-          - generic [ref=e81]:
-            - heading "Итог завершения" [level=3] [ref=e83]
-            - generic [ref=e84]:
-              - generic [ref=e85]:
-                - generic [ref=e86]:
-                  - generic [ref=e87]:
-                    - img [ref=e89]
-                    - generic [ref=e92]: Исход
-                  - generic [ref=e93]: Некачественный
-                - generic [ref=e94]:
-                  - generic [ref=e95]:
-                    - img [ref=e97]
-                    - generic [ref=e100]: Дата
-                  - generic [ref=e101]: 06.05.2026, 20:11
-                - generic [ref=e102]:
-                  - generic [ref=e103]:
-                    - img [ref=e105]
-                    - generic [ref=e108]: Менеджер
-                  - generic [ref=e109]: Manager User
-                - generic [ref=e110]:
-                  - generic [ref=e111]:
-                    - img [ref=e113]
-                    - generic [ref=e116]: Позиция
-                  - generic [ref=e117]: E2E 009-item
-              - textbox "Комментарий по завершению" [ref=e118]: E2E-009 unqualified reason 009-1778080314089-68
-              - textbox "Причина некачественного завершения" [ref=e119]: E2E-009 unqualified reason 009-1778080314089-68
-              - button "Сохранить комментарий" [ref=e121]
-          - generic [ref=e122]:
-            - heading "Контекст" [level=3] [ref=e124]
-            - generic [ref=e126]:
-              - generic [ref=e127]:
-                - generic [ref=e128]:
-                  - img [ref=e130]
-                  - generic [ref=e132]: Дата и окно
-                - generic [ref=e134]: 2026-05-07 · 10:00-14:00
-              - generic [ref=e135]:
-                - generic [ref=e136]:
-                  - img [ref=e138]
-                  - generic [ref=e141]: Адрес
-                - generic [ref=e142]: Москва, Тестовая улица, 87
-              - generic [ref=e143]:
-                - generic [ref=e144]:
-                  - img [ref=e146]
-                  - generic [ref=e150]: Клиент
-                - button "E2E 009 009-1778080313994-207" [ref=e152]
-              - generic [ref=e153]:
-                - generic [ref=e154]:
-                  - img [ref=e156]
-                  - generic [ref=e159]: Менеджер
-                - generic [ref=e160]: Manager User
-          - generic [ref=e161]:
-            - button "Открыть выезд" [ref=e162]:
-              - img [ref=e164]
+              - button "E2E 009 009-1779189525924-406" [ref=e66]
+            - generic [ref=e67]:
+              - generic [ref=e69]:
+                - img [ref=e70]
+                - generic [ref=e73]: Manager User
+              - generic [ref=e75]:
+                - img [ref=e76]
+                - generic [ref=e79]: E2E 009-item
+          - generic [ref=e80]:
+            - img [ref=e81]
+            - generic [ref=e83]: "Следующий шаг: Сохранить комментарий"
+          - generic [ref=e84]:
+            - heading "Итог завершения" [level=3] [ref=e86]
+            - generic [ref=e87]:
+              - generic [ref=e88]:
+                - generic [ref=e89]:
+                  - generic [ref=e90]:
+                    - img [ref=e92]
+                    - generic [ref=e95]: Исход
+                  - generic [ref=e96]: Некачественный
+                - generic [ref=e97]:
+                  - generic [ref=e98]:
+                    - img [ref=e100]
+                    - generic [ref=e103]: Дата
+                  - generic [ref=e104]: 19.05.2026, 16:18
+                - generic [ref=e105]:
+                  - generic [ref=e106]:
+                    - img [ref=e108]
+                    - generic [ref=e111]: Менеджер
+                  - generic [ref=e112]: Manager User
+                - generic [ref=e113]:
+                  - generic [ref=e114]:
+                    - img [ref=e116]
+                    - generic [ref=e119]: Позиция
+                  - generic [ref=e120]: E2E 009-item
+              - textbox "Комментарий по завершению" [ref=e121]: E2E-009 unqualified reason 009-1779189525996-18
+              - textbox "Причина некачественного завершения" [ref=e122]: E2E-009 unqualified reason 009-1779189525996-18
+              - button "Сохранить комментарий" [ref=e124]
+          - generic [ref=e125]:
+            - heading "Контекст" [level=3] [ref=e127]
+            - generic [ref=e129]:
+              - generic [ref=e130]:
+                - generic [ref=e131]:
+                  - img [ref=e133]
+                  - generic [ref=e135]: Дата и окно
+                - generic [ref=e137]: 2026-05-20 · 10:00-14:00
+              - generic [ref=e138]:
+                - generic [ref=e139]:
+                  - img [ref=e141]
+                  - generic [ref=e144]: Адрес
+                - generic [ref=e145]: Москва, Тестовая улица, 66
+              - generic [ref=e146]:
+                - generic [ref=e147]:
+                  - img [ref=e149]
+                  - generic [ref=e153]: Клиент
+                - button "E2E 009 009-1779189525924-406" [ref=e155]
+              - generic [ref=e156]:
+                - generic [ref=e157]:
+                  - img [ref=e159]
+                  - generic [ref=e162]: Менеджер
+                - generic [ref=e163]: Manager User
+          - generic [ref=e164]:
+            - button "Открыть выезд" [ref=e165]:
+              - img [ref=e167]
               - text: Открыть выезд
-            - button "Открыть бронь" [ref=e168]:
-              - img [ref=e170]
+            - button "Открыть бронь" [ref=e171]:
+              - img [ref=e173]
               - text: Открыть бронь
-            - button "Открыть заявку" [ref=e173]:
-              - img [ref=e175]
+            - button "Открыть заявку" [ref=e176]:
+              - img [ref=e178]
               - text: Открыть заявку
-            - button "Открыть лид" [ref=e178]:
-              - img [ref=e180]
+            - button "Открыть лид" [ref=e181]:
+              - img [ref=e183]
               - text: Открыть лид
-            - button "Открыть клиента" [ref=e183]:
-              - img [ref=e185]
+            - button "Открыть клиента" [ref=e186]:
+              - img [ref=e188]
               - text: Открыть клиента
-        - complementary [ref=e189]:
-          - generic [ref=e190]:
-            - button "Сводка" [ref=e192]:
-              - img [ref=e193]
-              - generic [ref=e195]: Сводка
-            - generic [ref=e196]:
-              - generic [ref=e197]:
-                - generic [ref=e198]: Статус
-                - generic [ref=e200]: Некачественный
-              - generic [ref=e201]:
-                - generic [ref=e202]: Дата
-                - generic [ref=e203]: 06.05.2026, 20:11
+        - complementary [ref=e192]:
+          - generic [ref=e193]:
+            - button "Сводка" [ref=e195]:
+              - img [ref=e196]
+              - generic [ref=e198]: Сводка
+            - generic [ref=e199]:
+              - generic [ref=e200]:
+                - generic [ref=e201]: Статус
+                - generic [ref=e203]: Некачественный
               - generic [ref=e204]:
-                - generic [ref=e205]: Менеджер
-                - generic [ref=e206]: Manager User
-          - generic [ref=e207]:
-            - button "Связанные записи" [ref=e209]:
-              - img [ref=e210]
-              - generic [ref=e212]: Связанные записи
-            - generic [ref=e213]:
-              - generic [ref=e214]:
-                - generic [ref=e215]: Лид
-                - button "LEAD-CMOU73YX" [ref=e217] [cursor=pointer]
-              - generic [ref=e218]:
-                - generic [ref=e219]: Заявка
-                - button "APP-000226" [ref=e221] [cursor=pointer]
-              - generic [ref=e222]:
-                - generic [ref=e223]: Бронь
-                - button "RSV-CMOU740S" [ref=e225] [cursor=pointer]
-              - generic [ref=e226]:
-                - generic [ref=e227]: Выезд
-                - button "DEP-CMOU741I" [ref=e229] [cursor=pointer]
-              - generic [ref=e230]:
-                - generic [ref=e231]: Завершение
-                - button "CMP-CMOU7422" [ref=e233] [cursor=pointer]
-              - generic [ref=e234]:
-                - generic [ref=e235]: Клиент
-                - button "E2E 009 009-1778080313994-207" [ref=e237] [cursor=pointer]
-          - button "Быстрые действия" [ref=e240]:
-            - img [ref=e241]
-            - generic [ref=e243]: Быстрые действия
+                - generic [ref=e205]: Дата
+                - generic [ref=e206]: 19.05.2026, 16:18
+              - generic [ref=e207]:
+                - generic [ref=e208]: Менеджер
+                - generic [ref=e209]: Manager User
+          - generic [ref=e210]:
+            - button "Связанные записи" [ref=e212]:
+              - img [ref=e213]
+              - generic [ref=e215]: Связанные записи
+            - generic [ref=e216]:
+              - generic [ref=e217]:
+                - generic [ref=e218]: Лид
+                - button "LEAD-CMPCJI8B" [ref=e220] [cursor=pointer]
+              - generic [ref=e221]:
+                - generic [ref=e222]: Заявка
+                - button "APP-000172" [ref=e224] [cursor=pointer]
+              - generic [ref=e225]:
+                - generic [ref=e226]: Бронь
+                - button "RSV-CMPCJI9X" [ref=e228] [cursor=pointer]
+              - generic [ref=e229]:
+                - generic [ref=e230]: Выезд
+                - button "DEP-CMPCJIAE" [ref=e232] [cursor=pointer]
+              - generic [ref=e233]:
+                - generic [ref=e234]: Завершение
+                - button "CMP-CMPCJIAV" [ref=e236] [cursor=pointer]
+              - generic [ref=e237]:
+                - generic [ref=e238]: Клиент
+                - button "E2E 009 009-1779189525924-406" [ref=e240] [cursor=pointer]
+          - button "Быстрые действия" [ref=e243]:
+            - img [ref=e244]
+            - generic [ref=e246]: Быстрые действия
 ```
 
 # Test source

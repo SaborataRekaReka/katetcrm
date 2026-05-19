@@ -21,13 +21,13 @@ import { useCompletionsQuery } from '../../hooks/useCompletionsQuery';
 import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
 import { useAuth } from '../../auth/AuthProvider';
 import { formatEntityDisplayId } from '../../lib/entityDisplayId';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 import logoMiniModern from '../../../imports/logo_mini_modern.svg';
 import type { RouteEntityType } from './routeSync';
 
 const WORKSPACE_SEARCH_SELECTOR = '[data-crm-search-input="true"]';
 const ENTITY_SUGGESTION_LIMIT = 3;
 const DEFAULT_WORKSPACE_TITLE = 'Катет CRM';
-const USE_API = import.meta.env.VITE_USE_API === 'true';
 
 type WorkspaceSuggestion = {
   kind: 'workspace';
@@ -199,6 +199,7 @@ export function GlobalTopbar() {
   }, [quickQueryTrimmed]);
 
   const shouldFetchEntitySuggestions = isSuggestionsOpen && debouncedQuickQuery.length >= 2;
+  const shouldFetchOperationalSuggestions = shouldFetchEntitySuggestions && !IS_SALES_LITE;
 
   const leadsQuery = useLeadsQuery(
     {
@@ -229,21 +230,21 @@ export function GlobalTopbar() {
       query: debouncedQuickQuery,
       isActive: 'true',
     },
-    shouldFetchEntitySuggestions,
+    shouldFetchOperationalSuggestions,
   );
 
   const departuresQuery = useDeparturesQuery(
     {
       query: debouncedQuickQuery,
     },
-    shouldFetchEntitySuggestions,
+    shouldFetchOperationalSuggestions,
   );
 
   const completionsQuery = useCompletionsQuery(
     {
       query: debouncedQuickQuery,
     },
-    shouldFetchEntitySuggestions,
+    shouldFetchOperationalSuggestions,
   );
 
   const entitySuggestions = useMemo<EntitySuggestion[]>(() => {
@@ -292,7 +293,7 @@ export function GlobalTopbar() {
         entityId: application.id,
       }));
 
-    const reservationItems = (reservationsQuery.data?.items ?? [])
+    const reservationItems = IS_SALES_LITE ? [] : (reservationsQuery.data?.items ?? [])
       .slice(0, ENTITY_SUGGESTION_LIMIT)
       .map((reservation) => ({
         kind: 'entity' as const,
@@ -305,7 +306,7 @@ export function GlobalTopbar() {
         entityId: reservation.id,
       }));
 
-    const departureItems = (departuresQuery.data?.items ?? [])
+    const departureItems = IS_SALES_LITE ? [] : (departuresQuery.data?.items ?? [])
       .slice(0, ENTITY_SUGGESTION_LIMIT)
       .map((departure) => ({
         kind: 'entity' as const,
@@ -318,7 +319,7 @@ export function GlobalTopbar() {
         entityId: departure.id,
       }));
 
-    const completionItems = (completionsQuery.data?.items ?? [])
+    const completionItems = IS_SALES_LITE ? [] : (completionsQuery.data?.items ?? [])
       .slice(0, ENTITY_SUGGESTION_LIMIT)
       .map((completion) => ({
         kind: 'entity' as const,

@@ -467,8 +467,48 @@ UI surface: Admin -> Integrations shows a Site section with routing toggles, man
 State/API/audit surface: Rules and queue cursor are stored in SystemConfig, settings updates are audited, and site ingest applies `managerId`/`responsibleManagerId` through the integration pipeline without breaking event idempotency.
 Test priority: P1
 
+QA-REQ-054:
+Question: QA-Q-054. How should `Квалифицированный` be represented in the sales-lite workflow?
+Answer: In sales-lite, use the existing terminal stage `completed` and display it as `Квалифицированный`; do not require a new backend enum in the first implementation stage.
+Route surface: /leads, /applications
+Domain surface: Lead/Application terminal qualified outcome in sales-lite profile.
+UI surface: Sales-lite board/list/table displays `completed` as `Квалифицированный`.
+State/API/audit surface: Persisted stage can remain `completed`; audit semantics remain terminal qualified outcome.
+Test priority: P0
+
+QA-REQ-055:
+Question: QA-Q-055. How should `В работе` be represented in the sales-lite workflow?
+Answer: The current Application entity can remain the technical representation, but UI should rename it to `В работе` and add confirmed rules before transition to the next stage.
+Route surface: /applications, /applications/my
+Domain surface: Application-as-work-in-progress in sales-lite profile.
+UI surface: Navigation and module metadata display `В работе` instead of generic `Заявки` in sales-lite.
+State/API/audit surface: Existing Application links and one-active-Application-per-Lead invariant remain unless a later decision changes them.
+Test priority: P0
+
+QA-REQ-056:
+Question: QA-Q-056. What should happen to operational modules in sales-lite?
+Answer: Reservations, departures, completions, equipment units, and subcontractors are available only in the full workflow profile. Categories/types may remain as lookup hints rather than full operational directories.
+Route surface: /reservations, /departures, /completion, /directory/units, /directory/contractors, /directory/equipment-types, /directory/categories
+Domain surface: Sales-lite removes CRM-owned operations while preserving full profile as future alternative.
+UI surface: Sales-lite hides operations, equipment units, and subcontractors from navigation and search suggestions; categories/types are not presented as operational modules.
+State/API/audit surface: Full-profile records are not deleted; full-only operational endpoints are guarded server-side in sales-lite.
+Test priority: P0
+
+QA-REQ-060:
+Question: QA-Q-060. Which lifecycle transitions are allowed in sales-lite?
+Answer: Sales-lite allows `lead -> application`, `lead -> unqualified`, `application -> completed`, and `application -> unqualified`. It does not allow `application -> reservation`, `reservation -> departure`, or any CRM-owned operational progression.
+Route surface: /leads, /applications
+Domain surface: Sales-lite lifecycle `Не обработан -> В работе -> Квалифицированный/Не квалифицированный`.
+UI surface: Board drag-and-drop and detail actions expose qualification/unqualification instead of reservation/departure actions.
+State/API/audit surface: `POST /api/v1/leads/:id/stage` enforces the profile-specific transition map and writes the usual stage-change activity entry.
+Test priority: P0
+
 ## 5. Open Questions
 
-None for QA-Q-001..QA-Q-037 in this first interview pass.
+Open QA-Q-057: In sales-lite `В работе`, should a request have one text need description or multiple line items/positions?
+
+Open QA-Q-058: Which exact fields are required before moving from `В работе` to `Квалифицированный`?
+
+Open QA-Q-059: Should full profile be part of every CI gate or a scheduled/pre-release regression gate?
 
 If behavior changes later, add a new QA-Q item and then add/update corresponding QA-REQ entries.

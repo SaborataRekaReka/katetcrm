@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
+import { FullWorkflowGuard } from '../../common/full-workflow.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import { CompletionsService } from './completions.service';
@@ -24,7 +25,7 @@ import {
 import { projectDepartures } from '../../common/projections/departure.projection';
 
 @Controller('completions')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, FullWorkflowGuard)
 export class CompletionsController {
   constructor(private readonly svc: CompletionsService) {}
 

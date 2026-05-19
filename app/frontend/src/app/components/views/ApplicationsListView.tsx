@@ -30,8 +30,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
-const GROUP_ORDER: ApplicationGroupId[] = [
+const GROUP_ORDER: ApplicationGroupId[] = IS_SALES_LITE ? [
+  'no_reservation',
+  'completed',
+  'cancelled',
+] : [
   'no_reservation',
   'in_reservation_work',
   'ready_for_departure',
@@ -41,12 +46,12 @@ const GROUP_ORDER: ApplicationGroupId[] = [
 ];
 
 const GROUP_META: Record<ApplicationGroupId, { title: string; color: string }> = {
-  no_reservation: { title: 'Активные заявки', color: 'bg-[#E74C3C]' },
+  no_reservation: { title: IS_SALES_LITE ? 'В работе' : 'Активные заявки', color: 'bg-[#E74C3C]' },
   in_reservation_work: { title: 'В работе по брони', color: 'bg-[#F5A623]' },
   ready_for_departure: { title: 'Готовы к выезду', color: 'bg-[#50C878]' },
   on_departure: { title: 'В выезде', color: 'bg-[#4A90E2]' },
-  completed: { title: 'Завершённые', color: 'bg-[#9B9B9B]' },
-  cancelled: { title: 'Отменённые', color: 'bg-[#7B68EE]' },
+  completed: { title: IS_SALES_LITE ? 'Квалифицированные' : 'Завершённые', color: 'bg-[#9B9B9B]' },
+  cancelled: { title: IS_SALES_LITE ? 'Не квалифицированные' : 'Отменённые', color: 'bg-[#7B68EE]' },
 };
 
 const APPLICATIONS_LIST_GRID_TEMPLATE = 'minmax(280px,1fr) 160px 180px 150px 1fr 130px 130px 40px';
@@ -74,12 +79,15 @@ interface ApplicationsListViewProps {
 }
 
 export function ApplicationsListView({ applications, onRowClick, isFiltered }: ApplicationsListViewProps) {
+  const groupForApp = (app: Application) => IS_SALES_LITE && app.stage === 'application'
+    ? 'no_reservation'
+    : computeGroup(app);
   const groups: GroupedListGroup<Application>[] = GROUP_ORDER
     .map((g) => ({
       id: g,
       title: GROUP_META[g].title,
       colorClass: GROUP_META[g].color,
-      items: applications.filter((a) => computeGroup(a) === g),
+      items: applications.filter((a) => groupForApp(a) === g),
     }))
     .filter((group) => group.items.length > 0);
 
@@ -87,7 +95,9 @@ export function ApplicationsListView({ applications, onRowClick, isFiltered }: A
     return (
       <div className="flex flex-1 flex-col items-center justify-center gap-1 text-muted-foreground">
         <p className="text-[13px]">
-          {isFiltered ? 'Нет заявок по выбранным фильтрам' : 'Заявок пока нет'}
+          {isFiltered
+            ? (IS_SALES_LITE ? 'Нет записей в работе по выбранным фильтрам' : 'Нет заявок по выбранным фильтрам')
+            : (IS_SALES_LITE ? 'Записей в работе пока нет' : 'Заявок пока нет')}
         </p>
       </div>
     );
@@ -98,14 +108,14 @@ export function ApplicationsListView({ applications, onRowClick, isFiltered }: A
       <GroupedList
         groups={groups}
         contentMinWidth={APPLICATIONS_LIST_MIN_WIDTH}
-        emptyGroupHint="Нет заявок в этой группе"
+        emptyGroupHint={IS_SALES_LITE ? 'Нет записей в этой группе' : 'Нет заявок в этой группе'}
         columnsHeader={
           <div
             className="grid h-7 items-center border-b border-border/40 bg-muted/30 text-[11px] uppercase tracking-wide text-muted-foreground"
             style={{ gridTemplateColumns: APPLICATIONS_LIST_GRID_TEMPLATE }}
           >
-            <div className="px-4">Заявка · клиент</div>
-            <div className="px-3">Позиции</div>
+            <div className="px-4">{IS_SALES_LITE ? 'В работе · клиент' : 'Заявка · клиент'}</div>
+            <div className="px-3">{IS_SALES_LITE ? 'Потребности' : 'Позиции'}</div>
             <div className="px-3">Типы техники</div>
             <div className="px-3">Дата / окно</div>
             <div className="px-3">Адрес</div>
@@ -126,6 +136,7 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
   const conflict = hasAnyConflict(app);
   const ready = readyForDeparture(app);
   const sourcing = dominantSourcing(app);
+  const groupId = IS_SALES_LITE && app.stage === 'application' ? 'no_reservation' : computeGroup(app);
 
   const readinessTone =
     conflict ? badgeTones.warning
@@ -152,8 +163,8 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
     >
       <div className="flex min-w-0 items-center gap-2 px-4">
         <span
-          className={cn('inline-block h-2 w-2 shrink-0 rounded-full', GROUP_META[computeGroup(app)].color)}
-          title={GROUP_META[computeGroup(app)].title}
+          className={cn('inline-block h-2 w-2 shrink-0 rounded-full', GROUP_META[groupId].color)}
+          title={GROUP_META[groupId].title}
         />
         <div className="min-w-0 flex-1 truncate">
           <span className="text-[13px] font-medium text-foreground">{app.number}</span>
@@ -168,25 +179,25 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
               <Flame className="h-2.5 w-2.5" />
             </span>
           ) : null}
-          {conflict ? (
+          {!IS_SALES_LITE && conflict ? (
             <span className={cn(badgeBase, badgeTones.warning)} title="Конфликт брони">
               <AlertTriangle className="h-2.5 w-2.5" /> конфликт
             </span>
           ) : null}
-          {ready ? (
+          {!IS_SALES_LITE && ready ? (
             <span className={cn(badgeBase, badgeTones.success)} title="Готова к выезду">
               <Truck className="h-2.5 w-2.5" /> готова
             </span>
           ) : null}
-          {sourcing === 'subcontractor' ? (
+          {!IS_SALES_LITE && sourcing === 'subcontractor' ? (
             <span className={cn(badgeBase, badgeTones.muted)} title="Подрядчик">
               <Factory className="h-2.5 w-2.5" /> подр.
             </span>
-          ) : sourcing === 'own' ? (
+          ) : !IS_SALES_LITE && sourcing === 'own' ? (
             <span className={cn(badgeBase, badgeTones.muted)} title="Свой парк">
               <Building2 className="h-2.5 w-2.5" /> парк
             </span>
-          ) : sourcing === 'undecided' ? (
+          ) : !IS_SALES_LITE && sourcing === 'undecided' ? (
             <span className={cn(badgeBase, badgeTones.caution)} title="Источник не выбран">
               источник?
             </span>
@@ -201,9 +212,11 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
         <span className="text-muted-foreground">
           {total === 1 ? 'поз.' : 'поз.'}
         </span>
-        <span className={cn(badgeBase, readinessTone, 'tabular-nums')} title="Позиций в брони">
-          {reserved}/{total}
-        </span>
+        {!IS_SALES_LITE ? (
+          <span className={cn(badgeBase, readinessTone, 'tabular-nums')} title="Позиций в брони">
+            {reserved}/{total}
+          </span>
+        ) : null}
       </div>
 
       <div className="truncate px-3 text-muted-foreground">{equipmentSummary(app)}</div>
@@ -226,25 +239,29 @@ function ApplicationListRow({ app, onClick }: { app: Application; onClick: () =>
             onClick={(e) => e.stopPropagation()}
             className="text-[12px]"
           >
-            <DropdownMenuItem onSelect={onClick}>Открыть заявку</DropdownMenuItem>
+            <DropdownMenuItem onSelect={onClick}>{IS_SALES_LITE ? 'Открыть в работе' : 'Открыть заявку'}</DropdownMenuItem>
             <DropdownMenuItem>
               <Plus className="mr-1 h-3.5 w-3.5" /> Добавить позицию
             </DropdownMenuItem>
             <DropdownMenuItem>
               <Copy className="mr-1 h-3.5 w-3.5" /> Дублировать позицию
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem disabled={reserved === total && total > 0}>
-              Перейти к брони
-            </DropdownMenuItem>
-            <DropdownMenuItem disabled={!ready}>
-              <Truck className="mr-1 h-3.5 w-3.5" /> Перевести в выезд
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              disabled={app.stage !== 'departure' && app.stage !== 'reservation'}
-            >
-              <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Завершить
-            </DropdownMenuItem>
+            {!IS_SALES_LITE ? (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem disabled={reserved === total && total > 0}>
+                  Перейти к брони
+                </DropdownMenuItem>
+                <DropdownMenuItem disabled={!ready}>
+                  <Truck className="mr-1 h-3.5 w-3.5" /> Перевести в выезд
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  disabled={app.stage !== 'departure' && app.stage !== 'reservation'}
+                >
+                  <CheckCircle2 className="mr-1 h-3.5 w-3.5" /> Завершить
+                </DropdownMenuItem>
+              </>
+            ) : null}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

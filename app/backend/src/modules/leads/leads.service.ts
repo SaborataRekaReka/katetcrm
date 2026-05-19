@@ -1,4 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import type {
   DepartureStatus,
@@ -29,8 +30,10 @@ type LeadApplicationPrerequisites = {
   hasNoContact: boolean;
 };
 
+type CrmWorkflowProfile = 'full' | 'sales-lite';
+
 /**
- * Правила перехода стадий (ТЗ §2.3, §3):
+ * Правила перехода стадий для полного профиля (ТЗ §2.3, §3):
  *   lead          → application | unqualified
  *   application   → reservation | unqualified
  *   reservation   → departure | unqualified
@@ -38,10 +41,20 @@ type LeadApplicationPrerequisites = {
  *   completed     → (terminal)
  *   unqualified   → (terminal)
  */
-const ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
+const FULL_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
   reservation: ['departure', 'unqualified'],
+  departure: [],
+  completed: [],
+  unqualified: [],
+  cancelled: [],
+};
+
+const SALES_LITE_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
+  lead: ['application', 'unqualified'],
+  application: ['completed', 'unqualified'],
+  reservation: [],
   departure: [],
   completed: [],
   unqualified: [],
@@ -91,7 +104,14 @@ export class LeadsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
+    private readonly config: ConfigService,
   ) {}
+
+  private getWorkflowProfile(): CrmWorkflowProfile {
+    return this.config.get<CrmWorkflowProfile>('CRM_WORKFLOW_PROFILE') === 'sales-lite'
+      ? 'sales-lite'
+      : 'full';
+  }
 
   async list(params: LeadListQueryDto, actor: ActorContext) {
     const where: Prisma.LeadWhereInput = {};
@@ -898,11 +918,13 @@ export class LeadsService {
 
   async changeStage(id: string, dto: ChangeStageDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+    const workflowProfile = this.getWorkflowProfile();
     if (existing.stage === 'lead' && dto.stage === 'application') {
       const missing = this.getLeadApplicationMissingFields(existing);
       if (missing.length > 0) {
+        const targetLabel = workflowProfile === 'sales-lite' ? 'работу' : 'заявку';
         throw new BadRequestException(
-          `Для перевода в заявку заполните: ${missing.join(', ')}`,
+          `Для перевода в ${targetLabel} заполните: ${missing.join(', ')}`,
         );
       }
     }
@@ -917,7 +939,9 @@ export class LeadsService {
         'Завершение этапа departure выполняется через completion',
       );
     }
-    const allowed = ALLOWED_TRANSITIONS[existing.stage];
+    const allowed = workflowProfile === 'sales-lite'
+      ? SALES_LITE_ALLOWED_TRANSITIONS[existing.stage]
+      : FULL_ALLOWED_TRANSITIONS[existing.stage];
     if (!allowed.includes(dto.stage)) {
       throw new BadRequestException(
         `Недопустимый переход ${existing.stage} → ${dto.stage}`,

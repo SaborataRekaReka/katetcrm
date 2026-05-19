@@ -7,7 +7,7 @@
 # Test info
 
 - Name: rbac-navigation.gwt.spec.ts >> RBAC and Navigation GWT (QA-REQ: 032..035) >> E2E-011 manager sees explicit permission-denied UX on direct admin route
-- Location: e2e\rbac-navigation.gwt.spec.ts:69:3
+- Location: e2e\rbac-navigation.gwt.spec.ts:90:3
 
 # Error details
 
@@ -33,15 +33,14 @@ expect(received).toEqual(expected) // deep equality
   - generic [ref=e3]:
     - banner [ref=e4]:
       - generic [ref=e5]:
-        - generic [ref=e6]: К
-        - generic [ref=e7]: Катет CRM
-      - generic [ref=e9]:
+        - img "Логотип Катет CRM" [ref=e7]
+        - generic [ref=e8]: Катет CRM
+      - generic [ref=e10]:
         - img
-        - textbox "Быстрый поиск" [ref=e10]:
+        - textbox "Быстрый поиск" [ref=e11]:
           - /placeholder: Поиск пользователей
         - generic: Ctrl K
-      - generic [ref=e11]:
-        - button "Менеджер" [ref=e12]
+      - generic [ref=e12]:
         - button "Уведомления" [ref=e13]:
           - img [ref=e14]
         - button "Помощь" [ref=e17]:
@@ -56,63 +55,61 @@ expect(received).toEqual(expected) // deep equality
             - img [ref=e31]
           - button "Продажи" [ref=e34]:
             - img [ref=e35]
-          - button "Клиенты" [ref=e38]:
+          - button "Операции" [ref=e38]:
             - img [ref=e39]
-          - button "Операции" [ref=e44]:
+          - button "Клиенты" [ref=e44]:
             - img [ref=e45]
           - button "Справочники" [ref=e50]:
             - img [ref=e51]
-          - button "Контроль" [ref=e55]:
-            - img [ref=e56]
-      - generic [ref=e58]:
-        - complementary [ref=e59]:
-          - generic [ref=e60]:
-            - generic [ref=e61]:
-              - generic [ref=e62]:
-                - img [ref=e63]
-                - heading "Админ" [level=2] [ref=e65]
-              - generic [ref=e66]:
-                - button "Поиск по меню" [ref=e67]:
-                  - img [ref=e68]
-                - button "Свернуть меню" [ref=e71]:
-                  - img [ref=e72]
-            - generic [ref=e76]:
-              - button "Импорт" [ref=e77]:
-                - img [ref=e78]
-                - generic [ref=e81]: Импорт
-              - button "Журнал событий" [ref=e82]:
-                - img [ref=e83]
-                - generic [ref=e85]: Журнал событий
-              - button "Настройки" [ref=e86]:
-                - img [ref=e87]
-                - generic [ref=e90]: Настройки
-              - button "Пользователи" [ref=e91]:
-                - img [ref=e92]
-                - generic [ref=e104]: Пользователи
-              - button "Права доступа" [ref=e105]:
-                - img [ref=e106]
-                - generic [ref=e109]: Права доступа
-            - button "Черновик" [ref=e111]:
-              - img [ref=e112]
-              - generic [ref=e115]: Черновик
-        - main [ref=e116]:
-          - generic [ref=e117]:
-            - generic [ref=e119]:
-              - heading "Пользователи" [level=1] [ref=e120]
-              - button "Новый пользователь" [ref=e121]:
-                - img [ref=e122]
-                - generic [ref=e123]: Новый пользователь
-            - generic [ref=e124]:
-              - generic [ref=e125]:
+      - generic [ref=e55]:
+        - complementary [ref=e56]:
+          - generic [ref=e57]:
+            - generic [ref=e58]:
+              - generic [ref=e59]:
+                - img [ref=e60]
+                - heading "Админ" [level=2] [ref=e62]
+              - generic [ref=e63]:
+                - button "Поиск по меню" [ref=e64]:
+                  - img [ref=e65]
+                - button "Свернуть меню" [ref=e68]:
+                  - img [ref=e69]
+            - generic [ref=e73]:
+              - button "Импорт" [ref=e74]:
+                - img [ref=e75]
+                - generic [ref=e78]: Импорт
+              - button "Интеграции" [ref=e79]:
+                - img [ref=e80]
+                - generic [ref=e82]: Интеграции
+              - button "Настройки" [ref=e83]:
+                - img [ref=e84]
+                - generic [ref=e87]: Настройки
+              - button "Пользователи" [ref=e88]:
+                - img [ref=e89]
+                - generic [ref=e101]: Пользователи
+              - button "Права доступа" [ref=e102]:
+                - img [ref=e103]
+                - generic [ref=e106]: Права доступа
+            - button "Сообщить о баге" [ref=e108]:
+              - img [ref=e109]
+              - generic [ref=e118]: Сообщить о баге
+        - main [ref=e119]:
+          - generic [ref=e120]:
+            - generic [ref=e122]:
+              - heading "Пользователи" [level=1] [ref=e123]
+              - button "Новый пользователь" [ref=e124]:
+                - img [ref=e125]
+                - generic [ref=e126]: Новый пользователь
+            - generic [ref=e127]:
+              - generic [ref=e128]:
                 - img
-                - textbox "Поиск пользователей" [ref=e126]
-              - combobox [ref=e127]:
+                - textbox "Поиск пользователей" [ref=e129]
+              - combobox [ref=e130]:
                 - generic: Все роли
                 - img
-              - combobox [ref=e128]:
+              - combobox [ref=e131]:
                 - generic: Все
                 - img
-            - generic [ref=e131]: Доступ запрещен (403)
+            - generic [ref=e134]: Доступ запрещен (403)
   - region "Notifications alt+T"
 ```
 
