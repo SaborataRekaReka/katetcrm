@@ -48,6 +48,16 @@ fi
 export PUBLIC_HOST="$public_host"
 echo "PUBLIC_HOST resolved: $PUBLIC_HOST"
 
+workflow_profile_raw="$(grep '^CRM_WORKFLOW_PROFILE=' app/backend/.env | head -n1 | cut -d= -f2- | tr -d '\r' | tr -d '"' | xargs || true)"
+if [ "$workflow_profile_raw" = "sales-lite" ]; then
+  workflow_profile="sales-lite"
+else
+  workflow_profile="full"
+fi
+
+export VITE_CRM_WORKFLOW_PROFILE="$workflow_profile"
+echo "VITE_CRM_WORKFLOW_PROFILE resolved: $VITE_CRM_WORKFLOW_PROFILE"
+
 echo "--- Building images"
 docker compose -f docker-compose.prod.yml build --no-cache backend frontend
 
