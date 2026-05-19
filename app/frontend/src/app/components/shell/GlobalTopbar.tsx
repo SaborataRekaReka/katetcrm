@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Bell, HelpCircle, ChevronDown, LogOut, Settings, UserRound } from 'lucide-react';
+import { Search, Bell, HelpCircle, ChevronDown, LogOut, MoonStar, Settings, UserRound } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { cn } from '../ui/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip';
 import {
@@ -10,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { Switch } from '../ui/switch';
 import { useLayout } from './layoutStore';
 import { getDomainConfig, getModuleMeta, PRIMARY_DOMAINS } from './navConfig';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
@@ -78,7 +80,14 @@ export function GlobalTopbar() {
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const workspaceSettingsQuery = useWorkspaceSettingsQuery(USE_API && authRole === 'admin');
+
+  const isDarkTheme = (theme === 'system' ? resolvedTheme : theme) === 'dark';
+
+  const setDarkThemeEnabled = (enabled: boolean) => {
+    setTheme(enabled ? 'dark' : 'light');
+  };
 
   const workspaceTitle = useMemo(() => {
     const sections = workspaceSettingsQuery.data?.sections;
@@ -553,7 +562,7 @@ export function GlobalTopbar() {
   };
 
   return (
-    <header className="flex h-10 w-full shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-white px-2 sm:gap-3 sm:px-3">
+    <header className="flex h-10 w-full shrink-0 items-center justify-between gap-2 border-b border-border/60 bg-[var(--shell-main-bg)] px-2 sm:gap-3 sm:px-3">
       <div className="flex min-w-0 items-center gap-2">
         <span className="flex h-6 w-6 items-center justify-center overflow-hidden rounded shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08)]">
           <img src={logoMiniModern} alt="Логотип Катет CRM" className="h-full w-full object-cover" />
@@ -609,14 +618,14 @@ export function GlobalTopbar() {
             }}
             placeholder={placeholder}
             aria-label="Быстрый поиск"
-            className="h-7 w-full rounded-md border border-border/60 bg-[#f7f8fa] pl-7 pr-2 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-[var(--brand-accent)] focus:bg-white sm:pr-14"
+            className="h-7 w-full rounded-md border border-border/60 bg-input/70 pl-7 pr-2 text-[12px] text-foreground outline-none transition-colors placeholder:text-muted-foreground hover:border-foreground/20 focus:border-[var(--brand-accent)] focus:bg-background sm:pr-14"
           />
           <kbd className="pointer-events-none absolute right-2 hidden rounded bg-muted px-1 py-0.5 text-[10px] font-medium text-muted-foreground sm:block">
             Ctrl K
           </kbd>
 
           {isSuggestionsOpen && suggestions.length > 0 ? (
-            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 overflow-hidden rounded-md border border-border bg-white shadow-lg">
+            <div className="absolute left-0 right-0 top-[calc(100%+4px)] z-50 overflow-hidden rounded-md border border-border bg-popover shadow-lg">
               <ul className="max-h-72 overflow-y-auto py-1">
                 {suggestions.map((item, index) => (
                   <li key={item.id}>
@@ -681,6 +690,23 @@ export function GlobalTopbar() {
                 Настройки
               </DropdownMenuItem>
             ) : null}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="justify-between gap-2"
+              onSelect={(event) => event.preventDefault()}
+              onClick={() => setDarkThemeEnabled(!isDarkTheme)}
+            >
+              <span className="inline-flex items-center gap-2">
+                <MoonStar className="h-3.5 w-3.5" />
+                Тёмная тема
+              </span>
+              <Switch
+                checked={isDarkTheme}
+                onCheckedChange={setDarkThemeEnabled}
+                aria-label="Тёмная тема"
+                onClick={(event) => event.stopPropagation()}
+              />
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onSelect={logout} variant="destructive">
               <LogOut className="h-3.5 w-3.5" />
