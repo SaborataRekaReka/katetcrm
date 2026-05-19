@@ -3,6 +3,7 @@ import { CurrentUser } from '../../common/current-user.decorator';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import {
+  AddTaskCommentDto,
   AddTaskSubtaskDto,
   CreateTaskDto,
   TaskListQueryDto,
@@ -66,5 +67,14 @@ export class TasksController {
     @CurrentUser() user: JwtPayload,
   ) {
     return this.tasks.addSubtask(id, dto, { id: user.sub, role: user.role });
+  }
+
+  @Post(':id/comments')
+  addComment(
+    @Param('id') id: string,
+    @Body() dto: AddTaskCommentDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.tasks.addComment(id, dto, { id: user.sub, role: user.role });
   }
 }

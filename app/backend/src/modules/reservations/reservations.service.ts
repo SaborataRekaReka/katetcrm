@@ -537,6 +537,13 @@ export class ReservationsService {
       throw new BadRequestException('Неактивная бронь не может быть изменена');
     }
 
+    const nextComment = dto.comment === undefined ? existing.comment : dto.comment;
+    const hasCommentUpdate =
+      dto.comment !== undefined
+      && dto.comment !== existing.comment
+      && typeof nextComment === 'string'
+      && nextComment.trim().length > 0;
+
     const nextSourcingType = dto.sourcingType ?? existing.sourcingType;
     const nextInternalStage = dto.internalStage ?? existing.internalStage;
 
@@ -630,6 +637,18 @@ export class ReservationsService {
       actorId: actor.id,
       payload: { hasConflictWarning: conflict },
     });
+
+    if (hasCommentUpdate) {
+      await this.activity.log({
+        action: 'note_added',
+        entityType: 'reservation',
+        entityId: id,
+        summary: 'Добавлен комментарий к брони',
+        actorId: actor.id,
+        payload: { textPreview: nextComment.slice(0, 250) },
+      });
+    }
+
     return updated;
   }
 

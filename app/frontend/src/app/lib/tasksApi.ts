@@ -55,6 +55,10 @@ export interface AddTaskSubtaskInputApi {
   priority?: TaskPriority;
 }
 
+export interface AddTaskCommentInputApi {
+  text: string;
+}
+
 export function listTasks(params: TasksListParams = {}) {
   return apiRequest<TasksListResponseApi>('tasks', {
     query: {
@@ -108,6 +112,13 @@ export function archiveTask(id: string) {
 
 export function addTaskSubtask(id: string, body: AddTaskSubtaskInputApi) {
   return apiRequest<Task>(`tasks/${id}/subtasks`, {
+    method: 'POST',
+    body,
+  });
+}
+
+export function addTaskComment(id: string, body: AddTaskCommentInputApi) {
+  return apiRequest<Task>(`tasks/${id}/comments`, {
     method: 'POST',
     body,
   });

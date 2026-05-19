@@ -150,7 +150,7 @@
 
 1. `GET /stats` для overview KPI.
 2. `GET /activity/search` для recent activity.
-3. `GET /tasks`, `POST /tasks`, `PATCH /tasks/:id`, `POST /tasks/:id/status`, `POST /tasks/:id/duplicate`, `POST /tasks/:id/archive`, `POST /tasks/:id/subtasks`.
+3. `GET /tasks`, `POST /tasks`, `PATCH /tasks/:id`, `POST /tasks/:id/status`, `POST /tasks/:id/duplicate`, `POST /tasks/:id/archive`, `POST /tasks/:id/subtasks`, `POST /tasks/:id/comments`.
 4. Task detail в Home поддерживает редактирование title/description/priority/dueDate/tags через tasks write-path.
 5. Очистка dueDate поддерживается end-to-end (`'' -> null` на frontend и `null` в API patch).
 

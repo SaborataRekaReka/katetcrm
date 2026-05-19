@@ -275,6 +275,20 @@ export class DeparturesService {
   async update(id: string, dto: UpdateDepartureDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
 
+    const nextNotes = dto.notes === undefined ? existing.notes : dto.notes;
+    const nextDeliveryNotes =
+      dto.deliveryNotes === undefined ? existing.deliveryNotes : dto.deliveryNotes;
+    const hasNotesUpdate =
+      dto.notes !== undefined
+      && dto.notes !== existing.notes
+      && typeof nextNotes === 'string'
+      && nextNotes.trim().length > 0;
+    const hasDeliveryNotesUpdate =
+      dto.deliveryNotes !== undefined
+      && dto.deliveryNotes !== existing.deliveryNotes
+      && typeof nextDeliveryNotes === 'string'
+      && nextDeliveryNotes.trim().length > 0;
+
     const terminalStatusRequested =
       dto.status === 'completed' || dto.status === 'cancelled';
     const terminalFieldsRequested =
@@ -331,6 +345,28 @@ export class DeparturesService {
           : 'Departure updated',
       actorId: actor.id,
     });
+
+    if (hasNotesUpdate || hasDeliveryNotesUpdate) {
+      await this.activity.log({
+        action: 'note_added',
+        entityType: 'departure',
+        entityId: id,
+        summary: hasDeliveryNotesUpdate
+          ? 'Добавлен комментарий к доставке'
+          : 'Добавлен комментарий к выезду',
+        actorId: actor.id,
+        payload: {
+          notesPreview:
+            hasNotesUpdate && typeof nextNotes === 'string'
+              ? nextNotes.slice(0, 250)
+              : undefined,
+          deliveryNotesPreview:
+            hasDeliveryNotesUpdate && typeof nextDeliveryNotes === 'string'
+              ? nextDeliveryNotes.slice(0, 250)
+              : undefined,
+        },
+      });
+    }
 
     return updated;
   }

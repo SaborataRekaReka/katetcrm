@@ -150,12 +150,13 @@ Contract expectations:
 - `POST /api/v1/tasks/:id/duplicate`
 - `POST /api/v1/tasks/:id/archive`
 - `POST /api/v1/tasks/:id/subtasks`
+- `POST /api/v1/tasks/:id/comments`
 
 Contract expectations:
 
 1. `scope=mine|all` is enforced server-side with RBAC/ownership semantics.
 2. `includeArchived` controls visibility of archived tasks without hard-delete behavior.
-3. Task write endpoints preserve audit trail through activity log entries (`created`, `updated`).
+3. Task write endpoints preserve audit trail through activity log entries (`created`, `updated`, `note_added`).
 4. Manager assignment boundaries are enforced server-side (no foreign assignee hijack in manager context).
 5. `dueDate` supports explicit clear semantics (`null`, and empty-string normalization path for compatibility) without deleting task history.
 
