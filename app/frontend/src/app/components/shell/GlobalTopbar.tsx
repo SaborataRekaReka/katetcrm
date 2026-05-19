@@ -61,6 +61,7 @@ type QuickSuggestion = WorkspaceSuggestion | EntitySuggestion | QuerySuggestion;
 
 export function GlobalTopbar() {
   const { user, logout } = useAuth();
+  const authRole = user?.role;
   const {
     role,
     activePrimaryNav,
@@ -77,7 +78,7 @@ export function GlobalTopbar() {
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const workspaceSettingsQuery = useWorkspaceSettingsQuery(USE_API && role === 'admin');
+  const workspaceSettingsQuery = useWorkspaceSettingsQuery(USE_API && authRole === 'admin');
 
   const workspaceTitle = useMemo(() => {
     const sections = workspaceSettingsQuery.data?.sections;
