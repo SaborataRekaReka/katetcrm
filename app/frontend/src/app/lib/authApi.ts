@@ -28,7 +28,7 @@ export function refreshRequest(refreshToken: string) {
 }
 
 export function meRequest() {
-  return apiRequest<{ sub: string; email: string; role: 'admin' | 'manager' }>('auth/me');
+  return apiRequest<{ sub: string; email: string; role: 'admin' | 'manager'; fullName: string }>('auth/me');
 }
 
 export function persistTokens(tokens: AuthTokens) {

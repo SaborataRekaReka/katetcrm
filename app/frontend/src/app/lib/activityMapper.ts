@@ -268,6 +268,27 @@ export interface MappedActivityEntry {
   links?: Array<{ label: string; href: string }>;
 }
 
+export interface MappedCommentEntry {
+  id: string;
+  author: string;
+  text: string;
+  time: string;
+}
+
+export function mapActivityCommentEntries(entries: ActivityLogEntryApi[]): MappedCommentEntry[] {
+  return entries
+    .filter((entry) => entry.action === 'note_added')
+    .map((entry) => {
+      const summary = entry.summary?.trim();
+      return {
+        id: entry.id,
+        author: entry.actor?.fullName ?? 'Система',
+        text: summary || 'Заметка',
+        time: formatRelativeTime(entry.createdAt),
+      };
+    });
+}
+
 export function mapActivityEntries(entries: ActivityLogEntryApi[]): MappedActivityEntry[] {
   return entries.map((e) => {
     const summary = e.summary?.trim() || 'Событие';

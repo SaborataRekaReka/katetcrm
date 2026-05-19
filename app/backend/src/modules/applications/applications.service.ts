@@ -201,6 +201,20 @@ export class ApplicationsService {
     if (!existing.isActive) {
       throw new BadRequestException('Заявка неактивна и не может быть изменена');
     }
+    const patchKeys = Object.entries(dto)
+      .filter(([, value]) => value !== undefined)
+      .map(([key]) => key);
+    const isCommentPatchOnly = patchKeys.length === 1 && patchKeys[0] === 'comment';
+    const previousComment = existing.comment?.trim() || undefined;
+    const hasIncomingComment = dto.comment !== undefined;
+    const nextComment =
+      typeof dto.comment === 'string' && dto.comment.trim().length > 0
+        ? dto.comment.trim()
+        : undefined;
+    const shouldLogComment =
+      hasIncomingComment &&
+      !!nextComment &&
+      (isCommentPatchOnly || nextComment !== previousComment);
     const updated = await this.prisma.application.update({
       where: { id },
       data: {
@@ -216,6 +230,19 @@ export class ApplicationsService {
       summary: `Обновлена заявка ${updated.number}`,
       actorId: actor.id,
     });
+    if (shouldLogComment && nextComment) {
+      await this.activity.log({
+        action: 'note_added',
+        entityType: 'application',
+        entityId: id,
+        summary: nextComment,
+        actorId: actor.id,
+        payload: {
+          source: 'manual_comment',
+          field: 'comment',
+        },
+      });
+    }
     return updated;
   }
 

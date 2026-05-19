@@ -896,6 +896,20 @@ export class LeadsService {
 
   async update(id: string, dto: UpdateLeadDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+    const patchKeys = Object.entries(dto)
+      .filter(([, value]) => value !== undefined)
+      .map(([key]) => key);
+    const isCommentPatchOnly = patchKeys.length === 1 && patchKeys[0] === 'comment';
+    const previousComment = existing.comment?.trim() || undefined;
+    const hasIncomingComment = dto.comment !== undefined;
+    const nextComment =
+      typeof dto.comment === 'string' && dto.comment.trim().length > 0
+        ? dto.comment.trim()
+        : undefined;
+    const shouldLogComment =
+      hasIncomingComment &&
+      !!nextComment &&
+      (isCommentPatchOnly || nextComment !== previousComment);
     const phoneChanged = dto.contactPhone !== undefined && dto.contactPhone !== existing.contactPhone;
     const updated = await this.prisma.lead.update({
       where: { id },
@@ -913,6 +927,19 @@ export class LeadsService {
       summary: `Обновлён лид ${updated.contactName}`,
       actorId: actor.id,
     });
+    if (shouldLogComment && nextComment) {
+      await this.activity.log({
+        action: 'note_added',
+        entityType: 'lead',
+        entityId: id,
+        summary: nextComment,
+        actorId: actor.id,
+        payload: {
+          source: 'manual_comment',
+          field: 'comment',
+        },
+      });
+    }
     return updated;
   }
 

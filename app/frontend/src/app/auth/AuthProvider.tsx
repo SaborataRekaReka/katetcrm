@@ -51,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           id: payload.sub,
           email: payload.email,
           role: payload.role,
-          fullName: payload.email,
+          fullName: payload.fullName,
         });
         setStatus('authenticated');
       } catch {

@@ -42,6 +42,7 @@ import {
 import {
   EntityActivityList,
   EntityCommentList,
+  EntityCommentsComposer,
   EntityCommentsPanel,
   EntityMetaGrid,
   EntityModalHeader,
@@ -61,6 +62,7 @@ import { useManagersQuery } from '../../hooks/useUsersQuery';
 import { useEntityActivity } from '../../hooks/useActivityQuery';
 import {
   extractLatestTelephonyRecording,
+  mapActivityCommentEntries,
   mapActivityEntries,
   type TelephonyRecording,
 } from '../../lib/activityMapper';
@@ -92,6 +94,7 @@ import { useLayout } from '../shell/layoutStore';
 import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 import { RelatedRecordsFields, type RelatedRecordItem } from './RelatedRecordsFields';
 import { LifecycleRollbackActions } from './LifecycleRollbackActions';
+import { useAuth } from '../../auth/AuthProvider';
 import type { LeadApi } from '../../lib/leadsApi';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
@@ -150,30 +153,34 @@ const sourcingMeta = {
   undecided: { label: 'Не определено', tone: badgeTones.caution, Icon: HelpCircle },
 };
 
-const MOCK_COMMENTS = [
-  {
-    id: '1',
-    author: 'Анна Смирнова',
-    avatar: 'А',
-    color: 'from-pink-400 to-rose-500',
-    time: '2 часа назад',
-    text: 'Клиент попросил перезвонить после 15:00 - обсудить сроки поставки.',
-  },
-  {
-    id: '2',
-    author: 'Иван Петров',
-    avatar: 'И',
-    color: 'from-indigo-400 to-purple-500',
-    time: 'вчера, 18:22',
-    text: 'Отправил КП, ждём подтверждение по позициям.',
-  },
-];
+const COMMENT_AVATAR_GRADIENT = 'from-indigo-500 to-purple-500';
 
-const MOCK_ACTIVITY = [
-  { id: '1', text: 'создал(а) задачу', who: 'Иван Петров', time: '3 дня назад' },
-  { id: '2', text: 'изменил(а) статус на Бронь', who: 'Анна Смирнова', time: '2 дня назад' },
-  { id: '3', text: 'добавил(а) менеджера', who: 'Олег Ким', time: 'вчера' },
-];
+function getCommentAvatar(author: string): string {
+  const source = author.trim();
+  if (!source) return 'U';
+
+  const wordInitials = source
+    .split(/\s+/)
+    .map((word) => Array.from(word.replace(/[^0-9A-Za-zА-Яа-яЁё]/g, ''))[0] ?? '')
+    .filter(Boolean);
+
+  if (wordInitials.length >= 2) {
+    return `${wordInitials[0]}${wordInitials[wordInitials.length - 1]}`.toUpperCase();
+  }
+
+  const singleToken = source.includes('@') ? source.split('@')[0] ?? source : source;
+  const chars = Array.from(singleToken.replace(/[^0-9A-Za-zА-Яа-яЁё]/g, ''));
+  if (chars.length === 0) {
+    return 'U';
+  }
+
+  return chars.slice(0, 2).join('').toUpperCase();
+}
+
+function getCommentGradient(author: string): string {
+  void author;
+  return COMMENT_AVATAR_GRADIENT;
+}
 
 function getPrimaryCTA(
   stage: string | undefined,
@@ -443,6 +450,7 @@ export function LeadDetailModal({
   onWorkflowNavigate,
 }: LeadDetailModalProps) {
   const { setActiveSecondaryNav, openSecondaryWithEntity, activeEntityType } = useLayout();
+  const { user } = useAuth();
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isUnqualOpen, setIsUnqualOpen] = useState(false);
@@ -1135,12 +1143,61 @@ export function LeadDetailModal({
   );
   const activityEntries = activityQuery.data
     ? mapActivityEntries(activityQuery.data)
-    : MOCK_ACTIVITY.map((item) => ({
-        id: item.id,
-        actor: item.who,
-        text: item.text,
-        time: item.time,
-      }));
+    : [];
+  const commentEntries = activityQuery.data
+    ? mapActivityCommentEntries(activityQuery.data).map((entry) => ({
+        id: entry.id,
+        author: entry.author,
+        avatar: getCommentAvatar(entry.author),
+        color: getCommentGradient(entry.author),
+        time: entry.time,
+        text: entry.text,
+      }))
+    : [];
+  const composerAuthor = useMemo(() => {
+    const fullName = user?.fullName?.trim();
+    if (fullName && !fullName.includes('@')) {
+      return fullName;
+    }
+
+    const email = user?.email?.trim() ?? fullName;
+    if (!email) {
+      return 'Пользователь';
+    }
+
+    const localPart = email.split('@')[0] ?? '';
+    const normalized = localPart.replace(/[._-]+/g, ' ').trim();
+    if (!normalized) {
+      return email;
+    }
+
+    return normalized
+      .split(/\s+/)
+      .map((chunk) => chunk.charAt(0).toUpperCase() + chunk.slice(1))
+      .join(' ');
+  }, [user?.email, user?.fullName]);
+  const composerAvatar = getCommentAvatar(composerAuthor);
+  const composerAvatarGradient = getCommentGradient(composerAuthor);
+  const canInlineEditComment = isLead ? canInlineEditLead : canInlineEditApp;
+  const handleCommentSubmit = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+
+    if (isLead) {
+      if (!lead?.id || !canInlineEditComment) return;
+      await updateLead.mutateAsync({
+        id: lead.id,
+        patch: { comment: trimmed },
+      });
+      return;
+    }
+
+    if (!application?.id || !canInlineEditComment) return;
+    await updateAppMutation.mutateAsync({
+      id: application.id,
+      patch: { comment: trimmed },
+    });
+  };
   const latestCallRecording = activityQuery.data
     ? extractLatestTelephonyRecording(activityQuery.data)
     : undefined;
@@ -1586,40 +1643,6 @@ export function LeadDetailModal({
         </EntitySection>
       )}
 
-      {!isLead && (
-        <EntitySection title="Комментарий">
-          <InlineText
-            value={application!.comment ?? ''}
-            onSave={makeAppFieldSaver((v) => ({
-              comment: v.trim() ? v.trim() : null,
-            }))}
-            ariaLabel="Комментарий"
-            disabled={!canInlineEditApp}
-            multiline
-            emptyDisplay={
-              <span className="text-[11px] text-gray-400 italic">Нажмите, чтобы добавить…</span>
-            }
-          />
-        </EntitySection>
-      )}
-
-      {isLead && (
-        <EntitySection title="Комментарий">
-          <InlineText
-            value={lead!.comment ?? ''}
-            onSave={makeLeadFieldSaver((v) => ({
-              comment: v.trim() ? v.trim() : null,
-            }))}
-            ariaLabel="Комментарий"
-            disabled={!canInlineEditLead}
-            multiline
-            emptyDisplay={
-              <span className="text-[11px] text-gray-400 italic">Нажмите, чтобы добавить…</span>
-            }
-          />
-        </EntitySection>
-      )}
-
       <EntitySection title="Связанные действия">
         <div className="space-y-0.5">{linkedActions}</div>
       </EntitySection>
@@ -1627,10 +1650,23 @@ export function LeadDetailModal({
       <EntityCommentsPanel
         tab={tab}
         onTabChange={setTab}
-        commentsCount={MOCK_COMMENTS.length}
+        commentsCount={commentEntries.length}
         commentsLabel="Комментарии"
         activityLabel="Журнал изменений"
-        commentsContent={<EntityCommentList comments={MOCK_COMMENTS} emptyText="Комментариев пока нет" />}
+        commentsContent={
+          <div className="space-y-3">
+            <EntityCommentList comments={commentEntries} emptyText="Комментариев пока нет" />
+            <div className="rounded-md border border-gray-200 bg-white">
+              <EntityCommentsComposer
+                placeholder="Написать комментарий и нажать Enter"
+                avatar={composerAvatar}
+                avatarGradient={composerAvatarGradient}
+                onSubmit={handleCommentSubmit}
+                disabled={!canInlineEditComment}
+              />
+            </div>
+          </div>
+        }
         activityContent={<EntityActivityList entries={activityEntries} emptyText="Событий пока нет" />}
       />
     </EntityModalShell>
