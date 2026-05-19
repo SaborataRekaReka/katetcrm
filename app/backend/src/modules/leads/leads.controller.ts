@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Sse, UseGuards } from '@nestjs/common';
 import { LeadsService } from './leads.service';
+import { LeadsEventsService } from './leads-events.service';
 import {
   ChangeStageDto,
   CreateLeadDto,
@@ -17,7 +18,15 @@ import type { JwtPayload } from '../auth/jwt.strategy';
 @Controller('leads')
 @UseGuards(JwtAuthGuard)
 export class LeadsController {
-  constructor(private readonly leads: LeadsService) {}
+  constructor(
+    private readonly leads: LeadsService,
+    private readonly leadEvents: LeadsEventsService,
+  ) {}
+
+  @Sse('stream')
+  stream(@CurrentUser() user: JwtPayload) {
+    return this.leadEvents.streamLeadEvents({ id: user.sub, role: user.role });
+  }
 
   @Get()
   async list(@Query() query: LeadListQueryDto, @CurrentUser() user: JwtPayload) {

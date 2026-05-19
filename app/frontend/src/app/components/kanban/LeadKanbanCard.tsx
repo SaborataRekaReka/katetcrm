@@ -45,11 +45,9 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
   const isReady = missing.length === 0;
   const warning = computeWarning(lead);
 
-  // Readiness slot: prefer isNew adaptation
+  // Readiness slot reflects only readiness-to-convert.
   let readiness: { label: string; tone: 'success' | 'caution' | 'progress'; icon: 'check' | 'alert' };
-  if (lead.isNew && isReady) {
-    readiness = { label: 'Новый', tone: 'progress', icon: 'check' };
-  } else if (isReady) {
+  if (isReady) {
     readiness = { label: 'Готов к заявке', tone: 'success', icon: 'check' };
   } else {
     const shown = missing.slice(0, 2).join(', ') + (missing.length > 2 ? '…' : '');
@@ -75,11 +73,16 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
               <div className="text-xs text-muted-foreground truncate">{lead.company}</div>
             )}
           </div>
-          {warning && (
-            <span className={`${badgeBase} ${badgeTones[warning.tone]}`}>
-              {warning.label}
-            </span>
-          )}
+          <div className="flex items-center gap-1">
+            {lead.isNew ? (
+              <span className={`${badgeBase} ${badgeTones.progress}`}>Новый</span>
+            ) : null}
+            {warning ? (
+              <span className={`${badgeBase} ${badgeTones[warning.tone]}`}>
+                {warning.label}
+              </span>
+            ) : null}
+          </div>
         </div>
 
         {/* Source — unified single slot */}

@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Lead, StageType } from '../../types/kanban';
 import { mockLeads } from '../../data/mockLeads';
 import { mockApplication } from '../../data/mockApplications';
@@ -25,6 +25,84 @@ import { toUiApplication } from '../../lib/applicationAdapter';
 import { useRegisterPrimaryCta } from '../shell/primaryCtaStore';
 import { NewLeadDialog } from '../leads/NewLeadDialog';
 import { saveViewSnapshot } from '../../lib/viewSnapshots';
+import { ACCESS_TOKEN_KEY } from '../../lib/apiClient';
+
+const OPENED_LEAD_IDS_STORAGE_KEY = 'katet-crm.leads.opened.v1';
+const UNOPENED_NEW_LEAD_IDS_STORAGE_KEY = 'katet-crm.leads.new-unopened.v1';
+const LEADS_STREAM_RECONNECT_MS = 3_000;
+
+let leadArrivalAudioContext: AudioContext | null = null;
+
+function readStoredIdSet(key: string): Set<string> {
+  if (typeof window === 'undefined') return new Set<string>();
+  try {
+    const raw = window.localStorage.getItem(key);
+    if (!raw) return new Set<string>();
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return new Set<string>();
+    return new Set<string>(parsed.filter((v): v is string => typeof v === 'string' && v.trim().length > 0));
+  } catch {
+    return new Set<string>();
+  }
+}
+
+function writeStoredIdSet(key: string, ids: Set<string>) {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(key, JSON.stringify(Array.from(ids)));
+  } catch {
+    /* ignore localStorage write failures */
+  }
+}
+
+function resolveLeadsStreamUrl() {
+  const base = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? 'http://localhost:3001/api/v1';
+  const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+
+  if (/^https?:\/\//i.test(normalizedBase)) {
+    return new URL('leads/stream', normalizedBase).toString();
+  }
+
+  const origin = typeof window === 'undefined' ? 'http://localhost' : window.location.origin;
+  const resolvedBase = new URL(normalizedBase.replace(/^\/+/, ''), `${origin}/`).toString();
+  return new URL('leads/stream', resolvedBase).toString();
+}
+
+function playLeadArrivalSound() {
+  if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') return;
+  try {
+    if (!leadArrivalAudioContext) {
+      leadArrivalAudioContext = new window.AudioContext();
+    }
+    const ctx = leadArrivalAudioContext;
+    if (ctx.state === 'suspended') {
+      void ctx.resume();
+    }
+
+    const now = ctx.currentTime + 0.01;
+    const tone = (frequency: number, start: number, duration: number) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(frequency, start);
+
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.07, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + duration + 0.02);
+    };
+
+    tone(880, now, 0.13);
+    tone(1174, now + 0.17, 0.13);
+  } catch {
+    /* ignore audio playback errors (autoplay policy, unsupported output, etc.) */
+  }
+}
 
 /**
  * Routed page for /leads (and saved-view aliases). Hosts three views —
@@ -50,6 +128,11 @@ export function LeadsKanbanPage() {
   const [clientLead, setClientLead] = useState<Lead | null>(null);
   const [isClientOpen, setIsClientOpen] = useState(false);
   const [isNewLeadOpen, setIsNewLeadOpen] = useState(false);
+  const [openedLeadIds, setOpenedLeadIds] = useState<Set<string>>(() => readStoredIdSet(OPENED_LEAD_IDS_STORAGE_KEY));
+  const [unopenedNewLeadIds, setUnopenedNewLeadIds] = useState<Set<string>>(() => readStoredIdSet(UNOPENED_NEW_LEAD_IDS_STORAGE_KEY));
+  const openedLeadIdsRef = useRef(openedLeadIds);
+  const unopenedNewLeadIdsRef = useRef(unopenedNewLeadIds);
+  const mutedLeadIdsRef = useRef<Set<string>>(new Set());
   const managersQuery = useManagersQuery(USE_API);
 
   const managerOptions = useMemo(() => {
@@ -140,7 +223,43 @@ export function LeadsKanbanPage() {
       ),
     [leadsQuery.data],
   );
-  const activeLeads = USE_API ? apiLeads : leads;
+
+  const markLeadAsOpened = useCallback((leadId: string) => {
+    mutedLeadIdsRef.current.delete(leadId);
+
+    setOpenedLeadIds((prev) => {
+      if (prev.has(leadId)) return prev;
+      const next = new Set(prev);
+      next.add(leadId);
+      writeStoredIdSet(OPENED_LEAD_IDS_STORAGE_KEY, next);
+      return next;
+    });
+
+    setUnopenedNewLeadIds((prev) => {
+      if (!prev.has(leadId)) return prev;
+      const next = new Set(prev);
+      next.delete(leadId);
+      writeStoredIdSet(UNOPENED_NEW_LEAD_IDS_STORAGE_KEY, next);
+      return next;
+    });
+  }, []);
+
+  const withLeadNewState = useCallback(
+    (lead: Lead): Lead => {
+      const opened = openedLeadIds.has(lead.id);
+      const pendingNew = unopenedNewLeadIds.has(lead.id);
+      const isNew = lead.stage === 'lead' && !opened && (Boolean(lead.isNew) || pendingNew);
+      if (lead.isNew === isNew) return lead;
+      return { ...lead, isNew };
+    },
+    [openedLeadIds, unopenedNewLeadIds],
+  );
+
+  const sourceLeads = USE_API ? apiLeads : leads;
+  const activeLeads = useMemo(
+    () => sourceLeads.map(withLeadNewState),
+    [sourceLeads, withLeadNewState],
+  );
 
   const routedLeadQuery = useLeadQuery(
     activeEntityType === 'lead' ? activeEntityId : null,
@@ -156,6 +275,135 @@ export function LeadsKanbanPage() {
     const apiApp = selectedApplicationQuery.data?.items?.[0];
     return apiApp ? toUiApplication(apiApp) : undefined;
   }, [selectedApplicationQuery.data, selectedLead]);
+
+  useEffect(() => {
+    openedLeadIdsRef.current = openedLeadIds;
+  }, [openedLeadIds]);
+
+  useEffect(() => {
+    unopenedNewLeadIdsRef.current = unopenedNewLeadIds;
+  }, [unopenedNewLeadIds]);
+
+  const handleLeadCreatedEvent = useCallback(
+    (leadId: string) => {
+      if (openedLeadIdsRef.current.has(leadId)) return;
+      if (mutedLeadIdsRef.current.has(leadId)) return;
+      if (unopenedNewLeadIdsRef.current.has(leadId)) return;
+
+      setUnopenedNewLeadIds((prev) => {
+        if (prev.has(leadId)) return prev;
+        const next = new Set(prev);
+        next.add(leadId);
+        writeStoredIdSet(UNOPENED_NEW_LEAD_IDS_STORAGE_KEY, next);
+        return next;
+      });
+
+      void leadsQuery.refetch();
+      playLeadArrivalSound();
+    },
+    [leadsQuery.refetch],
+  );
+
+  useEffect(() => {
+    if (!USE_API || typeof window === 'undefined') return;
+
+    let stopped = false;
+    let reconnectTimer: number | null = null;
+    let abortController: AbortController | null = null;
+
+    const scheduleReconnect = () => {
+      if (stopped || reconnectTimer !== null) return;
+      reconnectTimer = window.setTimeout(() => {
+        reconnectTimer = null;
+        void connect();
+      }, LEADS_STREAM_RECONNECT_MS);
+    };
+
+    const connect = async () => {
+      if (stopped) return;
+
+      const token = window.localStorage.getItem(ACCESS_TOKEN_KEY);
+      if (!token) {
+        scheduleReconnect();
+        return;
+      }
+
+      abortController = new AbortController();
+
+      try {
+        const response = await fetch(resolveLeadsStreamUrl(), {
+          method: 'GET',
+          headers: {
+            Accept: 'text/event-stream',
+            Authorization: `Bearer ${token}`,
+          },
+          cache: 'no-store',
+          signal: abortController.signal,
+        });
+
+        if (!response.ok || !response.body) {
+          throw new Error('Leads stream unavailable');
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder('utf-8');
+        let buffer = '';
+
+        while (!stopped) {
+          const chunk = await reader.read();
+          if (chunk.done) break;
+
+          buffer += decoder.decode(chunk.value, { stream: true }).replace(/\r\n/g, '\n');
+          let boundaryIndex = buffer.indexOf('\n\n');
+
+          while (boundaryIndex !== -1) {
+            const rawEvent = buffer.slice(0, boundaryIndex);
+            buffer = buffer.slice(boundaryIndex + 2);
+
+            const dataPayload = rawEvent
+              .split('\n')
+              .filter((line) => line.startsWith('data:'))
+              .map((line) => line.slice(5).trimStart())
+              .join('\n');
+
+            if (dataPayload.length > 0) {
+              try {
+                const payload = JSON.parse(dataPayload) as { leadId?: string };
+                if (typeof payload.leadId === 'string' && payload.leadId.length > 0) {
+                  handleLeadCreatedEvent(payload.leadId);
+                }
+              } catch {
+                // Ignore malformed stream payloads and keep subscription alive.
+              }
+            }
+
+            boundaryIndex = buffer.indexOf('\n\n');
+          }
+        }
+
+        reader.releaseLock();
+      } catch {
+        // Keep silent: connection recovery is handled by reconnect timer.
+      } finally {
+        abortController = null;
+        if (!stopped) {
+          scheduleReconnect();
+        }
+      }
+    };
+
+    void connect();
+
+    return () => {
+      stopped = true;
+      if (abortController) {
+        abortController.abort();
+      }
+      if (reconnectTimer !== null) {
+        window.clearTimeout(reconnectTimer);
+      }
+    };
+  }, [USE_API, handleLeadCreatedEvent]);
 
   useRegisterPrimaryCta(
     activeSecondaryNav,
@@ -231,6 +479,10 @@ export function LeadsKanbanPage() {
   };
 
   const handleCardClick = (lead: Lead) => {
+    if (lead.stage === 'lead') {
+      markLeadAsOpened(lead.id);
+    }
+
     if (IS_SALES_LITE && (lead.stage === 'completed' || lead.stage === 'unqualified')) {
       setSelectedLead(lead);
       setActiveEntityRoute('lead', lead.id);
@@ -324,6 +576,7 @@ export function LeadsKanbanPage() {
     setIsClientOpen(true);
   };
   const handleNewLeadCreated = (leadId: string) => {
+    mutedLeadIdsRef.current.add(leadId);
     setActiveEntityRoute('lead', leadId);
   };
   const handleCloseClient = () => {
@@ -403,18 +656,27 @@ export function LeadsKanbanPage() {
   useEffect(() => {
     if (activeEntityType !== 'lead' || !activeEntityId) return;
 
+    markLeadAsOpened(activeEntityId);
+
     if (USE_API) {
       if (!routedLeadQuery.data) return;
-      setSelectedLead(toKanbanLead(routedLeadQuery.data));
+      setSelectedLead(withLeadNewState(toKanbanLead(routedLeadQuery.data)));
       setIsDetailOpen(true);
       return;
     }
 
     const localLead = activeLeads.find((item) => item.id === activeEntityId);
     if (!localLead) return;
-    setSelectedLead(localLead);
+    setSelectedLead(withLeadNewState(localLead));
     setIsDetailOpen(true);
-  }, [activeEntityType, activeEntityId, activeLeads, routedLeadQuery.data]);
+  }, [
+    activeEntityType,
+    activeEntityId,
+    activeLeads,
+    markLeadAsOpened,
+    routedLeadQuery.data,
+    withLeadNewState,
+  ]);
 
   return (
     <div className="flex h-full min-h-0 min-w-0 flex-col">

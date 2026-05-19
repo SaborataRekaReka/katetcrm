@@ -17,6 +17,7 @@ import {
   LeadListQueryDto,
   UpdateLeadDto,
 } from './leads.dto';
+import { LeadsEventsService } from './leads-events.service';
 
 export interface ActorContext {
   id: string;
@@ -105,6 +106,7 @@ export class LeadsService {
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
     private readonly config: ConfigService,
+    private readonly leadEvents: LeadsEventsService,
   ) {}
 
   private getWorkflowProfile(): CrmWorkflowProfile {
@@ -289,6 +291,11 @@ export class LeadsService {
       summary: `Создан лид ${lead.contactName}`,
       actorId: actor.id,
       payload: { duplicatesFound: duplicates.length },
+    });
+    this.leadEvents.emitLeadCreated({
+      leadId: lead.id,
+      managerId: lead.managerId,
+      createdAt: lead.createdAt.toISOString(),
     });
     return { lead, duplicates };
   }

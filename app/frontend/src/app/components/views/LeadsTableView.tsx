@@ -161,6 +161,11 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
       sortValue: (l) => Number(!!l.isDuplicate) + Number(!!l.isUrgent) + Number(!!l.isStale),
       cell: (l) => (
         <div className="flex items-center gap-1">
+          {l.isNew ? (
+            <span className={cn(badgeBase, badgeTones.progress)} title="Новый лид">
+              Новый
+            </span>
+          ) : null}
           {l.isUrgent ? (
             <span className={cn(badgeBase, badgeTones.warning)} title="Срочно">
               <Flame className="h-2.5 w-2.5" />

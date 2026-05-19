@@ -151,6 +151,11 @@ function LeadListRow({
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <SourceBadge source={lead.source} channel={lead.sourceChannel} />
+          {lead.isNew ? (
+            <span className={cn(badgeBase, badgeTones.progress)} title="Новый лид">
+              Новый
+            </span>
+          ) : null}
           {lead.isUrgent ? (
             <span className={cn(badgeBase, badgeTones.warning)} title="Срочно">
               <Flame className="h-2.5 w-2.5" />
