@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Activity,
   AlertCircle,
@@ -286,13 +286,121 @@ function resolveInitialReservationStage(sourcing: ApplicationPosition['sourcingT
   }
 }
 
+function decodeBase64Loose(value: string): string | null {
+  const normalized = value.trim().replace(/-/g, '+').replace(/_/g, '/');
+  if (!normalized) return null;
+
+  const remainder = normalized.length % 4;
+  const padded = remainder === 0 ? normalized : `${normalized}${'='.repeat(4 - remainder)}`;
+
+  try {
+    return atob(padded);
+  } catch {
+    return null;
+  }
+}
+
+function buildMangoPlaybackFallbackUrls(rawHref: string): string[] {
+  const href = rawHref.trim();
+  if (!href) return [];
+
+  const unique = new Set<string>();
+  const push = (value?: string) => {
+    if (value && value.trim()) {
+      unique.add(value.trim());
+    }
+  };
+
+  push(href);
+
+  let parsed: URL;
+  try {
+    parsed = new URL(href);
+  } catch {
+    return Array.from(unique);
+  }
+
+  if (!parsed.pathname.includes('/call-recording/play-record/')) {
+    return Array.from(unique);
+  }
+
+  const hostCandidates = new Set<string>([parsed.hostname]);
+  if (parsed.hostname === 'lk.mango-office.ru') {
+    hostCandidates.add('app.mango-office.ru');
+  }
+
+  const pathParts = parsed.pathname.split('/').filter(Boolean);
+  if (pathParts.length === 0) {
+    return Array.from(unique);
+  }
+
+  const encodedRecordingId = pathParts[pathParts.length - 1] ?? '';
+  const recordingId = decodeURIComponent(encodedRecordingId);
+
+  const makeCandidate = (host: string, recordingSegment: string): string | null => {
+    const next = new URL(parsed.toString());
+    next.hostname = host;
+
+    const nextParts = next.pathname.split('/').filter(Boolean);
+    if (nextParts.length === 0) return null;
+    nextParts[nextParts.length - 1] = encodeURIComponent(recordingSegment);
+    next.pathname = `/${nextParts.join('/')}`;
+    return next.toString();
+  };
+
+  for (const host of hostCandidates) {
+    push(makeCandidate(host, recordingId));
+  }
+
+  const decoded = decodeBase64Loose(recordingId);
+  if (!decoded) {
+    return Array.from(unique);
+  }
+
+  for (const host of hostCandidates) {
+    push(makeCandidate(host, decoded));
+  }
+
+  const decodedParts = decoded.split(':');
+  const compactRecordingId = decodedParts[2]?.trim();
+  if (!compactRecordingId) {
+    return Array.from(unique);
+  }
+
+  for (const host of hostCandidates) {
+    push(makeCandidate(host, compactRecordingId));
+  }
+
+  return Array.from(unique);
+}
+
 function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording }) {
+  const playbackCandidates = useMemo(
+    () => (recording?.href ? buildMangoPlaybackFallbackUrls(recording.href) : []),
+    [recording?.href],
+  );
+  const [playbackIdx, setPlaybackIdx] = useState(0);
+
+  useEffect(() => {
+    setPlaybackIdx(0);
+  }, [recording?.href]);
+
   if (!recording) return null;
 
+  const playbackHref = playbackCandidates[playbackIdx] ?? recording.href;
   const route = recording.from || recording.to
     ? `${recording.from ?? '—'} -> ${recording.to ?? '—'}`
     : undefined;
   const metaParts = [recording.direction, recording.duration, recording.status].filter(Boolean);
+
+  const handlePlaybackError = () => {
+    setPlaybackIdx((prev) => {
+      if (prev + 1 >= playbackCandidates.length) {
+        return prev;
+      }
+      return prev + 1;
+    });
+  };
 
   return (
     <div className="mt-2 min-w-0 overflow-hidden rounded-sm border border-blue-100 bg-blue-50/60 p-2">
@@ -304,7 +412,8 @@ function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording
       <audio
         controls
         preload="none"
-        src={recording.href}
+        src={playbackHref}
+        onError={handlePlaybackError}
         className="mt-2 block h-8 w-full min-w-0 max-w-full"
         aria-label="Запись звонка"
       />
@@ -314,7 +423,7 @@ function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording
         {metaParts.length > 0 ? <div className="truncate">{metaParts.join(' · ')}</div> : null}
       </div>
       <a
-        href={recording.href}
+        href={playbackHref}
         target="_blank"
         rel="noreferrer noopener"
         className="mt-1 inline-flex max-w-full items-center gap-1 text-[10px] text-blue-600 hover:text-blue-700 hover:underline"
