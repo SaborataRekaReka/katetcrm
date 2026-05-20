@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Param, Post, Query, StreamableFile, UseGuards } from '@nestjs/common';
 import { Capabilities } from '../../common/capabilities.decorator';
 import { CapabilitiesGuard } from '../../common/capabilities.guard';
 import { CurrentUser } from '../../common/current-user.decorator';
@@ -83,6 +83,16 @@ export class IntegrationsController {
   @Get('events/mango')
   checkMangoConnector() {
     return { ok: true, provider: 'mango' };
+  }
+
+  @Get('mango/recording-proxy')
+  @UseGuards(JwtAuthGuard)
+  async proxyMangoRecording(@Query('url') url: string) {
+    const recording = await this.integrations.proxyMangoRecording(url);
+    return new StreamableFile(recording.buffer, {
+      type: recording.contentType,
+      disposition: 'inline',
+    });
   }
 
   @Get('mango/call-routing')

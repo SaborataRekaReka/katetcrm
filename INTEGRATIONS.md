@@ -100,6 +100,7 @@ For `channel=mango` call events:
 8. Admin can configure internal Mango extension -> CRM manager routing rules from `/admin/integrations`; inbound call ingest applies matching rules to Lead and active Application responsibility while preserving IntegrationEvent idempotency.
 9. Mango Office `recording` callbacks may arrive without contact phone; CRM should accept such events when call identity (`call_id`/`entry_id`) is present and correlate them to an existing Lead by `call_id` when available.
 10. If callback includes `recording_id` but no direct URL, CRM composes `recordingUrl` from env settings; when `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` is missing, CRM tries to derive account id from `recording_id` payload format.
+11. CRM provides authenticated Mango recording proxy at `/api/v1/integrations/mango/recording-proxy?url=<mango_url>` for playback in environments where direct browser access to Mango may be geo/network restricted.
 
 ## 8.1 Site lead distribution
 

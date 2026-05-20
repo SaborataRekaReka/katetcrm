@@ -137,6 +137,11 @@ export interface IntegrationIngestResult extends IntegrationProcessResult {
   deduplicated: boolean;
 }
 
+interface MangoRecordingProxyResult {
+  buffer: Buffer;
+  contentType: string;
+}
+
 const MAX_RETRY_ATTEMPTS = 3;
 
 const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
@@ -194,6 +199,8 @@ const CHANNEL_SECRET_ENV_KEY: Record<
 };
 
 const DEFAULT_HMAC_TOLERANCE_SECONDS = 300;
+const MANGO_RECORDING_PROXY_PATH_RE =
+  /^\/issa\/api\/[^/]+\/\d{4,20}\/call-recording\/play-record\/[^/]+$/;
 
 @Injectable()
 export class IntegrationsService {
@@ -470,6 +477,50 @@ export class IntegrationsService {
     });
 
     return this.processEvent(event, 'replay', actorId, reason);
+  }
+
+  async proxyMangoRecording(rawUrl: string): Promise<MangoRecordingProxyResult> {
+    const url = this.parseMangoRecordingProxyUrl(rawUrl);
+
+    let response: globalThis.Response;
+    try {
+      response = await fetch(url.toString(), {
+        method: 'GET',
+        redirect: 'follow',
+        headers: {
+          Accept: 'audio/*,application/octet-stream;q=0.9,*/*;q=0.1',
+        },
+      });
+    } catch {
+      throw new ServiceUnavailableException('Mango recording service is unreachable');
+    }
+
+    if (response.status === 403) {
+      throw new ForbiddenException('Mango recording access denied');
+    }
+    if (response.status === 404) {
+      throw new NotFoundException('Mango recording not found');
+    }
+    if (!response.ok) {
+      throw new ServiceUnavailableException(
+        `Mango recording request failed with status ${response.status}`,
+      );
+    }
+
+    const contentType = response.headers.get('content-type')?.trim() ?? 'application/octet-stream';
+    if (!this.isMangoRecordingContentTypeAllowed(contentType)) {
+      throw new ServiceUnavailableException('Mango recording returned unsupported content type');
+    }
+
+    const payload = await response.arrayBuffer();
+    if (payload.byteLength === 0) {
+      throw new ServiceUnavailableException('Mango recording returned empty body');
+    }
+
+    return {
+      buffer: Buffer.from(payload),
+      contentType,
+    };
   }
 
   private async handleExistingEvent(existing: IntegrationEvent): Promise<IntegrationIngestResult> {
@@ -2169,6 +2220,40 @@ export class IntegrationsService {
         recordingId,
       },
     );
+  }
+
+  private parseMangoRecordingProxyUrl(rawUrl: string): URL {
+    const candidate = rawUrl?.trim();
+    if (!candidate) {
+      throw new BadRequestException('Recording URL is required');
+    }
+
+    let parsed: URL;
+    try {
+      parsed = new URL(candidate);
+    } catch {
+      throw new BadRequestException('Recording URL must be an absolute URL');
+    }
+
+    if (parsed.protocol !== 'https:') {
+      throw new BadRequestException('Recording URL protocol is not allowed');
+    }
+    if (parsed.hostname !== 'lk.mango-office.ru') {
+      throw new BadRequestException('Recording host is not allowed');
+    }
+    if (parsed.search || parsed.hash) {
+      throw new BadRequestException('Recording URL must not include query or fragment');
+    }
+    if (!MANGO_RECORDING_PROXY_PATH_RE.test(parsed.pathname)) {
+      throw new BadRequestException('Recording URL path is not allowed');
+    }
+
+    return parsed;
+  }
+
+  private isMangoRecordingContentTypeAllowed(contentTypeRaw: string): boolean {
+    const contentType = contentTypeRaw.split(';')[0]?.trim().toLowerCase() ?? '';
+    return contentType.startsWith('audio/') || contentType === 'application/octet-stream';
   }
 
   private extractMangoRecordingAccountId(recordingId: string): string | undefined {

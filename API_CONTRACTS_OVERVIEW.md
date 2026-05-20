@@ -167,6 +167,7 @@ Contract expectations:
 - `POST /api/v1/integrations/events/:id/replay`
 - `GET /api/v1/integrations/mango/call-routing`
 - `POST /api/v1/integrations/mango/call-routing`
+- `GET /api/v1/integrations/mango/recording-proxy?url=<mango_playback_url>`
 - `GET /api/v1/integrations/site/lead-routing`
 - `POST /api/v1/integrations/site/lead-routing`
 - `POST /api/v1/imports/preview`
@@ -185,6 +186,7 @@ Contract expectations:
 8. Site lead-routing settings are admin-only, stored in `SystemConfig`, and assign new site Leads round-robin across configured active managers while preserving existing duplicate Lead managers by default.
 9. Mango connector `recording` callbacks without contact phone are accepted when call context identity is present; CRM links them to an existing Lead by `call_id` when possible and writes activity notes instead of failing validation.
 10. Mango `recording` callbacks with `recording_id` but without direct recording URL should produce `telephony.recordingUrl`; account id comes from `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` or fallback extraction from `recording_id` payload format.
+11. `GET /integrations/mango/recording-proxy` is available for authenticated users, validates Mango playback host/path (`lk.mango-office.ru`), and streams audio payload for in-CRM playback when direct client access to Mango is unavailable.
 
 ### 3.9 Users / Settings
 

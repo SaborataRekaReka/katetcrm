@@ -95,6 +95,7 @@ import { buildAbsoluteEntityUrl } from '../shell/routeSync';
 import { RelatedRecordsFields, type RelatedRecordItem } from './RelatedRecordsFields';
 import { LifecycleRollbackActions } from './LifecycleRollbackActions';
 import { useAuth } from '../../auth/AuthProvider';
+import { readStoredAccessToken } from '../../lib/authApi';
 import type { LeadApi } from '../../lib/leadsApi';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
@@ -383,19 +384,100 @@ function buildMangoPlaybackFallbackUrls(rawHref: string): string[] {
   return Array.from(unique);
 }
 
+function resolveApiBaseUrl(): string {
+  const raw = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? '/api/v1';
+  const normalized = raw.endsWith('/') ? raw : `${raw}/`;
+
+  if (/^https?:\/\//i.test(normalized)) {
+    return normalized;
+  }
+
+  return new URL(normalized.replace(/^\/+/, ''), `${window.location.origin}/`).toString();
+}
+
+function buildMangoRecordingProxyUrl(recordingUrl: string): string {
+  const url = new URL('integrations/mango/recording-proxy', resolveApiBaseUrl());
+  url.searchParams.set('url', recordingUrl);
+  return url.toString();
+}
+
+async function fetchMangoRecordingBlobUrl(
+  recordingUrl: string,
+  signal: AbortSignal,
+): Promise<string> {
+  const token = readStoredAccessToken();
+  const headers: Record<string, string> = {
+    Accept: 'audio/*,application/octet-stream;q=0.9,*/*;q=0.1',
+  };
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(buildMangoRecordingProxyUrl(recordingUrl), {
+    method: 'GET',
+    headers,
+    signal,
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP_${response.status}`);
+  }
+
+  const blob = await response.blob();
+  if (!blob.size) {
+    throw new Error('EMPTY_BODY');
+  }
+
+  return URL.createObjectURL(blob);
+}
+
 function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording }) {
   const playbackCandidates = useMemo(
     () => (recording?.href ? buildMangoPlaybackFallbackUrls(recording.href) : []),
     [recording?.href],
   );
   const [playbackIdx, setPlaybackIdx] = useState(0);
+  const [playbackSrc, setPlaybackSrc] = useState<string | null>(null);
 
   useEffect(() => {
     setPlaybackIdx(0);
+    setPlaybackSrc(null);
   }, [recording?.href]);
+
+  useEffect(() => {
+    const candidate = playbackCandidates[playbackIdx];
+    if (!candidate) {
+      setPlaybackSrc(null);
+      return;
+    }
+
+    const controller = new AbortController();
+    let objectUrl: string | null = null;
+
+    setPlaybackSrc(null);
+
+    void fetchMangoRecordingBlobUrl(candidate, controller.signal)
+      .then((nextSrc) => {
+        objectUrl = nextSrc;
+        setPlaybackSrc(nextSrc);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setPlaybackIdx((prev) => (prev + 1 < playbackCandidates.length ? prev + 1 : prev));
+        }
+      });
+
+    return () => {
+      controller.abort();
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl);
+      }
+    };
+  }, [playbackCandidates, playbackIdx]);
 
   if (!recording) return null;
 
+  const audioSrc = playbackSrc ?? undefined;
   const playbackHref = playbackCandidates[playbackIdx] ?? recording.href;
   const route = recording.from || recording.to
     ? `${recording.from ?? '—'} -> ${recording.to ?? '—'}`
@@ -421,7 +503,7 @@ function CallRecordingMiniPlayer({ recording }: { recording?: TelephonyRecording
       <audio
         controls
         preload="none"
-        src={playbackHref}
+        src={audioSrc}
         onError={handlePlaybackError}
         className="mt-2 block h-8 w-full min-w-0 max-w-full"
         aria-label="Запись звонка"
