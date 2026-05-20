@@ -160,6 +160,6 @@ export class IntegrationsController {
     @Body() dto: RetryOrReplayIntegrationEventDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.integrations.replayFailedEvent(id, user.sub, dto.reason);
+    return this.integrations.replayEvent(id, user.sub, dto.reason);
   }
 }

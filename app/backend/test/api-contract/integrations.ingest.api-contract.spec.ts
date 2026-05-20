@@ -819,4 +819,73 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID}/call-recording/play-record/mango-connector-apic-044-rec-${seed}`,
     );
   });
+
+  it('APIC-045: allows replay for already replayed Mango events (QA-REQ-051)', async () => {
+    const seed = uniqueSeed('045');
+    const phone = uniquePhone('045');
+    const payload = {
+      contactName: 'QA Mango APIC 045',
+      contactCompany: `QA APIC 045 ${seed} LLC`,
+      call: {
+        callId: `mango-apic-045-call-${seed}`,
+        direction: 'incoming',
+        from: phone,
+        to: '+74951234567',
+        duration: 26,
+        status: 'answered',
+        recordingUrl: `https://records.mango.test/apic045-${seed}.mp3`,
+        eventTime: '2026-05-20T10:00:00.000Z',
+      },
+      comment: 'apic-045 replay after replayed status',
+    } as Record<string, unknown>;
+
+    const ingestResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildMangoIngestHeaders(payload))
+      .send({
+        channel: 'mango',
+        externalId: `MANGO-APIC-045-${seed}`,
+        payload,
+      })
+      .expect(201);
+
+    expect(ingestResponse.body.processed).toBe(true);
+    const eventId = ingestResponse.body.event.id as string;
+    const leadId = ingestResponse.body.event.relatedLeadId as string;
+
+    await prisma.integrationEvent.update({
+      where: { id: eventId },
+      data: {
+        status: 'replayed',
+        replayedAt: new Date('2026-05-20T10:05:00.000Z'),
+      },
+    });
+
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const replayResponse = await request(app.getHttpServer())
+      .post(`/api/v1/integrations/events/${eventId}/replay`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({ reason: 'replay already replayed event for recording backfill' })
+      .expect(201);
+
+    expect(replayResponse.body.processed).toBe(true);
+    expect(replayResponse.body.event).toMatchObject({
+      id: eventId,
+      channel: 'mango',
+      status: 'replayed',
+      relatedLeadId: leadId,
+      errorMessage: null,
+    });
+
+    const replayAudit = await prisma.activityLogEntry.findFirst({
+      where: {
+        entityType: 'integration_event',
+        entityId: eventId,
+        action: 'updated',
+        summary: { contains: 'Replay succeeded' },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(replayAudit).not.toBeNull();
+  });
 });

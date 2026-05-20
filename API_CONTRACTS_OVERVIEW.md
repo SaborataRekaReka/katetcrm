@@ -256,7 +256,7 @@ Expectations:
 
 1. Equivalent dedup strategy per event (`channel + externalId`).
 2. Raw payload and processed status logged in `IntegrationEvent`.
-3. Retry/replay endpoints for failed events.
+3. Retry endpoint is for failed events; replay endpoint supports failed and already replayed events.
 4. Clear lifecycle statuses (`received`, `processed`, `failed`, `replayed`).
 5. Mango call payloads normalize telephony context (`direction`, `from`/`to`, `duration`, optional `recordingUrl`) for operator-visible activity timeline.
 6. Mango Office API connector callbacks may arrive as signed form fields `vpbx_api_key`, `sign`, `json`; signature is `sha256(vpbx_api_key + json + INTEGRATION_MANGO_SECRET)`.

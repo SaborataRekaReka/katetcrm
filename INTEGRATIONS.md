@@ -55,7 +55,7 @@ Retry policy:
 
 Replay policy:
 
-1. Failed events are replayable by admin/support flow.
+1. Failed and already replayed events are replayable by admin/support flow.
 2. Replay action is auditable.
 3. Replay uses same idempotency key.
 

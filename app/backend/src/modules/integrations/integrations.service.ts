@@ -446,14 +446,15 @@ export class IntegrationsService {
     return this.processEvent(event, 'retry', actorId, reason);
   }
 
-  async replayFailedEvent(
+  async replayEvent(
     id: string,
     actorId: string,
     reason?: string,
   ): Promise<IntegrationProcessResult> {
     const event = await this.requireEventById(id);
-    if (event.status !== 'failed') {
-      throw new BadRequestException('Replay доступен только для failed событий');
+    const replayableStatuses: IntegrationEventStatus[] = ['failed', 'replayed'];
+    if (!replayableStatuses.includes(event.status)) {
+      throw new BadRequestException('Replay доступен только для failed/replayed событий');
     }
 
     await this.activity.log({
