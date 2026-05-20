@@ -2143,8 +2143,9 @@ export class IntegrationsService {
     if (!recordingId) return undefined;
 
     const apiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
-    const accountId =
+    const configuredAccountId =
       (this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID') ?? '').trim();
+    const accountId = configuredAccountId || this.extractMangoRecordingAccountId(recordingId) || '';
     const template =
       (this.config.get<string>('INTEGRATION_MANGO_RECORDING_URL_TEMPLATE') ?? '').trim();
 
@@ -2168,6 +2169,45 @@ export class IntegrationsService {
         recordingId,
       },
     );
+  }
+
+  private extractMangoRecordingAccountId(recordingId: string): string | undefined {
+    const rawParts = recordingId.split(':');
+    if (rawParts.length >= 2) {
+      const candidate = rawParts[1]?.trim();
+      if (candidate && /^\d{4,20}$/.test(candidate)) {
+        return candidate;
+      }
+    }
+
+    const decoded = this.decodeBase64Loose(recordingId);
+    if (!decoded) return undefined;
+
+    const decodedParts = decoded.split(':');
+    if (decodedParts.length < 2) return undefined;
+
+    const candidate = decodedParts[1]?.trim();
+    if (candidate && /^\d{4,20}$/.test(candidate)) {
+      return candidate;
+    }
+
+    return undefined;
+  }
+
+  private decodeBase64Loose(value: string): string | undefined {
+    const normalized = value.trim().replaceAll('-', '+').replaceAll('_', '/');
+    if (!normalized) return undefined;
+
+    const remainder = normalized.length % 4;
+    const padded = remainder === 0
+      ? normalized
+      : `${normalized}${'='.repeat(4 - remainder)}`;
+
+    try {
+      return Buffer.from(padded, 'base64').toString('utf8');
+    } catch {
+      return undefined;
+    }
   }
 
   private interpolateMangoRecordingUrlTemplate(

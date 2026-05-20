@@ -706,6 +706,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
   it('APIC-044: accepts Mango recording callback without contact phone and links by call_id (QA-REQ-051)', async () => {
     const seed = uniqueSeed('044');
     const phone = uniquePhone('044');
+    const expectedRecordingAccountId = '10160071';
 
     const baseCallPayload = {
       entry_id: `mango-connector-apic-044-entry-call-${seed}`,
@@ -740,23 +741,39 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       select: { id: true },
     });
 
-    const recordingPayload = {
-      seq: 2,
-      call_id: `mango-connector-apic-044-call-${seed}`,
-      entry_id: `mango-connector-apic-044-entry-rec-${seed}`,
-      extension: '11',
-      recipient: 'Cloud',
-      timestamp: 1779199699,
-      recording_id: `mango-connector-apic-044-rec-${seed}`,
-      completion_code: 1000,
-      recording_state: 'Completed',
-    } as Record<string, unknown>;
+    const recordingId = Buffer
+      .from(`1:${expectedRecordingAccountId}:mango-connector-apic-044-rec-${seed}:0`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
+    const previousRecordingAccountId = process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
 
-    const recordingResponse = await request(app.getHttpServer())
-      .post('/api/v1/integrations/events/mango/events/recording')
-      .type('form')
-      .send(buildMangoConnectorBody(recordingPayload))
-      .expect(201);
+    let recordingResponse: request.Response;
+    try {
+      const recordingPayload = {
+        seq: 2,
+        call_id: `mango-connector-apic-044-call-${seed}`,
+        entry_id: `mango-connector-apic-044-entry-rec-${seed}`,
+        extension: '11',
+        recipient: 'Cloud',
+        timestamp: 1779199699,
+        recording_id: recordingId,
+        completion_code: 1000,
+        recording_state: 'Completed',
+      } as Record<string, unknown>;
+
+      recordingResponse = await request(app.getHttpServer())
+        .post('/api/v1/integrations/events/mango/events/recording')
+        .type('form')
+        .send(buildMangoConnectorBody(recordingPayload))
+        .expect(201);
+    } finally {
+      if (previousRecordingAccountId === undefined) {
+        delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+      } else {
+        process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = previousRecordingAccountId;
+      }
+    }
 
     expect(recordingResponse.body.processed).toBe(true);
     expect(recordingResponse.body.event).toMatchObject({
@@ -790,7 +807,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       | { telephony?: { recordingUrl?: string | null } }
       | undefined;
     expect(recordingLeadPayload?.telephony?.recordingUrl).toBe(
-      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID}/call-recording/play-record/mango-connector-apic-044-rec-${seed}`,
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${expectedRecordingAccountId}/call-recording/play-record/${recordingId}`,
     );
 
     const appActivities = await prisma.activityLogEntry.findMany({
@@ -816,7 +833,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       | { telephony?: { recordingUrl?: string | null } }
       | undefined;
     expect(recordingAppPayload?.telephony?.recordingUrl).toBe(
-      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID}/call-recording/play-record/mango-connector-apic-044-rec-${seed}`,
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${expectedRecordingAccountId}/call-recording/play-record/${recordingId}`,
     );
   });
 

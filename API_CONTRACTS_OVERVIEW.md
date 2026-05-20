@@ -184,6 +184,7 @@ Contract expectations:
 7. Mango call-routing settings are admin-only, stored in `SystemConfig`, and map internal Mango extensions to active CRM managers for inbound call assignment.
 8. Site lead-routing settings are admin-only, stored in `SystemConfig`, and assign new site Leads round-robin across configured active managers while preserving existing duplicate Lead managers by default.
 9. Mango connector `recording` callbacks without contact phone are accepted when call context identity is present; CRM links them to an existing Lead by `call_id` when possible and writes activity notes instead of failing validation.
+10. Mango `recording` callbacks with `recording_id` but without direct recording URL should produce `telephony.recordingUrl`; account id comes from `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` or fallback extraction from `recording_id` payload format.
 
 ### 3.9 Users / Settings
 

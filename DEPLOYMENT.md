@@ -66,7 +66,7 @@ Mango Office note:
 1. `INTEGRATION_MANGO_API_KEY` = «Уникальный код вашей АТС» from Mango API connector settings.
 2. `INTEGRATION_MANGO_SECRET` = «Ключ для создания подписи» from the same Mango settings.
 3. Mango external system URL should be `https://<your-domain>/api/v1/integrations/events/mango`; CRM also accepts Mango typed event paths such as `https://<your-domain>/api/v1/integrations/events/mango/events/call` and `https://<your-domain>/api/v1/integrations/events/call`.
-4. If Mango `recording` callbacks include only `recording_id`, configure `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` (and optionally `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE`) so CRM can compose `recordingUrl` for lead/application timeline player.
+4. If Mango `recording` callbacks include only `recording_id`, set `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` (and optionally `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE`) so CRM can compose `recordingUrl` for lead/application timeline player. If account id is omitted, CRM attempts fallback extraction from `recording_id` payload format.
 
 If `DATABASE_URL` uses localhost, deploy script rewrites host to `postgres:5432`.
 

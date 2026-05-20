@@ -99,7 +99,7 @@ For `channel=mango` call events:
 7. Mango Office typed event paths are accepted for call callbacks: `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
 8. Admin can configure internal Mango extension -> CRM manager routing rules from `/admin/integrations`; inbound call ingest applies matching rules to Lead and active Application responsibility while preserving IntegrationEvent idempotency.
 9. Mango Office `recording` callbacks may arrive without contact phone; CRM should accept such events when call identity (`call_id`/`entry_id`) is present and correlate them to an existing Lead by `call_id` when available.
-10. If callback includes `recording_id` but no direct URL, CRM can compose `recordingUrl` from environment settings (`INTEGRATION_MANGO_RECORDING_ACCOUNT_ID`, optional `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE`).
+10. If callback includes `recording_id` but no direct URL, CRM composes `recordingUrl` from env settings; when `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` is missing, CRM tries to derive account id from `recording_id` payload format.
 
 ## 8.1 Site lead distribution
 
