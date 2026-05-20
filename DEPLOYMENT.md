@@ -56,11 +56,17 @@ IPv6 note:
 6. `CORS_ORIGINS=https://<your-domain>`
 7. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
 
+Optional for Mango recording callbacks without direct URL:
+
+8. `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID=<mango_account_id_for_record_links>`
+9. `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE=https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}`
+
 Mango Office note:
 
 1. `INTEGRATION_MANGO_API_KEY` = «Уникальный код вашей АТС» from Mango API connector settings.
 2. `INTEGRATION_MANGO_SECRET` = «Ключ для создания подписи» from the same Mango settings.
 3. Mango external system URL should be `https://<your-domain>/api/v1/integrations/events/mango`; CRM also accepts Mango typed event paths such as `https://<your-domain>/api/v1/integrations/events/mango/events/call` and `https://<your-domain>/api/v1/integrations/events/call`.
+4. If Mango `recording` callbacks include only `recording_id`, configure `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` (and optionally `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE`) so CRM can compose `recordingUrl` for lead/application timeline player.
 
 If `DATABASE_URL` uses localhost, deploy script rewrites host to `postgres:5432`.
 

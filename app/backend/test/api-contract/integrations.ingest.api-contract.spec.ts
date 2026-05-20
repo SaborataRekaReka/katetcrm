@@ -78,17 +78,28 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
   let originalMangoApiKey: string | undefined;
+  let originalMangoRecordingAccountId: string | undefined;
+  let originalMangoRecordingUrlTemplate: string | undefined;
   let originalSiteSecret: string | undefined;
 
   beforeAll(async () => {
     originalMangoSecret = process.env.INTEGRATION_MANGO_SECRET;
     originalMangoApiKey = process.env.INTEGRATION_MANGO_API_KEY;
+    originalMangoRecordingAccountId = process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    originalMangoRecordingUrlTemplate = process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE;
     originalSiteSecret = process.env.INTEGRATION_SITE_SECRET;
     if (!originalMangoSecret) {
       process.env.INTEGRATION_MANGO_SECRET = 'qa-test-mango-secret';
     }
     if (!originalMangoApiKey) {
       process.env.INTEGRATION_MANGO_API_KEY = 'qa-test-mango-api-key';
+    }
+    if (!originalMangoRecordingAccountId) {
+      process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = 'qa-recording-account';
+    }
+    if (!originalMangoRecordingUrlTemplate) {
+      process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE =
+        'https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}';
     }
     if (!originalSiteSecret) {
       process.env.INTEGRATION_SITE_SECRET = 'qa-test-site-secret';
@@ -115,6 +126,16 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       delete process.env.INTEGRATION_MANGO_API_KEY;
     } else {
       process.env.INTEGRATION_MANGO_API_KEY = originalMangoApiKey;
+    }
+    if (originalMangoRecordingAccountId === undefined) {
+      delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    } else {
+      process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = originalMangoRecordingAccountId;
+    }
+    if (originalMangoRecordingUrlTemplate === undefined) {
+      delete process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE;
+    } else {
+      process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE = originalMangoRecordingUrlTemplate;
     }
     if (originalSiteSecret === undefined) {
       delete process.env.INTEGRATION_SITE_SECRET;
@@ -757,11 +778,20 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     });
     const recordingLeadActivity = leadActivities.find((entry) => {
       const payload = entry.payload as
-        | { integration?: { eventId?: string } }
+        | {
+            integration?: { eventId?: string };
+            telephony?: { recordingUrl?: string | null };
+          }
         | undefined;
       return payload?.integration?.eventId === recordingResponse.body.event.id;
     });
     expect(recordingLeadActivity).toBeDefined();
+    const recordingLeadPayload = recordingLeadActivity?.payload as
+      | { telephony?: { recordingUrl?: string | null } }
+      | undefined;
+    expect(recordingLeadPayload?.telephony?.recordingUrl).toBe(
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID}/call-recording/play-record/mango-connector-apic-044-rec-${seed}`,
+    );
 
     const appActivities = await prisma.activityLogEntry.findMany({
       where: {
@@ -774,10 +804,19 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     });
     const recordingAppActivity = appActivities.find((entry) => {
       const payload = entry.payload as
-        | { integration?: { eventId?: string } }
+        | {
+            integration?: { eventId?: string };
+            telephony?: { recordingUrl?: string | null };
+          }
         | undefined;
       return payload?.integration?.eventId === recordingResponse.body.event.id;
     });
     expect(recordingAppActivity).toBeDefined();
+    const recordingAppPayload = recordingAppActivity?.payload as
+      | { telephony?: { recordingUrl?: string | null } }
+      | undefined;
+    expect(recordingAppPayload?.telephony?.recordingUrl).toBe(
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID}/call-recording/play-record/mango-connector-apic-044-rec-${seed}`,
+    );
   });
 });

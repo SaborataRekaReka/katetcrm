@@ -148,6 +148,8 @@ const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
 
 const MANGO_CALL_ROUTING_SETTINGS_KEY = 'integrations.mango.call_routing.v1';
 const SITE_LEAD_ROUTING_SETTINGS_KEY = 'integrations.site.lead_routing.v1';
+const DEFAULT_MANGO_RECORDING_URL_TEMPLATE =
+  'https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}';
 
 const DEFAULT_MANGO_CALL_ROUTING_SETTINGS: MangoCallRoutingSettings = {
   enabled: true,
@@ -2096,17 +2098,21 @@ export class IntegrationsService {
       'finish_time',
       'call_end_time',
     ])?.toISOString();
-    const recordingUrl = this.pickUrl(scopes, [
-      'recordingUrl',
-      'recording_url',
-      'recordUrl',
-      'record_url',
-      'recording',
-      'record',
-      'recordingLink',
-      'recordLink',
-      'talkRecordUrl',
-    ]);
+    const recordingUrl =
+      this.pickUrl(scopes, [
+        'recordingUrl',
+        'recording_url',
+        'recordUrl',
+        'record_url',
+        'recording',
+        'record',
+        'recordingLink',
+        'recordLink',
+        'talkRecordUrl',
+      ])
+      ?? this.buildMangoRecordingUrl(
+        this.pickString(scopes, ['recordingId', 'recording_id', 'recordId', 'record_id']),
+      );
 
     const hasCallContext =
       Boolean(callId) ||
@@ -2129,6 +2135,72 @@ export class IntegrationsService {
       endedAt,
       recordingUrl,
     };
+  }
+
+  private buildMangoRecordingUrl(recordingIdRaw: string | undefined): string | undefined {
+    const recordingId = recordingIdRaw?.trim();
+    if (!recordingId) return undefined;
+
+    const apiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
+    const accountId =
+      (this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID') ?? '').trim();
+    const template =
+      (this.config.get<string>('INTEGRATION_MANGO_RECORDING_URL_TEMPLATE') ?? '').trim();
+
+    if (template) {
+      return this.interpolateMangoRecordingUrlTemplate(template, {
+        apiKey,
+        accountId,
+        recordingId,
+      });
+    }
+
+    if (!apiKey || !accountId) {
+      return undefined;
+    }
+
+    return this.interpolateMangoRecordingUrlTemplate(
+      DEFAULT_MANGO_RECORDING_URL_TEMPLATE,
+      {
+        apiKey,
+        accountId,
+        recordingId,
+      },
+    );
+  }
+
+  private interpolateMangoRecordingUrlTemplate(
+    templateRaw: string,
+    values: {
+      apiKey: string;
+      accountId: string;
+      recordingId: string;
+    },
+  ): string | undefined {
+    const template = templateRaw.trim();
+    if (!template) return undefined;
+
+    if (
+      template.includes('{apiKey}') && !values.apiKey
+      || template.includes('{accountId}') && !values.accountId
+    ) {
+      return undefined;
+    }
+
+    const candidate = template
+      .replaceAll('{apiKey}', encodeURIComponent(values.apiKey))
+      .replaceAll('{accountId}', encodeURIComponent(values.accountId))
+      .replaceAll('{recordingId}', encodeURIComponent(values.recordingId));
+
+    try {
+      const parsed = new URL(candidate);
+      if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+        return parsed.toString();
+      }
+      return undefined;
+    } catch {
+      return undefined;
+    }
   }
 
   private hasMangoContactPhone(
