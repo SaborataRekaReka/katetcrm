@@ -503,6 +503,15 @@ UI surface: Board drag-and-drop and detail actions expose qualification/unqualif
 State/API/audit surface: `POST /api/v1/leads/:id/stage` enforces the profile-specific transition map and writes the usual stage-change activity entry.
 Test priority: P0
 
+QA-REQ-061:
+Question: QA-Q-061. Who can change manager assignment in a Lead card?
+Answer: Only Admin can reassign `Lead.managerId`. Manager can edit allowed lead fields but cannot change lead manager.
+Route surface: /leads detail, /api/v1/leads/:id
+Domain surface: Lead owner reassignment RBAC
+UI surface: Lead detail manager control is editable for Admin and read-only for Manager.
+State/API/audit surface: `PATCH /api/v1/leads/:id` returns `403` for manager when `managerId` changes; admin patch updates `managerId`.
+Test priority: P0
+
 ## 5. Open Questions
 
 Open QA-Q-057: In sales-lite `В работе`, should a request have one text need description or multiple line items/positions?

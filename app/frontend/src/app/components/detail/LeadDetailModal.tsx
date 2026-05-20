@@ -680,7 +680,9 @@ export function LeadDetailModal({
     initialApplication?.id,
     USE_API && !!initialApplication?.id,
   );
-  const managersQuery = useManagersQuery(USE_API && !!initialApplication?.id);
+  const managersQuery = useManagersQuery(
+    USE_API && (!!initialApplication?.id || !!initialLead?.id),
+  );
 
   // Используем свежие данные из query, если доступны — иначе prop как seed.
   const lead = leadDetailQuery.data
@@ -704,7 +706,7 @@ export function LeadDetailModal({
   );
   const existingReservationId = activeReservationsQuery.data?.items?.[0]?.id ?? null;
 
-  const managerOptions = useMemo(() => {
+  const applicationManagerOptions = useMemo(() => {
     const options = (managersQuery.data ?? []).map((manager) => ({
       value: manager.id,
       label: manager.fullName,
@@ -728,9 +730,41 @@ export function LeadDetailModal({
     return options;
   }, [application?.responsibleManager, application?.responsibleManagerId, managersQuery.data]);
 
+  const leadManagerOptions = useMemo(() => {
+    const options = (managersQuery.data ?? []).map((manager) => ({
+      value: manager.id,
+      label: manager.fullName,
+    }));
+
+    const currentManagerId = leadDetailQuery.data?.managerId;
+    if (currentManagerId) {
+      const exists = options.some((option) => option.value === currentManagerId);
+      if (!exists) {
+        options.unshift({
+          value: currentManagerId,
+          label: leadDetailQuery.data?.managerName ?? lead?.manager ?? 'Текущий менеджер',
+        });
+      }
+    } else {
+      options.unshift({
+        value: UNASSIGNED_MANAGER_OPTION,
+        label: 'Не назначен',
+      });
+    }
+
+    return options;
+  }, [
+    lead?.manager,
+    leadDetailQuery.data?.managerId,
+    leadDetailQuery.data?.managerName,
+    managersQuery.data,
+  ]);
+
   if (!lead && !application) return null;
 
+  const isAdmin = user?.role === 'admin';
   const canInlineEditLead = isLead && USE_API && !!lead?.id;
+  const canInlineEditLeadManager = canInlineEditLead && isAdmin;
   const canInlineEditApp = !isLead && USE_API && !!application?.id;
 
   /**
@@ -1544,7 +1578,29 @@ export function LeadDetailModal({
                       )
                     }
                   />
-                  <PropertyRow icon={<UserPlus className="w-3 h-3" />} label="Менеджер" value={<InlineValue>{lead!.manager}</InlineValue>} />
+                  <PropertyRow
+                    icon={<UserPlus className="w-3 h-3" />}
+                    label="Менеджер"
+                    value={
+                      canInlineEditLeadManager && leadManagerOptions.length > 0 ? (
+                        <InlineSelect<string>
+                          value={leadDetailQuery.data?.managerId ?? UNASSIGNED_MANAGER_OPTION}
+                          options={leadManagerOptions}
+                          onSave={async (v) => {
+                            if (!lead || v === UNASSIGNED_MANAGER_OPTION) return;
+                            await updateLead.mutateAsync({
+                              id: lead.id,
+                              patch: { managerId: v },
+                            });
+                          }}
+                          ariaLabel="Ответственный менеджер лида"
+                          disabled={!canInlineEditLeadManager || managersQuery.isPending}
+                        />
+                      ) : (
+                        <InlineValue>{lead!.manager}</InlineValue>
+                      )
+                    }
+                  />
                   <PropertyRow
                     icon={<Building2 className="w-3 h-3" />}
                     label={lead!.company ? 'Контактное лицо' : 'Компания'}
@@ -1701,10 +1757,10 @@ export function LeadDetailModal({
                     icon={<UserPlus className="w-3 h-3" />}
                     label="Менеджер"
                     value={
-                      canInlineEditApp && managerOptions.length > 0 ? (
+                      canInlineEditApp && applicationManagerOptions.length > 0 ? (
                         <InlineSelect<string>
                           value={application!.responsibleManagerId ?? UNASSIGNED_MANAGER_OPTION}
-                          options={managerOptions}
+                          options={applicationManagerOptions}
                           onSave={makeAppFieldSaver((v) => ({
                             responsibleManagerId:
                               v === UNASSIGNED_MANAGER_OPTION ? undefined : v,

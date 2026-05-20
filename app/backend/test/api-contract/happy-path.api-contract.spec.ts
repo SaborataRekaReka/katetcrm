@@ -796,6 +796,37 @@ describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..042)', () => 
       .expect(403);
   });
 
+  it('APIC-013: QA-REQ-035 manager cannot reassign lead manager, admin can', async () => {
+    const managerLogin = await loginByPassword(app, TEST_MANAGER);
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+
+    const created = await request(app.getHttpServer())
+      .post('/api/v1/leads')
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .send({
+        contactName: 'QA APIC-013 Lead',
+        contactPhone: uniquePhone('013'),
+      })
+      .expect(201);
+
+    const leadId = created.body.lead.id as string;
+
+    await request(app.getHttpServer())
+      .patch(`/api/v1/leads/${leadId}`)
+      .set('Authorization', authHeader(managerLogin.accessToken))
+      .send({ managerId: adminLogin.user.id })
+      .expect(403);
+
+    const reassigned = await request(app.getHttpServer())
+      .patch(`/api/v1/leads/${leadId}`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({ managerId: adminLogin.user.id })
+      .expect(200);
+
+    expect(reassigned.body.managerId).toBe(adminLogin.user.id);
+    expect(reassigned.body.managerName).toBe(adminLogin.user.fullName);
+  });
+
   it('APIC-012: Navigation deep-link deterministic route context contract', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
     const seed = uniqueSeed('APIC012');

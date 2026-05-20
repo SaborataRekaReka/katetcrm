@@ -904,6 +904,10 @@ export class LeadsService {
 
   async update(id: string, dto: UpdateLeadDto, actor: ActorContext) {
     const existing = await this.get(id, actor);
+    const managerIdChanged = dto.managerId !== undefined && dto.managerId !== existing.managerId;
+    if (managerIdChanged && actor.role !== 'admin') {
+      throw new ForbiddenException('Только администратор может менять менеджера лида');
+    }
     const patchKeys = Object.entries(dto)
       .filter(([, value]) => value !== undefined)
       .map(([key]) => key);

@@ -33,6 +33,7 @@ Manager can:
 Manager cannot:
 
 1. Access admin-only modules (control dashboard/reports/audit/bug-reports, imports/integrations/settings/users/permissions) unless explicitly granted in future policy.
+2. Reassign lead owner/manager (`Lead.managerId`) from lead detail or direct API patch.
 
 ## 2.3 User Access Lifecycle
 
@@ -61,6 +62,7 @@ Backend must validate regardless of frontend state:
 5. Transition rights for critical workflow actions.
 6. Mutation rights for directories/admin modules, where directory create/update is allowed for manager and delete remains admin-only.
 7. Workflow profile access: `/reservations`, `/departures`, `/completions`, `/equipment-units`, and `/subcontractors` are available only in `full` profile and return `403` in `sales-lite`.
+8. Lead manager reassignment rights: changed `managerId` in `PATCH /leads/:id` is admin-only and must return `403` for manager.
 
 Runtime policy details:
 
