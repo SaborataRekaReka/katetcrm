@@ -300,6 +300,17 @@ function decodeBase64Loose(value: string): string | null {
   }
 }
 
+function encodeBase64Loose(value: string): string | null {
+  const normalized = value.trim();
+  if (!normalized) return null;
+
+  try {
+    return btoa(normalized).replace(/=+$/g, '');
+  } catch {
+    return null;
+  }
+}
+
 function buildMangoPlaybackFallbackUrls(rawHref: string): string[] {
   const href = rawHref.trim();
   if (!href) return [];
@@ -324,11 +335,6 @@ function buildMangoPlaybackFallbackUrls(rawHref: string): string[] {
     return Array.from(unique);
   }
 
-  const hostCandidates = new Set<string>([parsed.hostname]);
-  if (parsed.hostname === 'lk.mango-office.ru') {
-    hostCandidates.add('app.mango-office.ru');
-  }
-
   const pathParts = parsed.pathname.split('/').filter(Boolean);
   if (pathParts.length === 0) {
     return Array.from(unique);
@@ -348,27 +354,30 @@ function buildMangoPlaybackFallbackUrls(rawHref: string): string[] {
     return next.toString();
   };
 
-  for (const host of hostCandidates) {
-    push(makeCandidate(host, recordingId));
-  }
+  const host = parsed.hostname;
+  const recordingSegments = new Set<string>([recordingId]);
+
+  const addSegment = (value?: string | null) => {
+    const normalized = value?.trim();
+    if (normalized) {
+      recordingSegments.add(normalized);
+    }
+  };
 
   const decoded = decodeBase64Loose(recordingId);
-  if (!decoded) {
-    return Array.from(unique);
+  if (decoded) {
+    addSegment(decoded);
+
+    const decodedParts = decoded.split(':');
+    const compactRecordingId = decodedParts[2]?.trim();
+    if (compactRecordingId) {
+      addSegment(compactRecordingId);
+      addSegment(encodeBase64Loose(compactRecordingId));
+    }
   }
 
-  for (const host of hostCandidates) {
-    push(makeCandidate(host, decoded));
-  }
-
-  const decodedParts = decoded.split(':');
-  const compactRecordingId = decodedParts[2]?.trim();
-  if (!compactRecordingId) {
-    return Array.from(unique);
-  }
-
-  for (const host of hostCandidates) {
-    push(makeCandidate(host, compactRecordingId));
+  for (const recordingSegment of recordingSegments) {
+    push(makeCandidate(host, recordingSegment));
   }
 
   return Array.from(unique);
