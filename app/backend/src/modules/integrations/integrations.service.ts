@@ -142,6 +142,11 @@ interface MangoRecordingProxyResult {
   contentType: string;
 }
 
+interface MangoRecordingFetchAttempt {
+  source: 'legacy' | 'signed_link' | 'post_download';
+  status: number;
+}
+
 const MAX_RETRY_ATTEMPTS = 3;
 
 const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
@@ -157,7 +162,9 @@ const DEFAULT_MANGO_RECORDING_URL_TEMPLATE =
   'https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}';
 const MANGO_SIGNED_RECORDING_LINK_BASE =
   'https://app.mango-office.ru/vpbx/queries/recording/link';
+const MANGO_RECORDING_POST_URL = 'https://app.mango-office.ru/vpbx/queries/recording/post';
 const MANGO_SIGNED_RECORDING_LINK_ACTION = 'play';
+const MANGO_RECORDING_POST_ACTION = 'download';
 const MANGO_SIGNED_RECORDING_LINK_TTL_SECONDS = 300;
 
 const DEFAULT_MANGO_CALL_ROUTING_SETTINGS: MangoCallRoutingSettings = {
@@ -487,25 +494,47 @@ export class IntegrationsService {
     const url = this.parseMangoRecordingProxyUrl(rawUrl);
 
     let response = await this.fetchMangoRecordingResponse(url.toString());
+    const attempts: MangoRecordingFetchAttempt[] = [{ source: 'legacy', status: response.status }];
     if (response.status === 403 || response.status === 404) {
       const signedFallbackUrl = this.buildMangoSignedRecordingLinkFromLegacyUrl(url);
       if (signedFallbackUrl) {
         const fallbackResponse = await this.fetchMangoRecordingResponse(signedFallbackUrl);
+        attempts.push({ source: 'signed_link', status: fallbackResponse.status });
         if (fallbackResponse.ok) {
           response = fallbackResponse;
+        }
+      }
+
+      if (!response.ok) {
+        const recordingId = this.extractMangoRecordingIdFromLegacyUrl(url);
+        if (recordingId) {
+          const postResponse = await this.fetchMangoRecordingViaPostDownload(recordingId);
+          attempts.push({ source: 'post_download', status: postResponse.status });
+          if (postResponse.ok) {
+            response = postResponse;
+          }
         }
       }
     }
 
     if (response.status === 403) {
-      throw new ForbiddenException('Mango recording access denied');
+      throw new ForbiddenException(this.buildMangoRecordingFailureMessage(
+        'Mango recording access denied',
+        attempts,
+      ));
     }
     if (response.status === 404) {
-      throw new NotFoundException('Mango recording not found');
+      throw new NotFoundException(this.buildMangoRecordingFailureMessage(
+        'Mango recording not found',
+        attempts,
+      ));
     }
     if (!response.ok) {
       throw new ServiceUnavailableException(
-        `Mango recording request failed with status ${response.status}`,
+        this.buildMangoRecordingFailureMessage(
+          `Mango recording request failed with status ${response.status}`,
+          attempts,
+        ),
       );
     }
 
@@ -537,6 +566,49 @@ export class IntegrationsService {
     } catch {
       throw new ServiceUnavailableException('Mango recording service is unreachable');
     }
+  }
+
+  private async fetchMangoRecordingViaPostDownload(
+    recordingId: string,
+  ): Promise<globalThis.Response> {
+    const apiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
+    const apiSalt = (this.config.get<string>('INTEGRATION_MANGO_SECRET') ?? '').trim();
+    if (!apiKey || !apiSalt) {
+      return new Response(null, { status: 503 });
+    }
+
+    const json = JSON.stringify({
+      recording_id: recordingId,
+      action: MANGO_RECORDING_POST_ACTION,
+    });
+    const form = new URLSearchParams({
+      vpbx_api_key: apiKey,
+      sign: createHash('sha256').update(`${apiKey}${json}${apiSalt}`).digest('hex'),
+      json,
+    });
+
+    let tempLinkResponse: globalThis.Response;
+    try {
+      tempLinkResponse = await fetch(MANGO_RECORDING_POST_URL, {
+        method: 'POST',
+        redirect: 'manual',
+        headers: {
+          Accept: '*/*',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: form,
+      });
+    } catch {
+      throw new ServiceUnavailableException('Mango recording service is unreachable');
+    }
+
+    const tempLink = tempLinkResponse.headers.get('location')?.trim();
+    if (!tempLink || ![301, 302, 303, 307, 308].includes(tempLinkResponse.status)) {
+      return tempLinkResponse;
+    }
+
+    const downloadUrl = this.parseMangoRecordingTempLink(tempLink, MANGO_RECORDING_POST_URL);
+    return this.fetchMangoRecordingResponse(downloadUrl.toString());
   }
 
   private async handleExistingEvent(existing: IntegrationEvent): Promise<IntegrationIngestResult> {
@@ -2268,22 +2340,7 @@ export class IntegrationsService {
   }
 
   private buildMangoSignedRecordingLinkFromLegacyUrl(url: URL): string | undefined {
-    if (!MANGO_RECORDING_PROXY_PATH_RE.test(url.pathname)) {
-      return undefined;
-    }
-
-    const pathParts = url.pathname.split('/').filter(Boolean);
-    const encodedRecordingId = pathParts[pathParts.length - 1]?.trim();
-    if (!encodedRecordingId) {
-      return undefined;
-    }
-
-    let recordingId = '';
-    try {
-      recordingId = decodeURIComponent(encodedRecordingId).trim();
-    } catch {
-      return undefined;
-    }
+    const recordingId = this.extractMangoRecordingIdFromLegacyUrl(url);
     if (!recordingId) {
       return undefined;
     }
@@ -2307,6 +2364,57 @@ export class IntegrationsService {
       String(expires),
       sign,
     ].join('/');
+  }
+
+  private extractMangoRecordingIdFromLegacyUrl(url: URL): string | undefined {
+    if (!MANGO_RECORDING_PROXY_PATH_RE.test(url.pathname)) {
+      return undefined;
+    }
+
+    const pathParts = url.pathname.split('/').filter(Boolean);
+    const encodedRecordingId = pathParts[pathParts.length - 1]?.trim();
+    if (!encodedRecordingId) {
+      return undefined;
+    }
+
+    try {
+      const recordingId = decodeURIComponent(encodedRecordingId).trim();
+      return recordingId || undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  private parseMangoRecordingTempLink(rawUrl: string, baseUrl: string): URL {
+    let parsed: URL;
+    try {
+      parsed = new URL(rawUrl, baseUrl);
+    } catch {
+      throw new ServiceUnavailableException('Mango recording returned invalid temporary link');
+    }
+
+    if (parsed.protocol !== 'https:') {
+      throw new ServiceUnavailableException('Mango recording temporary link protocol is not allowed');
+    }
+    if (parsed.hostname !== 'app.mango-office.ru' && parsed.hostname !== 'lk.mango-office.ru') {
+      throw new ServiceUnavailableException('Mango recording temporary link host is not allowed');
+    }
+
+    return parsed;
+  }
+
+  private buildMangoRecordingFailureMessage(
+    baseMessage: string,
+    attempts: MangoRecordingFetchAttempt[],
+  ): string {
+    if (attempts.length <= 1) {
+      return baseMessage;
+    }
+
+    const trace = attempts
+      .map((attempt) => `${attempt.source}:${attempt.status}`)
+      .join(', ');
+    return `${baseMessage} (${trace})`;
   }
 
   private isMangoRecordingContentTypeAllowed(contentTypeRaw: string): boolean {
