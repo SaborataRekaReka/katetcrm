@@ -110,6 +110,11 @@ interface LeadUpsertResult {
   managerAssignment?: IntegrationManagerAssignment;
 }
 
+interface MangoPhoneOptionalProcessing {
+  shouldHandle: boolean;
+  call?: NormalizedCallContext;
+}
+
 interface IngestAuthHeaders {
   signature?: string;
   timestamp?: string;
@@ -535,6 +540,17 @@ export class IntegrationsService {
     const actor = await this.resolveSystemActor();
 
     try {
+      const mangoPhoneOptional = this.detectMangoPhoneOptionalProcessing(event);
+      if (mangoPhoneOptional.shouldHandle) {
+        return await this.processMangoPhoneOptionalEvent(
+          event,
+          mode,
+          mangoPhoneOptional.call,
+          initiatedByActorId,
+          reason,
+        );
+      }
+
       const normalizedPayload = this.normalizeLeadPayload(
         event.channel,
         event.payload,
@@ -659,6 +675,91 @@ export class IntegrationsService {
         failure,
       };
     }
+  }
+
+  private detectMangoPhoneOptionalProcessing(
+    event: IntegrationEvent,
+  ): MangoPhoneOptionalProcessing {
+    if (event.channel !== 'mango') {
+      return { shouldHandle: false };
+    }
+
+    const root = this.asRecord(event.payload);
+    const lead = this.asRecord(root?.lead);
+    const contact = this.asRecord(root?.contact);
+    const sender = this.asRecord(root?.sender);
+    const call = this.asRecord(root?.call);
+    const scopes = [root, lead, contact, sender, call];
+    const callScopes = [call, root, lead, contact, sender];
+
+    const callContext = this.normalizeCallContext(callScopes, event.externalId);
+    const hasPhone = this.hasMangoContactPhone(scopes, callContext);
+    if (hasPhone) {
+      return { shouldHandle: false };
+    }
+
+    const isRecording = this.isMangoRecordingPayload(root, call, callContext);
+    if (!isRecording) {
+      return { shouldHandle: false };
+    }
+
+    return {
+      shouldHandle: true,
+      call: callContext,
+    };
+  }
+
+  private async processMangoPhoneOptionalEvent(
+    event: IntegrationEvent,
+    mode: ProcessingMode,
+    call: NormalizedCallContext | undefined,
+    initiatedByActorId?: string,
+    reason?: string,
+  ): Promise<IntegrationProcessResult> {
+    const leadId = await this.resolveLeadIdForMangoCallContext(event, call);
+    const status: IntegrationEventStatus = mode === 'replay' ? 'replayed' : 'processed';
+
+    const updated = await this.prisma.integrationEvent.update({
+      where: { id: event.id },
+      data: {
+        status,
+        relatedLeadId: leadId ?? null,
+        processedAt: new Date(),
+        replayedAt: mode === 'replay' ? new Date() : undefined,
+        errorCode: null,
+        errorClass: null,
+        errorMessage: null,
+      },
+    });
+
+    if (leadId && call) {
+      await this.logMangoCallActivity(event, leadId, call);
+    }
+
+    if (mode === 'retry' || mode === 'replay') {
+      await this.activity.log({
+        action: 'updated',
+        entityType: 'integration_event',
+        entityId: event.id,
+        summary:
+          mode === 'replay'
+            ? `Replay succeeded for integration event ${event.id}`
+            : `Retry succeeded for integration event ${event.id}`,
+        actorId: initiatedByActorId ?? null,
+        payload: {
+          reason: reason ?? null,
+          leadId: leadId ?? null,
+          operation: leadId ? 'updated' : 'skipped',
+          duplicatesFound: 0,
+          managerAssignment: null,
+        },
+      });
+    }
+
+    return {
+      event: updated,
+      processed: true,
+    };
   }
 
   private async upsertLeadFromEvent(
@@ -1097,6 +1198,10 @@ export class IntegrationsService {
     const call = this.asRecord(root.call);
     const scopes = [root, lead, contact, sender, call];
 
+    const isMangoRecording =
+      dto.channel === 'mango'
+      && this.isMangoRecordingPayload(root, call);
+
     const phone = this.pickEndpointString(scopes, [
       'contactPhone',
       'phone',
@@ -1113,7 +1218,7 @@ export class IntegrationsService {
       'abonent_number',
       'line_number',
     ]);
-    if (!phone) {
+    if (!phone && !isMangoRecording) {
       throw new BadRequestException(
         `payload does not match ${dto.channel} schema: missing contact phone`,
       );
@@ -2024,6 +2129,109 @@ export class IntegrationsService {
       endedAt,
       recordingUrl,
     };
+  }
+
+  private hasMangoContactPhone(
+    scopes: Array<Record<string, unknown> | undefined>,
+    call: NormalizedCallContext | undefined,
+  ): boolean {
+    const callCounterpartyPhone = call
+      ? this.pickCallCounterpartyPhone(call)
+      : undefined;
+
+    const phoneRaw =
+      callCounterpartyPhone
+      ?? this.pickString(scopes, ['contactPhone', 'phone', 'phoneNumber', 'senderPhone'])
+      ?? this.pickEndpointString(scopes, [
+        'from',
+        'from_number',
+        'fromNumber',
+        'to',
+        'to_number',
+        'toNumber',
+        'caller_number',
+        'callee_number',
+        'abonent_number',
+        'line_number',
+      ])
+      ?? '';
+
+    return Boolean(normalizePhone(phoneRaw));
+  }
+
+  private isMangoRecordingPayload(
+    root: Record<string, unknown> | undefined,
+    call?: Record<string, unknown>,
+    callContext?: NormalizedCallContext,
+  ): boolean {
+    const connector = this.asRecord(root?._connector);
+    const typeRaw = this.pickString([connector, root, call], [
+      'eventType',
+      'event_type',
+      'type',
+    ])?.toLowerCase();
+    if (typeRaw?.includes('recording')) {
+      return true;
+    }
+
+    if (
+      Boolean(
+        this.pickString([root, call], [
+          'recordingId',
+          'recording_id',
+          'recordingState',
+          'recording_state',
+        ]),
+      )
+    ) {
+      return true;
+    }
+
+    return Boolean(callContext?.recordingUrl);
+  }
+
+  private async resolveLeadIdForMangoCallContext(
+    event: IntegrationEvent,
+    call: NormalizedCallContext | undefined,
+  ): Promise<string | undefined> {
+    if (event.relatedLeadId) {
+      return event.relatedLeadId;
+    }
+
+    const callId = call?.callId?.trim();
+    if (!callId) {
+      return undefined;
+    }
+
+    const recentEvents = await this.prisma.integrationEvent.findMany({
+      where: {
+        channel: 'mango',
+        id: { not: event.id },
+        relatedLeadId: { not: null },
+      },
+      orderBy: { receivedAt: 'desc' },
+      take: 300,
+      select: {
+        externalId: true,
+        relatedLeadId: true,
+        payload: true,
+      },
+    });
+
+    for (const candidate of recentEvents) {
+      const root = this.asRecord(candidate.payload);
+      const lead = this.asRecord(root?.lead);
+      const contact = this.asRecord(root?.contact);
+      const sender = this.asRecord(root?.sender);
+      const nestedCall = this.asRecord(root?.call);
+      const callScopes = [nestedCall, root, lead, contact, sender];
+      const candidateCall = this.normalizeCallContext(callScopes, candidate.externalId);
+      if (candidateCall?.callId === callId) {
+        return candidate.relatedLeadId ?? undefined;
+      }
+    }
+
+    return undefined;
   }
 
   private normalizeCallDirection(raw: string | undefined): CallDirection | undefined {

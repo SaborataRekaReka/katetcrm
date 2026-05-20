@@ -62,7 +62,6 @@ Contract expectations:
 - `POST /api/v1/leads/:id/rollback`
 - `POST /api/v1/leads/:id/delete-current`
 - `DELETE /api/v1/leads/:id/chain` (admin-only)
-- `GET /api/v1/leads/stream` (SSE, auth required)
 
 Contract expectations:
 
@@ -74,7 +73,6 @@ Contract expectations:
 6. `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` are server-owned one-step lifecycle rollback operations. They hard-delete only the current representation, restore the previous stage, and write audit snapshot payloads.
 7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
 8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
-9. `GET /api/v1/leads/stream` pushes `lead_created` events as Server-Sent Events. Admin receives all events, manager receives only own assigned leads.
 
 ### 3.3 Applications
 
@@ -152,13 +150,12 @@ Contract expectations:
 - `POST /api/v1/tasks/:id/duplicate`
 - `POST /api/v1/tasks/:id/archive`
 - `POST /api/v1/tasks/:id/subtasks`
-- `POST /api/v1/tasks/:id/comments`
 
 Contract expectations:
 
 1. `scope=mine|all` is enforced server-side with RBAC/ownership semantics.
 2. `includeArchived` controls visibility of archived tasks without hard-delete behavior.
-3. Task write endpoints preserve audit trail through activity log entries (`created`, `updated`, `note_added`).
+3. Task write endpoints preserve audit trail through activity log entries (`created`, `updated`).
 4. Manager assignment boundaries are enforced server-side (no foreign assignee hijack in manager context).
 5. `dueDate` supports explicit clear semantics (`null`, and empty-string normalization path for compatibility) without deleting task history.
 
@@ -186,6 +183,7 @@ Contract expectations:
 6. Mango ingest events with call metadata create/update lead context and write `note_added` activity records for linked Lead and active Application entities.
 7. Mango call-routing settings are admin-only, stored in `SystemConfig`, and map internal Mango extensions to active CRM managers for inbound call assignment.
 8. Site lead-routing settings are admin-only, stored in `SystemConfig`, and assign new site Leads round-robin across configured active managers while preserving existing duplicate Lead managers by default.
+9. Mango connector `recording` callbacks without contact phone are accepted when call context identity is present; CRM links them to an existing Lead by `call_id` when possible and writes activity notes instead of failing validation.
 
 ### 3.9 Users / Settings
 

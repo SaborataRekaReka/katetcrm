@@ -681,4 +681,103 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     expect(preservedLead.managerId).toBe(firstManager.id);
     expect(preservedLead.contactName).toBe('QA Site Routing First Lead Updated');
   });
+
+  it('APIC-044: accepts Mango recording callback without contact phone and links by call_id (QA-REQ-051)', async () => {
+    const seed = uniqueSeed('044');
+    const phone = uniquePhone('044');
+
+    const baseCallPayload = {
+      entry_id: `mango-connector-apic-044-entry-call-${seed}`,
+      call_id: `mango-connector-apic-044-call-${seed}`,
+      call_direction: 'incoming',
+      from_number: phone,
+      to_number: '+74951234567',
+      duration: 31,
+      call_state: 'connected',
+      create_time: '2026-05-20T09:00:00.000Z',
+    } as Record<string, unknown>;
+
+    const baseCallResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango')
+      .type('form')
+      .send(buildMangoConnectorBody(baseCallPayload))
+      .expect(201);
+
+    expect(baseCallResponse.body.processed).toBe(true);
+    const leadId = baseCallResponse.body.event.relatedLeadId as string;
+    expect(leadId).toEqual(expect.any(String));
+
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    await request(app.getHttpServer())
+      .post(`/api/v1/leads/${leadId}/stage`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({ stage: 'application' })
+      .expect(201);
+
+    const activeApplication = await prisma.application.findFirstOrThrow({
+      where: { leadId, isActive: true },
+      select: { id: true },
+    });
+
+    const recordingPayload = {
+      seq: 2,
+      call_id: `mango-connector-apic-044-call-${seed}`,
+      entry_id: `mango-connector-apic-044-entry-rec-${seed}`,
+      extension: '11',
+      recipient: 'Cloud',
+      timestamp: 1779199699,
+      recording_id: `mango-connector-apic-044-rec-${seed}`,
+      completion_code: 1000,
+      recording_state: 'Completed',
+    } as Record<string, unknown>;
+
+    const recordingResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango/events/recording')
+      .type('form')
+      .send(buildMangoConnectorBody(recordingPayload))
+      .expect(201);
+
+    expect(recordingResponse.body.processed).toBe(true);
+    expect(recordingResponse.body.event).toMatchObject({
+      channel: 'mango',
+      externalId: `mango-connector-apic-044-entry-rec-${seed}`,
+      status: 'processed',
+      relatedLeadId: leadId,
+      errorMessage: null,
+    });
+
+    const leadActivities = await prisma.activityLogEntry.findMany({
+      where: {
+        entityType: 'lead',
+        entityId: leadId,
+        action: 'note_added',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+    const recordingLeadActivity = leadActivities.find((entry) => {
+      const payload = entry.payload as
+        | { integration?: { eventId?: string } }
+        | undefined;
+      return payload?.integration?.eventId === recordingResponse.body.event.id;
+    });
+    expect(recordingLeadActivity).toBeDefined();
+
+    const appActivities = await prisma.activityLogEntry.findMany({
+      where: {
+        entityType: 'application',
+        entityId: activeApplication.id,
+        action: 'note_added',
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 10,
+    });
+    const recordingAppActivity = appActivities.find((entry) => {
+      const payload = entry.payload as
+        | { integration?: { eventId?: string } }
+        | undefined;
+      return payload?.integration?.eventId === recordingResponse.body.event.id;
+    });
+    expect(recordingAppActivity).toBeDefined();
+  });
 });

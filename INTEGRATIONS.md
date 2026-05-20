@@ -98,6 +98,7 @@ For `channel=mango` call events:
 6. Auth or schema rejected Mango connector callbacks should be visible as redacted `failed` integration events when the request reaches the CRM endpoint.
 7. Mango Office typed event paths are accepted for call callbacks: `/api/v1/integrations/events/mango/events/call` and `/api/v1/integrations/events/call`.
 8. Admin can configure internal Mango extension -> CRM manager routing rules from `/admin/integrations`; inbound call ingest applies matching rules to Lead and active Application responsibility while preserving IntegrationEvent idempotency.
+9. Mango Office `recording` callbacks may arrive without contact phone; CRM should accept such events when call identity (`call_id`/`entry_id`) is present and correlate them to an existing Lead by `call_id` when available.
 
 ## 8.1 Site lead distribution
 
