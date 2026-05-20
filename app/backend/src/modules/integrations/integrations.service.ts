@@ -493,9 +493,17 @@ export class IntegrationsService {
   async proxyMangoRecording(rawUrl: string): Promise<MangoRecordingProxyResult> {
     const url = this.parseMangoRecordingProxyUrl(rawUrl);
 
-    let response = await this.fetchMangoRecordingResponse(url.toString());
-    const attempts: MangoRecordingFetchAttempt[] = [{ source: 'legacy', status: response.status }];
-    if (response.status === 403 || response.status === 404) {
+    let response: globalThis.Response | undefined;
+    const attempts: MangoRecordingFetchAttempt[] = [];
+    const recordingId = this.extractMangoRecordingIdFromLegacyUrl(url);
+
+    if (recordingId) {
+      const postResponse = await this.fetchMangoRecordingViaPostDownload(recordingId);
+      attempts.push({ source: 'post_download', status: postResponse.status });
+      response = postResponse;
+    }
+
+    if (!response?.ok && response?.status !== 429) {
       const signedFallbackUrl = this.buildMangoSignedRecordingLinkFromLegacyUrl(url);
       if (signedFallbackUrl) {
         const fallbackResponse = await this.fetchMangoRecordingResponse(signedFallbackUrl);
@@ -504,17 +512,18 @@ export class IntegrationsService {
           response = fallbackResponse;
         }
       }
+    }
 
-      if (!response.ok) {
-        const recordingId = this.extractMangoRecordingIdFromLegacyUrl(url);
-        if (recordingId) {
-          const postResponse = await this.fetchMangoRecordingViaPostDownload(recordingId);
-          attempts.push({ source: 'post_download', status: postResponse.status });
-          if (postResponse.ok) {
-            response = postResponse;
-          }
-        }
+    if (!response?.ok && response?.status !== 429) {
+      const legacyResponse = await this.fetchMangoRecordingResponse(url.toString());
+      attempts.push({ source: 'legacy', status: legacyResponse.status });
+      if (legacyResponse.ok || !response) {
+        response = legacyResponse;
       }
+    }
+
+    if (!response) {
+      throw new ServiceUnavailableException('Mango recording request could not be started');
     }
 
     if (response.status === 403) {
@@ -2396,8 +2405,11 @@ export class IntegrationsService {
     if (parsed.protocol !== 'https:') {
       throw new ServiceUnavailableException('Mango recording temporary link protocol is not allowed');
     }
-    if (parsed.hostname !== 'app.mango-office.ru' && parsed.hostname !== 'lk.mango-office.ru') {
-      throw new ServiceUnavailableException('Mango recording temporary link host is not allowed');
+    const hostname = parsed.hostname.toLowerCase();
+    if (hostname !== 'mango-office.ru' && !hostname.endsWith('.mango-office.ru')) {
+      throw new ServiceUnavailableException(
+        `Mango recording temporary link host is not allowed (${hostname})`,
+      );
     }
 
     return parsed;
