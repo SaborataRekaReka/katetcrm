@@ -264,7 +264,7 @@ export class LeadsService {
   async create(dto: CreateLeadDto, actor: ActorContext) {
     const phoneNormalized = normalizePhone(dto.contactPhone);
     const duplicates = await this.findDuplicates(dto.contactPhone, dto.contactCompany);
-    const managerId = dto.managerId ?? actor.id;
+    const managerId = dto.managerId === undefined ? actor.id : dto.managerId;
     const lead = await this.prisma.lead.create({
       data: {
         source: dto.source ?? 'manual',

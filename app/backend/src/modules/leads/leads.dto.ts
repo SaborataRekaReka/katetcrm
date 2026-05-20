@@ -61,7 +61,7 @@ export class CreateLeadDto {
 
   @IsOptional()
   @IsString()
-  managerId?: string;
+  managerId?: string | null;
 
   @IsOptional()
   @IsString()

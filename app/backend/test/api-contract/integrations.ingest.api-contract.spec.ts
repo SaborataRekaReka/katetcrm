@@ -190,6 +190,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     const lead = await prisma.lead.findUnique({ where: { id: leadId } });
     expect(lead).not.toBeNull();
     expect(lead?.source).toBe('mango');
+    expect(lead?.managerId).toBeNull();
     expect(lead?.contactPhone).toContain(phone.slice(-10));
     expect(lead?.comment).toContain(`[integration:mango#MANGO-APIC-036-1-${seed}]`);
     expect(lead?.comment).toContain('https://records.mango.test/apic036-call-1.mp3');

@@ -451,7 +451,7 @@ Test priority: P1
 
 QA-REQ-052:
 Question: QA-Q-052. How should Mango Office call distribution assign CRM managers?
-Answer: Admin can configure Mango internal extension -> CRM manager rules in Admin -> Integrations. When an inbound Mango call payload contains a matching internal extension, CRM assigns that manager to the created/updated Lead and to the active Application for that Lead. Transfer and missed-call assignment obey the stored toggles.
+Answer: Admin can configure Mango internal extension -> CRM manager rules in Admin -> Integrations. When an inbound Mango call payload contains a matching internal extension, CRM assigns that manager to the created/updated Lead and to the active Application for that Lead. Transfer and missed-call assignment obey the stored toggles. If no rule/fallback matches, CRM must not assign the system admin as the Lead manager.
 Route surface: /api/v1/integrations/mango/call-routing, /api/v1/integrations/events/mango, /admin/integrations
 Domain surface: Mango Office call routing -> Lead/Application responsible manager assignment
 UI surface: Admin -> Integrations shows a Mango Office section with extension-to-manager rows and routing toggles.

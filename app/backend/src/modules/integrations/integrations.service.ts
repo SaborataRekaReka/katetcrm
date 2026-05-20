@@ -979,7 +979,7 @@ export class IntegrationsService {
         address: payload.address,
         comment,
         isUrgent: payload.isUrgent,
-        managerId: effectiveManagerAssignment?.managerId,
+        managerId: effectiveManagerAssignment?.managerId ?? null,
       },
       actor,
     );
