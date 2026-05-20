@@ -1,12 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Task, TaskStatus } from '../data/mockTasks';
 import {
-  addTaskComment,
   addTaskSubtask,
   archiveTask,
   createTask,
   duplicateTask,
-  type AddTaskCommentInputApi,
   type AddTaskSubtaskInputApi,
   type CreateTaskInputApi,
   updateTask,
@@ -63,14 +61,6 @@ export function useAddTaskSubtaskMutation() {
   const qc = useQueryClient();
   return useMutation<Task, Error, { id: string; payload: AddTaskSubtaskInputApi }>({
     mutationFn: ({ id, payload }) => addTaskSubtask(id, payload),
-    onSuccess: () => invalidateTasks(qc),
-  });
-}
-
-export function useAddTaskCommentMutation() {
-  const qc = useQueryClient();
-  return useMutation<Task, Error, { id: string; payload: AddTaskCommentInputApi }>({
-    mutationFn: ({ id, payload }) => addTaskComment(id, payload),
     onSuccess: () => invalidateTasks(qc),
   });
 }

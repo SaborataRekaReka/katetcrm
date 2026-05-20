@@ -55,7 +55,6 @@ import { useRecentActivityQuery } from '../../hooks/useActivityQuery';
 import { useLeadsQuery } from '../../hooks/useLeadsQuery';
 import { useTasksQuery } from '../../hooks/useTasksQuery';
 import {
-  useAddTaskCommentMutation,
   useAddTaskSubtaskMutation,
   useArchiveTaskMutation,
   useCreateTaskMutation,
@@ -736,7 +735,6 @@ function ApiMyTasksPage() {
   const duplicateMutation = useDuplicateTaskMutation();
   const archiveMutation = useArchiveTaskMutation();
   const addSubtaskMutation = useAddTaskSubtaskMutation();
-  const addCommentMutation = useAddTaskCommentMutation();
 
   const isPending = USE_API && tasksQuery.isPending && !tasksQuery.data;
   const isError = USE_API && tasksQuery.isError && !tasksQuery.data;
@@ -842,22 +840,6 @@ function ApiMyTasksPage() {
       });
     } catch (error) {
       setMutationError(error instanceof Error ? error.message : 'Не удалось добавить подзадачу.');
-    }
-  };
-
-  const handleAddComment = async (taskId: string, text: string) => {
-    const body = text.trim();
-    if (!body) return;
-
-    setMutationError(null);
-    try {
-      await addCommentMutation.mutateAsync({
-        id: taskId,
-        payload: { text: body },
-      });
-    } catch (error) {
-      setMutationError(error instanceof Error ? error.message : 'Не удалось добавить комментарий.');
-      throw error;
     }
   };
 
@@ -980,7 +962,6 @@ function ApiMyTasksPage() {
         onAddSubtask={(taskId) => {
           void handleAddSubtask(taskId);
         }}
-        onAddComment={(taskId, text) => handleAddComment(taskId, text)}
       />
     </div>
   );

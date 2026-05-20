@@ -226,6 +226,11 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
 
   const canInlineEditClient = isApiDetailMode;
 
+  const toNullable = (value: string): string | null => {
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : null;
+  };
+
   /** Фабрика save-обработчиков для инлайн-полей клиента. */
   const makeClientFieldSaver = (
     apply: (next: string) => Parameters<typeof updateClientMutation.mutateAsync>[0]['patch'],
@@ -330,7 +335,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
       try {
         await updateClientMutation.mutateAsync({
           id: resolvedApiClientId,
-          patch: { notes: comment.trim() || undefined },
+          patch: { notes: toNullable(comment) },
         });
       } catch {
         // Keep local state to avoid losing user text on transient API issues.
@@ -814,7 +819,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   ariaLabel="Эл. почта клиента"
                   placeholder="Добавить эл. почту…"
                   emptyDisplay={<EmptyValue />}
-                  onSave={makeClientFieldSaver((v) => ({ email: v.trim() || undefined }))}
+                  onSave={makeClientFieldSaver((v) => ({ email: toNullable(v) }))}
                 />
               ) : base.primaryEmail ? (
                 <EmailLink value={base.primaryEmail} />
@@ -996,7 +1001,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                   placeholder="Условия работы, особенности, договорённости…"
                   multiline
                   emptyDisplay={<span className="text-gray-400 italic">Добавить заметку…</span>}
-                  onSave={makeClientFieldSaver((v) => ({ notes: v.trim() || undefined }))}
+                  onSave={makeClientFieldSaver((v) => ({ notes: toNullable(v) }))}
                 />
               </div>
             ) : notesEditing ? (

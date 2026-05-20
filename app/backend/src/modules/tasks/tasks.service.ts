@@ -9,7 +9,6 @@ import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { ActivityService } from '../activity/activity.service';
 import {
-  AddTaskCommentDto,
   AddTaskSubtaskDto,
   CreateTaskDto,
   TaskCommentView,
@@ -337,59 +336,6 @@ export class TasksService {
     return this.toTaskView(updated, activityMap.get(id) ?? []);
   }
 
-  async addComment(id: string, dto: AddTaskCommentDto, actor: TaskActorContext): Promise<TaskView> {
-    const existing = await this.prisma.task.findUnique({
-      where: { id },
-      include: TASK_INCLUDE,
-    });
-    if (!existing) throw new NotFoundException('Задача не найдена.');
-    this.assertTaskAccess(existing, actor);
-
-    const text = dto.text.trim();
-    if (!text) {
-      throw new BadRequestException('Комментарий не может быть пустым.');
-    }
-
-    const actorUser = await this.prisma.user.findUnique({
-      where: { id: actor.id },
-      select: { fullName: true },
-    });
-    const author = actorUser?.fullName ?? 'Система';
-    const comments = this.parseComments(existing.comments);
-
-    const nextComment: TaskCommentView = {
-      id: `c-${randomUUID()}`,
-      author,
-      avatar: this.buildAvatar(author),
-      color: 'from-indigo-400 to-purple-500',
-      time: 'только что',
-      text,
-    };
-
-    const updated = await this.prisma.task.update({
-      where: { id },
-      data: {
-        comments: [nextComment, ...comments] as unknown as Prisma.InputJsonValue,
-      },
-      include: TASK_INCLUDE,
-    });
-
-    await this.activity.log({
-      action: 'note_added',
-      entityType: 'task',
-      entityId: id,
-      actorId: actor.id,
-      summary: 'Добавлен комментарий к задаче',
-      payload: {
-        commentId: nextComment.id,
-        textPreview: text.slice(0, 250),
-      },
-    });
-
-    const activityMap = await this.loadActivityMap([id]);
-    return this.toTaskView(updated, activityMap.get(id) ?? []);
-  }
-
   private buildListWhere(query: TaskListQueryDto, actor: TaskActorContext): Prisma.TaskWhereInput {
     const where: Prisma.TaskWhereInput = {};
 
@@ -593,13 +539,6 @@ export class TasksService {
       hour: '2-digit',
       minute: '2-digit',
     });
-  }
-
-  private buildAvatar(name: string) {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length === 0) return 'S';
-    if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
-    return `${parts[0].slice(0, 1)}${parts[parts.length - 1].slice(0, 1)}`.toUpperCase();
   }
 
   private parseSubtasks(value: Prisma.JsonValue | null): TaskSubtaskView[] {

@@ -69,7 +69,11 @@ export interface ClientRequisitesInput {
   bik?: string;
 }
 
-export interface UpdateClientInput extends Partial<CreateClientInput> {
+export interface UpdateClientInput
+  extends Omit<Partial<CreateClientInput>, 'company' | 'email' | 'notes'> {
+  company?: string | null;
+  email?: string | null;
+  notes?: string | null;
   contacts?: ClientContactInput[];
   requisites?: ClientRequisitesInput;
 }

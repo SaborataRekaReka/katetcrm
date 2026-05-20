@@ -233,13 +233,6 @@ export class AddTaskSubtaskDto {
   priority?: TaskPriority;
 }
 
-export class AddTaskCommentDto {
-  @IsString()
-  @MinLength(1)
-  @MaxLength(4000)
-  text!: string;
-}
-
 export interface TaskSubtaskView {
   id: string;
   title: string;

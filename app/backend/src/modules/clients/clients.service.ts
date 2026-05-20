@@ -156,14 +156,9 @@ export class ClientsService {
   async update(id: string, dto: UpdateClientDto, actorId: string | null) {
     const existing = await this.prisma.client.findUnique({
       where: { id },
-      select: { id: true, notes: true },
+      select: { id: true },
     });
     if (!existing) throw new NotFoundException('Клиент не найден');
-
-    const hasNoteUpdate =
-      dto.notes !== undefined
-      && dto.notes !== (existing.notes ?? undefined)
-      && dto.notes.trim().length > 0;
 
     const { contacts, requisites, ...clientPatch } = dto;
 
@@ -249,18 +244,6 @@ export class ClientsService {
       summary: `Обновлён клиент ${updated.name}`,
       actorId,
     });
-
-    if (hasNoteUpdate) {
-      await this.activity.log({
-        action: 'note_added',
-        entityType: 'client',
-        entityId: id,
-        summary: 'Добавлен комментарий клиента',
-        actorId,
-        payload: { textPreview: dto.notes?.slice(0, 250) },
-      });
-    }
-
     return this.get(id);
   }
 }

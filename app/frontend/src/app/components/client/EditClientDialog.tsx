@@ -258,6 +258,11 @@ export function EditClientDialog({ open, onOpenChange, client }: EditClientDialo
     setTouched(true);
     if (!form || !client || !canSave) return;
 
+    const toNullable = (value: string): string | null => {
+      const trimmed = value.trim();
+      return trimmed.length > 0 ? trimmed : null;
+    };
+
     const normalizedContacts = form.contacts
       .map((contact) => ({
         name: contact.name.trim(),
@@ -285,10 +290,10 @@ export function EditClientDialog({ open, onOpenChange, client }: EditClientDialo
         id: client.id,
         patch: {
           name: form.name.trim(),
-          company: form.company.trim() || undefined,
+          company: toNullable(form.company),
           phone: form.phone.trim(),
-          email: form.email.trim() || undefined,
-          notes: form.notes.trim() || undefined,
+          email: toNullable(form.email),
+          notes: toNullable(form.notes),
           contacts: contactsPatch,
           requisites: {
             inn: form.requisites.inn.trim() || undefined,

@@ -993,7 +993,7 @@ export function ReservationWorkspace({ lead, onClose, onOpenClient, onOpenLead, 
               value={
                 <InlineText
                   value={reservationQuery.data?.promisedModelOrUnit ?? ''}
-                  onSave={makeResFieldSaver((v) => ({ promisedModelOrUnit: v.trim() || undefined } as any))}
+                  onSave={makeResFieldSaver((v) => ({ promisedModelOrUnit: (v.trim() || null) } as any))}
                   ariaLabel="Модель или единица, обещанная подрядчиком"
                   placeholder="например: CAT 320D"
                   emptyDisplay={<EmptyValue />}

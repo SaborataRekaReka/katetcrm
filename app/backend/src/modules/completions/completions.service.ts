@@ -478,24 +478,7 @@ export class CompletionsService {
   }
 
   async update(id: string, dto: UpdateCompletionDto, actor: ActorContext) {
-    const existing = await this.get(id, actor);
-
-    const nextCompletionNote =
-      dto.completionNote === undefined ? existing.completionNote : dto.completionNote;
-    const nextUnqualifiedReason =
-      dto.unqualifiedReason === undefined
-        ? existing.unqualifiedReason
-        : dto.unqualifiedReason;
-    const hasCompletionNoteUpdate =
-      dto.completionNote !== undefined
-      && dto.completionNote !== existing.completionNote
-      && typeof nextCompletionNote === 'string'
-      && nextCompletionNote.trim().length > 0;
-    const hasUnqualifiedReasonUpdate =
-      dto.unqualifiedReason !== undefined
-      && dto.unqualifiedReason !== existing.unqualifiedReason
-      && typeof nextUnqualifiedReason === 'string'
-      && nextUnqualifiedReason.trim().length > 0;
+    await this.get(id, actor);
 
     const updated = await this.prisma.completion.update({
       where: { id },
@@ -514,28 +497,6 @@ export class CompletionsService {
       summary: 'Completion updated',
       actorId: actor.id,
     });
-
-    if (hasCompletionNoteUpdate || hasUnqualifiedReasonUpdate) {
-      await this.activity.log({
-        action: 'note_added',
-        entityType: 'completion',
-        entityId: id,
-        summary: hasCompletionNoteUpdate
-          ? 'Добавлен комментарий завершения'
-          : 'Добавлен комментарий по причине unqualified',
-        actorId: actor.id,
-        payload: {
-          completionNotePreview:
-            hasCompletionNoteUpdate && typeof nextCompletionNote === 'string'
-              ? nextCompletionNote.slice(0, 250)
-              : undefined,
-          unqualifiedReasonPreview:
-            hasUnqualifiedReasonUpdate && typeof nextUnqualifiedReason === 'string'
-              ? nextUnqualifiedReason.slice(0, 250)
-              : undefined,
-        },
-      });
-    }
 
     return updated;
   }
