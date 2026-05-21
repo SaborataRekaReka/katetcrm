@@ -1930,14 +1930,21 @@ export class IntegrationsService {
     const normalized = key.toLowerCase();
     return (
       normalized === 'ext' ||
+      normalized === 'to' ||
+      normalized === 'dst' ||
       normalized === 'number' ||
+      normalized.includes('number') ||
       normalized.includes('extension') ||
       normalized.includes('abonent') ||
       normalized.includes('operator') ||
       normalized.includes('employee') ||
       normalized.includes('internal') ||
       normalized.includes('manager') ||
-      normalized.includes('responsible')
+      normalized.includes('member') ||
+      normalized.includes('participant') ||
+      normalized.includes('recipient') ||
+      normalized.includes('responsible') ||
+      normalized.includes('destination')
     );
   }
 
@@ -2614,10 +2621,16 @@ export class IntegrationsService {
     if (!raw) return undefined;
     const value = raw.trim().toLowerCase();
 
-    if (['in', 'incoming', 'inbound', 'entry', 'входящий', 'вход'].includes(value)) {
+    if (
+      ['1', 'in', 'incoming', 'inbound', 'entry', 'входящий', 'вход'].includes(value) ||
+      /incoming|inbound|incoming_call|inbound_call|входящ/.test(value)
+    ) {
       return 'inbound';
     }
-    if (['out', 'outgoing', 'outbound', 'исходящий', 'исход'].includes(value)) {
+    if (
+      ['2', '0', 'out', 'outgoing', 'outbound', 'исходящий', 'исход'].includes(value) ||
+      /outgoing|outbound|outgoing_call|outbound_call|исходящ/.test(value)
+    ) {
       return 'outbound';
     }
 
@@ -2840,6 +2853,9 @@ export class IntegrationsService {
         const value = scope[key];
         if (typeof value === 'string' && value.trim()) {
           return value.trim();
+        }
+        if (typeof value === 'number' && Number.isFinite(value)) {
+          return String(value);
         }
       }
     }

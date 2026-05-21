@@ -555,6 +555,66 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     expect(assignmentActivity?.summary).toContain('Mango');
   });
 
+  it('APIC-046: routes updated Mango numeric direction and to_number extension format (QA-REQ-052)', async () => {
+    const seed = uniqueSeed('046');
+    const phone = uniquePhone('046');
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const manager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({
+        enabled: true,
+        updateResponsibleOnAnswered: true,
+        updateResponsibleOnTransfer: true,
+        assignMissedCalls: false,
+        fallbackManagerId: null,
+        rules: [
+          {
+            extension: '115',
+            userId: manager.id,
+            isActive: true,
+          },
+        ],
+      })
+      .expect(201);
+
+    const payload = {
+      entry_id: `mango-routing-apic-046-entry-${seed}`,
+      call_id: `mango-routing-apic-046-call-${seed}`,
+      call_direction: 1,
+      from: { number: phone },
+      to_number: 115,
+      duration: 36,
+      call_state: 'connected',
+      create_time: '2026-05-22T09:00:00.000Z',
+    } as Record<string, unknown>;
+
+    const response = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildMangoIngestHeaders(payload))
+      .send({
+        channel: 'mango',
+        externalId: `MANGO-ROUTING-APIC-046-${seed}`,
+        payload,
+      })
+      .expect(201);
+
+    expect(response.body.processed).toBe(true);
+    expect(response.body.event.relatedLeadId).toEqual(expect.any(String));
+
+    const routedLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: response.body.event.relatedLeadId as string },
+      select: { managerId: true, source: true },
+    });
+    expect(routedLead.source).toBe('mango');
+    expect(routedLead.managerId).toBe(manager.id);
+  });
+
   it('APIC-042: protects and persists site lead-routing settings (QA-REQ-053)', async () => {
     const adminLogin = await loginByPassword(app, TEST_ADMIN);
     const managerLogin = await loginByPassword(app, TEST_MANAGER);
