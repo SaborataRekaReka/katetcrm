@@ -81,7 +81,7 @@ interface IntegrationManagerAssignment {
 
 type MangoManagerAssignment = IntegrationManagerAssignment & {
   channel: 'mango';
-  reason: 'extension_match' | 'fallback';
+  reason: 'extension_match' | 'fallback' | 'round_robin';
 };
 
 type SiteLeadManagerAssignment = IntegrationManagerAssignment & {
@@ -370,11 +370,12 @@ export class IntegrationsService {
   ): Promise<IntegrationIngestResult> {
     try {
       const connector = this.unwrapMangoConnectorPayload(payload, connectorEventType);
-      const externalId = this.extractMangoExternalId(connector.payload);
+      const externalIdentity = this.extractMangoExternalIdentity(connector.payload);
       return await this.ingest(
         {
           channel: 'mango',
-          externalId,
+          externalId: externalIdentity.externalId,
+          correlationId: externalIdentity.correlationId,
           payload: connector.payload,
         },
         {
@@ -1630,7 +1631,29 @@ export class IntegrationsService {
     }
   }
 
+  private extractMangoExternalIdentity(payload: Record<string, unknown>): {
+    externalId?: string;
+    correlationId?: string;
+  } {
+    const baseExternalId = this.extractMangoBaseExternalId(payload);
+    if (!baseExternalId) return {};
+
+    const discriminator = this.extractMangoLifecycleDiscriminator(payload);
+    if (!discriminator) {
+      return { externalId: baseExternalId };
+    }
+
+    return {
+      externalId: this.limitText(`${baseExternalId}:${discriminator}`, 255),
+      correlationId: baseExternalId,
+    };
+  }
+
   private extractMangoExternalId(payload: Record<string, unknown>): string | undefined {
+    return this.extractMangoExternalIdentity(payload).externalId;
+  }
+
+  private extractMangoBaseExternalId(payload: Record<string, unknown>): string | undefined {
     const root = this.asRecord(payload);
     const call = this.asRecord(root?.call);
     const scopes = [root, call];
@@ -1652,6 +1675,38 @@ export class IntegrationsService {
       'sip_call_id',
     ]);
     return externalId ? this.limitText(externalId, 255) : undefined;
+  }
+
+  private extractMangoLifecycleDiscriminator(payload: Record<string, unknown>): string | undefined {
+    const root = this.asRecord(payload);
+    const call = this.asRecord(root?.call);
+    const connector = this.asRecord(root?._connector);
+    const scopes = [root, call, connector];
+
+    const sequence = this.pickString(scopes, ['seq', 'sequence', 'eventSeq', 'event_seq']);
+    if (sequence) return `seq:${this.normalizeExternalIdPart(sequence)}`;
+
+    const hasExplicitDirection = Boolean(
+      this.pickString(scopes, ['direction', 'callDirection', 'call_direction', 'callDirectionType']),
+    );
+    if (hasExplicitDirection) return undefined;
+
+    const state = this.pickString(scopes, ['call_state', 'callState', 'status']);
+    const location = this.pickString(scopes, ['location', 'callLocation', 'call_location']);
+    const timestamp = this.pickString(scopes, ['timestamp', 'eventTime', 'event_time']);
+    if (!state && !location && !timestamp) return undefined;
+
+    return [
+      'event',
+      state ? `state-${this.normalizeExternalIdPart(state)}` : undefined,
+      location ? `loc-${this.normalizeExternalIdPart(location)}` : undefined,
+      timestamp ? `ts-${this.normalizeExternalIdPart(timestamp)}` : undefined,
+    ].filter(Boolean).join(':');
+  }
+
+  private normalizeExternalIdPart(value: string): string {
+    const normalized = value.trim().replace(/[^a-zA-Z0-9_.=-]+/g, '-');
+    return this.limitText(normalized || 'na', 80);
   }
 
   private parseTimestampHeader(raw: string): number {
@@ -1866,11 +1921,8 @@ export class IntegrationsService {
     if (isMissed && !settings.assignMissedCalls) return undefined;
     if (!isTransfer && !isMissed && !settings.updateResponsibleOnAnswered) return undefined;
 
-    const activeRules = new Map(
-      settings.rules
-        .filter((rule) => rule.isActive)
-        .map((rule) => [rule.extension, rule]),
-    );
+    const activeRuleList = settings.rules.filter((rule) => rule.isActive);
+    const activeRules = new Map(activeRuleList.map((rule) => [rule.extension, rule]));
     const extensions = this.collectMangoRoutingExtensions(payload);
 
     for (const extension of extensions) {
@@ -1893,7 +1945,27 @@ export class IntegrationsService {
       };
     }
 
-    return undefined;
+    return this.resolveMangoRoutingPoolAssignment(activeRuleList, call);
+  }
+
+  private resolveMangoRoutingPoolAssignment(
+    activeRules: MangoCallRoutingRule[],
+    call: NormalizedCallContext,
+  ): MangoManagerAssignment | undefined {
+    const managerIds = Array.from(new Set(activeRules.map((rule) => rule.userId).filter(Boolean)));
+    if (managerIds.length === 0) return undefined;
+
+    const hashSource = [call.callId, call.from, call.to, call.startedAt]
+      .filter(Boolean)
+      .join('|') || 'mango-call';
+    const hash = createHash('sha256').update(hashSource).digest();
+    const index = hash.readUInt32BE(0) % managerIds.length;
+
+    return {
+      channel: 'mango',
+      managerId: managerIds[index],
+      reason: 'round_robin',
+    };
   }
 
   private collectMangoRoutingExtensions(payload: Prisma.JsonValue): string[] {
@@ -2175,19 +2247,6 @@ export class IntegrationsService {
       'sip_call_id',
     ]) ?? externalId ?? undefined;
 
-    const direction =
-      this.normalizeCallDirection(
-        this.pickString(scopes, [
-          'direction',
-          'callDirection',
-          'call_direction',
-          'callDirectionType',
-          'type',
-        ]),
-      )
-      ?? this.normalizeCallDirectionFromFlags(scopes)
-      ?? 'unknown';
-
     const from = this.pickEndpointString(scopes, [
       'from',
       'from_number',
@@ -2214,6 +2273,19 @@ export class IntegrationsService {
       'destination_number',
       'line_number',
     ]);
+    const direction =
+      this.normalizeCallDirection(
+        this.pickString(scopes, [
+          'direction',
+          'callDirection',
+          'call_direction',
+          'callDirectionType',
+          'type',
+        ]),
+      )
+      ?? this.normalizeCallDirectionFromFlags(scopes)
+      ?? this.inferMangoCallDirection(scopes, from, to)
+      ?? 'unknown';
     const status = this.pickString(scopes, [
       'status',
       'result',
@@ -2291,6 +2363,35 @@ export class IntegrationsService {
       endedAt,
       recordingUrl,
     };
+  }
+
+  private inferMangoCallDirection(
+    scopes: Array<Record<string, unknown> | undefined>,
+    from: string | undefined,
+    to: string | undefined,
+  ): CallDirection | undefined {
+    const location = this.pickString(scopes, ['location', 'callLocation', 'call_location'])
+      ?.toLowerCase();
+    if (location && /ivr|queue|acd|incoming|inbound|вход/.test(location)) {
+      return 'inbound';
+    }
+    if (location && /outgoing|outbound|исход/.test(location)) {
+      return 'outbound';
+    }
+
+    const fromExtension = this.normalizeMangoEndpointExtension(from);
+    const toExtension = this.normalizeMangoEndpointExtension(to);
+    if (!fromExtension && toExtension) return 'inbound';
+    if (fromExtension && !toExtension) return 'outbound';
+
+    return undefined;
+  }
+
+  private normalizeMangoEndpointExtension(value: string | undefined): string | undefined {
+    if (!value) return undefined;
+    const compact = value.trim().replace(/[^\d#*]/g, '');
+    if (/^[\d#*]{1,6}$/.test(compact)) return compact;
+    return undefined;
   }
 
   private buildMangoRecordingUrl(recordingIdRaw: string | undefined): string | undefined {

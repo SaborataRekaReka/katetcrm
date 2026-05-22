@@ -615,6 +615,108 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     expect(routedLead.managerId).toBe(manager.id);
   });
 
+  it('APIC-047: routes Mango IVR lifecycle events without explicit direction (QA-REQ-052)', async () => {
+    const seed = uniqueSeed('047');
+    const phone = uniquePhone('047');
+    const entryId = `mango-routing-apic-047-entry-${seed}`;
+    const callId = `mango-routing-apic-047-call-${seed}`;
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const manager = await prisma.user.findUniqueOrThrow({
+      where: { email: TEST_MANAGER.email },
+      select: { id: true },
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/integrations/mango/call-routing')
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({
+        enabled: true,
+        updateResponsibleOnAnswered: true,
+        updateResponsibleOnTransfer: true,
+        assignMissedCalls: false,
+        fallbackManagerId: null,
+        rules: [
+          {
+            extension: '15',
+            userId: manager.id,
+            isActive: true,
+          },
+        ],
+      })
+      .expect(201);
+
+    const appearedPayload = {
+      entry_id: entryId,
+      call_id: callId,
+      seq: 1,
+      from: { number: phone },
+      to: {
+        number: '74994606567',
+        line_number: '74994606567',
+      },
+      dct: {
+        type: 2,
+        number: '74994606567',
+      },
+      location: 'ivr',
+      timestamp: 1779426881,
+      call_state: 'Appeared',
+    } as Record<string, unknown>;
+
+    const appearedResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango/events/call')
+      .type('form')
+      .send(buildMangoConnectorBody(appearedPayload))
+      .expect(201);
+
+    expect(appearedResponse.body.deduplicated).toBe(false);
+    expect(appearedResponse.body.event).toMatchObject({
+      channel: 'mango',
+      externalId: `${entryId}:seq:1`,
+      correlationId: entryId,
+      status: 'processed',
+      relatedLeadId: expect.any(String),
+    });
+
+    const appearedLead = await prisma.lead.findUniqueOrThrow({
+      where: { id: appearedResponse.body.event.relatedLeadId as string },
+      select: { managerId: true, source: true },
+    });
+    expect(appearedLead.source).toBe('mango');
+    expect(appearedLead.managerId).toBe(manager.id);
+
+    const connectedPayload = {
+      ...appearedPayload,
+      seq: 2,
+      to: { number: '15' },
+      location: 'abonent',
+      call_state: 'Connected',
+    } as Record<string, unknown>;
+
+    const connectedResponse = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/mango/events/call')
+      .type('form')
+      .send(buildMangoConnectorBody(connectedPayload))
+      .expect(201);
+
+    expect(connectedResponse.body.deduplicated).toBe(false);
+    expect(connectedResponse.body.event).toMatchObject({
+      channel: 'mango',
+      externalId: `${entryId}:seq:2`,
+      correlationId: entryId,
+      status: 'processed',
+      relatedLeadId: appearedResponse.body.event.relatedLeadId,
+    });
+
+    const eventCount = await prisma.integrationEvent.count({
+      where: {
+        channel: 'mango',
+        correlationId: entryId,
+      },
+    });
+    expect(eventCount).toBe(2);
+  });
+
   it('APIC-042: protects and persists site lead-routing settings (QA-REQ-053)', async () => {
     const adminLogin = await loginByPassword(app, TEST_ADMIN);
     const managerLogin = await loginByPassword(app, TEST_MANAGER);
