@@ -379,11 +379,11 @@ Test priority: P0
 
 QA-REQ-037:
 Question: QA-Q-037. Where should Mango call recording metadata be visible?
-Answer: In the right `Статус и мета` sidebar of linked Lead and active Application as a compact audio player when Mango sends a recording URL.
+Answer: In the right `Статус и мета` sidebar of linked Lead and active Application as a compact audio player when Mango sends a recording URL or CRM can infer and verify a playable Mango recording from callback identity.
 Route surface: /leads detail, /applications detail
 Domain surface: Telephony context visibility across lead/application stages
 UI surface: `Статус и мета` shows a mini player and external recording link; activity timeline keeps call details but does not render the recording link.
-State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`).
+State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`). If a Mango call callback has no `recording_id` but includes `entry_id`, CRM may compose the Mango playback URL from the decoded entry id and store it only after server-side availability validation succeeds.
 Test priority: P1
 
 QA-REQ-038:

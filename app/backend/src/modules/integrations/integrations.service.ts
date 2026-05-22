@@ -2057,7 +2057,8 @@ export class IntegrationsService {
   ): Promise<void> {
     if (event.channel !== 'mango' || !call) return;
 
-    const summary = this.buildCallActivitySummary(call);
+    const callForActivity = await this.withResolvedMangoRecordingUrl(event, call);
+    const summary = this.buildCallActivitySummary(callForActivity);
     const payload: Prisma.InputJsonValue = {
       integration: {
         provider: 'mango',
@@ -2067,15 +2068,15 @@ export class IntegrationsService {
         correlationId: event.correlationId,
       },
       telephony: {
-        callId: call.callId ?? null,
-        direction: call.direction,
-        from: call.from ?? null,
-        to: call.to ?? null,
-        status: call.status ?? null,
-        durationSec: call.durationSec ?? null,
-        startedAt: call.startedAt ?? null,
-        endedAt: call.endedAt ?? null,
-        recordingUrl: call.recordingUrl ?? null,
+        callId: callForActivity.callId ?? null,
+        direction: callForActivity.direction,
+        from: callForActivity.from ?? null,
+        to: callForActivity.to ?? null,
+        status: callForActivity.status ?? null,
+        durationSec: callForActivity.durationSec ?? null,
+        startedAt: callForActivity.startedAt ?? null,
+        endedAt: callForActivity.endedAt ?? null,
+        recordingUrl: callForActivity.recordingUrl ?? null,
       },
       managerAssignment: managerAssignment
         ? {
@@ -2114,6 +2115,150 @@ export class IntegrationsService {
         actorId: null,
         payload,
       });
+    }
+  }
+
+  private async withResolvedMangoRecordingUrl(
+    event: IntegrationEvent,
+    call: NormalizedCallContext,
+  ): Promise<NormalizedCallContext> {
+    if (call.recordingUrl) return call;
+
+    const inferredRecordingUrl = this.buildInferredMangoRecordingUrl(event, call);
+    if (!inferredRecordingUrl) return call;
+
+    const isAvailable = await this.isMangoRecordingAvailable(inferredRecordingUrl);
+    if (!isAvailable) return call;
+
+    return {
+      ...call,
+      recordingUrl: inferredRecordingUrl,
+    };
+  }
+
+  private buildInferredMangoRecordingUrl(
+    event: IntegrationEvent,
+    call: NormalizedCallContext,
+  ): string | undefined {
+    if (event.channel !== 'mango') return undefined;
+
+    const root = this.asRecord(event.payload);
+    const nestedCall = this.asRecord(root?.call);
+    const scopes = [nestedCall, root];
+    if (!this.canInferMangoRecordingFromCallState(scopes)) return undefined;
+
+    const explicitRecordingId = this.pickString(scopes, [
+      'recordingId',
+      'recording_id',
+      'recordId',
+      'record_id',
+    ]);
+    if (explicitRecordingId) {
+      return this.buildMangoRecordingUrl(explicitRecordingId);
+    }
+
+    const entryId = this.pickString(scopes, ['entryId', 'entry_id']);
+    const entryNumericId = this.extractMangoEntryNumericId(entryId);
+    if (!entryNumericId) return undefined;
+
+    const configuredAccountId = this.normalizeMangoRecordingAccountId(
+      this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID'),
+    );
+    const payloadCallId = this.pickString(scopes, ['callId', 'call_id']);
+    const accountId = configuredAccountId
+      || this.extractMangoRecordingAccountId(call.callId ?? '')
+      || this.extractMangoRecordingAccountId(payloadCallId ?? '');
+    if (!accountId) return undefined;
+
+    const recordingId = Buffer
+      .from(`1:${accountId}:${entryNumericId}:0`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
+
+    return this.buildMangoRecordingUrl(recordingId);
+  }
+
+  private canInferMangoRecordingFromCallState(
+    scopes: Array<Record<string, unknown> | undefined>,
+  ): boolean {
+    const completionCode = this.pickNumber(scopes, ['completionCode', 'completion_code']);
+    if (completionCode === 1000) return true;
+
+    const state = this.pickString(scopes, [
+      'recordingState',
+      'recording_state',
+      'callState',
+      'call_state',
+      'status',
+    ])?.toLowerCase();
+    if (!state) return false;
+
+    return /completed|recorded|disconnected|finished|ended|заверш/.test(state);
+  }
+
+  private extractMangoEntryNumericId(value: string | undefined): string | undefined {
+    const candidates = [value, value ? this.decodeBase64Loose(value) : undefined];
+    for (const candidate of candidates) {
+      const normalized = candidate?.trim();
+      if (normalized && /^\d{4,30}$/.test(normalized)) {
+        return normalized;
+      }
+    }
+    return undefined;
+  }
+
+  private normalizeMangoRecordingAccountId(value: string | undefined): string | undefined {
+    const normalized = value?.trim();
+    return normalized && /^\d{4,20}$/.test(normalized) ? normalized : undefined;
+  }
+
+  private async isMangoRecordingAvailable(rawUrl: string): Promise<boolean> {
+    let url: URL;
+    try {
+      url = this.parseMangoRecordingProxyUrl(rawUrl);
+    } catch {
+      return false;
+    }
+
+    try {
+      const recordingId = this.extractMangoRecordingIdFromLegacyUrl(url);
+
+      if (recordingId) {
+        const postResponse = await this.fetchMangoRecordingViaPostDownload(recordingId);
+        if (await this.isUsableMangoRecordingResponse(postResponse)) return true;
+        if (postResponse.status === 429) return false;
+      }
+
+      const signedFallbackUrl = this.buildMangoSignedRecordingLinkFromLegacyUrl(url);
+      if (signedFallbackUrl) {
+        const signedResponse = await this.fetchMangoRecordingResponse(signedFallbackUrl);
+        if (await this.isUsableMangoRecordingResponse(signedResponse)) return true;
+        if (signedResponse.status === 429) return false;
+      }
+
+      const legacyResponse = await this.fetchMangoRecordingResponse(url.toString());
+      return this.isUsableMangoRecordingResponse(legacyResponse);
+    } catch {
+      return false;
+    }
+  }
+
+  private async isUsableMangoRecordingResponse(
+    response: globalThis.Response,
+  ): Promise<boolean> {
+    try {
+      const contentType = response.headers.get('content-type')?.trim() ?? 'application/octet-stream';
+      return response.ok && this.isMangoRecordingContentTypeAllowed(contentType);
+    } finally {
+      await this.releaseMangoRecordingResponse(response);
+    }
+  }
+
+  private async releaseMangoRecordingResponse(response: globalThis.Response): Promise<void> {
+    try {
+      await response.body?.cancel();
+    } catch {
+      // Best-effort stream cleanup only.
     }
   }
 
@@ -2399,8 +2544,9 @@ export class IntegrationsService {
     if (!recordingId) return undefined;
 
     const apiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
-    const configuredAccountId =
-      (this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID') ?? '').trim();
+    const configuredAccountId = this.normalizeMangoRecordingAccountId(
+      this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID'),
+    );
     const accountId = configuredAccountId || this.extractMangoRecordingAccountId(recordingId) || '';
     const template =
       (this.config.get<string>('INTEGRATION_MANGO_RECORDING_URL_TEMPLATE') ?? '').trim();

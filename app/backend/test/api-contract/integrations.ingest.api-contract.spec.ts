@@ -1000,6 +1000,84 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     );
   });
 
+  it('APIC-048: infers verified Mango recording URL from call callback entry_id (QA-REQ-037)', async () => {
+    const phone = uniquePhone('048');
+    const expectedRecordingAccountId = '10160071';
+    const entryNumericId = `268${Date.now().toString().slice(-8)}`;
+    const callId = Buffer
+      .from(`1:${expectedRecordingAccountId}:121:1115002113:1`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
+    const entryId = Buffer.from(entryNumericId, 'utf8').toString('base64');
+    const expectedRecordingId = Buffer
+      .from(`1:${expectedRecordingAccountId}:${entryNumericId}:0`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
+
+    const previousRecordingAccountId = process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+      const url = typeof input === 'string'
+        ? input
+        : input instanceof URL
+          ? input.toString()
+          : input.url;
+      if (url === 'https://app.mango-office.ru/vpbx/queries/recording/post') {
+        return new Response('audio-bytes', {
+          status: 200,
+          headers: { 'content-type': 'audio/mpeg' },
+        });
+      }
+      return new Response(null, { status: 404 });
+    });
+
+    let response!: request.Response;
+    try {
+      response = await request(app.getHttpServer())
+        .post('/api/v1/integrations/events/mango/events/call')
+        .type('form')
+        .send(buildMangoConnectorBody({
+          seq: 2,
+          call_id: callId,
+          entry_id: entryId,
+          location: 'ivr',
+          timestamp: 1779432708,
+          call_state: 'Disconnected',
+          disconnect_reason: 1100,
+          from: { number: phone },
+          to: { number: '74994606567', line_number: '74994606567' },
+        }))
+        .expect(201);
+    } finally {
+      fetchMock.mockRestore();
+      if (previousRecordingAccountId === undefined) {
+        delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+      } else {
+        process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = previousRecordingAccountId;
+      }
+    }
+
+    expect(response.body.processed).toBe(true);
+    const leadId = response.body.event.relatedLeadId as string;
+    expect(leadId).toEqual(expect.any(String));
+
+    const leadActivity = await prisma.activityLogEntry.findFirst({
+      where: {
+        entityType: 'lead',
+        entityId: leadId,
+        action: 'note_added',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const payload = leadActivity?.payload as
+      | { telephony?: { recordingUrl?: string | null } }
+      | undefined;
+    expect(payload?.telephony?.recordingUrl).toBe(
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${expectedRecordingAccountId}/call-recording/play-record/${expectedRecordingId}`,
+    );
+  });
+
   it('APIC-045: allows admin replay for processed and already replayed Mango events (QA-REQ-051)', async () => {
     const seed = uniqueSeed('045');
     const phone = uniquePhone('045');
