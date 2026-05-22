@@ -1050,7 +1050,8 @@ export function IntegrationsWorkspacePage() {
   const selected = detailQuery.data ?? rows.find((row) => row.id === selectedId) ?? null;
 
   const busy = retryMutation.isPending || replayMutation.isPending;
-  const canRecover = selected?.status === 'failed';
+  const canRetry = selected?.status === 'failed';
+  const canReplay = selected ? ['failed', 'processed', 'replayed'].includes(selected.status) : false;
 
   const hasActive =
     query.length > 0 ||
@@ -1328,7 +1329,7 @@ export function IntegrationsWorkspacePage() {
                       size="sm"
                       className="gap-1"
                       variant="outline"
-                      disabled={!canRecover || busy}
+                      disabled={!canRetry || busy}
                       onClick={() => void runRecovery('retry')}
                     >
                       <RefreshCw className="h-3.5 w-3.5" /> Повтор
@@ -1336,7 +1337,7 @@ export function IntegrationsWorkspacePage() {
                     <Button
                       size="sm"
                       className="gap-1"
-                      disabled={!canRecover || busy}
+                      disabled={!canReplay || busy}
                       onClick={() => void runRecovery('replay')}
                     >
                       <RotateCcw className="h-3.5 w-3.5" /> Переобработать
@@ -1352,9 +1353,9 @@ export function IntegrationsWorkspacePage() {
                       </Button>
                     ) : null}
                   </div>
-                  {!canRecover ? (
+                  {!canRetry ? (
                     <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-                      <ArrowRight className="h-3 w-3" /> Повтор/переобработка доступны только для событий со статусом failed.
+                      <ArrowRight className="h-3 w-3" /> Повтор доступен только для failed; переобработка доступна для failed, processed и replayed.
                     </div>
                   ) : null}
                 </div>

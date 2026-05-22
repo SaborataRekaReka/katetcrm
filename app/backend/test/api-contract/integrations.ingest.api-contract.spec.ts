@@ -1000,7 +1000,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     );
   });
 
-  it('APIC-045: allows replay for already replayed Mango events (QA-REQ-051)', async () => {
+  it('APIC-045: allows admin replay for processed and already replayed Mango events (QA-REQ-051)', async () => {
     const seed = uniqueSeed('045');
     const phone = uniquePhone('045');
     const payload = {
@@ -1033,23 +1033,30 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     const eventId = ingestResponse.body.event.id as string;
     const leadId = ingestResponse.body.event.relatedLeadId as string;
 
-    await prisma.integrationEvent.update({
-      where: { id: eventId },
-      data: {
-        status: 'replayed',
-        replayedAt: new Date('2026-05-20T10:05:00.000Z'),
-      },
-    });
-
     const adminLogin = await loginByPassword(app, TEST_ADMIN);
     const replayResponse = await request(app.getHttpServer())
+      .post(`/api/v1/integrations/events/${eventId}/replay`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .send({ reason: 'replay processed event for recording backfill' })
+      .expect(201);
+
+    expect(replayResponse.body.processed).toBe(true);
+    expect(replayResponse.body.event).toMatchObject({
+      id: eventId,
+      channel: 'mango',
+      status: 'replayed',
+      relatedLeadId: leadId,
+      errorMessage: null,
+    });
+
+    const replayedAgainResponse = await request(app.getHttpServer())
       .post(`/api/v1/integrations/events/${eventId}/replay`)
       .set('Authorization', authHeader(adminLogin.accessToken))
       .send({ reason: 'replay already replayed event for recording backfill' })
       .expect(201);
 
-    expect(replayResponse.body.processed).toBe(true);
-    expect(replayResponse.body.event).toMatchObject({
+    expect(replayedAgainResponse.body.processed).toBe(true);
+    expect(replayedAgainResponse.body.event).toMatchObject({
       id: eventId,
       channel: 'mango',
       status: 'replayed',

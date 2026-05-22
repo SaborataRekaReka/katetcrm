@@ -177,7 +177,7 @@ Contract expectations:
 
 Contract expectations:
 
-1. Integration events are replay-safe and auditable.
+1. Integration events are replay-safe and auditable. Retry is limited to `failed` events; replay can be manually triggered by admin for `failed`, `processed`, and `replayed` events to rerun the domain upsert path.
 2. Import run/report preserves accounting fields (`imported`, `skipped`, `failed`).
 3. Mixed valid/invalid import batches keep deterministic accounting and persist validation issues for report replay.
 4. `GET /imports/:id/report` provides error artifacts (`issues`, `errorReportCsv`) for failed-row diagnostics.

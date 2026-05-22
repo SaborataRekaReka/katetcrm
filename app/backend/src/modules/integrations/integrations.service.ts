@@ -471,9 +471,9 @@ export class IntegrationsService {
     reason?: string,
   ): Promise<IntegrationProcessResult> {
     const event = await this.requireEventById(id);
-    const replayableStatuses: IntegrationEventStatus[] = ['failed', 'replayed'];
+    const replayableStatuses: IntegrationEventStatus[] = ['failed', 'processed', 'replayed'];
     if (!replayableStatuses.includes(event.status)) {
-      throw new BadRequestException('Replay доступен только для failed/replayed событий');
+      throw new BadRequestException('Replay доступен только для failed/processed/replayed событий');
     }
 
     await this.activity.log({
