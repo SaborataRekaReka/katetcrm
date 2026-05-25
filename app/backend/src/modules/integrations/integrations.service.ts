@@ -2115,7 +2115,9 @@ export class IntegrationsService {
   ): Promise<NormalizedCallContext> {
     if (call.recordingUrl) return call;
 
-    const inferredRecordingUrl = this.buildInferredMangoRecordingUrl(event, call);
+    const inferredRecordingUrl =
+      this.buildInferredMangoRecordingUrl(event, call)
+      ?? await this.buildInferredMangoRecordingUrlFromRelatedEvents(event);
     if (!inferredRecordingUrl) return call;
 
     const isAvailable = await this.isMangoRecordingAvailable(inferredRecordingUrl);
@@ -2165,6 +2167,86 @@ export class IntegrationsService {
       .replace(/=+$/g, '');
 
     return this.buildMangoRecordingUrl(recordingId);
+  }
+
+  private async buildInferredMangoRecordingUrlFromRelatedEvents(
+    event: IntegrationEvent,
+  ): Promise<string | undefined> {
+    if (event.channel !== 'mango') return undefined;
+
+    const root = this.asRecord(event.payload);
+    const nestedCall = this.asRecord(root?.call);
+    const scopes = [nestedCall, root];
+    if (!this.canInferMangoRecordingFromCallState(scopes)) return undefined;
+
+    const entryId = this.pickString(scopes, ['entryId', 'entry_id']);
+    const entryNumericId = this.extractMangoEntryNumericId(entryId);
+    if (!entryNumericId) return undefined;
+
+    const accountId = await this.findMangoRecordingAccountIdFromRelatedEvents(
+      event,
+      entryNumericId,
+    );
+    if (!accountId) return undefined;
+
+    const recordingId = Buffer
+      .from(`1:${accountId}:${entryNumericId}:0`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
+
+    return this.buildMangoRecordingUrl(recordingId);
+  }
+
+  private async findMangoRecordingAccountIdFromRelatedEvents(
+    event: IntegrationEvent,
+    entryNumericId: string,
+  ): Promise<string | undefined> {
+    const externalIdPrefix = event.externalId?.trim();
+    const relatedWhere: Prisma.IntegrationEventWhereInput[] = [];
+    if (externalIdPrefix) {
+      relatedWhere.push({ externalId: { startsWith: `${externalIdPrefix}:` } });
+    }
+    if (event.relatedLeadId) {
+      relatedWhere.push({ relatedLeadId: event.relatedLeadId });
+    }
+    if (relatedWhere.length === 0) return undefined;
+
+    const relatedEvents = await this.prisma.integrationEvent.findMany({
+      where: {
+        channel: 'mango',
+        id: { not: event.id },
+        OR: relatedWhere,
+      },
+      select: {
+        payload: true,
+      },
+      orderBy: {
+        receivedAt: 'desc',
+      },
+      take: 20,
+    });
+
+    for (const relatedEvent of relatedEvents) {
+      const root = this.asRecord(relatedEvent.payload);
+      const nestedCall = this.asRecord(root?.call);
+      const scopes = [nestedCall, root];
+      const relatedEntryId = this.pickString(scopes, ['entryId', 'entry_id']);
+      if (this.extractMangoEntryNumericId(relatedEntryId) !== entryNumericId) continue;
+
+      const recordingId = this.pickString(scopes, [
+        'recordingId',
+        'recording_id',
+        'recordId',
+        'record_id',
+      ]);
+      const callId = this.pickString(scopes, ['callId', 'call_id']);
+      const accountId =
+        this.extractMangoRecordingAccountId(recordingId ?? '')
+        || this.extractMangoRecordingAccountId(callId ?? '');
+      if (accountId) return accountId;
+    }
+
+    return undefined;
   }
 
   private canInferMangoRecordingFromCallState(

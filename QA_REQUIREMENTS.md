@@ -383,7 +383,7 @@ Answer: In the right `Статус и мета` sidebar of linked Lead and activ
 Route surface: /leads detail, /applications detail
 Domain surface: Telephony context visibility across lead/application stages
 UI surface: `Статус и мета` shows a mini player and external recording link; activity timeline keeps call details but does not render the recording link.
-State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`). If a Mango call callback has no `recording_id` but includes `entry_id`, CRM may compose the Mango playback URL from the decoded entry id and store it only after server-side availability validation succeeds; completed summary callbacks are eligible when completion is visible through fields such as `end_time`, with account id taken from explicit recording env, call identity, or the recording URL template.
+State/API/audit surface: Ingest writes `note_added` activity entries for lead/application with telephony payload (`direction`, `durationSec`, `recordingUrl`). If a Mango call callback has no `recording_id` but includes `entry_id`, CRM may compose the Mango playback URL from the decoded entry id and store it only after server-side availability validation succeeds; completed summary callbacks are eligible when completion is visible through fields such as `end_time`, with account id taken from explicit recording env, call identity, the recording URL template, or related lifecycle events with the same `entry_id`.
 Test priority: P1
 
 QA-REQ-038:

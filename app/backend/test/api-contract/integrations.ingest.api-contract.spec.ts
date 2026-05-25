@@ -1082,6 +1082,10 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     const phone = uniquePhone('049');
     const expectedRecordingAccountId = '10160071';
     const entryNumericId = `268${Date.now().toString().slice(-8)}`;
+    const callId = Buffer
+      .from(`1:${expectedRecordingAccountId}:576:204827952`, 'utf8')
+      .toString('base64')
+      .replace(/=+$/g, '');
     const entryId = Buffer.from(entryNumericId, 'utf8').toString('base64');
     const expectedRecordingId = Buffer
       .from(`1:${expectedRecordingAccountId}:${entryNumericId}:0`, 'utf8')
@@ -1092,7 +1096,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     const previousRecordingUrlTemplate = process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE;
     delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
     process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE =
-      `https://lk.mango-office.ru/issa/api/{apiKey}/${expectedRecordingAccountId}/call-recording/play-record/{recordingId}`;
+      'https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}';
     const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = typeof input === 'string'
         ? input
@@ -1110,6 +1114,22 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
 
     let response!: request.Response;
     try {
+      await request(app.getHttpServer())
+        .post('/api/v1/integrations/events/mango/events/call')
+        .type('form')
+        .send(buildMangoConnectorBody({
+          seq: 3,
+          call_id: callId,
+          entry_id: entryId,
+          location: 'abonent',
+          timestamp: 1779693167,
+          call_state: 'Disconnected',
+          disconnect_reason: 1120,
+          from: { number: phone },
+          to: { number: '79013382295', extension: '15', line_number: '74994606567' },
+        }))
+        .expect(201);
+
       response = await request(app.getHttpServer())
         .post('/api/v1/integrations/events/mango')
         .type('form')
