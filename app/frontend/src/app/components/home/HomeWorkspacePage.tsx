@@ -62,6 +62,7 @@ import {
   useUpdateTaskMutation,
   useUpdateTaskStatusMutation,
 } from '../../hooks/useTaskMutations';
+import { resolveLeadDisplayName } from '../../lib/leadIdentity';
 import type { RouteEntityType } from '../shell/routeSync';
 import type { Lead } from '../../types/kanban';
 import { Dialog, DialogContent } from '../ui/dialog';
@@ -1045,7 +1046,10 @@ function UrgentTodayPage() {
         id: l.id,
         stage: l.stage,
         company: l.contactCompany,
-        client: l.contactName,
+        client: resolveLeadDisplayName({
+          contactName: l.contactName,
+          contactPhone: l.contactPhone,
+        }),
         equipmentType: l.equipmentTypeHint ?? '—',
         manager: l.managerName ?? l.manager?.fullName ?? '—',
         lastActivity,

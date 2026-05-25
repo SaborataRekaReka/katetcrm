@@ -7,6 +7,7 @@
  */
 import type { Lead } from '../types/kanban';
 import type { LeadApi } from './leadsApi';
+import { normalizeLeadContactName, resolveLeadDisplayName } from './leadIdentity';
 
 const MS_MIN = 60_000;
 const MS_HOUR = 60 * MS_MIN;
@@ -22,11 +23,17 @@ function humanizeSince(iso: string): string {
 }
 
 export function toKanbanLead(a: LeadApi): Lead {
+  const contactName = normalizeLeadContactName(a.contactName);
+
   return {
     id: a.id,
     apiClientId: a.clientId ?? undefined,
     stage: a.stage,
-    client: a.contactName,
+    client: resolveLeadDisplayName({
+      contactName,
+      contactPhone: a.contactPhone,
+    }),
+    contactName: contactName || undefined,
     company: a.contactCompany ?? undefined,
     phone: a.contactPhone,
     source: a.sourceLabel,

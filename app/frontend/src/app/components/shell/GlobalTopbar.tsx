@@ -24,6 +24,7 @@ import { useWorkspaceSettingsQuery } from '../../hooks/useSettingsQuery';
 import { useAuth } from '../../auth/AuthProvider';
 import { formatEntityDisplayId } from '../../lib/entityDisplayId';
 import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
+import { resolveLeadDisplayName } from '../../lib/leadIdentity';
 import logoMiniModern from '../../../imports/logo_mini_modern.svg';
 import type { RouteEntityType } from './routeSync';
 
@@ -266,8 +267,14 @@ export function GlobalTopbar() {
         kind: 'entity' as const,
         id: `lead:${lead.id}`,
         label: lead.contactCompany
-          ? `${lead.contactCompany} · ${lead.contactName}`
-          : lead.contactName,
+          ? `${lead.contactCompany} · ${resolveLeadDisplayName({
+            contactName: lead.contactName,
+            contactPhone: lead.contactPhone,
+          })}`
+          : resolveLeadDisplayName({
+            contactName: lead.contactName,
+            contactPhone: lead.contactPhone,
+          }),
         hint: `Лид · ${lead.contactPhone}`,
         primaryId: 'sales',
         secondaryId: 'leads',

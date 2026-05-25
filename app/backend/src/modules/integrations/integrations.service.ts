@@ -926,6 +926,7 @@ export class IntegrationsService {
     actor: ActorContext,
     managerAssignment?: MangoManagerAssignment,
   ): Promise<LeadUpsertResult> {
+    const incomingContactName = payload.contactName.trim();
     const duplicates = await this.leads.findDuplicates(payload.contactPhone, payload.contactCompany);
     if (duplicates.length > 0) {
       const target = duplicates[0];
@@ -941,7 +942,7 @@ export class IntegrationsService {
       const updated = await this.leads.update(
         target.id,
         {
-          contactName: payload.contactName,
+          contactName: incomingContactName.length > 0 ? incomingContactName : undefined,
           contactCompany: payload.contactCompany,
           contactPhone: payload.contactPhone,
           equipmentTypeHint: payload.equipmentTypeHint,
@@ -977,7 +978,7 @@ export class IntegrationsService {
       {
         source: CHANNEL_TO_SOURCE[event.channel],
         sourceLabel: `integration:${event.channel}`,
-        contactName: payload.contactName,
+        contactName: incomingContactName,
         contactCompany: payload.contactCompany,
         contactPhone: payload.contactPhone,
         equipmentTypeHint: payload.equipmentTypeHint,
@@ -1768,9 +1769,12 @@ export class IntegrationsService {
         'fromDisplayName',
         'calleeName',
         'toDisplayName',
-      ]) ??
-      'Интеграционный контакт';
-    const contactName = this.limitText(nameRaw, 200);
+      ]);
+    const contactNameCandidate = nameRaw ? this.limitText(nameRaw, 200).trim() : '';
+    const contactName =
+      contactNameCandidate.toLowerCase() === 'интеграционный контакт'
+        ? ''
+        : contactNameCandidate;
 
     const callCounterpartyPhone = callContext
       ? this.pickCallCounterpartyPhone(callContext)

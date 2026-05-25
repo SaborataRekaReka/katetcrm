@@ -102,6 +102,7 @@ export interface Lead {
   apiClientId?: string;
   stage: StageType;
   client: string;
+  contactName?: string;
   company?: string;
   phone: string;
   source: string;

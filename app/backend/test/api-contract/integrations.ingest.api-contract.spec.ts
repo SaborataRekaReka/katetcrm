@@ -325,6 +325,7 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     expect(lead).not.toBeNull();
     expect(lead?.source).toBe('mango');
     expect(lead?.contactPhone).toContain(phone.slice(-10));
+    expect(lead?.contactName).toBe('');
   });
 
   it('APIC-038: records rejected Mango connector callbacks for admin diagnostics (QA-REQ-050)', async () => {

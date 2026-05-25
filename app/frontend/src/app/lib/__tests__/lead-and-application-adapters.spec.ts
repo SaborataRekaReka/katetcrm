@@ -137,6 +137,35 @@ describe('Lead/Application adapters (QA-REQ-028, QA-REQ-030, QA-REQ-031)', () =>
     expect(lead.lastActivity).toBe('только что');
   });
 
+  it('uses phone as display name when contact name is empty or integration placeholder', () => {
+    const emptyName = toKanbanLead(
+      buildLeadApi({
+        contactName: '   ',
+        contactPhone: '+79991112233',
+      }),
+    );
+    expect(emptyName.client).toBe('+79991112233');
+    expect(emptyName.contactName).toBeUndefined();
+
+    const placeholderName = toKanbanLead(
+      buildLeadApi({
+        contactName: 'Интеграционный контакт',
+        contactPhone: '+79994445566',
+      }),
+    );
+    expect(placeholderName.client).toBe('+79994445566');
+    expect(placeholderName.contactName).toBeUndefined();
+
+    const realName = toKanbanLead(
+      buildLeadApi({
+        contactName: '  Петр Петров  ',
+        contactPhone: '+79997778899',
+      }),
+    );
+    expect(realName.client).toBe('Петр Петров');
+    expect(realName.contactName).toBe('Петр Петров');
+  });
+
   it('maps LeadApi humanized time for hours and days', () => {
     const now = new Date('2026-05-06T15:00:00.000Z').getTime();
     vi.spyOn(Date, 'now').mockReturnValue(now);

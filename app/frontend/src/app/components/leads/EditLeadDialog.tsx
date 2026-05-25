@@ -64,7 +64,7 @@ const SOURCE_OPTIONS: { value: SourceChannel; label: string }[] = [
 function leadToForm(lead: Lead): FormState {
   const sourceValue = (SOURCE_OPTIONS.find((o) => o.value === lead.sourceChannel)?.value ?? 'manual') as SourceChannel;
   return {
-    contactName: lead.client ?? '',
+    contactName: lead.contactName ?? '',
     contactCompany: lead.company ?? '',
     contactPhone: lead.phone ?? '',
     source: sourceValue,

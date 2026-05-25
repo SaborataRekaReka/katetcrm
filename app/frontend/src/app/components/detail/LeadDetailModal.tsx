@@ -917,7 +917,7 @@ export function LeadDetailModal({
   const handleCreateClientFromLead = async () => {
     if (!lead || !USE_API || canOpenClientDetails) return;
 
-    const contactName = lead.client?.trim() ?? '';
+    const contactName = lead.contactName?.trim() ?? '';
     const contactCompany = lead.company?.trim() ?? '';
     const phone = lead.phone?.trim() ?? '';
 
@@ -1567,7 +1567,7 @@ export function LeadDetailModal({
                         </button>
                       ) : (
                         <InlineText
-                          value={lead!.client ?? ''}
+                          value={lead!.contactName ?? ''}
                           onSave={makeLeadFieldSaver((v) => ({ contactName: v.trim() }))}
                           ariaLabel="Имя контакта"
                           placeholder="Имя контакта"
@@ -1607,7 +1607,7 @@ export function LeadDetailModal({
                     value={
                       lead!.company ? (
                         <InlineText
-                          value={lead!.client ?? ''}
+                          value={lead!.contactName ?? ''}
                           onSave={makeLeadFieldSaver((v) => ({ contactName: v.trim() }))}
                           ariaLabel="Имя контакта"
                           placeholder="Имя контакта"
