@@ -1875,16 +1875,7 @@ export class IntegrationsService {
       'recordLink',
       'talkRecordUrl',
     ]);
-    const duration = this.normalizeDurationSeconds(
-      this.pickNumber(callScopes, [
-        'durationSec',
-        'duration',
-        'durationSeconds',
-        'talkDuration',
-        'talkTime',
-        'billsec',
-      ]),
-    );
+    const duration = this.pickMangoDurationSeconds(callScopes);
 
     return {
       contactName: this.pickString(scopes, ['contactName', 'name', 'fullName']) ?? null,
@@ -2181,6 +2172,18 @@ export class IntegrationsService {
   private canInferMangoRecordingFromCallState(
     scopes: Array<Record<string, unknown> | undefined>,
   ): boolean {
+    const endedAt = this.pickDate(scopes, [
+      'endedAt',
+      'ended_at',
+      'endTime',
+      'end_time',
+      'finish_time',
+      'disconnectTime',
+      'disconnect_time',
+      'call_end_time',
+    ]);
+    if (endedAt) return true;
+
     const completionCode = this.pickNumber(scopes, ['completionCode', 'completion_code']);
     if (completionCode === 1000) return true;
 
@@ -2440,18 +2443,7 @@ export class IntegrationsService {
       'call_state',
       'callState',
     ]);
-    const durationSec = this.normalizeDurationSeconds(
-      this.pickNumber(scopes, [
-        'durationSec',
-        'duration',
-        'durationSeconds',
-        'talkDuration',
-        'talkTime',
-        'billsec',
-        'talk_time',
-        'call_duration',
-      ]),
-    );
+    const durationSec = this.pickMangoDurationSeconds(scopes);
     const startedAt = this.pickDate(scopes, [
       'startedAt',
       'started_at',
@@ -2900,6 +2892,56 @@ export class IntegrationsService {
     // Some providers send milliseconds in duration-like fields.
     const seconds = raw > 86_400 ? Math.round(raw / 1000) : Math.round(raw);
     return seconds > 0 ? seconds : undefined;
+  }
+
+  private pickMangoDurationSeconds(
+    scopes: Array<Record<string, unknown> | undefined>,
+  ): number | undefined {
+    return this.normalizeDurationSeconds(
+      this.pickNumber(scopes, [
+        'durationSec',
+        'duration',
+        'durationSeconds',
+        'talkDuration',
+        'billsec',
+        'call_duration',
+      ]),
+    ) ?? this.deriveMangoDurationSecondsFromTimestamps(scopes);
+  }
+
+  private deriveMangoDurationSecondsFromTimestamps(
+    scopes: Array<Record<string, unknown> | undefined>,
+  ): number | undefined {
+    const startedAt = this.pickDate(scopes, [
+      'answerTime',
+      'answer_time',
+      'talkTime',
+      'talk_time',
+      'startedAt',
+      'started_at',
+      'startTime',
+      'start_time',
+      'forwardTime',
+      'forward_time',
+      'create_time',
+      'call_start_time',
+    ]);
+    const endedAt = this.pickDate(scopes, [
+      'endedAt',
+      'ended_at',
+      'endTime',
+      'end_time',
+      'finish_time',
+      'disconnectTime',
+      'disconnect_time',
+      'call_end_time',
+    ]);
+
+    if (!startedAt || !endedAt) return undefined;
+
+    const seconds = Math.round((endedAt.getTime() - startedAt.getTime()) / 1000);
+    if (seconds <= 0 || seconds > 24 * 60 * 60) return undefined;
+    return seconds;
   }
 
   private pickCallCounterpartyPhone(call: NormalizedCallContext): string | undefined {
