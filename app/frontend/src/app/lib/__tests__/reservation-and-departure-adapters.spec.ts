@@ -190,6 +190,7 @@ describe('Reservation/Departure adapters (QA-REQ-014, QA-REQ-028, QA-REQ-031)', 
 
     expect(row.lead.reservationStage).toBe('subcontractor');
     expect(row.reservation.linked.plannedTime).toBe('10:00–18:00');
+    expect(row.reservation.linked.applicationNumber).toBe('APP-1');
 
     const entity = toReservationEntity(
       buildReservationApi({
@@ -320,6 +321,7 @@ describe('Reservation/Departure adapters (QA-REQ-014, QA-REQ-028, QA-REQ-031)', 
     expect(fallbackRow.lead.id).toBe('item-1');
     expect(fallbackRow.reservation.reservationType).toBe('equipment_type');
     expect(fallbackRow.reservation.linked.applicationTitle).toBe('Заявка');
+    expect(fallbackRow.reservation.linked.applicationNumber).toBeUndefined();
     expect(fallbackRow.reservation.linked.clientId).toBe('');
     expect(fallbackRow.reservation.linked.leadId).toBeUndefined();
     expect(fallbackRow.reservation.releasedAt).toBe('2026-05-04T10:00:00.000Z');
@@ -345,6 +347,7 @@ describe('Reservation/Departure adapters (QA-REQ-014, QA-REQ-028, QA-REQ-031)', 
     expect(fallbackEntity.conflict).toBeUndefined();
     expect(fallbackEntity.reservationType).toBe('equipment_type');
     expect(fallbackEntity.linked.applicationTitle).toBe('Заявка');
+    expect(fallbackEntity.linked.applicationNumber).toBeUndefined();
   });
 
   it('maps reservation humanized labels for minute/hour/day branches', () => {

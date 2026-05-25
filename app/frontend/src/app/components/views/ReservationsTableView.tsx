@@ -17,7 +17,7 @@ import {
   ReservationRow,
   deriveReservationState,
 } from '../shell/reservationHelpers';
-import { formatEntityDisplayId } from '../../lib/entityDisplayId';
+import { formatApplicationDisplayId, formatEntityDisplayId } from '../../lib/entityDisplayId';
 
 function fmtDate(d?: string) {
   if (!d) return '—';
@@ -280,8 +280,20 @@ export function ReservationsTableView({ rows, onRowClick, isFiltered }: Reservat
       header: 'ID заявки',
       width: 130,
       defaultVisible: false,
-      sortValue: (r) => r.reservation.linked.applicationId,
-      cell: (r) => <span className="truncate text-muted-foreground">{r.reservation.linked.applicationId}</span>,
+      sortValue: (r) => formatApplicationDisplayId(
+        r.reservation.linked.applicationNumber,
+        r.reservation.linked.applicationId,
+        '—',
+      ),
+      cell: (r) => (
+        <span className="truncate text-muted-foreground">
+          {formatApplicationDisplayId(
+            r.reservation.linked.applicationNumber,
+            r.reservation.linked.applicationId,
+            '—',
+          )}
+        </span>
+      ),
     },
   ];
 

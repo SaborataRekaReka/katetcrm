@@ -40,6 +40,7 @@ export interface ReservationSubcontractorOption {
 
 export interface ReservationLinkedItem {
   applicationId: string;
+  applicationNumber?: string;
   applicationTitle: string;
   clientId: string;
   clientName: string;

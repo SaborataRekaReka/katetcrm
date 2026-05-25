@@ -85,6 +85,7 @@ export function toReservationRow(api: ReservationApi): ReservationRow {
     readyForDeparture: api.readyForDeparture,
     linked: {
       applicationId: api.applicationId,
+      applicationNumber: api.applicationNumber ?? undefined,
       applicationTitle: api.applicationNumber
         ? `Заявка #${api.applicationNumber}`
         : 'Заявка',
@@ -161,6 +162,7 @@ export function toReservationEntity(api: ReservationApi): Reservation {
     readyForDeparture: api.readyForDeparture,
     linked: {
       applicationId: api.applicationId,
+      applicationNumber: api.applicationNumber ?? undefined,
       applicationTitle: api.applicationNumber
         ? `Заявка #${api.applicationNumber}`
         : 'Заявка',

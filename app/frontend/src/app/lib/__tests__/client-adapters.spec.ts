@@ -243,6 +243,8 @@ describe('Client adapters (QA-REQ-001, QA-REQ-024, QA-REQ-028)', () => {
     expect(model.contacts.length).toBe(1);
     expect(model.contacts[0].name).toBe('Иван Иванов');
     expect(model.activeRecords.applicationsCount).toBe(1);
+    expect(model.activeRecords.topActiveApplication?.id).toBe('APP-3');
+    expect(model.activeRecords.topActiveApplication?.title).toContain('APP-3');
     expect(model.activeRecords.departuresCount).toBe(1);
     expect(model.activity[0].message).toBe('Client updated');
   });

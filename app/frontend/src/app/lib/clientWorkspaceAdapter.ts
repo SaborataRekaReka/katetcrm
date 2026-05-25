@@ -9,6 +9,7 @@ import type {
 import type { ActivityLogEntryApi } from './activityApi';
 import type { ApplicationApi } from './applicationsApi';
 import type { ClientDetailApi } from './clientsApi';
+import { formatApplicationDisplayId } from './entityDisplayId';
 import type { LeadApi } from './leadsApi';
 
 const TERMINAL_LEAD_STAGES = new Set(['completed', 'unqualified', 'cancelled']);
@@ -239,6 +240,9 @@ export function toClientWorkspaceModel(args: {
     ),
   );
   const firstDepartureApp = activeApps.find((a) => a.stage === 'departure');
+  const firstAppDisplayId = firstApp
+    ? formatApplicationDisplayId(firstApp.number, firstApp.id, '—')
+    : null;
 
   const fallbackContactName =
     leads.find((lead) => normalizeOptionalText(lead.contactName))?.contactName
@@ -291,8 +295,8 @@ export function toClientWorkspaceModel(args: {
       departuresCount: activeDeparturesCount,
       topActiveApplication: firstApp
         ? {
-            id: firstApp.id,
-            title: `${firstApp.number} · ${firstApp.equipmentSummary}`,
+            id: firstAppDisplayId ?? '—',
+            title: `${firstAppDisplayId ?? '—'} · ${firstApp.equipmentSummary}`,
             entityId: firstApp.id,
           }
         : undefined,
