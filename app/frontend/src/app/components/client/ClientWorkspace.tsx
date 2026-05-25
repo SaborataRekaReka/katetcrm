@@ -402,9 +402,13 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     const linkedLead = leadId ? leadById.get(leadId) : null;
     if (leadId) {
       leadChainsUsed.add(leadId);
+      const leadDisplayId = formatEntityDisplayId('lead', leadId, leadId);
+      const leadDetails = linkedLead?.date
+        ? `${leadDisplayId} · ${linkedLead.date}`
+        : leadDisplayId;
       chain.push({
         stage: 'Лид',
-        details: linkedLead ? `${linkedLead.id} · ${linkedLead.date}` : leadId,
+        details: leadDetails,
         onClick: leadEntityId
           ? () => openEntitySecondary('leads', 'lead', leadEntityId)
           : null,
@@ -454,10 +458,11 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
     .filter((leadItem) => !leadChainsUsed.has(leadItem.id))
     .map((leadItem) => {
       const leadEntityId = normalizeEntityRouteId(leadItem.id);
+      const leadDisplayId = formatEntityDisplayId('lead', leadItem.id, leadItem.id);
       return [
         {
           stage: 'Лид',
-          details: `${leadItem.id} · ${leadItem.date}`,
+          details: `${leadDisplayId} · ${leadItem.date}`,
           onClick: leadEntityId
             ? () => openEntitySecondary('leads', 'lead', leadEntityId)
             : null,
@@ -1191,6 +1196,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
         <div className="border border-gray-200 rounded-md bg-white divide-y divide-gray-200 overflow-hidden">
           {base.leadsHistory.map((l) => {
             const leadEntityId = normalizeEntityRouteId(l.id);
+            const leadDisplayId = formatEntityDisplayId('lead', l.id, l.id);
             return (
               <div key={l.id} className="flex flex-col gap-1.5 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
                 <div className="flex flex-wrap items-center gap-1.5 sm:w-[116px] sm:flex-shrink-0">
@@ -1207,7 +1213,7 @@ export function ClientWorkspace({ lead, onClose, apiClientId }: Props) {
                       onClick={leadEntityId ? () => openEntitySecondary('leads', 'lead', leadEntityId) : undefined}
                       disabled={!leadEntityId}
                     >
-                      {l.id}
+                      {leadDisplayId}
                     </Button>
                     <span className="text-[10px] text-gray-500">· {l.date}</span>
                     <span className="text-[10px] text-gray-500">· {l.source}</span>
