@@ -2152,9 +2152,7 @@ export class IntegrationsService {
     const entryNumericId = this.extractMangoEntryNumericId(entryId);
     if (!entryNumericId) return undefined;
 
-    const configuredAccountId = this.normalizeMangoRecordingAccountId(
-      this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID'),
-    );
+    const configuredAccountId = this.getConfiguredMangoRecordingAccountId();
     const payloadCallId = this.pickString(scopes, ['callId', 'call_id']);
     const accountId = configuredAccountId
       || this.extractMangoRecordingAccountId(call.callId ?? '')
@@ -2213,6 +2211,21 @@ export class IntegrationsService {
   private normalizeMangoRecordingAccountId(value: string | undefined): string | undefined {
     const normalized = value?.trim();
     return normalized && /^\d{4,20}$/.test(normalized) ? normalized : undefined;
+  }
+
+  private getConfiguredMangoRecordingAccountId(): string | undefined {
+    return this.normalizeMangoRecordingAccountId(
+      this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID'),
+    ) ?? this.extractMangoRecordingAccountIdFromTemplate(
+      this.config.get<string>('INTEGRATION_MANGO_RECORDING_URL_TEMPLATE'),
+    );
+  }
+
+  private extractMangoRecordingAccountIdFromTemplate(value: string | undefined): string | undefined {
+    const normalized = value?.trim();
+    if (!normalized) return undefined;
+    const match = normalized.match(/\/(\d{4,20})\/call-recording\/play-record(?:\/|$|\{)/);
+    return this.normalizeMangoRecordingAccountId(match?.[1]);
   }
 
   private async isMangoRecordingAvailable(rawUrl: string): Promise<boolean> {
@@ -2536,9 +2549,7 @@ export class IntegrationsService {
     if (!recordingId) return undefined;
 
     const apiKey = (this.config.get<string>('INTEGRATION_MANGO_API_KEY') ?? '').trim();
-    const configuredAccountId = this.normalizeMangoRecordingAccountId(
-      this.config.get<string>('INTEGRATION_MANGO_RECORDING_ACCOUNT_ID'),
-    );
+    const configuredAccountId = this.getConfiguredMangoRecordingAccountId();
     const accountId = configuredAccountId || this.extractMangoRecordingAccountId(recordingId) || '';
     const template =
       (this.config.get<string>('INTEGRATION_MANGO_RECORDING_URL_TEMPLATE') ?? '').trim();

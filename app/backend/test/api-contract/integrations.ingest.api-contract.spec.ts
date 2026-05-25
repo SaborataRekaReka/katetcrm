@@ -1089,7 +1089,10 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       .replace(/=+$/g, '');
 
     const previousRecordingAccountId = process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
-    process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = expectedRecordingAccountId;
+    const previousRecordingUrlTemplate = process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE;
+    delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
+    process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE =
+      `https://lk.mango-office.ru/issa/api/{apiKey}/${expectedRecordingAccountId}/call-recording/play-record/{recordingId}`;
     const fetchMock = jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
       const url = typeof input === 'string'
         ? input
@@ -1131,6 +1134,11 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
         delete process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID;
       } else {
         process.env.INTEGRATION_MANGO_RECORDING_ACCOUNT_ID = previousRecordingAccountId;
+      }
+      if (previousRecordingUrlTemplate === undefined) {
+        delete process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE;
+      } else {
+        process.env.INTEGRATION_MANGO_RECORDING_URL_TEMPLATE = previousRecordingUrlTemplate;
       }
     }
 
