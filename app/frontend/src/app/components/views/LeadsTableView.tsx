@@ -138,7 +138,7 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
       header: 'Адрес',
       width: 220,
       sortValue: (l) => l.address ?? '',
-      cell: (l) => <span className="truncate text-muted-foreground">{l.address ?? '—'}</span>,
+      cell: (l) => <span className="truncate text-muted-foreground">{l.address ?? 'Незаполнен'}</span>,
     },
     {
       id: 'manager',

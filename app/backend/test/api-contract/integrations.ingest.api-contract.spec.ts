@@ -1061,6 +1061,12 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     const leadId = response.body.event.relatedLeadId as string;
     expect(leadId).toEqual(expect.any(String));
 
+    const lead = await prisma.lead.findUniqueOrThrow({
+      where: { id: leadId },
+      select: { address: true },
+    });
+    expect(lead.address).toBeNull();
+
     const leadActivity = await prisma.activityLogEntry.findFirst({
       where: {
         entityType: 'lead',

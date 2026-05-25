@@ -446,7 +446,7 @@ Answer: CRM should accept the direct connector URL and Mango Office typed event 
 Route surface: /api/v1/integrations/events/mango, /api/v1/integrations/events/mango/events/call, /api/v1/integrations/events/call
 Domain surface: Mango Office callback compatibility.
 UI surface: Successful call callbacks appear as processed Mango events in the integrations journal and create/update Leads. Admin can manually reprocess failed, processed, and replayed integration events from the journal without using the failed-only retry action.
-State/API/audit surface: Typed Mango event paths are normalized into `channel=mango` IntegrationEvent records using event identifiers for idempotency, and nested Mango call parties resolve to Lead phone and call context. Replay re-runs the domain upsert path for failed/processed/replayed events and records audit activity.
+State/API/audit surface: Typed Mango event paths are normalized into `channel=mango` IntegrationEvent records using event identifiers for idempotency, and nested Mango call parties resolve to Lead phone and call context. Mango call `location` values such as `ivr`/`abonent` are call-routing metadata and must not populate `Lead.address`; a missing address remains a manager-filled field. Replay re-runs the domain upsert path for failed/processed/replayed events and records audit activity.
 Test priority: P1
 
 QA-REQ-052:

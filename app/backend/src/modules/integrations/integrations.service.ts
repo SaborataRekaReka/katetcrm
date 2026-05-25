@@ -1813,7 +1813,10 @@ export class IntegrationsService {
     const timeWindowRaw = this.pickString(scopes, ['timeWindow']);
     const timeWindow = timeWindowRaw ? this.limitText(timeWindowRaw, 50) : undefined;
 
-    const addressRaw = this.pickString(scopes, ['address', 'location']);
+    const addressRaw = this.pickString(
+      scopes,
+      channel === 'mango' ? ['address'] : ['address', 'location'],
+    );
     const address = addressRaw ? this.limitText(addressRaw, 500) : undefined;
 
     const commentRaw = this.pickString(scopes, ['comment', 'message', 'text', 'note']);

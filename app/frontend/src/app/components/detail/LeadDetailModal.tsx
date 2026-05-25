@@ -1642,7 +1642,7 @@ export function LeadDetailModal({
                         required
                         disabled={disabledInline}
                         emptyDisplay={
-                          <span className="text-[11px] text-amber-600">Не заполнено · {missingFieldHint}</span>
+                          <span className="text-[11px] text-amber-600">Незаполнен · {missingFieldHint}</span>
                         }
                       />
                     }

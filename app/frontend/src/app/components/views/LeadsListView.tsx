@@ -196,7 +196,7 @@ function LeadListRow({
       <div className="truncate px-3 text-muted-foreground">
         {formatDateTime(lead.date, lead.timeWindow)}
       </div>
-      <div className="truncate px-3 text-muted-foreground">{lead.address ?? '—'}</div>
+      <div className="truncate px-3 text-muted-foreground">{lead.address ?? 'Незаполнен'}</div>
       <div className="truncate px-3">{lead.manager}</div>
       <div className="truncate px-3 text-muted-foreground">{lead.lastActivity}</div>
 
