@@ -147,6 +147,12 @@ interface MangoRecordingFetchAttempt {
   status: number;
 }
 
+interface MangoActivityRecordingBackfillRow {
+  id: string;
+  summary: string;
+  payload: Prisma.JsonValue | null;
+}
+
 const MAX_RETRY_ATTEMPTS = 3;
 
 const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
@@ -2087,6 +2093,8 @@ export class IntegrationsService {
       payload,
     });
 
+    await this.backfillMangoRecordingUrlForRelatedActivities(event, callForActivity);
+
     const activeApplications = await this.prisma.application.findMany({
       where: {
         leadId,
@@ -2107,6 +2115,73 @@ export class IntegrationsService {
         payload,
       });
     }
+  }
+
+  private async backfillMangoRecordingUrlForRelatedActivities(
+    event: IntegrationEvent,
+    call: NormalizedCallContext,
+  ): Promise<void> {
+    if (event.channel !== 'mango' || !call.recordingUrl) return;
+
+    const groupExternalId = this.getMangoGroupExternalId(event);
+    if (!groupExternalId) return;
+
+    const externalIdPattern = `${groupExternalId}:%`;
+    const rows = await this.prisma.$queryRaw<MangoActivityRecordingBackfillRow[]>`
+      SELECT id, summary, payload
+      FROM activity_log
+      WHERE payload IS NOT NULL
+        AND payload->'integration'->>'provider' = 'mango'
+        AND (
+          payload->'integration'->>'correlationId' = ${groupExternalId}
+          OR payload->'integration'->>'externalId' = ${groupExternalId}
+          OR payload->'integration'->>'externalId' LIKE ${externalIdPattern}
+        )
+      ORDER BY created_at DESC
+      LIMIT 200
+    `;
+
+    for (const row of rows) {
+      const payload = this.asRecord(row.payload);
+      const telephony = this.asRecord(payload?.telephony);
+      if (!payload || !telephony) continue;
+      if (this.pickString([telephony], ['recordingUrl', 'recording_url'])) continue;
+
+      const nextPayload = {
+        ...payload,
+        telephony: {
+          ...telephony,
+          recordingUrl: call.recordingUrl,
+        },
+      };
+      const nextSummary = row.summary.includes('есть запись')
+        ? row.summary
+        : `${row.summary} · есть запись`;
+
+      await this.prisma.activityLogEntry.update({
+        where: { id: row.id },
+        data: {
+          summary: nextSummary,
+          payload: nextPayload as Prisma.InputJsonValue,
+        },
+      });
+    }
+  }
+
+  private getMangoGroupExternalId(event: IntegrationEvent): string | undefined {
+    const payloadBaseId = this.extractMangoBaseExternalId(
+      this.asRecord(event.payload) ?? {},
+    );
+    if (payloadBaseId) return payloadBaseId;
+
+    const correlationId = event.correlationId?.trim();
+    if (correlationId) return correlationId;
+
+    const externalId = event.externalId?.trim();
+    if (!externalId) return undefined;
+
+    const delimiterIndex = externalId.indexOf(':');
+    return delimiterIndex === -1 ? externalId : externalId.slice(0, delimiterIndex);
   }
 
   private async withResolvedMangoRecordingUrl(

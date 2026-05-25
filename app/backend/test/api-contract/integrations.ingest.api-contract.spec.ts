@@ -1112,6 +1112,45 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       return new Response(null, { status: 404 });
     });
 
+    const orphanPhone = uniquePhone('050');
+    const orphanLead = await prisma.lead.create({
+      data: {
+        source: 'mango',
+        sourceLabel: 'integration:mango',
+        contactName: 'QA orphan Mango lead',
+        contactPhone: orphanPhone,
+        phoneNormalized: orphanPhone.replace(/\D/g, ''),
+      },
+    });
+    const orphanActivity = await prisma.activityLogEntry.create({
+      data: {
+        action: 'note_added',
+        entityType: 'lead',
+        entityId: orphanLead.id,
+        summary: `Входящий звонок Mango · ${phone}`,
+        payload: {
+          integration: {
+            provider: 'mango',
+            eventId: `orphan-apic-049-${entryId}`,
+            channel: 'mango',
+            externalId: `${entryId}:seq:1`,
+            correlationId: entryId,
+          },
+          telephony: {
+            callId,
+            direction: 'inbound',
+            from: phone,
+            to: '74994606567',
+            status: 'Appeared',
+            durationSec: null,
+            startedAt: '2026-05-25T07:10:19.000Z',
+            endedAt: null,
+            recordingUrl: null,
+          },
+        },
+      },
+    });
+
     let response!: request.Response;
     try {
       await request(app.getHttpServer())
@@ -1180,6 +1219,17 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
       | undefined;
     expect(payload?.telephony?.durationSec).toBe(132);
     expect(payload?.telephony?.recordingUrl).toBe(
+      `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${expectedRecordingAccountId}/call-recording/play-record/${expectedRecordingId}`,
+    );
+
+    const updatedOrphanActivity = await prisma.activityLogEntry.findUniqueOrThrow({
+      where: { id: orphanActivity.id },
+    });
+    const orphanPayload = updatedOrphanActivity.payload as
+      | { telephony?: { recordingUrl?: string | null } }
+      | undefined;
+    expect(updatedOrphanActivity.summary).toContain('есть запись');
+    expect(orphanPayload?.telephony?.recordingUrl).toBe(
       `https://lk.mango-office.ru/issa/api/${process.env.INTEGRATION_MANGO_API_KEY}/${expectedRecordingAccountId}/call-recording/play-record/${expectedRecordingId}`,
     );
   });
