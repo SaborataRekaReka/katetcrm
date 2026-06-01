@@ -33,6 +33,44 @@ const UNOPENED_NEW_LEAD_IDS_STORAGE_KEY = 'katet-crm.leads.new-unopened.v1';
 const LEADS_STREAM_RECONNECT_MS = 3_000;
 
 let leadArrivalAudioContext: AudioContext | null = null;
+let pendingLeadArrivalSound = false;
+let removeLeadArrivalUnlockListeners: (() => void) | null = null;
+
+function getLeadArrivalAudioContext() {
+  if (typeof window === 'undefined') return null;
+
+  const AudioContextConstructor =
+    window.AudioContext ??
+    (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+
+  if (!AudioContextConstructor) return null;
+
+  if (!leadArrivalAudioContext || leadArrivalAudioContext.state === 'closed') {
+    leadArrivalAudioContext = new AudioContextConstructor();
+  }
+
+  return leadArrivalAudioContext;
+}
+
+function attachLeadArrivalUnlockListeners() {
+  if (typeof window === 'undefined' || removeLeadArrivalUnlockListeners) return;
+
+  const onUserInteraction = () => {
+    if (!pendingLeadArrivalSound) return;
+    void playLeadArrivalSound();
+  };
+
+  window.addEventListener('pointerdown', onUserInteraction, { passive: true });
+  window.addEventListener('touchstart', onUserInteraction, { passive: true });
+  window.addEventListener('keydown', onUserInteraction);
+
+  removeLeadArrivalUnlockListeners = () => {
+    window.removeEventListener('pointerdown', onUserInteraction);
+    window.removeEventListener('touchstart', onUserInteraction);
+    window.removeEventListener('keydown', onUserInteraction);
+    removeLeadArrivalUnlockListeners = null;
+  };
+}
 
 function readStoredIdSet(key: string): Set<string> {
   if (typeof window === 'undefined') return new Set<string>();
@@ -69,15 +107,19 @@ function resolveLeadsStreamUrl() {
   return new URL('leads/stream', resolvedBase).toString();
 }
 
-function playLeadArrivalSound() {
-  if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') return;
+async function playLeadArrivalSound() {
+  const ctx = getLeadArrivalAudioContext();
+  if (!ctx) return;
+
   try {
-    if (!leadArrivalAudioContext) {
-      leadArrivalAudioContext = new window.AudioContext();
-    }
-    const ctx = leadArrivalAudioContext;
     if (ctx.state === 'suspended') {
-      void ctx.resume();
+      await ctx.resume();
+    }
+
+    if (ctx.state !== 'running') {
+      pendingLeadArrivalSound = true;
+      attachLeadArrivalUnlockListeners();
+      return;
     }
 
     const now = ctx.currentTime + 0.01;
@@ -100,8 +142,14 @@ function playLeadArrivalSound() {
 
     tone(880, now, 0.13);
     tone(1174, now + 0.17, 0.13);
+
+    pendingLeadArrivalSound = false;
+    if (removeLeadArrivalUnlockListeners) {
+      removeLeadArrivalUnlockListeners();
+    }
   } catch {
-    /* ignore audio playback errors (autoplay policy, unsupported output, etc.) */
+    pendingLeadArrivalSound = true;
+    attachLeadArrivalUnlockListeners();
   }
 }
 
@@ -279,6 +327,14 @@ export function LeadsKanbanPage() {
   }, [selectedApplicationQuery.data, selectedLead]);
 
   useEffect(() => {
+    return () => {
+      if (removeLeadArrivalUnlockListeners) {
+        removeLeadArrivalUnlockListeners();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     openedLeadIdsRef.current = openedLeadIds;
   }, [openedLeadIds]);
 
@@ -302,7 +358,7 @@ export function LeadsKanbanPage() {
       });
 
       void leadsQuery.refetch();
-      playLeadArrivalSound();
+      void playLeadArrivalSound();
     },
     [leadsQuery.refetch, user?.id],
   );
