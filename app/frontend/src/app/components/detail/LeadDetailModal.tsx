@@ -551,7 +551,7 @@ function PositionCard({
   if (status === 'reserved') nextStep = null;
   else if (status === 'conflict') nextStep = 'Разрешить конфликт';
   else if (status === 'no_reservation') nextStep = IS_SALES_LITE ? null : 'Создать бронь';
-  else if (pos.sourcingType === 'undecided') nextStep = 'Выбрать sourcing';
+  else if (pos.sourcingType === 'undecided') nextStep = 'Выбрать способ обеспечения';
   else nextStep = 'Продолжить обработку';
 
   const reservationExists =

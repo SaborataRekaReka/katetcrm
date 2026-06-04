@@ -213,7 +213,7 @@ export function PropertyRow({
   );
 }
 
-export function EmptyValue({ text = 'Empty' }: { text?: string }) {
+export function EmptyValue({ text = 'Не указано' }: { text?: string }) {
   return <span className="text-gray-400 text-[11px]">{text}</span>;
 }
 

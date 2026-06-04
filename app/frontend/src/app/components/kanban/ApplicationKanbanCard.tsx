@@ -23,7 +23,7 @@ function deriveReadiness(lead: Lead) {
 
 const readinessMeta: Record<string, { label: (l: Lead) => string; tone: string; Icon: React.ComponentType<{ className?: string }> }> = {
   ready: { label: () => 'Готово к брони', tone: badgeTones.success, Icon: CheckCircle2 },
-  waiting_sourcing: { label: () => 'Ждёт sourcing', tone: badgeTones.caution, Icon: Clock },
+  waiting_sourcing: { label: () => 'Ждёт подбора', tone: badgeTones.caution, Icon: Clock },
   no_data: { label: () => 'Нет данных', tone: badgeTones.warning, Icon: AlertCircle },
   partial: {
     label: (l) => `${l.positionsReady ?? 0}/${l.positionsTotal ?? l.multipleItems ?? 0} готовы`,
