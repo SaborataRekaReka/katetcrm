@@ -153,6 +153,20 @@ interface MangoActivityRecordingBackfillRow {
   payload: Prisma.JsonValue | null;
 }
 
+export interface MangoRecordingBackfillReport {
+  dryRun: boolean;
+  scannedEvents: number;
+  answeredCalls: number;
+  groupsWithInferredUrl: number;
+  activitiesUpdated: number;
+  samples: Array<{
+    eventId: string;
+    leadId: string | null;
+    group: string | null;
+    recordingUrl: string;
+  }>;
+}
+
 const MAX_RETRY_ATTEMPTS = 3;
 
 const CHANNEL_TO_SOURCE: Record<IntegrationChannel, SourceChannel> = {
@@ -221,12 +235,59 @@ const MANGO_RECORDING_PROXY_PATH_RE =
 
 @Injectable()
 export class IntegrationsService {
+  /**
+   * In-process serialization chains keyed by lead identity (normalized phone).
+   * Mango sends several near-simultaneous webhooks per call; without this lock
+   * concurrent ingests race in the find-duplicates/create section and produce
+   * duplicate orphan leads, splitting the call lifecycle (and its recording).
+   */
+  private readonly leadProcessingChains = new Map<string, Promise<void>>();
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly leads: LeadsService,
     private readonly activity: ActivityService,
     private readonly config: ConfigService,
   ) {}
+
+  private async runWithLeadProcessingLock<T>(
+    key: string,
+    fn: () => Promise<T>,
+  ): Promise<T> {
+    const previous = this.leadProcessingChains.get(key) ?? Promise.resolve();
+    const run = previous.then(fn, fn);
+    const guard = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    this.leadProcessingChains.set(key, guard);
+    try {
+      return await run;
+    } finally {
+      if (this.leadProcessingChains.get(key) === guard) {
+        this.leadProcessingChains.delete(key);
+      }
+    }
+  }
+
+  private computeLeadProcessingLockKey(event: IntegrationEvent): string {
+    try {
+      const normalized = this.normalizeLeadPayload(
+        event.channel,
+        event.payload,
+        event.externalId,
+      );
+      const phoneKey = normalizePhone(normalized.contactPhone);
+      if (phoneKey) return `lead-phone:${phoneKey}`;
+    } catch {
+      // Payload without a usable phone falls through to a channel-group key.
+    }
+    if (event.channel === 'mango') {
+      const group = this.getMangoGroupExternalId(event);
+      if (group) return `mango-group:${group}`;
+    }
+    return `event:${event.idempotencyKey}`;
+  }
 
   async getMangoCallRoutingSettings(): Promise<MangoCallRoutingSettings> {
     return this.readMangoCallRoutingSettings();
@@ -365,7 +426,10 @@ export class IntegrationsService {
 
     return {
       deduplicated: false,
-      ...(await this.processEvent(created, 'ingest')),
+      ...(await this.runWithLeadProcessingLock(
+        this.computeLeadProcessingLockKey(created),
+        () => this.processEvent(created, 'ingest'),
+      )),
     };
   }
 
@@ -510,7 +574,10 @@ export class IntegrationsService {
       response = postResponse;
     }
 
-    if (!response?.ok && response?.status !== 429) {
+    // A 429 on the post-download path must not block the remaining sources:
+    // the signed-link and legacy URLs hit a different Mango host and often
+    // succeed when the post endpoint is momentarily rate limited.
+    if (!response?.ok) {
       const signedFallbackUrl = this.buildMangoSignedRecordingLinkFromLegacyUrl(url);
       if (signedFallbackUrl) {
         const fallbackResponse = await this.fetchMangoRecordingResponse(signedFallbackUrl);
@@ -521,7 +588,7 @@ export class IntegrationsService {
       }
     }
 
-    if (!response?.ok && response?.status !== 429) {
+    if (!response?.ok) {
       const legacyResponse = await this.fetchMangoRecordingResponse(url.toString());
       attempts.push({ source: 'legacy', status: legacyResponse.status });
       if (legacyResponse.ok || !response) {
@@ -2127,11 +2194,11 @@ export class IntegrationsService {
   private async backfillMangoRecordingUrlForRelatedActivities(
     event: IntegrationEvent,
     call: NormalizedCallContext,
-  ): Promise<void> {
-    if (event.channel !== 'mango' || !call.recordingUrl) return;
+  ): Promise<number> {
+    if (event.channel !== 'mango' || !call.recordingUrl) return 0;
 
     const groupExternalId = this.getMangoGroupExternalId(event);
-    if (!groupExternalId) return;
+    if (!groupExternalId) return 0;
 
     const externalIdPattern = `${groupExternalId}:%`;
     const rows = await this.prisma.$queryRaw<MangoActivityRecordingBackfillRow[]>`
@@ -2148,6 +2215,7 @@ export class IntegrationsService {
       LIMIT 200
     `;
 
+    let updatedCount = 0;
     for (const row of rows) {
       const payload = this.asRecord(row.payload);
       const telephony = this.asRecord(payload?.telephony);
@@ -2172,7 +2240,101 @@ export class IntegrationsService {
           payload: nextPayload as Prisma.InputJsonValue,
         },
       });
+      updatedCount += 1;
     }
+
+    return updatedCount;
+  }
+
+  /**
+   * Non-destructive historical backfill for Mango call recordings.
+   *
+   * Older answered calls lost their recording URL because the previous
+   * disconnect-time availability probe discarded the (correctly inferred) URL,
+   * and concurrent webhooks split a single call across duplicate leads. This
+   * re-derives the recording URL from each stored Mango event's entry_id using
+   * the exact same proven formula as live ingest, then propagates it onto every
+   * related activity in the call group (including the lead a manager actually
+   * opens). It never merges, deletes, or reassigns leads.
+   */
+  async backfillMissingMangoRecordings(
+    options: { dryRun?: boolean; limit?: number } = {},
+  ): Promise<MangoRecordingBackfillReport> {
+    const limit = options.limit ?? 10000;
+    const dryRun = options.dryRun ?? false;
+
+    const events = await this.prisma.integrationEvent.findMany({
+      where: { channel: 'mango', status: 'processed' },
+      orderBy: { receivedAt: 'asc' },
+      take: limit,
+    });
+
+    const report: MangoRecordingBackfillReport = {
+      dryRun,
+      scannedEvents: events.length,
+      answeredCalls: 0,
+      groupsWithInferredUrl: 0,
+      activitiesUpdated: 0,
+      samples: [],
+    };
+
+    const processedGroups = new Set<string>();
+
+    for (const event of events) {
+      const root = this.asRecord(event.payload);
+      const lead = this.asRecord(root?.lead);
+      const contact = this.asRecord(root?.contact);
+      const sender = this.asRecord(root?.sender);
+      const call = this.asRecord(root?.call);
+      const callScopes = [call, root, lead, contact, sender];
+
+      const callContext = this.normalizeCallContext(callScopes, event.externalId);
+      if (!callContext) continue;
+      if (callContext.recordingUrl) continue;
+      if (!this.isAnsweredMangoCall(event, callContext)) continue;
+      report.answeredCalls += 1;
+
+      const groupKey = this.getMangoGroupExternalId(event);
+      if (groupKey && processedGroups.has(groupKey)) continue;
+
+      const recordingUrl =
+        this.buildInferredMangoRecordingUrl(event, callContext)
+        ?? (await this.buildInferredMangoRecordingUrlFromRelatedEvents(event));
+      if (!recordingUrl) continue;
+
+      report.groupsWithInferredUrl += 1;
+      if (groupKey) processedGroups.add(groupKey);
+
+      const resolvedCall: NormalizedCallContext = { ...callContext, recordingUrl };
+
+      if (dryRun) {
+        if (report.samples.length < 20) {
+          report.samples.push({
+            eventId: event.id,
+            leadId: event.relatedLeadId,
+            group: groupKey ?? null,
+            recordingUrl,
+          });
+        }
+        continue;
+      }
+
+      const updated = await this.backfillMangoRecordingUrlForRelatedActivities(
+        event,
+        resolvedCall,
+      );
+      report.activitiesUpdated += updated;
+      if (updated > 0 && report.samples.length < 20) {
+        report.samples.push({
+          eventId: event.id,
+          leadId: event.relatedLeadId,
+          group: groupKey ?? null,
+          recordingUrl,
+        });
+      }
+    }
+
+    return report;
   }
 
   private getMangoGroupExternalId(event: IntegrationEvent): string | undefined {
@@ -2203,12 +2365,41 @@ export class IntegrationsService {
     if (!inferredRecordingUrl) return call;
 
     const isAvailable = await this.isMangoRecordingAvailable(inferredRecordingUrl);
-    if (!isAvailable) return call;
+    // Mango finishes processing/storing a recording some time after the call
+    // disconnects, so a probe at ingest time often fails (or is geo/rate
+    // limited) even though the recording will exist when a manager opens the
+    // lead later. For answered calls the recording is deterministically derived
+    // from entry_id, so store it optimistically and let the play-time proxy
+    // resolve availability. Unanswered/missed calls have no recording, so we
+    // keep the strict probe gate for them to avoid broken players.
+    if (!isAvailable && !this.isAnsweredMangoCall(event, call)) return call;
 
     return {
       ...call,
       recordingUrl: inferredRecordingUrl,
     };
+  }
+
+  private isAnsweredMangoCall(
+    event: IntegrationEvent,
+    call: NormalizedCallContext,
+  ): boolean {
+    if (typeof call.durationSec === 'number' && call.durationSec > 0) return true;
+
+    const root = this.asRecord(event.payload);
+    const nestedCall = this.asRecord(root?.call);
+    const scopes = [nestedCall, root];
+
+    const entryResult = this.pickNumber(scopes, ['entry_result', 'entryResult']);
+    if (entryResult === 1) return true;
+
+    const talkTime = this.pickNumber(scopes, ['talk_time', 'talkTime']);
+    const forwardTime = this.pickNumber(scopes, ['forward_time', 'forwardTime']);
+    const createTime = this.pickNumber(scopes, ['create_time', 'createTime']);
+    if (talkTime && forwardTime && talkTime > forwardTime) return true;
+    if (talkTime && createTime && talkTime > createTime) return true;
+
+    return false;
   }
 
   private buildInferredMangoRecordingUrl(
