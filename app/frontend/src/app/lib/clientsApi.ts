@@ -10,6 +10,7 @@ export interface ClientListItemApi {
   company: string | null;
   phone: string;
   email: string | null;
+  managerName?: string | null;
   totalOrders: number;
   activeApplications: number;
   activeReservations: number;

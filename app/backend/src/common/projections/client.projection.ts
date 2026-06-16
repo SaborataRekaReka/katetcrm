@@ -27,6 +27,7 @@ export interface ClientListView {
   company: string | null;
   phone: string;
   email: string | null;
+  managerName: string | null;
   totalOrders: number;
   activeApplications: number;
   activeReservations: number;
@@ -43,6 +44,17 @@ type WithAggregates = Prisma.ClientGetPayload<{
       select: {
         applications: true;
         leads: true;
+      };
+    };
+    leads: {
+      take: 1;
+      orderBy: [{ createdAt: 'desc' }, { updatedAt: 'desc' }];
+      select: {
+        manager: {
+          select: {
+            fullName: true;
+          };
+        };
       };
     };
     applications: {
@@ -75,6 +87,7 @@ export function deriveClientListTags(totalOrders: number): ClientListTag[] {
 export function projectClientListItem(c: WithAggregates): ClientListView {
   const completed = c.applications.filter((a) => a.completedAt);
   const active = c.applications.filter((a) => a.isActive);
+  const managerName = c.leads?.[0]?.manager?.fullName ?? null;
   const activeReservations = c.applications.reduce((sum, a) => {
     return sum + a.items.reduce((inner, it) => inner + it.reservations.length, 0);
   }, 0);
@@ -93,6 +106,7 @@ export function projectClientListItem(c: WithAggregates): ClientListView {
     company: c.company,
     phone: c.phone,
     email: c.email,
+    managerName,
     totalOrders: completed.length,
     activeApplications: active.length,
     activeReservations,

@@ -6,7 +6,7 @@
  * только презентационные поля:
  *   - lastActivity: humanize(updatedAt)
  *   - lastOrderDate: форматирование YYYY-MM-DD (или undefined)
- *   - manager: '—' (пока Client не привязан к менеджеру в schema; будет в later session)
+ *   - manager: managerName из API (fallback '—')
  *   - sourceLead: синтетический Lead для открытия ClientWorkspace модалки
  *     (ClientWorkspace в API-режиме догружает real detail по id).
  */
@@ -28,6 +28,8 @@ function humanizeSince(iso: string): string {
 }
 
 export function toClientsListItem(api: ClientListItemApi): ClientsListItem {
+  const manager = api.managerName ?? '—';
+
   const sourceLead: Lead = {
     id: api.id,
     stage: 'completed',
@@ -36,7 +38,7 @@ export function toClientsListItem(api: ClientListItemApi): ClientsListItem {
     phone: api.phone,
     source: 'CRM',
     equipmentType: '—',
-    manager: '—',
+    manager,
     lastActivity: humanizeSince(api.lastActivity),
   };
 
@@ -46,7 +48,7 @@ export function toClientsListItem(api: ClientListItemApi): ClientsListItem {
     type: api.type,
     company: api.company ?? undefined,
     phone: api.phone,
-    manager: '—',
+    manager,
     totalOrders: api.totalOrders,
     activeApplications: api.activeApplications,
     activeReservations: api.activeReservations,

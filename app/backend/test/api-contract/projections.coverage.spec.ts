@@ -660,6 +660,7 @@ describe('Projection Coverage Pack (QA-REQ-028, QA-REQ-029, QA-REQ-031, QA-REQ-0
       email: null,
       createdAt: new Date('2026-05-01T00:00:00.000Z'),
       updatedAt: new Date('2026-05-03T00:00:00.000Z'),
+      leads: [{ manager: { fullName: 'Иванова С.' } }],
       applications: [
         {
           id: 'app-1',
@@ -676,6 +677,7 @@ describe('Projection Coverage Pack (QA-REQ-028, QA-REQ-029, QA-REQ-031, QA-REQ-0
     expect(listItem.name).toBe('Петр Петров');
     expect(listItem.type).toBe('person');
     expect(listItem.totalOrders).toBe(0);
+    expect(listItem.managerName).toBe('Иванова С.');
     expect(listItem.lastOrderDate).toBeNull();
     expect(listItem.tags).toEqual(['new']);
 

@@ -38,6 +38,17 @@ export class ClientsService {
         skip,
         include: {
           _count: { select: { applications: true, leads: true } },
+          leads: {
+            take: 1,
+            orderBy: [{ createdAt: 'desc' }, { updatedAt: 'desc' }],
+            select: {
+              manager: {
+                select: {
+                  fullName: true,
+                },
+              },
+            },
+          },
           applications: {
             select: {
               id: true,
@@ -66,6 +77,17 @@ export class ClientsService {
       where: { id },
       include: {
         _count: { select: { applications: true, leads: true } },
+        leads: {
+          take: 1,
+          orderBy: [{ createdAt: 'desc' }, { updatedAt: 'desc' }],
+          select: {
+            manager: {
+              select: {
+                fullName: true,
+              },
+            },
+          },
+        },
         applications: {
           select: {
             id: true,

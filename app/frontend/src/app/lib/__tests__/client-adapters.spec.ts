@@ -203,6 +203,7 @@ describe('Client adapters (QA-REQ-001, QA-REQ-024, QA-REQ-028)', () => {
       company: 'ООО Тест',
       phone: '+70000000000',
       email: null,
+      managerName: 'Иванова С.',
       totalOrders: 2,
       activeApplications: 1,
       activeReservations: 0,
@@ -214,8 +215,9 @@ describe('Client adapters (QA-REQ-001, QA-REQ-024, QA-REQ-028)', () => {
     });
 
     expect(item.lastOrderDate).toBe('2026-05-01');
-    expect(item.manager).toBe('—');
+    expect(item.manager).toBe('Иванова С.');
     expect(item.sourceLead.stage).toBe('completed');
+    expect(item.sourceLead.manager).toBe('Иванова С.');
     expect(item.lastActivity).toBe('30 мин назад');
   });
 

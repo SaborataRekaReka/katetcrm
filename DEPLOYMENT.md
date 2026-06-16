@@ -54,12 +54,13 @@ IPv6 note:
 4. `DATABASE_URL=postgresql://<user>:<pass>@postgres:5432/<db>?schema=public`
 5. `JWT_SECRET=<strong_secret>`
 6. `CORS_ORIGINS=https://<your-domain>`
-7. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
+7. `CRM_WORKFLOW_PROFILE=sales-lite` (or `full` when full operations profile is required)
+8. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
 
 Optional for Mango recording callbacks without direct URL:
 
-8. `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID=<mango_account_id_for_record_links>`
-9. `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE=https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}`
+9. `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID=<mango_account_id_for_record_links>`
+10. `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE=https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}`
 
 Mango Office note:
 
@@ -69,6 +70,11 @@ Mango Office note:
 4. If Mango `recording` callbacks include only `recording_id`, set `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID` (and optionally `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE`) so CRM can compose `recordingUrl` for lead/application timeline player. If account id is omitted, CRM attempts fallback extraction from `recording_id` payload format.
 
 If `DATABASE_URL` uses localhost, deploy script rewrites host to `postgres:5432`.
+
+Workflow profile note:
+
+1. `scripts/deploy-vps.sh` now reads `CRM_WORKFLOW_PROFILE` from `app/backend/.env` and passes it to frontend build args.
+2. For stable sales-lite production, keep `CRM_WORKFLOW_PROFILE=sales-lite` in `PROD_BACKEND_ENV`.
 
 TLS host note:
 

@@ -122,6 +122,7 @@ Contract expectations:
 2. Completion/unqualified outcomes stay explicit in API payload.
 3. `POST /api/v1/departures` currently requires a selected reservation `equipmentUnitId` before departure creation.
 4. Completion/unqualified cascades must release active reservations and write activity entries.
+5. `GET /api/v1/clients` and `GET /api/v1/clients/:id` include `managerName` (nullable), derived from the latest lead manager assigned to the client.
 
 ### 3.6 Stats / Activity
 
