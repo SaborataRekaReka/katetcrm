@@ -180,6 +180,45 @@ describe('API Contract - Happy Path Matrix (QA-REQ: 001..024, 028..042)', () => 
     expect(activeCount).toBe(1);
   });
 
+  it('APIC-014: Lead to Application numbering stays unique after deleted applications', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+
+    const parseAppNumber = (value: string | null | undefined): number => {
+      const match = /^APP-(\d+)$/.exec(value ?? '');
+      return match ? Number.parseInt(match[1], 10) : 0;
+    };
+
+    const fixtureA = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC014A'));
+    const fixtureB = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC014B'));
+
+    const existingBeforeDelete = await prisma.application.findMany({
+      select: { number: true },
+    });
+    const maxBeforeDelete = existingBeforeDelete.reduce((max, row) => {
+      return Math.max(max, parseAppNumber(row.number));
+    }, 0);
+
+    await prisma.application.delete({ where: { id: fixtureA.applicationId } });
+
+    const fixtureC = await createLeadAndApplication(app, login.accessToken, uniqueSeed('APIC014C'));
+    const createdAfterDelete = await prisma.application.findUnique({
+      where: { id: fixtureC.applicationId },
+      select: { number: true },
+    });
+
+    expect(createdAfterDelete?.number).toEqual(expect.stringMatching(/^APP-\d+$/));
+    expect(parseAppNumber(createdAfterDelete?.number)).toBe(maxBeforeDelete + 1);
+
+    const activeNumbers = await prisma.application.findMany({
+      where: {
+        id: { in: [fixtureB.applicationId, fixtureC.applicationId] },
+      },
+      select: { number: true },
+    });
+    const numbers = activeNumbers.map((row) => row.number);
+    expect(new Set(numbers).size).toBe(numbers.length);
+  });
+
   it('APIC-038: Application to Reservation stage requires an active Reservation entity', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
     const seed = uniqueSeed('APIC038');

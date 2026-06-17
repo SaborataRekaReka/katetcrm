@@ -68,6 +68,20 @@ const ACTIVE_DEPARTURE_STATUSES: DepartureStatus[] = [
   'arrived',
 ];
 
+const APPLICATION_NUMBER_PREFIX = 'APP-';
+const APPLICATION_NUMBER_PADDING = 6;
+
+function parseApplicationNumber(value: string | null | undefined): number {
+  const match = /^APP-(\d+)$/.exec(value ?? '');
+  if (!match) return 0;
+  const parsed = Number.parseInt(match[1], 10);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatApplicationNumber(value: number): string {
+  return `${APPLICATION_NUMBER_PREFIX}${String(value).padStart(APPLICATION_NUMBER_PADDING, '0')}`;
+}
+
 const LEAD_LIFECYCLE_INCLUDE = Prisma.validator<Prisma.LeadInclude>()({
   client: true,
   manager: { select: { id: true, fullName: true, email: true } },
@@ -1033,8 +1047,13 @@ export class LeadsService {
           await tx.lead.update({ where: { id }, data: { clientId: created.id } });
           lead.clientId = created.id;
         }
-        const count = await tx.application.count({});
-        const number = `APP-${(count + 1).toString().padStart(6, '0')}`;
+        const latestApplication = await tx.application.findFirst({
+          where: { number: { startsWith: APPLICATION_NUMBER_PREFIX } },
+          orderBy: { number: 'desc' },
+          select: { number: true },
+        });
+        const nextApplicationNumber = parseApplicationNumber(latestApplication?.number) + 1;
+        const number = formatApplicationNumber(nextApplicationNumber);
         await tx.application.create({
           data: {
             number,
