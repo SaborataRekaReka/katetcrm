@@ -44,6 +44,13 @@ Manager cannot:
 5. Admin-only capabilities (`admin.*`) cannot be granted to Manager in the permissions matrix while the MVP role boundary remains admin-only.
 6. Admin cannot deactivate or demote the current admin account, and the system must keep at least one active admin.
 
+## 2.4 Demo read-only access
+
+1. Demo access is implemented as a manager account listed in `DEMO_READONLY_EMAILS`.
+2. Demo account can authenticate and read data through `GET/HEAD/OPTIONS`.
+3. Mutating protected API requests (`POST/PATCH/PUT/DELETE`) for demo account return `403`.
+4. This policy is enforced server-side in auth guard and does not rely on UI visibility.
+
 ## 3. UI visibility rules
 
 1. Admin-only sections must be hidden for manager in navigation.

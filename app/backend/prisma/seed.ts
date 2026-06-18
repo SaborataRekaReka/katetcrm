@@ -284,6 +284,7 @@ async function resetDatabase() {
 async function seedUsers(): Promise<Record<SeedUserKey, SeedUser>> {
   const adminPassword = await bcrypt.hash('admin123', 10);
   const managerPassword = await bcrypt.hash('manager123', 10);
+  const demoPassword = await bcrypt.hash('demo123', 10);
 
   const userRows: Array<{
     key: SeedUserKey;
@@ -348,6 +349,16 @@ async function seedUsers(): Promise<Record<SeedUserKey, SeedUser>> {
     });
     users[row.key] = { id: created.id, email: created.email };
   }
+
+  await prisma.user.create({
+    data: {
+      email: 'demo@katet.local',
+      passwordHash: demoPassword,
+      fullName: 'Демо Просмотр',
+      role: 'manager',
+      isActive: true,
+    },
+  });
 
   return users;
 }

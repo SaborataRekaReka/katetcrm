@@ -44,6 +44,17 @@ NestJS + Prisma + PostgreSQL. Modular monolith per `ARCHITECTURE.md`.
 
    Проверь: `GET http://localhost:3001/api/v1/health` → `{ "status": "ok" }`.
 
+## Demo доступ только на просмотр
+
+После `npm run prepare:dev` в seed создаются базовые учётные записи:
+
+- `admin@katet.local` / `admin123`
+- `manager@katet.local` / `manager123`
+- `demo@katet.local` / `demo123` (только просмотр)
+
+Read-only режим для demo контролируется env-переменной `DEMO_READONLY_EMAILS`.
+Для email из этого списка backend разрешает только `GET/HEAD/OPTIONS`, а мутации (`POST/PATCH/PUT/DELETE`) возвращают `403`.
+
 ## Fallback runbook: порт 5433 занят
 
 1. Проверь, кто слушает порт:
@@ -99,7 +110,7 @@ src/
       health/
 prisma/
   schema.prisma         # доменная модель
-  seed.ts               # сид: admin + мин. справочники
+   seed.ts               # сид: базовые аккаунты (включая demo read-only) + справочники
 ```
 
 ## Модули (текущее состояние)

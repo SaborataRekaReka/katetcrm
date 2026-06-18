@@ -47,6 +47,10 @@ class EnvVars {
 
   @IsString()
   @IsOptional()
+  DEMO_READONLY_EMAILS = 'demo@katet.local';
+
+  @IsString()
+  @IsOptional()
   CORS_ORIGINS = '';
 
   @IsEnum(CrmWorkflowProfile)

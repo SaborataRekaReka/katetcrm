@@ -1,4 +1,5 @@
 import type { INestApplication } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 import request from 'supertest';
 import { PrismaService } from '../../src/prisma/prisma.service';
 import {
@@ -11,10 +12,32 @@ import { closeTestApp, createTestApp } from '../helpers/test-app';
 
 describe('API Contract - Auth (QA-REQ: 003, 032, 033, 035)', () => {
   let app: INestApplication;
+  let prisma: PrismaService;
+
+  const DEMO_EMAIL = 'demo@katet.local';
+  const DEMO_PASSWORD = 'demo123';
 
   beforeAll(async () => {
     app = await createTestApp();
-    await ensureBaseUsers(app.get(PrismaService));
+    prisma = app.get(PrismaService);
+    await ensureBaseUsers(prisma);
+
+    await prisma.user.upsert({
+      where: { email: DEMO_EMAIL },
+      create: {
+        email: DEMO_EMAIL,
+        fullName: 'Demo ReadOnly',
+        role: 'manager',
+        isActive: true,
+        passwordHash: await bcrypt.hash(DEMO_PASSWORD, 10),
+      },
+      update: {
+        fullName: 'Demo ReadOnly',
+        role: 'manager',
+        isActive: true,
+        passwordHash: await bcrypt.hash(DEMO_PASSWORD, 10),
+      },
+    });
   });
 
   afterAll(async () => {
@@ -63,5 +86,31 @@ describe('API Contract - Auth (QA-REQ: 003, 032, 033, 035)', () => {
 
   it('APIC-001A: unauthorized /auth/me returns 401 without token', async () => {
     await request(app.getHttpServer()).get('/api/v1/auth/me').expect(401);
+  });
+
+  it('APIC-001B (QA-REQ-035): demo read-only account can login but cannot mutate protected API', async () => {
+    const demoLogin = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: DEMO_EMAIL, password: DEMO_PASSWORD })
+      .expect(200);
+
+    expect(demoLogin.body.user).toMatchObject({
+      email: DEMO_EMAIL,
+      role: 'manager',
+    });
+
+    await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${demoLogin.body.accessToken}`)
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/bug-reports')
+      .set('Authorization', `Bearer ${demoLogin.body.accessToken}`)
+      .send({
+        title: 'Demo mutation must be blocked',
+        description: 'Demo account has read-only access and cannot create records.',
+      })
+      .expect(403);
   });
 });
