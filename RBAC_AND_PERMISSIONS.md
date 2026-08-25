@@ -51,6 +51,16 @@ Manager cannot:
 3. Mutating protected API requests (`POST/PATCH/PUT/DELETE`) for demo account return `403`.
 4. This policy is enforced server-side in auth guard and does not rely on UI visibility.
 
+## 2.5 Service API access
+
+1. Service API tokens are opaque credentials stored only as SHA-256 hashes and tied to a dedicated active audit actor.
+2. Service scopes are endpoint-specific and independent of interactive Admin/Manager UI visibility.
+3. The current external integration profile contains exactly `leads:read`, `leads:create`, `leads:update`, and `integration-events:read`.
+4. `leads:update` allows ordinary lead patch and stage mutation, but not rollback, delete-current, or full-chain deletion.
+5. `integration-events:read` allows journal list/detail reads, but not retry, replay, integration configuration, or recording proxy.
+6. Any protected route without an explicit service-scope declaration returns `403` to a valid service token. Revoked or expired service tokens return `401`.
+7. Service-created Leads stay unassigned when `managerId` is omitted, while activity entries retain the dedicated service actor identity.
+
 ## 3. UI visibility rules
 
 1. Admin-only sections must be hidden for manager in navigation.

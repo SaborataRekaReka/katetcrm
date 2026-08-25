@@ -51,7 +51,7 @@ Future-ready target (production backend integration):
 - Prisma schema покрывает все ключевые сущности MVP: `User`, `Client`, `Lead`,
   `Application`, `ApplicationItem`, `Reservation`, `Task`, `EquipmentCategory`,
   `EquipmentType`, `EquipmentUnit`, `Subcontractor`, `Departure`, `Completion`,
-  `ActivityLogEntry`, `IntegrationEvent`, `SystemConfig`.
+  `ActivityLogEntry`, `IntegrationEvent`, `ServiceApiToken`, `SystemConfig`.
 - Инварианты уровня БД: partial unique index на одну активную `Application` на
   `Lead` и одну активную `Reservation` на `ApplicationItem`; уникальность
   `IntegrationEvent` по `(channel, externalId)` для идемпотентности.
@@ -63,6 +63,7 @@ Future-ready target (production backend integration):
 
 - Versioned API `/api/v1/...`.
 - Server-side RBAC (admin/manager) через RolesGuard.
+- Scoped opaque service-token access for machine clients; raw secrets are never stored and protected routes fail closed unless explicitly service-enabled.
 - Integration ingestion endpoints и retry/replay-safe handlers.
 - Audit logging как first-class concern.
 

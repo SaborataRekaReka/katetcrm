@@ -18,6 +18,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "seed": "ts-node prisma/seed.ts",
+    "service-token": "ts-node src/cli/service-api-token.ts",
     "backfill:mango-recordings": "ts-node scripts/backfill-mango-recordings.ts",
     "prepare:dev": "powershell -ExecutionPolicy Bypass -File ./scripts/prepare-dev.ps1",
     "lint": "eslint \"{src,test}/**/*.ts\" --max-warnings=0",

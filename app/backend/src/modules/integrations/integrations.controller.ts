@@ -5,6 +5,7 @@ import { CurrentUser } from '../../common/current-user.decorator';
 import { JwtAuthGuard } from '../../common/jwt-auth.guard';
 import { Roles } from '../../common/roles.decorator';
 import { RolesGuard } from '../../common/roles.guard';
+import { ServiceApiScopes } from '../../common/service-api-scopes.decorator';
 import type { JwtPayload } from '../auth/jwt.strategy';
 import {
   IntegrationEventListQueryDto,
@@ -137,6 +138,7 @@ export class IntegrationsController {
   @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('admin.integrations')
+  @ServiceApiScopes('integration-events:read')
   list(@Query() query: IntegrationEventListQueryDto) {
     return this.integrations.list(query);
   }
@@ -145,6 +147,7 @@ export class IntegrationsController {
   @UseGuards(JwtAuthGuard, RolesGuard, CapabilitiesGuard)
   @Roles('admin')
   @Capabilities('admin.integrations')
+  @ServiceApiScopes('integration-events:read')
   getById(@Param('id') id: string) {
     return this.integrations.getById(id);
   }

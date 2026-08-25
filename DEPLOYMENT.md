@@ -111,6 +111,20 @@ docker compose -f docker-compose.prod.yml ps
 docker compose -f docker-compose.prod.yml logs --tail=100 backend frontend postgres
 ```
 
+## 6.1 Issue a scoped service API token
+
+After the deploy health check and migrations succeed, issue the raw token exactly once from the backend container:
+
+```bash
+docker compose --env-file app/backend/.env -f docker-compose.prod.yml exec -T backend \
+  node dist/src/cli/service-api-token.js create \
+  --name external-crm-integration \
+  --scopes leads:read,leads:create,leads:update,integration-events:read \
+  --expires-days 365
+```
+
+Store the returned token in a secrets manager or password manager. PostgreSQL keeps only its hash. Use the same CLI with `list` for non-secret metadata and `revoke --id <token-id>` for immediate revocation.
+
 ## 7. Notes
 
 1. HTTPS is terminated by Caddy with automatic Let's Encrypt certificates.

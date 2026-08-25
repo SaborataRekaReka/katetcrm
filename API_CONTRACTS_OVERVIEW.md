@@ -51,6 +51,9 @@ Contract expectations:
 1. JWT access token + refresh token flow is server-side enforced.
 2. `me` returns role fields used by frontend RBAC visibility.
 3. Inactive users cannot receive login or refresh tokens.
+4. Machine-to-machine access uses opaque Bearer tokens with the `katet_crm_` marker; only a SHA-256 hash is stored in PostgreSQL, and the raw token is returned once at issuance.
+5. A service token is denied on every protected endpoint unless that endpoint declares a required service scope. Invalid, expired, or revoked tokens return `401`; missing scope or an undeclared service route returns `403`.
+6. Supported service scopes are `leads:read`, `leads:create`, `leads:update`, and `integration-events:read`. They do not grant user/settings access, integration retry/replay, lead rollback/delete-current, or full-chain deletion.
 
 ### 3.2 Leads
 
@@ -74,6 +77,8 @@ Contract expectations:
 7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
 8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
 9. `PATCH /api/v1/leads/:id` keeps ordinary lead edits available for allowed actor scope, but lead manager reassignment (`managerId` change) is admin-only; manager receives `403`.
+10. A service token with `leads:create` leaves `Lead.managerId` unassigned when `managerId` is omitted, rather than assigning the technical service actor as the operational manager.
+11. `leads:update` covers `PATCH /leads/:id` and `POST /leads/:id/stage`; destructive rollback/delete-current/chain routes remain unavailable to service tokens.
 
 ### 3.3 Applications
 
@@ -193,6 +198,7 @@ Contract expectations:
 13. Mango call `location` values such as `ivr`/`abonent` are routing metadata and must not be mapped into `Lead.address`; empty addresses remain manager-filled fields.
 14. Mango callbacks without explicit contact person name keep `Lead.contactName` empty; frontend should temporarily render `Lead.contactPhone` as lead display name until manager fills contact name.
 15. `GET /integrations/mango/recording-proxy` is available for authenticated users, validates Mango legacy playback host/path (`lk.mango-office.ru`), streams audio payload for in-CRM playback, prefers Mango signed POST download endpoint (`app.mango-office.ru/vpbx/queries/recording/post`), can fall back to signed recording-link endpoint (`app.mango-office.ru/vpbx/queries/recording/link/...`) and legacy playback fetch with server-side integration credentials, and stops fallback on upstream `429`; temporary download redirects are accepted only from HTTPS `mango-office.ru` domains.
+16. `integration-events:read` grants service-token access only to `GET /integrations/events` and `GET /integrations/events/:id`; retry, replay, routing settings, and recording proxy are not included.
 
 ### 3.9 Users / Settings
 

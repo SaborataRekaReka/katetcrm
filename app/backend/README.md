@@ -55,6 +55,38 @@ NestJS + Prisma + PostgreSQL. Modular monolith per `ARCHITECTURE.md`.
 Read-only режим для demo контролируется env-переменной `DEMO_READONLY_EMAILS`.
 Для email из этого списка backend разрешает только `GET/HEAD/OPTIONS`, а мутации (`POST/PATCH/PUT/DELETE`) возвращают `403`.
 
+## Сервисные API-токены
+
+Сервисные токены имеют формат `katet_crm_<prefix>.<secret>`. В БД хранится только SHA-256-хэш; исходный токен выводится один раз при создании.
+
+Создать токен на 365 дней с текущим интеграционным профилем:
+
+```bash
+npm run service-token -- create -- \
+  --name external-crm-integration \
+  --scopes leads:read,leads:create,leads:update,integration-events:read \
+  --expires-days 365
+```
+
+Посмотреть метаданные без секретов и отозвать токен:
+
+```bash
+npm run service-token -- list
+npm run service-token -- revoke -- --id <token-id>
+```
+
+В production команда запускается внутри backend-контейнера после применения миграций:
+
+```bash
+docker compose --env-file app/backend/.env -f docker-compose.prod.yml exec -T backend \
+  node dist/src/cli/service-api-token.js create \
+  --name external-crm-integration \
+  --scopes leads:read,leads:create,leads:update,integration-events:read \
+  --expires-days 365
+```
+
+Токен передаётся как `Authorization: Bearer <token>`. Допустимы только чтение/создание/изменение лидов и чтение списка/карточки событий интеграций. Повтор/переигрывание событий, настройки, пользователи и операции удаления недоступны.
+
 ## Fallback runbook: порт 5433 занят
 
 1. Проверь, кто слушает порт:

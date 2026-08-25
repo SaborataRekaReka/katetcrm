@@ -512,6 +512,15 @@ UI surface: Lead detail manager control is editable for Admin and read-only for 
 State/API/audit surface: `PATCH /api/v1/leads/:id` returns `403` for manager when `managerId` changes; admin patch updates `managerId`.
 Test priority: P0
 
+QA-REQ-062:
+Question: QA-Q-062. What may the external service CRM API token access?
+Answer: The token may read, create, and update Leads and read IntegrationEvent list/detail. Lead update includes ordinary patch and stage mutation. It must not access any other protected API, integration retry/replay or settings, Lead rollback/delete-current, or chain deletion. Invalid/revoked/expired tokens return `401`; a valid token outside its scopes returns `403`.
+Route surface: `/api/v1/leads`, `/api/v1/leads/:id`, `/api/v1/leads/:id/stage`, `/api/v1/integrations/events`, `/api/v1/integrations/events/:id`
+Domain surface: Scoped machine-to-machine CRM access
+UI surface: None; token issuance and revocation are operational CLI actions.
+State/API/audit surface: Only the token hash is stored, token scope is checked server-side per route, service-created Leads remain unassigned when `managerId` is omitted, and Lead mutations retain a dedicated service actor in activity logs.
+Test priority: P0
+
 ## 5. Open Questions
 
 Open QA-Q-057: In sales-lite `В работе`, should a request have one text need description or multiple line items/positions?

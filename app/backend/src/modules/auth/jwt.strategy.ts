@@ -2,11 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import type { ServiceApiScope } from '../../common/service-api-token';
 
 export interface JwtPayload {
   sub: string;
   email: string;
   role: 'admin' | 'manager';
+  authType?: 'user' | 'service';
+  serviceTokenId?: string;
+  serviceTokenName?: string;
+  scopes?: ServiceApiScope[];
 }
 
 @Injectable()

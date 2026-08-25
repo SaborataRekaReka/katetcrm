@@ -255,6 +255,7 @@ interface IntegrationEventSeedInput {
 }
 
 async function resetDatabase() {
+  await prisma.serviceApiToken.deleteMany();
   await prisma.completion.deleteMany();
   await prisma.departure.deleteMany();
   await prisma.reservation.deleteMany();

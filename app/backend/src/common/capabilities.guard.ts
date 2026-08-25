@@ -26,6 +26,10 @@ export class CapabilitiesGuard implements CanActivate {
     const { user } = context.switchToHttp().getRequest<{ user?: JwtPayload }>();
     if (!user) return false;
 
+    // Service API tokens are already restricted per endpoint by JwtAuthGuard scopes.
+    // Do not make their explicit scopes depend on the mutable UI permissions matrix.
+    if (user.authType === 'service') return true;
+
     const matrix = await this.readPermissionsMatrix();
     const byId = new Map(matrix.capabilities.map((item) => [item.id, item]));
 

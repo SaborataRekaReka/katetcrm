@@ -22,6 +22,7 @@ import { LeadsEventsService } from './leads-events.service';
 export interface ActorContext {
   id: string;
   role: UserRole;
+  authType?: 'user' | 'service';
 }
 
 type LeadApplicationPrerequisites = {
@@ -278,7 +279,11 @@ export class LeadsService {
   async create(dto: CreateLeadDto, actor: ActorContext) {
     const phoneNormalized = normalizePhone(dto.contactPhone);
     const duplicates = await this.findDuplicates(dto.contactPhone, dto.contactCompany);
-    const managerId = dto.managerId === undefined ? actor.id : dto.managerId;
+    const managerId = dto.managerId === undefined
+      ? actor.authType === 'service'
+        ? null
+        : actor.id
+      : dto.managerId;
     const lead = await this.prisma.lead.create({
       data: {
         source: dto.source ?? 'manual',
