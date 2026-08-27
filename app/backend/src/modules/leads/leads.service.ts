@@ -227,6 +227,10 @@ export class LeadsService {
           orderBy: [{ capturedAt: 'asc' }],
           take: 50,
         },
+        metrikaConversions: {
+          orderBy: [{ createdAt: 'asc' }],
+          take: 10,
+        },
         applications: {
           orderBy: [{ createdAt: 'desc' }],
           take: 3,
@@ -983,7 +987,7 @@ export class LeadsService {
         },
       });
     }
-    return updated;
+    return this.get(id, actor);
   }
 
   async changeStage(id: string, dto: ChangeStageDto, actor: ActorContext) {
@@ -1020,7 +1024,7 @@ export class LeadsService {
 
     // Инвариант: lead → application создаёт одну активную Application.
     // Используем partial unique index (leadId, isActive=true) для enforcement.
-    const changedLead = await this.prisma.$transaction(async (tx) => {
+    await this.prisma.$transaction(async (tx) => {
       const now = new Date();
       const activeApplicationIdsForReservation =
         existing.stage === 'application' && dto.stage === 'reservation'
@@ -1195,6 +1199,6 @@ export class LeadsService {
     });
 
     this.metrika.scheduleFlush();
-    return changedLead;
+    return this.get(id, actor);
   }
 }

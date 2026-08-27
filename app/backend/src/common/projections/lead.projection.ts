@@ -19,6 +19,7 @@ import type {
   DepartureStatus,
   Lead,
   LeadAttribution,
+  MetrikaConversion,
   Reservation,
   SourceChannel,
   User,
@@ -61,6 +62,7 @@ export interface LeadWithRelations extends Lead {
   manager?: Pick<User, 'id' | 'fullName' | 'email'> | { id: string; fullName: string } | null;
   applications?: ApplicationLink[];
   attributions?: LeadAttribution[];
+  metrikaConversions?: MetrikaConversion[];
 }
 
 export interface LeadAttributionView {
@@ -77,6 +79,19 @@ export interface LeadAttributionView {
   firstLandingPage: string | null;
   referrer: string | null;
   capturedAt: string;
+}
+
+export interface MetrikaConversionView {
+  id: string;
+  target: string;
+  goalId: string;
+  status: string;
+  attempts: number;
+  occurredAt: string;
+  nextAttemptAt: string | null;
+  lastAttemptAt: string | null;
+  sentAt: string | null;
+  lastErrorCode: string | null;
 }
 
 export interface LeadView {
@@ -125,6 +140,7 @@ export interface LeadView {
 
   linkedIds: StageLinkedIds;
   attributions: LeadAttributionView[];
+  metrikaConversions: MetrikaConversionView[];
 }
 
 function pickLinkedApplication(applications: ApplicationLink[]): ApplicationLink | null {
@@ -241,6 +257,18 @@ export function projectLead(lead: LeadWithRelations): LeadView {
       firstLandingPage: attribution.firstLandingPage,
       referrer: attribution.referrer,
       capturedAt: attribution.capturedAt.toISOString(),
+    })),
+    metrikaConversions: (lead.metrikaConversions ?? []).map((conversion) => ({
+      id: conversion.id,
+      target: conversion.target,
+      goalId: conversion.goalId,
+      status: conversion.status,
+      attempts: conversion.attempts,
+      occurredAt: conversion.occurredAt.toISOString(),
+      nextAttemptAt: conversion.nextAttemptAt?.toISOString() ?? null,
+      lastAttemptAt: conversion.lastAttemptAt?.toISOString() ?? null,
+      sentAt: conversion.sentAt?.toISOString() ?? null,
+      lastErrorCode: conversion.lastErrorCode,
     })),
   };
 }

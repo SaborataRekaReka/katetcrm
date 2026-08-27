@@ -15,6 +15,35 @@ export type SourceChannel = 'site' | 'mango' | 'telegram' | 'max' | 'manual' | '
 
 export type LeadMissingField = 'address' | 'date' | 'contact' | 'equipment';
 
+export interface LeadAttributionApi {
+  id: string;
+  submissionId: string;
+  metrikaClientId: string | null;
+  yclid: string | null;
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  utmTerm: string | null;
+  utmTags: Record<string, string> | null;
+  firstLandingPage: string | null;
+  referrer: string | null;
+  capturedAt: string;
+}
+
+export interface MetrikaConversionApi {
+  id: string;
+  target: string;
+  goalId: string;
+  status: string;
+  attempts: number;
+  occurredAt: string;
+  nextAttemptAt: string | null;
+  lastAttemptAt: string | null;
+  sentAt: string | null;
+  lastErrorCode: string | null;
+}
+
 export interface LeadApi {
   id: string;
   stage: PipelineStage;
@@ -45,21 +74,8 @@ export interface LeadApi {
   createdAt: string;
   updatedAt: string;
   linkedIds: StageLinkedIds;
-  attributions?: Array<{
-    id: string;
-    submissionId: string;
-    metrikaClientId: string | null;
-    yclid: string | null;
-    utmSource: string | null;
-    utmMedium: string | null;
-    utmCampaign: string | null;
-    utmContent: string | null;
-    utmTerm: string | null;
-    utmTags: Record<string, string> | null;
-    firstLandingPage: string | null;
-    referrer: string | null;
-    capturedAt: string;
-  }>;
+  attributions?: LeadAttributionApi[];
+  metrikaConversions?: MetrikaConversionApi[];
 }
 
 export interface LeadListResponse {

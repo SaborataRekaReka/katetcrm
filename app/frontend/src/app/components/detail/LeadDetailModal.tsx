@@ -98,6 +98,7 @@ import { useAuth } from '../../auth/AuthProvider';
 import { readStoredAccessToken } from '../../lib/authApi';
 import type { LeadApi } from '../../lib/leadsApi';
 import { STAGE_LABEL } from '../../lib/stageTokens';
+import { MarketingAttributionSection } from './MarketingAttributionSection';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
 
@@ -1880,6 +1881,13 @@ export function LeadDetailModal({
           )}
         </EntityMetaGrid>
       </EntitySection>
+
+      {isLead ? (
+        <MarketingAttributionSection
+          attributions={leadDetailQuery.data?.attributions}
+          conversions={leadDetailQuery.data?.metrikaConversions}
+        />
+      ) : null}
 
       {!isLead && (
         <EntitySection
