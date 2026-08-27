@@ -265,10 +265,11 @@ jobs:
           EOF
           fi
 
-      - name: Sync site integration secret
+      - name: Sync production integration secrets
         shell: bash
         env:
           INTEGRATION_SITE_SECRET: ${{ secrets['INTEGRATION_SITE_SECRET'] }}
+          YANDEX_METRIKA_OAUTH_TOKEN: ${{ secrets['YANDEX_METRIKA_OAUTH_TOKEN'] }}
           PROD_SSH_PASSWORD: ${{ secrets['PROD_SSH_PASSWORD'] }}
           AUTH_MODE: ${{ steps.ssh_auth.outputs.auth_mode }}
           TARGET: ${{ steps.ssh_auth.outputs.target }}
@@ -282,29 +283,39 @@ jobs:
             exit 1
           fi
 
+          if [ -z "${YANDEX_METRIKA_OAUTH_TOKEN:-}" ]; then
+            echo "::error::Missing required secret: YANDEX_METRIKA_OAUTH_TOKEN"
+            exit 1
+          fi
+
           site_secret_b64="$(printf '%s' "$INTEGRATION_SITE_SECRET" | base64 | tr -d '\n')"
+          metrika_token_b64="$(printf '%s' "$YANDEX_METRIKA_OAUTH_TOKEN" | base64 | tr -d '\n')"
 
           if [ "$AUTH_MODE" = "key" ]; then
-            ssh -i ~/.ssh/id_ed25519 -p "$SSH_PORT" -o BatchMode=yes "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' bash -se" <<'EOF'
+            ssh -i ~/.ssh/id_ed25519 -p "$SSH_PORT" -o BatchMode=yes "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' METRIKA_TOKEN_B64='$metrika_token_b64' bash -se" <<'EOF'
           set -euo pipefail
           cd "$APP_PATH"
           env_file="app/backend/.env"
           test -s "$env_file"
           tmp_file="$(mktemp)"
-          grep -Ev '^INTEGRATION_SITE_SECRET=' "$env_file" > "$tmp_file" || true
+          grep -Ev '^(INTEGRATION_SITE_SECRET|YANDEX_METRIKA_COUNTER_ID|YANDEX_METRIKA_OAUTH_TOKEN)=' "$env_file" > "$tmp_file" || true
           printf 'INTEGRATION_SITE_SECRET=%s\n' "$(printf '%s' "$SITE_SECRET_B64" | base64 -d)" >> "$tmp_file"
+          printf 'YANDEX_METRIKA_COUNTER_ID=89111072\n' >> "$tmp_file"
+          printf 'YANDEX_METRIKA_OAUTH_TOKEN=%s\n' "$(printf '%s' "$METRIKA_TOKEN_B64" | base64 -d)" >> "$tmp_file"
           mv "$tmp_file" "$env_file"
           chmod 600 "$env_file"
           EOF
           else
-            sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$SSH_PORT" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' bash -se" <<'EOF'
+            sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$SSH_PORT" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' METRIKA_TOKEN_B64='$metrika_token_b64' bash -se" <<'EOF'
           set -euo pipefail
           cd "$APP_PATH"
           env_file="app/backend/.env"
           test -s "$env_file"
           tmp_file="$(mktemp)"
-          grep -Ev '^INTEGRATION_SITE_SECRET=' "$env_file" > "$tmp_file" || true
+          grep -Ev '^(INTEGRATION_SITE_SECRET|YANDEX_METRIKA_COUNTER_ID|YANDEX_METRIKA_OAUTH_TOKEN)=' "$env_file" > "$tmp_file" || true
           printf 'INTEGRATION_SITE_SECRET=%s\n' "$(printf '%s' "$SITE_SECRET_B64" | base64 -d)" >> "$tmp_file"
+          printf 'YANDEX_METRIKA_COUNTER_ID=89111072\n' >> "$tmp_file"
+          printf 'YANDEX_METRIKA_OAUTH_TOKEN=%s\n' "$(printf '%s' "$METRIKA_TOKEN_B64" | base64 -d)" >> "$tmp_file"
           mv "$tmp_file" "$env_file"
           chmod 600 "$env_file"
           EOF
@@ -326,3 +337,19 @@ jobs:
           else
             sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$SSH_PORT" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no "$TARGET" "cd '$APP_PATH' && bash scripts/deploy-vps.sh"
           fi
+
+      - name: Verify Yandex Metrika upload authorization
+        shell: bash
+        env:
+          YANDEX_METRIKA_OAUTH_TOKEN: ${{ secrets['YANDEX_METRIKA_OAUTH_TOKEN'] }}
+        run: |
+          set -euo pipefail
+          status="$(curl -sS -o /dev/null -w '%{http_code}' \
+            -X POST \
+            -H "Authorization: OAuth ${YANDEX_METRIKA_OAUTH_TOKEN}" \
+            'https://api-metrika.yandex.net/management/v1/counter/89111072/offline_conversions/upload')"
+          if [ "$status" != "400" ]; then
+            echo "::error::Unexpected Metrika authorization probe status: $status"
+            exit 1
+          fi
+          echo "Yandex Metrika upload authorization verified; no conversion was created."
