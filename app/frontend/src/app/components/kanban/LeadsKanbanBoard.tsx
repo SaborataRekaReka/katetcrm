@@ -25,19 +25,23 @@ const COLUMNS: KanbanColumn[] = STAGE_ORDER.map((id) => ({
 const FULL_ALLOWED: Record<StageType, StageType[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
+  marketing_qualified: [],
   reservation: ['departure', 'unqualified'],
   departure: [],
   completed: [],
   unqualified: [],
+  cancelled: [],
 };
 
 const SALES_LITE_ALLOWED: Record<StageType, StageType[]> = {
   lead: ['application', 'unqualified'],
-  application: ['completed', 'unqualified'],
+  application: ['marketing_qualified', 'completed', 'unqualified'],
+  marketing_qualified: ['completed', 'unqualified'],
   reservation: [],
   departure: [],
   completed: [],
   unqualified: [],
+  cancelled: [],
 };
 
 export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageDrop }: Props) {

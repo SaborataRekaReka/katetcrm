@@ -190,6 +190,7 @@ export class StatsService {
 
     const lead = stageMap.get('lead') ?? 0;
     const application = stageMap.get('application') ?? 0;
+    const marketingQualified = stageMap.get('marketing_qualified') ?? 0;
     const reservation = stageMap.get('reservation') ?? 0;
     const departure = stageMap.get('departure') ?? 0;
     const completed = stageMap.get('completed') ?? 0;
@@ -197,7 +198,7 @@ export class StatsService {
     const cancelled = stageMap.get('cancelled') ?? 0;
 
     const total =
-      lead + application + reservation + departure + completed + unqualified + cancelled;
+      lead + application + marketingQualified + reservation + departure + completed + unqualified + cancelled;
     const active = total - completed - unqualified - cancelled;
 
     return {
@@ -205,6 +206,7 @@ export class StatsService {
       pipeline: {
         lead,
         application,
+        marketingQualified,
         reservation,
         departure,
         completed,

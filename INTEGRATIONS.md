@@ -116,6 +116,21 @@ For `channel=site` lead events:
 3. Duplicate site leads preserve the existing Lead manager by default.
 4. If no active queue manager can be selected, CRM may use the configured fallback manager.
 5. Routing settings and the queue cursor are stored in `SystemConfig` under a versioned key.
+6. Every accepted submission carries a unique `externalId` or payload `submissionId`; a nested `form.submissionId` is supported and becomes the event idempotency key when `externalId` is omitted.
+7. CRM links the submission to the Lead in `LeadAttribution` and retains Metrika ClientID, yclid, every received `utm_*` tag, first landing page, referrer, and capture time.
+
+## 8.2 Yandex Metrika offline qualification
+
+CRM uses the persistent `MetrikaConversion` outbox and the official offline-conversion upload endpoint.
+
+1. Lead stage `marketing_qualified` enqueues target `MARKETING_QUAL` with reference goal id `601866056`.
+2. Lead stage `completed` ensures both `MARKETING_QUAL` and `SALES_QUAL` (reference goal id `601866057`) exist.
+3. Lead stage `unqualified` enqueues nothing.
+4. Unique `(leadId, target)` prevents duplicate queue rows on repeat processing or stage replay.
+5. Upload uses the latest Lead attribution that has Metrika ClientID or yclid. A conversion waits when identity is not available yet.
+6. HTTP 408/429/5xx and network failures retry automatically with exponential backoff; non-retryable 4xx failures remain recorded for diagnostics.
+7. Production requires `YANDEX_METRIKA_COUNTER_ID` and an OAuth token with permission to upload offline conversions in `YANDEX_METRIKA_OAUTH_TOKEN`.
+8. OAuth tokens and site integration secrets are server-side secrets and must never be written to tracked source or logs.
 
 ## 9. Dedup strategy
 

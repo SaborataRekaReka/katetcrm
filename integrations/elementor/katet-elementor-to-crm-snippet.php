@@ -16,8 +16,8 @@ if (!defined('KATET_CRM_INGEST_URL')) {
 }
 
 if (!defined('KATET_CRM_SITE_SECRET')) {
-    define('KATET_CRM_SITE_SECRET', 'QqzFiKuzDpqiN24ZN_k8E2gH8XylWsjbkoUKR9tC_09VfeSUbPAE2xik3sUF8f2B
-');
+    // Define this only in wp-config.php or another server-side secret store.
+    define('KATET_CRM_SITE_SECRET', '');
 }
 
 if (!defined('KATET_CRM_FORM_NAMES_ALLOWLIST')) {
@@ -35,6 +35,10 @@ if (!defined('KATET_CRM_DEBUG_LOG')) {
 
 if (!has_action('elementor_pro/forms/new_record', 'katet_crm_handle_elementor_record')) {
     add_action('elementor_pro/forms/new_record', 'katet_crm_handle_elementor_record', 10, 2);
+}
+
+if (!has_action('init', 'katet_crm_capture_first_touch')) {
+    add_action('init', 'katet_crm_capture_first_touch', 1);
 }
 
 if (!function_exists('katet_crm_handle_elementor_record')) {
@@ -155,6 +159,9 @@ if (!function_exists('katet_crm_handle_elementor_record')) {
             ? $name
             : ($formName !== '' ? ('Website lead: ' . $formName) : 'Website lead');
 
+        $externalId = katet_crm_build_external_id($formName, $phone, $eventTime, $fields);
+        $attribution = katet_crm_get_attribution($externalId);
+
         $payload = array(
             'lead' => array(
                 'contactName' => $contactName,
@@ -177,11 +184,10 @@ if (!function_exists('katet_crm_handle_elementor_record')) {
                 'pageUrl' => katet_crm_detect_page_url(),
             ),
             'eventTime' => $eventTime,
+            'attribution' => $attribution,
             'rawFields' => $fields,
         );
         $payload = katet_crm_compact_payload($payload);
-
-        $externalId = katet_crm_build_external_id($formName, $phone, $eventTime, $fields);
 
         $requestBody = array(
             'channel' => 'site',
@@ -231,6 +237,127 @@ if (!function_exists('katet_crm_handle_elementor_record')) {
             'formName' => $formName,
             'status' => $statusCode,
             'externalId' => $externalId,
+        ));
+    }
+}
+
+if (!function_exists('katet_crm_capture_first_touch')) {
+    function katet_crm_capture_first_touch()
+    {
+        $pageUrl = katet_crm_current_page_url();
+        $referrer = isset($_SERVER['HTTP_REFERER'])
+            ? esc_url_raw(trim((string) wp_unslash($_SERVER['HTTP_REFERER'])))
+            : '';
+
+        katet_crm_set_tracking_cookie_once('katet_first_landing_page', $pageUrl);
+        katet_crm_set_tracking_cookie_once('katet_first_referrer', $referrer);
+
+        $query = array();
+        if ($pageUrl !== '') {
+            $queryString = (string) wp_parse_url($pageUrl, PHP_URL_QUERY);
+            parse_str($queryString, $query);
+        }
+
+        $yclid = isset($query['yclid']) ? sanitize_text_field((string) $query['yclid']) : '';
+        if ($yclid !== '') {
+            katet_crm_set_tracking_cookie('katet_yclid', $yclid);
+        }
+
+        foreach ($query as $rawKey => $rawValue) {
+            $key = strtolower(sanitize_key((string) $rawKey));
+            if (!preg_match('/^utm_[a-z0-9_]{1,64}$/', $key) || is_array($rawValue)) {
+                continue;
+            }
+            $value = sanitize_text_field((string) $rawValue);
+            if ($value !== '') {
+                katet_crm_set_tracking_cookie('katet_' . $key, $value);
+            }
+        }
+    }
+}
+
+if (!function_exists('katet_crm_current_page_url')) {
+    function katet_crm_current_page_url()
+    {
+        $host = isset($_SERVER['HTTP_HOST'])
+            ? sanitize_text_field((string) wp_unslash($_SERVER['HTTP_HOST']))
+            : '';
+        $uri = isset($_SERVER['REQUEST_URI'])
+            ? (string) wp_unslash($_SERVER['REQUEST_URI'])
+            : '';
+        if ($host === '' || $uri === '') {
+            return '';
+        }
+
+        return esc_url_raw((is_ssl() ? 'https://' : 'http://') . $host . $uri);
+    }
+}
+
+if (!function_exists('katet_crm_set_tracking_cookie_once')) {
+    function katet_crm_set_tracking_cookie_once($name, $value)
+    {
+        if (isset($_COOKIE[$name]) && trim((string) wp_unslash($_COOKIE[$name])) !== '') {
+            return;
+        }
+        katet_crm_set_tracking_cookie($name, $value);
+    }
+}
+
+if (!function_exists('katet_crm_set_tracking_cookie')) {
+    function katet_crm_set_tracking_cookie($name, $value)
+    {
+        $safeValue = trim((string) $value);
+        if ($safeValue === '' || headers_sent()) {
+            return;
+        }
+
+        $expires = time() + (180 * DAY_IN_SECONDS);
+        $path = defined('COOKIEPATH') && COOKIEPATH ? COOKIEPATH : '/';
+        $domain = defined('COOKIE_DOMAIN') ? (string) COOKIE_DOMAIN : '';
+        setcookie($name, $safeValue, $expires, $path, $domain, is_ssl(), false);
+        $_COOKIE[$name] = $safeValue;
+    }
+}
+
+if (!function_exists('katet_crm_tracking_cookie')) {
+    function katet_crm_tracking_cookie($name)
+    {
+        if (!isset($_COOKIE[$name])) {
+            return '';
+        }
+        return sanitize_text_field(trim((string) wp_unslash($_COOKIE[$name])));
+    }
+}
+
+if (!function_exists('katet_crm_get_attribution')) {
+    function katet_crm_get_attribution($submissionId)
+    {
+        $utm = array();
+        foreach ($_COOKIE as $cookieName => $rawValue) {
+            $cookieName = (string) $cookieName;
+            if (strpos($cookieName, 'katet_utm_') !== 0) {
+                continue;
+            }
+            $key = substr($cookieName, strlen('katet_'));
+            if (!preg_match('/^utm_[a-z0-9_]{1,64}$/', $key)) {
+                continue;
+            }
+            $value = is_array($rawValue)
+                ? ''
+                : sanitize_text_field(trim((string) wp_unslash($rawValue)));
+            if ($value !== '') {
+                $utm[$key] = $value;
+            }
+        }
+
+        return katet_crm_compact_payload(array(
+            'submissionId' => trim((string) $submissionId),
+            'metrikaClientId' => katet_crm_tracking_cookie('_ym_uid'),
+            'yclid' => katet_crm_tracking_cookie('katet_yclid'),
+            'utm' => $utm,
+            'firstLandingPage' => katet_crm_tracking_cookie('katet_first_landing_page'),
+            'referrer' => katet_crm_tracking_cookie('katet_first_referrer'),
+            'capturedAt' => gmdate('c'),
         ));
     }
 }

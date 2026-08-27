@@ -47,6 +47,22 @@ interface NormalizedLeadPayload {
   comment?: string;
   isUrgent: boolean;
   call?: NormalizedCallContext;
+  attribution?: NormalizedSiteAttribution;
+}
+
+interface NormalizedSiteAttribution {
+  submissionId: string;
+  metrikaClientId?: string;
+  yclid?: string;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+  utmTags?: Record<string, string>;
+  firstLandingPage?: string;
+  referrer?: string;
+  capturedAt?: Date;
 }
 
 export interface MangoCallRoutingRule {
@@ -405,7 +421,10 @@ export class IntegrationsService {
     this.assertIngestAuth(dto, auth);
     this.validateChannelPayload(dto);
 
-    const externalId = dto.externalId?.trim() || undefined;
+    const externalId = dto.externalId?.trim()
+      || (dto.channel === 'site'
+        ? this.normalizeSiteAttribution(dto.payload, null)?.submissionId
+        : undefined);
     const correlationId = dto.correlationId?.trim() || undefined;
     const idempotencyKey = this.computeIdempotencyKey(dto.channel, externalId, dto.payload);
 
@@ -791,6 +810,11 @@ export class IntegrationsService {
         normalizedPayload,
         actor,
         mangoManagerAssignment,
+      );
+      await this.persistSiteAttribution(
+        event,
+        leadResult.leadId,
+        normalizedPayload.attribution,
       );
       const status: IntegrationEventStatus = mode === 'replay' ? 'replayed' : 'processed';
 
@@ -1422,7 +1446,8 @@ export class IntegrationsService {
     const contact = this.asRecord(root.contact);
     const sender = this.asRecord(root.sender);
     const call = this.asRecord(root.call);
-    const scopes = [root, lead, contact, sender, call];
+    const form = this.asRecord(root.form);
+    const scopes = [root, lead, contact, sender, call, form];
 
     const isMangoRecording =
       dto.channel === 'mango'
@@ -1463,6 +1488,19 @@ export class IntegrationsService {
       if (!hasContactContext) {
         throw new BadRequestException(
           'payload does not match site schema: missing contact context',
+        );
+      }
+      const submissionId = dto.externalId?.trim() || this.pickString(scopes, [
+        'submissionId',
+        'submission_id',
+        'formSubmissionId',
+        'form_submission_id',
+        'requestId',
+        'request_id',
+      ]);
+      if (!submissionId) {
+        throw new BadRequestException(
+          'payload does not match site schema: missing unique form submission id',
         );
       }
       return;
@@ -1818,7 +1856,8 @@ export class IntegrationsService {
     const contact = this.asRecord(root?.contact);
     const sender = this.asRecord(root?.sender);
     const call = this.asRecord(root?.call);
-    const scopes = [root, lead, contact, sender, call];
+    const form = this.asRecord(root?.form);
+    const scopes = [root, lead, contact, sender, call, form];
     const callScopes = [call, root, lead, contact, sender];
 
     const callContext =
@@ -1913,7 +1952,135 @@ export class IntegrationsService {
       comment,
       isUrgent: this.pickBoolean(scopes, ['isUrgent', 'urgent']) ?? false,
       call: callContext,
+      attribution: channel === 'site'
+        ? this.normalizeSiteAttribution(root, externalId)
+        : undefined,
     };
+  }
+
+  private normalizeSiteAttribution(
+    root: Record<string, unknown> | undefined,
+    externalId: string | null,
+  ): NormalizedSiteAttribution | undefined {
+    if (!root) return undefined;
+
+    const form = this.asRecord(root.form);
+    const attribution = this.asRecord(root.attribution);
+    const analytics = this.asRecord(root.analytics);
+    const tracking = this.asRecord(root.tracking);
+    const utm = this.asRecord(attribution?.utm)
+      ?? this.asRecord(analytics?.utm)
+      ?? this.asRecord(tracking?.utm)
+      ?? this.asRecord(root.utm);
+    const scopes = [attribution, analytics, tracking, form, root];
+    const utmScopes = [utm, attribution, analytics, tracking, root];
+
+    const submissionIdRaw = externalId ?? this.pickString(scopes, [
+      'submissionId',
+      'submission_id',
+      'formSubmissionId',
+      'form_submission_id',
+      'requestId',
+      'request_id',
+    ]);
+    if (!submissionIdRaw) return undefined;
+
+    const utmTags: Record<string, string> = {};
+    for (const scope of utmScopes) {
+      if (!scope) continue;
+      for (const [key, value] of Object.entries(scope)) {
+        const normalizedKey = key.trim().toLowerCase().replace(/-/g, '_');
+        if (!normalizedKey.startsWith('utm_')) continue;
+        if (typeof value !== 'string' && typeof value !== 'number') continue;
+        const normalizedValue = this.limitText(String(value).trim(), 500);
+        if (normalizedValue) utmTags[normalizedKey] = normalizedValue;
+      }
+    }
+
+    const metrikaClientId = this.pickString(scopes, [
+      'metrikaClientId',
+      'metrika_client_id',
+      'ymClientId',
+      'ym_client_id',
+      'ClientID',
+      'clientID',
+    ]);
+    const yclid = this.pickString(scopes, ['yclid', 'Yclid', 'YCLID']);
+    const firstLandingPage = this.pickString(scopes, [
+      'firstLandingPage',
+      'first_landing_page',
+      'firstLandingUrl',
+      'first_landing_url',
+      'landingPage',
+      'landing_page',
+      'pageUrl',
+    ]);
+    const referrer = this.pickString(scopes, [
+      'referrer',
+      'referer',
+      'firstReferrer',
+      'first_referrer',
+    ]);
+
+    return {
+      submissionId: this.limitText(submissionIdRaw, 255),
+      metrikaClientId: metrikaClientId ? this.limitText(metrikaClientId, 255) : undefined,
+      yclid: yclid ? this.limitText(yclid, 255) : undefined,
+      utmSource: utmTags.utm_source,
+      utmMedium: utmTags.utm_medium,
+      utmCampaign: utmTags.utm_campaign,
+      utmContent: utmTags.utm_content,
+      utmTerm: utmTags.utm_term,
+      utmTags: Object.keys(utmTags).length > 0 ? utmTags : undefined,
+      firstLandingPage: firstLandingPage
+        ? this.limitText(firstLandingPage, 2000)
+        : undefined,
+      referrer: referrer ? this.limitText(referrer, 2000) : undefined,
+      capturedAt: this.pickDate(scopes, [
+        'capturedAt',
+        'captured_at',
+        'submittedAt',
+        'submitted_at',
+        'eventTime',
+        'event_time',
+        'timestamp',
+      ]),
+    };
+  }
+
+  private async persistSiteAttribution(
+    event: IntegrationEvent,
+    leadId: string,
+    attribution: NormalizedSiteAttribution | undefined,
+  ): Promise<void> {
+    if (event.channel !== 'site' || !attribution) return;
+
+    const data = {
+      leadId,
+      submissionId: attribution.submissionId,
+      metrikaClientId: attribution.metrikaClientId ?? null,
+      yclid: attribution.yclid ?? null,
+      utmSource: attribution.utmSource ?? null,
+      utmMedium: attribution.utmMedium ?? null,
+      utmCampaign: attribution.utmCampaign ?? null,
+      utmContent: attribution.utmContent ?? null,
+      utmTerm: attribution.utmTerm ?? null,
+      utmTags: attribution.utmTags
+        ? attribution.utmTags as Prisma.InputJsonValue
+        : Prisma.JsonNull,
+      firstLandingPage: attribution.firstLandingPage ?? null,
+      referrer: attribution.referrer ?? null,
+      capturedAt: attribution.capturedAt ?? event.receivedAt,
+    };
+
+    await this.prisma.leadAttribution.upsert({
+      where: { integrationEventId: event.id },
+      create: {
+        integrationEventId: event.id,
+        ...data,
+      },
+      update: data,
+    });
   }
 
   private computeIdempotencyKey(
@@ -1972,6 +2139,14 @@ export class IntegrationsService {
         ) ?? null,
       callDurationSec: duration ?? null,
       hasRecording: Boolean(recordingUrl),
+      hasMetrikaClientId: Boolean(this.pickString(scopes, [
+        'metrikaClientId',
+        'metrika_client_id',
+        'ymClientId',
+        'ym_client_id',
+        'ClientID',
+      ])),
+      hasYclid: Boolean(this.pickString(scopes, ['yclid', 'Yclid', 'YCLID'])),
     };
   }
 

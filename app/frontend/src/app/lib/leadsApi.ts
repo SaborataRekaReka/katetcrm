@@ -4,6 +4,7 @@ import type { StageLinkedIds } from './linkedIds';
 export type PipelineStage =
   | 'lead'
   | 'application'
+  | 'marketing_qualified'
   | 'reservation'
   | 'departure'
   | 'completed'
@@ -44,6 +45,21 @@ export interface LeadApi {
   createdAt: string;
   updatedAt: string;
   linkedIds: StageLinkedIds;
+  attributions?: Array<{
+    id: string;
+    submissionId: string;
+    metrikaClientId: string | null;
+    yclid: string | null;
+    utmSource: string | null;
+    utmMedium: string | null;
+    utmCampaign: string | null;
+    utmContent: string | null;
+    utmTerm: string | null;
+    utmTags: Record<string, string> | null;
+    firstLandingPage: string | null;
+    referrer: string | null;
+    capturedAt: string;
+  }>;
 }
 
 export interface LeadListResponse {

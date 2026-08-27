@@ -73,7 +73,7 @@ function buildMangoConnectorBody(payload: Record<string, unknown>) {
   };
 }
 
-describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 052, 053)', () => {
+describe('API Contract - Integrations ingest Mango and site (QA-REQ: 036, 037, 050, 051, 052, 053, 064)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
   let originalMangoSecret: string | undefined;
@@ -865,6 +865,92 @@ describe('API Contract - Integrations ingest Mango (QA-REQ: 036, 037, 050, 051, 
     });
     expect(preservedLead.managerId).toBe(firstManager.id);
     expect(preservedLead.contactName).toBe('QA Site Routing First Lead Updated');
+  });
+
+  it('APIC-065: stores site attribution on the lead and deduplicates by nested submission id (QA-REQ-064)', async () => {
+    const seed = uniqueSeed('065');
+    const submissionId = `FORM-APIC-065-${seed}`;
+    const payload = {
+      contactName: 'QA Site Attribution Lead',
+      contactPhone: uniquePhone('065'),
+      contactCompany: `QA Attribution ${seed} LLC`,
+      form: {
+        submissionId,
+      },
+      attribution: {
+        metrikaClientId: `ym-client-${seed}`,
+        yclid: `yclid-${seed}`,
+        utm: {
+          utm_source: 'yandex',
+          utm_medium: 'cpc',
+          utm_campaign: 'crm_launch',
+          utm_content: 'banner_a',
+          utm_term: 'katet_crm',
+          utm_custom: 'custom-value',
+        },
+        firstLandingPage: 'https://katet.tech/rent?utm_source=yandex',
+        referrer: 'https://yandex.ru/search/',
+        capturedAt: '2026-08-27T10:00:00.000Z',
+      },
+    } as Record<string, unknown>;
+
+    const first = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildSiteIngestHeaders(payload))
+      .send({ channel: 'site', payload })
+      .expect(201);
+
+    expect(first.body).toMatchObject({
+      deduplicated: false,
+      processed: true,
+      event: {
+        externalId: submissionId,
+        relatedLeadId: expect.any(String),
+      },
+    });
+
+    const leadId = first.body.event.relatedLeadId as string;
+    const stored = await prisma.leadAttribution.findUniqueOrThrow({
+      where: { integrationEventId: first.body.event.id as string },
+    });
+    expect(stored).toMatchObject({
+      leadId,
+      submissionId,
+      metrikaClientId: `ym-client-${seed}`,
+      yclid: `yclid-${seed}`,
+      utmSource: 'yandex',
+      utmMedium: 'cpc',
+      utmCampaign: 'crm_launch',
+      utmContent: 'banner_a',
+      utmTerm: 'katet_crm',
+      firstLandingPage: 'https://katet.tech/rent?utm_source=yandex',
+      referrer: 'https://yandex.ru/search/',
+    });
+    expect(stored.utmTags).toMatchObject({ utm_custom: 'custom-value' });
+
+    const adminLogin = await loginByPassword(app, TEST_ADMIN);
+    const leadResponse = await request(app.getHttpServer())
+      .get(`/api/v1/leads/${leadId}`)
+      .set('Authorization', authHeader(adminLogin.accessToken))
+      .expect(200);
+    expect(leadResponse.body.attributions).toEqual([
+      expect.objectContaining({
+        submissionId,
+        metrikaClientId: `ym-client-${seed}`,
+        yclid: `yclid-${seed}`,
+      }),
+    ]);
+
+    const replay = await request(app.getHttpServer())
+      .post('/api/v1/integrations/events/ingest')
+      .set(buildSiteIngestHeaders(payload))
+      .send({ channel: 'site', payload })
+      .expect(201);
+    expect(replay.body.deduplicated).toBe(true);
+    expect(replay.body.event.id).toBe(first.body.event.id);
+    expect(
+      await prisma.leadAttribution.count({ where: { submissionId } }),
+    ).toBe(1);
   });
 
   it('APIC-044: accepts Mango recording callback without contact phone and links by call_id (QA-REQ-051)', async () => {

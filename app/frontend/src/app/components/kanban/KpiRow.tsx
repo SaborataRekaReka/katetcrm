@@ -8,6 +8,7 @@ export type KpiCardId =
   | 'no_contact'
   | 'awaiting_application'
   | 'needs_reservation'
+  | 'marketing_qualified'
   | 'departures_today'
   | 'stale'
   | 'duplicates'
@@ -24,6 +25,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
     noContact: leads.filter((l) => l.hasNoContact).length,
     awaitingApplication: leads.filter((l) => l.stage === 'lead' && !l.isNew).length,
     needsReservation: leads.filter((l) => l.stage === 'application').length,
+    marketingQualified: leads.filter((l) => l.stage === 'marketing_qualified').length,
     departuresToday: leads.filter((l) => l.stage === 'departure' && l.departureStatus === 'today').length,
     stale: leads.filter((l) => l.isStale).length,
     duplicates: leads.filter((l) => (l as { isDuplicate?: boolean }).isDuplicate).length,
@@ -48,6 +50,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
     { id: 'no_contact' as const, label: 'Без первого контакта', value: stats.noContact, icon: PhoneOff, tone: 'amber' },
     { id: 'awaiting_application' as const, label: 'К переводу в работу', value: stats.awaitingApplication, icon: FileCheck, tone: 'violet' },
     { id: 'needs_reservation' as const, label: 'В работе', value: stats.needsReservation, icon: Calendar, tone: 'orange' },
+    { id: 'marketing_qualified' as const, label: 'Маркетинговый квал', value: stats.marketingQualified, icon: FileCheck, tone: 'emerald' },
     { id: 'stale' as const, label: 'Зависшие', value: stats.stale, icon: Clock, tone: 'red' },
     { id: 'duplicates' as const, label: 'Дубли', value: stats.duplicates, icon: Copy, tone: 'slate' },
   ] as const;
@@ -58,7 +61,7 @@ export function KpiRow({ leads, onSelect }: KpiRowProps) {
     <div className="scroll-thin shrink-0 overflow-x-auto overflow-y-hidden border-b border-border/60 bg-[var(--shell-main-bg)] px-4 py-2 [scrollbar-gutter:stable]">
       <div className={cn(
         'grid w-max min-w-full grid-flow-col auto-cols-[minmax(136px,1fr)] gap-2 lg:w-full lg:grid-flow-row lg:auto-cols-auto',
-        IS_SALES_LITE ? 'lg:grid-cols-6' : 'lg:grid-cols-8',
+        IS_SALES_LITE ? 'lg:grid-cols-7' : 'lg:grid-cols-8',
       )}>
       {cards.map((s) => {
         const Icon = s.icon;

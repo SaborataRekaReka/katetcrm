@@ -317,11 +317,18 @@ export function LeadsKanbanPage() {
   );
 
   const selectedApplicationQuery = useApplicationsQuery(
-    selectedLead?.stage === 'application' ? { leadId: selectedLead.id, scope: 'all' } : {},
-    USE_API && isDetailOpen && selectedLead?.stage === 'application',
+    selectedLead?.stage === 'application' || selectedLead?.stage === 'marketing_qualified'
+      ? { leadId: selectedLead.id, scope: 'all' }
+      : {},
+    USE_API
+      && isDetailOpen
+      && (selectedLead?.stage === 'application' || selectedLead?.stage === 'marketing_qualified'),
   );
   const selectedApplication = useMemo(() => {
-    if (!USE_API || selectedLead?.stage !== 'application') return undefined;
+    if (
+      !USE_API
+      || (selectedLead?.stage !== 'application' && selectedLead?.stage !== 'marketing_qualified')
+    ) return undefined;
     const apiApp = selectedApplicationQuery.data?.items?.[0];
     return apiApp ? toUiApplication(apiApp) : undefined;
   }, [selectedApplicationQuery.data, selectedLead]);
@@ -554,7 +561,9 @@ export function LeadsKanbanPage() {
 
     const linkedIds = USE_API ? apiLinkedIdsByLeadId.get(lead.id) : null;
 
-    const applicationId = lead.stage === 'application' ? linkedIds?.applicationId ?? null : null;
+    const applicationId = lead.stage === 'application' || lead.stage === 'marketing_qualified'
+      ? linkedIds?.applicationId ?? null
+      : null;
     const reservationId = lead.stage === 'reservation' ? linkedIds?.reservationId ?? null : null;
     const departureId = lead.stage === 'departure' ? linkedIds?.departureId ?? null : null;
     const completionId =
@@ -688,6 +697,12 @@ export function LeadsKanbanPage() {
         }
         setActiveSecondaryNav('view-needs-reservation');
         return;
+      case 'marketing_qualified':
+        setActivePrimaryNav('sales');
+        setActiveSecondaryNav('leads');
+        setFilters({ ...DEFAULT_LEADS_FILTERS, stage: 'marketing_qualified' });
+        setQuery('');
+        return;
       case 'departures_today':
         if (IS_SALES_LITE) return;
         reset();
@@ -794,7 +809,7 @@ export function LeadsKanbanPage() {
             <LeadDetailModal
               lead={selectedLead}
               application={
-                selectedLead.stage === 'application'
+                selectedLead.stage === 'application' || selectedLead.stage === 'marketing_qualified'
                   ? (USE_API
                     ? selectedApplication
                     : mockApplicationsList.find((a) => a.leadId === selectedLead.id) ?? mockApplication)

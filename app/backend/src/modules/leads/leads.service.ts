@@ -18,6 +18,7 @@ import {
   UpdateLeadDto,
 } from './leads.dto';
 import { LeadsEventsService } from './leads-events.service';
+import { MetrikaService } from '../metrika/metrika.service';
 
 export interface ActorContext {
   id: string;
@@ -46,6 +47,7 @@ type CrmWorkflowProfile = 'full' | 'sales-lite';
 const FULL_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
   lead: ['application', 'unqualified'],
   application: ['reservation', 'unqualified'],
+  marketing_qualified: [],
   reservation: ['departure', 'unqualified'],
   departure: [],
   completed: [],
@@ -55,7 +57,8 @@ const FULL_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
 
 const SALES_LITE_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
   lead: ['application', 'unqualified'],
-  application: ['completed', 'unqualified'],
+  application: ['marketing_qualified', 'completed', 'unqualified'],
+  marketing_qualified: ['completed', 'unqualified'],
   reservation: [],
   departure: [],
   completed: [],
@@ -122,6 +125,7 @@ export class LeadsService {
     private readonly activity: ActivityService,
     private readonly config: ConfigService,
     private readonly leadEvents: LeadsEventsService,
+    private readonly metrika: MetrikaService,
   ) {}
 
   private getWorkflowProfile(): CrmWorkflowProfile {
@@ -166,6 +170,10 @@ export class LeadsService {
       include: {
         client: true,
         manager: { select: { id: true, fullName: true } },
+        attributions: {
+          orderBy: [{ capturedAt: 'asc' }],
+          take: 10,
+        },
         applications: {
           orderBy: [{ createdAt: 'desc' }],
           take: 1,
@@ -215,6 +223,10 @@ export class LeadsService {
       include: {
         client: true,
         manager: { select: { id: true, fullName: true, email: true } },
+        attributions: {
+          orderBy: [{ capturedAt: 'asc' }],
+          take: 50,
+        },
         applications: {
           orderBy: [{ createdAt: 'desc' }],
           take: 3,
@@ -1008,7 +1020,7 @@ export class LeadsService {
 
     // Инвариант: lead → application создаёт одну активную Application.
     // Используем partial unique index (leadId, isActive=true) для enforcement.
-    return this.prisma.$transaction(async (tx) => {
+    const changedLead = await this.prisma.$transaction(async (tx) => {
       const now = new Date();
       const activeApplicationIdsForReservation =
         existing.stage === 'application' && dto.stage === 'reservation'
@@ -1177,7 +1189,12 @@ export class LeadsService {
         payload: { from: existing.stage, to: dto.stage, reason: dto.reason },
       });
 
+      await this.metrika.enqueueForStage(tx, id, dto.stage, now);
+
       return lead;
     });
+
+    this.metrika.scheduleFlush();
+    return changedLead;
   }
 }

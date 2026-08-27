@@ -25,10 +25,12 @@ import { PhoneLink } from '../detail/ContactAtoms';
 const STAGE_META: Record<StageType, { title: string; color: string }> = {
   lead: { title: 'Лид', color: 'bg-[#7B68EE]' },
   application: { title: 'Заявка', color: 'bg-[#4A90E2]' },
+  marketing_qualified: { title: 'Маркетинговый квал', color: 'bg-[#14B8A6]' },
   reservation: { title: 'Бронь', color: 'bg-[#F5A623]' },
   departure: { title: 'Выезд', color: 'bg-[#50C878]' },
   completed: { title: 'Завершено', color: 'bg-[#9B9B9B]' },
   unqualified: { title: 'Некачественный', color: 'bg-[#E74C3C]' },
+  cancelled: { title: 'Отменено', color: 'bg-[#64748B]' },
 };
 
 const FALLBACK_STAGE_META = {

@@ -63,6 +63,7 @@ export function LeadsKanbanColumn({
       case 'lead':
         return <LeadKanbanCard key={lead.id} {...props} />;
       case 'application':
+      case 'marketing_qualified':
         return <ApplicationKanbanCard key={lead.id} {...props} />;
       case 'reservation':
         return <ReservationKanbanCard key={lead.id} {...props} />;

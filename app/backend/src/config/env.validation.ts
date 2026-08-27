@@ -85,6 +85,14 @@ class EnvVars {
   @IsBoolean()
   @IsOptional()
   INTEGRATION_REQUIRE_SIGNATURES = false;
+
+  @IsString()
+  @IsOptional()
+  YANDEX_METRIKA_COUNTER_ID = '';
+
+  @IsString()
+  @IsOptional()
+  YANDEX_METRIKA_OAUTH_TOKEN = '';
 }
 
 export function validateEnv(config: Record<string, unknown>) {

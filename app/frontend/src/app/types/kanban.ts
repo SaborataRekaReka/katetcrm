@@ -1,4 +1,4 @@
-export type StageType = 'lead' | 'application' | 'reservation' | 'departure' | 'completed' | 'unqualified' | 'cancelled';
+export type StageType = 'lead' | 'application' | 'marketing_qualified' | 'reservation' | 'departure' | 'completed' | 'unqualified' | 'cancelled';
 
 export type ReservationStage = 'own_equipment' | 'subcontractor' | 'type_reserved' | 'unit_confirmed' | 'ready';
 

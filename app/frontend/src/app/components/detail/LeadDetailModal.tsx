@@ -97,6 +97,7 @@ import { LifecycleRollbackActions } from './LifecycleRollbackActions';
 import { useAuth } from '../../auth/AuthProvider';
 import { readStoredAccessToken } from '../../lib/authApi';
 import type { LeadApi } from '../../lib/leadsApi';
+import { STAGE_LABEL } from '../../lib/stageTokens';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
 
@@ -202,7 +203,8 @@ function getPrimaryCTA(
   }
 
   if (IS_SALES_LITE) {
-    if (stage === 'application') return { label: 'Квалифицировать', secondary: 'Не квалифицировать' };
+    if (stage === 'application') return { label: 'Маркетинговый квал', secondary: 'Не квалифицировать' };
+    if (stage === 'marketing_qualified') return { label: 'Квалифицировать', secondary: 'Не квалифицировать' };
     if (stage === 'completed') return { label: 'Квалифицированный' };
     if (stage === 'cancelled' || stage === 'unqualified') return { label: 'Не квалифицированный' };
   }
@@ -834,7 +836,12 @@ export function LeadDetailModal({
     && linkedLeadStage !== 'cancelled'
     && isCurrentStageTail;
   const canMarkUnqualified = isLead && canMarkChainUnqualified;
-  const cta = getPrimaryCTA(application?.stage || lead?.stage, isLead, hasLinkedApplication);
+  const cta = getPrimaryCTA(lifecycleLeadStage, isLead, hasLinkedApplication);
+  const lifecycleStageLabel = lifecycleLeadStage === 'cancelled'
+    ? 'Отменено'
+    : lifecycleLeadStage
+      ? STAGE_LABEL[lifecycleLeadStage]
+      : applicationEntityLabel;
   const clientEntityId = isLead
     ? (lead?.apiClientId ?? linkedIds?.clientId ?? null)
     : (application?.clientId ?? linkedIds?.clientId ?? null);
@@ -867,7 +874,10 @@ export function LeadDetailModal({
       openEntitySecondary('leads', 'lead', fresh.id);
       return;
     }
-    if (fresh.stage === 'application' && ids.applicationId) {
+    if (
+      (fresh.stage === 'application' || fresh.stage === 'marketing_qualified')
+      && ids.applicationId
+    ) {
       openEntitySecondary('applications', 'application', ids.applicationId);
       return;
     }
@@ -1153,13 +1163,24 @@ export function LeadDetailModal({
     && USE_API
     && !!application?.leadId
     && application.stage === 'application'
+    && (lifecycleLeadStage === 'application' || lifecycleLeadStage === 'marketing_qualified')
     && isCurrentStageTail;
+
+  const qualificationTarget = lifecycleLeadStage === 'marketing_qualified'
+    ? 'completed'
+    : 'marketing_qualified';
+  const qualificationActionLabel = qualificationTarget === 'completed'
+    ? 'Квалифицировать'
+    : 'Маркетинговый квал';
 
   const handleQualifyApplication = async () => {
     if (!application?.leadId || !canQualifyApplication) return;
     setStageError(null);
     try {
-      const fresh = await changeStage.mutateAsync({ id: application.leadId, stage: 'completed' });
+      const fresh = await changeStage.mutateAsync({
+        id: application.leadId,
+        stage: qualificationTarget,
+      });
       openLeadLifecycleStage(fresh);
     } catch (err) {
       setStageError(err instanceof Error ? err.message : 'Не удалось квалифицировать');
@@ -1466,7 +1487,7 @@ export function LeadDetailModal({
               }
             : canQualifyApplication
               ? {
-                  label: changeStage.isPending ? 'Квалифицируем…' : cta.label,
+                  label: changeStage.isPending ? 'Сохраняем…' : cta.label,
                   icon: <CheckCircle2 className="w-3 h-3" />,
                   onClick: () => void handleQualifyApplication(),
                 }
@@ -2015,7 +2036,7 @@ export function LeadDetailModal({
       title: 'Статус и мета',
       content: (
         <>
-          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.progress}`}>{applicationEntityLabel}</span>} />
+          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.progress}`}>{lifecycleStageLabel}</span>} />
           <SidebarField label="Номер" value={application!.number} />
           <SidebarField label="Обновлено" value={application!.lastActivity} />
           <SidebarField label="Менеджер" value={application!.responsibleManager} />
@@ -2048,7 +2069,7 @@ export function LeadDetailModal({
                 onClick={() => void handleQualifyApplication()}
                 disabled={!canQualifyApplication || changeStage.isPending}
               >
-                {changeStage.isPending ? 'Квалифицируем…' : 'Квалифицировать'}
+                {changeStage.isPending ? 'Сохраняем…' : qualificationActionLabel}
               </Button>
             ) : (
               <Button

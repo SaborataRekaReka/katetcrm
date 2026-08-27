@@ -10,6 +10,7 @@ File:
 - Hooks into `elementor_pro/forms/new_record`.
 - Captures submitted Elementor Pro form fields.
 - Builds CRM payload for `channel=site`.
+- Captures Yandex Metrika ClientID (`_ym_uid`), yclid, UTM tags, first landing page, referrer, and a unique form submission ID.
 - Signs request with HMAC SHA-256 exactly as backend expects:
   - message: `<x-integration-timestamp>.site.<stable-json-payload>`
   - header: `x-integration-signature: sha256=<hex>`
@@ -20,7 +21,7 @@ File:
 Set these variables in `app/backend/.env` (or your production secret store):
 
 ```env
-INTEGRATION_SITE_SECRET=super-strong-shared-secret
+INTEGRATION_SITE_SECRET=<strong-shared-secret>
 INTEGRATION_REQUIRE_SIGNATURES=true
 ```
 
@@ -29,12 +30,18 @@ INTEGRATION_REQUIRE_SIGNATURES=true
 ## WordPress setup
 
 1. Install and activate plugin `Code Snippets`.
-2. Create a new snippet and paste `katet-elementor-to-crm-snippet.php`.
-3. Edit constants at the top of the snippet:
-   - `KATET_CRM_INGEST_URL`
-   - `KATET_CRM_SITE_SECRET`
-4. Optional: set `KATET_CRM_FORM_NAMES_ALLOWLIST` to comma-separated Form Name values if you do not want all forms.
-5. In Code Snippets, set execution to run everywhere (front + admin), then save and activate snippet.
+2. Put the shared secret in `wp-config.php` (or another approved server-side secret store), never in the tracked snippet:
+
+   ```php
+   define('KATET_CRM_SITE_SECRET', '<same-secret-as-crm-production-env>');
+   ```
+
+3. Create a new snippet and paste `katet-elementor-to-crm-snippet.php`.
+4. If needed, define `KATET_CRM_INGEST_URL` in `wp-config.php`; the checked-in snippet defaults to the production CRM URL.
+5. Optional: define `KATET_CRM_FORM_NAMES_ALLOWLIST` as comma-separated Form Name values if you do not want all forms.
+6. In Code Snippets, set execution to run everywhere (front + admin), then save and activate snippet.
+
+Do not send the real secret through ordinary chat, tickets, screenshots, or logs. Use the team's password/secret manager and rotate CRM + WordPress together if exposure is suspected.
 
 Important for Elementor Actions After Submit:
 

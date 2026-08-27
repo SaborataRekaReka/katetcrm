@@ -87,6 +87,7 @@ function ControlDashboardPage() {
       const map: Record<PipelineStage, number> = {
         lead: p.lead,
         application: p.application,
+        marketing_qualified: p.marketingQualified,
         reservation: p.reservation,
         departure: p.departure,
         completed: p.completed,

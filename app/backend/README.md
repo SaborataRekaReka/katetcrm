@@ -217,6 +217,8 @@ npm run backfill:client-contacts
 Секреты задаются per-channel через env-переменные:
 
 - `INTEGRATION_SITE_SECRET`
+- `YANDEX_METRIKA_COUNTER_ID`
+- `YANDEX_METRIKA_OAUTH_TOKEN`
 - `INTEGRATION_MANGO_API_KEY` — опционально ожидаемый Mango `vpbx_api_key` / «Уникальный код вашей АТС» для callback из API коннектора.
 - `INTEGRATION_MANGO_SECRET`
 - `INTEGRATION_TELEGRAM_SECRET`
@@ -247,13 +249,22 @@ npm run backfill:client-contacts
 Минимальная подготовка backend:
 
 ```env
-INTEGRATION_SITE_SECRET=super-strong-shared-secret
+INTEGRATION_SITE_SECRET=<same-secret-as-the-website-server-store>
 INTEGRATION_REQUIRE_SIGNATURES=true
+YANDEX_METRIKA_COUNTER_ID=89111072
+YANDEX_METRIKA_OAUTH_TOKEN=<oauth-token-with-offline-conversion-upload-access>
 ```
 
 Сниппет отправляет события в `POST /api/v1/integrations/events/ingest` с `channel=site`
 и подписывает payload через `x-integration-timestamp` + `x-integration-signature`.
 Алгоритм подписи полностью совместим с текущей backend-проверкой HMAC.
+Секрет нельзя хранить в репозитории или передавать в обычном чате: задайте его в
+production env CRM и в серверном secret store сайта. Сниппет также передаёт
+ClientID Метрики, yclid, UTM, первую посадочную страницу, referrer и ID отправки формы.
+
+При `marketing_qualified` backend один раз ставит в outbox `MARKETING_QUAL`, а при
+`completed` гарантирует наличие `MARKETING_QUAL` и `SALES_QUAL`. Временные ошибки
+загрузки offline conversions повторяются автоматически.
 
 ## Инварианты, которые enforced на уровне БД
 

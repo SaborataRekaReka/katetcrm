@@ -72,13 +72,15 @@ Contract expectations:
 2. Dedupe-related flags are returned for UI signaling.
 3. Repeat-order flow is canonical via `POST /api/v1/leads` with `source=manual`, `sourceLabel=repeat_order`, and `clientId` from client workspace context.
 4. `GET /api/v1/leads` supports list filters used by analytics views (`stage`, `managerId`, `query`, `isUrgent`, `isStale`).
-5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites and the active workflow profile: `lead -> application` requires contact, requested date, and address. In `full`, `application -> reservation` requires an existing active Reservation for the active Application. In `sales-lite`, `application -> completed` is the qualified terminal outcome and `application -> reservation` is rejected.
+5. `POST /api/v1/leads/:id/stage` enforces lifecycle prerequisites and the active workflow profile: `lead -> application` requires contact, requested date, and address. In `full`, `application -> reservation` requires an existing active Reservation for the active Application. In `sales-lite`, `application -> marketing_qualified -> completed` represents `В работе -> Маркетинговый квал -> Квалифицированный`; direct `application -> completed` remains supported, while `application -> reservation` is rejected.
 6. `POST /api/v1/leads/:id/rollback` and `POST /api/v1/leads/:id/delete-current` are server-owned one-step lifecycle rollback operations. They hard-delete only the current representation, restore the previous stage, and write audit snapshot payloads.
 7. Rollback safety rules follow `QA-REQ-040`: Application rollback requires no downstream records; Reservation rollback deletes all active Reservations for the active Application only when none has a Departure; Departure rollback deletes active Departures; terminal rollback deletes Completion and restores the Departure/Reservation/Application chain active.
 8. `DELETE /api/v1/leads/:id/chain` is admin-only, deletes the Lead lifecycle records in FK-safe order, preserves Client/contact/company data, and writes a pre-delete audit snapshot. Manager receives `403`.
 9. `PATCH /api/v1/leads/:id` keeps ordinary lead edits available for allowed actor scope, but lead manager reassignment (`managerId` change) is admin-only; manager receives `403`.
 10. A service token with `leads:create` leaves `Lead.managerId` unassigned when `managerId` is omitted, rather than assigning the technical service actor as the operational manager.
 11. `leads:update` covers `PATCH /leads/:id` and `POST /leads/:id/stage`; destructive rollback/delete-current/chain routes remain unavailable to service tokens.
+12. `GET /api/v1/leads` accepts `stage=marketing_qualified`; Lead projections expose `attributions[]` containing the linked site submission identity, Yandex identifiers, UTM map, landing page, referrer, and capture timestamp.
+13. `GET /api/v1/stats` exposes the persisted stage count as `pipeline.marketingQualified` and includes it in `total`/`active`.
 
 ### 3.3 Applications
 
@@ -97,7 +99,7 @@ Contract expectations:
 1. One active application per lead is guarded by DB/business rules.
 2. Item-level statuses remain consistent with reservation lifecycle.
 3. Item readiness follows `QA-REQ-009`: equipment type, quantity, planned date/time, address, and non-undecided source.
-4. In `full`, moving an Application out of Sales scope to Reservation must be tied to a real active Reservation entity, not a stage-only Lead update. In `sales-lite`, Application remains the `В работе` representation and can close through Lead stage `completed`/`unqualified` without creating Reservation, Departure, or Completion records.
+4. In `full`, moving an Application out of Sales scope to Reservation must be tied to a real active Reservation entity, not a stage-only Lead update. In `sales-lite`, Application remains the linked technical representation for both Lead stages `application` and `marketing_qualified`, and can close through Lead stage `completed`/`unqualified` without creating Reservation, Departure, or Completion records.
 
 ### 3.4 Reservations
 
@@ -199,6 +201,9 @@ Contract expectations:
 14. Mango callbacks without explicit contact person name keep `Lead.contactName` empty; frontend should temporarily render `Lead.contactPhone` as lead display name until manager fills contact name.
 15. `GET /integrations/mango/recording-proxy` is available for authenticated users, validates Mango legacy playback host/path (`lk.mango-office.ru`), streams audio payload for in-CRM playback, prefers Mango signed POST download endpoint (`app.mango-office.ru/vpbx/queries/recording/post`), can fall back to signed recording-link endpoint (`app.mango-office.ru/vpbx/queries/recording/link/...`) and legacy playback fetch with server-side integration credentials, and stops fallback on upstream `429`; temporary download redirects are accepted only from HTTPS `mango-office.ru` domains.
 16. `integration-events:read` grants service-token access only to `GET /integrations/events` and `GET /integrations/events/:id`; retry, replay, routing settings, and recording proxy are not included.
+17. Site ingest requires a unique form submission ID in `externalId` or the payload (`submissionId`, including nested `form.submissionId`). When `externalId` is omitted, CRM normalizes that submission ID into the event idempotency key.
+18. A processed site event persists one Lead-linked attribution snapshot with Metrika ClientID, yclid, all `utm_*` tags, first landing page, referrer, and capture time; replay upserts the same attribution row.
+19. Stage mutation transactionally upserts the Metrika conversion outbox: `marketing_qualified` ensures `MARKETING_QUAL`/601866056, `completed` ensures both `MARKETING_QUAL` and `SALES_QUAL`/601866057, and `unqualified` creates no conversion.
 
 ### 3.9 Users / Settings
 

@@ -55,12 +55,21 @@ IPv6 note:
 5. `JWT_SECRET=<strong_secret>`
 6. `CORS_ORIGINS=https://<your-domain>`
 7. `CRM_WORKFLOW_PROFILE=sales-lite` (or `full` when full operations profile is required)
-8. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
+8. `INTEGRATION_SITE_SECRET=<strong_shared_site_hmac_secret>`
+9. integration secrets as needed (`INTEGRATION_MANGO_API_KEY`, `INTEGRATION_MANGO_SECRET`, ...)
+10. `YANDEX_METRIKA_COUNTER_ID=89111072`
+11. `YANDEX_METRIKA_OAUTH_TOKEN=<oauth_token_with_offline_conversion_upload_access>`
 
 Optional for Mango recording callbacks without direct URL:
 
-9. `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID=<mango_account_id_for_record_links>`
-10. `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE=https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}`
+12. `INTEGRATION_MANGO_RECORDING_ACCOUNT_ID=<mango_account_id_for_record_links>`
+13. `INTEGRATION_MANGO_RECORDING_URL_TEMPLATE=https://lk.mango-office.ru/issa/api/{apiKey}/{accountId}/call-recording/play-record/{recordingId}`
+
+Site integration secret note:
+
+1. Keep the same `INTEGRATION_SITE_SECRET` value in the CRM production environment and the website server-side secret store (for WordPress, `wp-config.php` or an approved secrets plugin).
+2. Never place the value in tracked PHP/JavaScript, deployment logs, issue text, or ordinary chat.
+3. Share or rotate the value only through the team's approved password/secret manager and update both endpoints together.
 
 Mango Office note:
 

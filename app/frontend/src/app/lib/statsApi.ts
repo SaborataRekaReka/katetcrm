@@ -5,6 +5,7 @@ export interface StatsApi {
   pipeline: {
     lead: number;
     application: number;
+    marketingQualified: number;
     reservation: number;
     departure: number;
     completed: number;

@@ -469,11 +469,11 @@ Test priority: P1
 
 QA-REQ-054:
 Question: QA-Q-054. How should `Квалифицированный` be represented in the sales-lite workflow?
-Answer: In sales-lite, use the existing terminal stage `completed` and display it as `Квалифицированный`; do not require a new backend enum in the first implementation stage.
+Answer: In sales-lite, use the existing terminal stage `completed` and display it as `Квалифицированный`. The preceding `Маркетинговый квал` state is persisted separately as `marketing_qualified`.
 Route surface: /leads, /applications
 Domain surface: Lead/Application terminal qualified outcome in sales-lite profile.
-UI surface: Sales-lite board/list/table displays `completed` as `Квалифицированный`.
-State/API/audit surface: Persisted stage can remain `completed`; audit semantics remain terminal qualified outcome.
+UI surface: Sales-lite board/list/table displays `marketing_qualified` between `В работе` and `Квалифицированный`, while `completed` remains `Квалифицированный`.
+State/API/audit surface: `marketing_qualified` and `completed` are distinct persisted Lead stages; both use the standard stage filter, counters, API projection, and stage-change activity log.
 Test priority: P0
 
 QA-REQ-055:
@@ -496,9 +496,9 @@ Test priority: P0
 
 QA-REQ-060:
 Question: QA-Q-060. Which lifecycle transitions are allowed in sales-lite?
-Answer: Sales-lite allows `lead -> application`, `lead -> unqualified`, `application -> completed`, and `application -> unqualified`. It does not allow `application -> reservation`, `reservation -> departure`, or any CRM-owned operational progression.
+Answer: Sales-lite allows `lead -> application`, `lead -> unqualified`, `application -> marketing_qualified`, `application -> completed`, `application -> unqualified`, `marketing_qualified -> completed`, and `marketing_qualified -> unqualified`. It does not allow `application -> reservation`, `reservation -> departure`, or any CRM-owned operational progression.
 Route surface: /leads, /applications
-Domain surface: Sales-lite lifecycle `Не обработан -> В работе -> Квалифицированный/Не квалифицированный`.
+Domain surface: Sales-lite lifecycle `Не обработан -> В работе -> Маркетинговый квал -> Квалифицированный/Не квалифицированный`.
 UI surface: Board drag-and-drop and detail actions expose qualification/unqualification instead of reservation/departure actions.
 State/API/audit surface: `POST /api/v1/leads/:id/stage` enforces the profile-specific transition map and writes the usual stage-change activity entry.
 Test priority: P0
@@ -519,6 +519,42 @@ Route surface: `/api/v1/leads`, `/api/v1/leads/:id`, `/api/v1/leads/:id/stage`, 
 Domain surface: Scoped machine-to-machine CRM access
 UI surface: None; token issuance and revocation are operational CLI actions.
 State/API/audit surface: Only the token hash is stored, token scope is checked server-side per route, service-created Leads remain unassigned when `managerId` is omitted, and Lead mutations retain a dedicated service actor in activity logs.
+Test priority: P0
+
+QA-REQ-063:
+Question: QA-Q-063. How is `Маркетинговый квал` represented and audited?
+Answer: Store it as the distinct Lead stage `marketing_qualified`, ordered between `application` and `completed` in sales-lite UI. Drag-and-drop and detail actions must use the same backend stage mutation as other lifecycle changes.
+Route surface: /leads, /applications, `/api/v1/leads`, `/api/v1/leads/:id/stage`, `/api/v1/stats`
+Domain surface: Marketing qualification in the sales-lite lifecycle.
+UI surface: Board, list, table, filters, KPI row, and lead detail use the label `Маркетинговый квал`.
+State/API/audit surface: The stage persists in PostgreSQL, is accepted by the stage API/filter DTO, contributes to `pipeline.marketingQualified`, and writes a `stage_changed` activity entry.
+Test priority: P0
+
+QA-REQ-064:
+Question: QA-Q-064. Which first-touch advertising attributes must be retained from a site form submission?
+Answer: Retain the unique submission ID, Yandex Metrika ClientID, yclid, all received `utm_*` tags, first landing page, referrer, and capture time, linked to both the IntegrationEvent and Lead. A submission ID may be supplied as the event external ID or inside the site payload.
+Route surface: `/api/v1/integrations/events/ingest`, `/api/v1/leads/:id`
+Domain surface: Site lead attribution and form-submission idempotency.
+UI surface: Attribution is available in the Lead API projection for CRM and conversion integrations; no separate manual-edit UI is required.
+State/API/audit surface: One `LeadAttribution` row is upserted per IntegrationEvent; the normalized submission ID is the site idempotency key when no external ID is supplied.
+Test priority: P0
+
+QA-REQ-065:
+Question: QA-Q-065. Which Yandex Metrika offline goals follow CRM qualification?
+Answer: `marketing_qualified` enqueues `MARKETING_QUAL` (goal 601866056). `completed` ensures both `MARKETING_QUAL` and `SALES_QUAL` (goal 601866057) are enqueued. `unqualified` enqueues nothing.
+Route surface: `/api/v1/leads/:id/stage`
+Domain surface: CRM qualification -> Yandex Metrika offline conversion.
+UI surface: No manual send action is required.
+State/API/audit surface: A persistent outbox has a unique `(leadId, target)` key, records identity and upload state, automatically retries transient failures with backoff, and never recreates a sent target during repeated processing.
+Test priority: P0
+
+QA-REQ-066:
+Question: QA-Q-066. How is the production site integration secret handled?
+Answer: `INTEGRATION_SITE_SECRET` must be configured in the CRM production secret environment and in the website server-side secret store. It must never be embedded in tracked source, browser code, logs, screenshots, test fixtures used in production, or ordinary chat.
+Route surface: `/api/v1/integrations/events/ingest`
+Domain surface: HMAC authentication for site lead ingestion.
+UI surface: None.
+State/API/audit surface: Production readiness may be confirmed with a non-destructive signed probe, but the raw value is exchanged only through an approved secret manager or an equally protected one-to-one channel.
 Test priority: P0
 
 ## 5. Open Questions

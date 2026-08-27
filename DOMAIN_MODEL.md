@@ -11,7 +11,7 @@ Purpose:
 Key fields:
 
 - `id`
-- `stage`: `lead | application | reservation | departure | completed | unqualified`
+- `stage`: `lead | application | marketing_qualified | reservation | departure | completed | unqualified`
 - `client`, `company`, `phone`
 - `source`, `sourceChannel`
 - `equipmentType`
@@ -168,6 +168,32 @@ Minimal fields:
 - status (`received | processed | failed | replayed`)
 - retry counters and error details
 
+### 1.12 LeadAttribution
+
+Purpose:
+
+- Immutable advertising attribution captured with a site form submission and linked to its Lead.
+
+Minimal fields:
+
+- `leadId`, `integrationEventId`, unique form `submissionId`
+- Yandex Metrika `metrikaClientId`, `yclid`
+- canonical UTM fields plus the complete received `utm_*` map
+- first landing page, referrer, capture timestamp
+
+### 1.13 MetrikaConversion
+
+Purpose:
+
+- Persistent outbox for idempotent CRM qualification uploads to Yandex Metrika.
+
+Minimal fields:
+
+- `leadId`, unique conversion `target`, reference `goalId`
+- state (`pending | processing | waiting_identity | failed | sent`), attempts and retry time
+- qualification timestamp and ClientID/yclid snapshot
+- provider upload id, last error metadata, sent timestamp
+
 ## 2. Relationships
 
 1. Lead 1 -> 0..1 active Application.
@@ -178,6 +204,7 @@ Minimal fields:
 6. Subcontractor 1 -> N EquipmentUnits.
 7. Any critical entity mutation -> ActivityLog entry.
 8. Integration-ingested mutation -> IntegrationEvent trace.
+9. Lead 1 -> N LeadAttributions and N MetrikaConversions.
 
 ## 3. Invariants and constraints
 
@@ -188,6 +215,8 @@ Minimal fields:
 5. Lead/application/reservation stage transitions must be auditable.
 6. Source channel must be preserved for ingestion-originated leads.
 7. Manager visibility in UI does not replace backend permission checks.
+8. Site form submission ID is the event idempotency identity and attribution rows are unique per IntegrationEvent.
+9. Metrika conversion targets are unique per Lead, so replay or repeated stage processing cannot enqueue the same goal twice.
 
 ## 4. Status models
 
@@ -195,6 +224,7 @@ Minimal fields:
 
 - `lead`
 - `application`
+- `marketing_qualified` (sales-lite only; UI label `Маркетинговый квал`)
 - `reservation`
 - `departure`
 - `completed`

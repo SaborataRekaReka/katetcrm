@@ -18,6 +18,7 @@ import type {
   Departure,
   DepartureStatus,
   Lead,
+  LeadAttribution,
   Reservation,
   SourceChannel,
   User,
@@ -59,6 +60,23 @@ export interface LeadWithRelations extends Lead {
   client?: Client | null;
   manager?: Pick<User, 'id' | 'fullName' | 'email'> | { id: string; fullName: string } | null;
   applications?: ApplicationLink[];
+  attributions?: LeadAttribution[];
+}
+
+export interface LeadAttributionView {
+  id: string;
+  submissionId: string;
+  metrikaClientId: string | null;
+  yclid: string | null;
+  utmSource: string | null;
+  utmMedium: string | null;
+  utmCampaign: string | null;
+  utmContent: string | null;
+  utmTerm: string | null;
+  utmTags: unknown;
+  firstLandingPage: string | null;
+  referrer: string | null;
+  capturedAt: string;
 }
 
 export interface LeadView {
@@ -106,6 +124,7 @@ export interface LeadView {
   updatedAt: string;
 
   linkedIds: StageLinkedIds;
+  attributions: LeadAttributionView[];
 }
 
 function pickLinkedApplication(applications: ApplicationLink[]): ApplicationLink | null {
@@ -208,6 +227,21 @@ export function projectLead(lead: LeadWithRelations): LeadView {
     updatedAt: lead.updatedAt.toISOString(),
 
     linkedIds,
+    attributions: (lead.attributions ?? []).map((attribution) => ({
+      id: attribution.id,
+      submissionId: attribution.submissionId,
+      metrikaClientId: attribution.metrikaClientId,
+      yclid: attribution.yclid,
+      utmSource: attribution.utmSource,
+      utmMedium: attribution.utmMedium,
+      utmCampaign: attribution.utmCampaign,
+      utmContent: attribution.utmContent,
+      utmTerm: attribution.utmTerm,
+      utmTags: attribution.utmTags,
+      firstLandingPage: attribution.firstLandingPage,
+      referrer: attribution.referrer,
+      capturedAt: attribution.capturedAt.toISOString(),
+    })),
   };
 }
 

@@ -36,6 +36,7 @@ enum SourceChannel {
 enum PipelineStage {
   lead
   application
+  marketing_qualified
   reservation
   departure
   completed
@@ -349,11 +350,65 @@ model Lead {
   updatedAt       DateTime      @updatedAt @map("updated_at")
 
   applications    Application[]
+  attributions    LeadAttribution[]
+  metrikaConversions MetrikaConversion[]
 
   @@index([stage])
   @@index([managerId])
   @@index([phoneNormalized])
   @@map("leads")
+}
+
+model LeadAttribution {
+  id                 String   @id @default(cuid())
+  leadId             String   @map("lead_id")
+  lead               Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  integrationEventId String   @unique @map("integration_event_id")
+  submissionId       String   @map("submission_id")
+  metrikaClientId    String?  @map("metrika_client_id")
+  yclid               String?
+  utmSource           String?  @map("utm_source")
+  utmMedium           String?  @map("utm_medium")
+  utmCampaign         String?  @map("utm_campaign")
+  utmContent          String?  @map("utm_content")
+  utmTerm             String?  @map("utm_term")
+  utmTags             Json?    @map("utm_tags")
+  firstLandingPage    String?  @map("first_landing_page")
+  referrer            String?
+  capturedAt          DateTime @map("captured_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([leadId, capturedAt])
+  @@index([submissionId])
+  @@index([metrikaClientId])
+  @@index([yclid])
+  @@map("lead_attributions")
+}
+
+model MetrikaConversion {
+  id                 String    @id @default(cuid())
+  leadId             String    @map("lead_id")
+  lead               Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  target             String
+  goalId             String    @map("goal_id")
+  status             String    @default("pending")
+  attempts           Int       @default(0)
+  occurredAt         DateTime  @map("occurred_at")
+  nextAttemptAt      DateTime? @default(now()) @map("next_attempt_at")
+  lastAttemptAt      DateTime? @map("last_attempt_at")
+  sentAt             DateTime? @map("sent_at")
+  metrikaClientId    String?   @map("metrika_client_id")
+  yclid               String?
+  uploadId           String?   @map("upload_id")
+  lastErrorCode      String?   @map("last_error_code")
+  lastErrorMessage   String?   @map("last_error_message")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  @@unique([leadId, target])
+  @@index([status, nextAttemptAt])
+  @@map("metrika_conversions")
 }
 
 // ---------------------------------------------------------------------------
