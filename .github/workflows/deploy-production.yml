@@ -265,6 +265,51 @@ jobs:
           EOF
           fi
 
+      - name: Sync site integration secret
+        shell: bash
+        env:
+          INTEGRATION_SITE_SECRET: ${{ secrets['INTEGRATION_SITE_SECRET'] }}
+          PROD_SSH_PASSWORD: ${{ secrets['PROD_SSH_PASSWORD'] }}
+          AUTH_MODE: ${{ steps.ssh_auth.outputs.auth_mode }}
+          TARGET: ${{ steps.ssh_auth.outputs.target }}
+          SSH_PORT: ${{ steps.ssh_auth.outputs.ssh_port }}
+          APP_PATH: ${{ steps.app_path.outputs.app_path }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "${INTEGRATION_SITE_SECRET:-}" ]; then
+            echo "::error::Missing required secret: INTEGRATION_SITE_SECRET"
+            exit 1
+          fi
+
+          site_secret_b64="$(printf '%s' "$INTEGRATION_SITE_SECRET" | base64 | tr -d '\n')"
+
+          if [ "$AUTH_MODE" = "key" ]; then
+            ssh -i ~/.ssh/id_ed25519 -p "$SSH_PORT" -o BatchMode=yes "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' bash -se" <<'EOF'
+          set -euo pipefail
+          cd "$APP_PATH"
+          env_file="app/backend/.env"
+          test -s "$env_file"
+          tmp_file="$(mktemp)"
+          grep -Ev '^INTEGRATION_SITE_SECRET=' "$env_file" > "$tmp_file" || true
+          printf 'INTEGRATION_SITE_SECRET=%s\n' "$(printf '%s' "$SITE_SECRET_B64" | base64 -d)" >> "$tmp_file"
+          mv "$tmp_file" "$env_file"
+          chmod 600 "$env_file"
+          EOF
+          else
+            sshpass -p "$PROD_SSH_PASSWORD" ssh -p "$SSH_PORT" -o PreferredAuthentications=password -o PubkeyAuthentication=no -o NumberOfPasswordPrompts=1 -o BatchMode=no "$TARGET" "APP_PATH='$APP_PATH' SITE_SECRET_B64='$site_secret_b64' bash -se" <<'EOF'
+          set -euo pipefail
+          cd "$APP_PATH"
+          env_file="app/backend/.env"
+          test -s "$env_file"
+          tmp_file="$(mktemp)"
+          grep -Ev '^INTEGRATION_SITE_SECRET=' "$env_file" > "$tmp_file" || true
+          printf 'INTEGRATION_SITE_SECRET=%s\n' "$(printf '%s' "$SITE_SECRET_B64" | base64 -d)" >> "$tmp_file"
+          mv "$tmp_file" "$env_file"
+          chmod 600 "$env_file"
+          EOF
+          fi
+
       - name: Run deploy script on server
         shell: bash
         env:
