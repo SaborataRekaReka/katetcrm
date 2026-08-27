@@ -86,6 +86,10 @@ export class UpdateLeadDto {
   contactPhone?: string;
 
   @IsOptional()
+  @IsEnum(SourceChannel)
+  source?: SourceChannel;
+
+  @IsOptional()
   @IsString()
   equipmentTypeHint?: string;
 
