@@ -4,6 +4,7 @@ import { Label } from '../ui/label';
 import { Textarea } from '../ui/textarea';
 import { Button } from '../ui/button';
 import { useChangeLeadStage } from '../../hooks/useLeadMutations';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 type UnqualifyLeadDialogProps = {
   open: boolean;
@@ -50,7 +51,7 @@ export function UnqualifyLeadDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>Пометить некачественным</DialogTitle>
+          <DialogTitle>{IS_SALES_LITE ? 'Не квалифицированный' : 'Пометить некачественным'}</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">

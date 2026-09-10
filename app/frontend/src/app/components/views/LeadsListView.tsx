@@ -21,25 +21,17 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { PhoneLink } from '../detail/ContactAtoms';
-
-const STAGE_ORDER: StageType[] = [
-  'lead',
-  'application',
-  'marketing_qualified',
-  'reservation',
-  'departure',
-  'completed',
-  'unqualified',
-];
+import { STAGE_LABEL, STAGE_ORDER } from '../../lib/stageTokens';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 const STAGE_META: Record<StageType, { title: string; color: string }> = {
-  lead: { title: 'Лид', color: 'bg-[#7B68EE]' },
-  application: { title: 'Заявка', color: 'bg-[#4A90E2]' },
-  marketing_qualified: { title: 'Маркетинговый квал', color: 'bg-[#14B8A6]' },
-  reservation: { title: 'Бронь', color: 'bg-[#F5A623]' },
-  departure: { title: 'Выезд', color: 'bg-[#50C878]' },
-  completed: { title: 'Завершено', color: 'bg-[#9B9B9B]' },
-  unqualified: { title: 'Некачественный', color: 'bg-[#E74C3C]' },
+  lead: { title: STAGE_LABEL.lead, color: 'bg-[#7B68EE]' },
+  application: { title: STAGE_LABEL.application, color: 'bg-[#4A90E2]' },
+  marketing_qualified: { title: STAGE_LABEL.marketing_qualified, color: 'bg-[#14B8A6]' },
+  reservation: { title: STAGE_LABEL.reservation, color: 'bg-[#F5A623]' },
+  departure: { title: STAGE_LABEL.departure, color: 'bg-[#50C878]' },
+  completed: { title: STAGE_LABEL.completed, color: 'bg-[#9B9B9B]' },
+  unqualified: { title: STAGE_LABEL.unqualified, color: 'bg-[#E74C3C]' },
   cancelled: { title: 'Отменено', color: 'bg-[#64748B]' },
 };
 
@@ -126,7 +118,7 @@ function LeadListRow({
   onClick: () => void;
   onConvertToApplication?: () => void;
 }) {
-  const canConvert = lead.stage === 'lead' && !(lead.missingFields && lead.missingFields.length > 0);
+  const canConvert = lead.stage === 'lead' && (IS_SALES_LITE || !(lead.missingFields && lead.missingFields.length > 0));
   return (
     <div
       role="button"
@@ -169,7 +161,7 @@ function LeadListRow({
               <Copy className="h-2.5 w-2.5" />
             </span>
           ) : null}
-          {lead.missingFields && lead.missingFields.length > 0 ? (
+          {!IS_SALES_LITE && lead.missingFields && lead.missingFields.length > 0 ? (
             <span className={cn(badgeBase, badgeTones.caution)} title="Не хватает данных">
               <AlertTriangle className="h-2.5 w-2.5" />
             </span>
@@ -220,7 +212,7 @@ function LeadListRow({
             <DropdownMenuItem onSelect={onClick}>Открыть</DropdownMenuItem>
             {canConvert && onConvertToApplication ? (
               <DropdownMenuItem onSelect={onConvertToApplication}>
-                <ArrowRightCircle className="mr-1 h-3.5 w-3.5" /> Перевести в заявку
+                <ArrowRightCircle className="mr-1 h-3.5 w-3.5" /> {IS_SALES_LITE ? 'Перевести в работу' : 'Перевести в заявку'}
               </DropdownMenuItem>
             ) : null}
             <DropdownMenuItem>

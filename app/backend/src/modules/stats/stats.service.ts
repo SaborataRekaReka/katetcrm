@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { Prisma, UserRole } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import type { StatsAnalyticsViewId } from './stats.dto';
@@ -80,7 +81,7 @@ const STALE_LEAD_DAYS = 3;
 
 @Injectable()
 export class StatsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService, private readonly config: ConfigService) {}
 
   async getSummary(actor: StatsActorContext) {
     const now = new Date();
@@ -602,12 +603,14 @@ export class StatsService {
             stage: { notIn: [...TERMINAL_LEAD_STAGES] },
           },
         }),
-        this.prisma.application.count({
-          where: {
-            responsibleManagerId: id,
-            isActive: true,
-          },
-        }),
+        this.config.get<string>('CRM_WORKFLOW_PROFILE') === 'sales-lite'
+          ? this.prisma.lead.count({ where: { managerId: id, stage: 'application' } })
+          : this.prisma.application.count({
+              where: {
+                responsibleManagerId: id,
+                isActive: true,
+              },
+            }),
         this.prisma.reservation.count({
           where: {
             isActive: true,

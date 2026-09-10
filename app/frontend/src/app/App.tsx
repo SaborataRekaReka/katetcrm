@@ -15,6 +15,7 @@ import { useLayout } from './components/shell/layoutStore';
 import { isSecondaryAvailableInWorkflow } from './components/shell/navConfig';
 import { useAuth } from './auth/AuthProvider';
 import { LoginScreen } from './auth/LoginScreen';
+import { IS_SALES_LITE } from './lib/featureFlags';
 
 function AuthRoleSync() {
   const { user } = useAuth();
@@ -92,7 +93,7 @@ function RouteOutlet() {
 
   if (!isSecondaryAvailableInWorkflow(activeSecondaryNav)) return <LeadsKanbanPage />;
   if (LEADS_IDS.has(activeSecondaryNav)) return <LeadsKanbanPage />;
-  if (APPLICATIONS_IDS.has(activeSecondaryNav)) return <ApplicationsWorkspacePage />;
+  if (APPLICATIONS_IDS.has(activeSecondaryNav)) return IS_SALES_LITE ? <LeadsKanbanPage /> : <ApplicationsWorkspacePage />;
   if (RESERVATIONS_IDS.has(activeSecondaryNav)) return <ReservationsWorkspacePage />;
   if (CLIENTS_IDS.has(activeSecondaryNav)) return <ClientsWorkspacePage />;
   if (DEPARTURES_IDS.has(activeSecondaryNav)) return <DeparturesWorkspacePage />;

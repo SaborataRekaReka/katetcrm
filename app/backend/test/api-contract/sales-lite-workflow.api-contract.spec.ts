@@ -12,9 +12,25 @@ import {
 } from '../helpers/auth-fixtures';
 import {
   authHeader,
-  createLeadAndApplication,
+  uniquePhone,
   uniqueSeed,
 } from '../helpers/domain-fixtures';
+
+async function createLeadInWork(app: INestApplication, accessToken: string, seed: string) {
+  const response = await request(app.getHttpServer())
+    .post('/api/v1/leads')
+    .set('Authorization', authHeader(accessToken))
+    .send({ contactName: `QA ${seed}`, contactPhone: uniquePhone('067'), source: 'mango' })
+    .expect(201);
+  const leadId = response.body.lead.id as string;
+  const promoted = await request(app.getHttpServer())
+    .post(`/api/v1/leads/${leadId}/stage`)
+    .set('Authorization', authHeader(accessToken))
+    .send({ stage: 'application' })
+    .expect(201);
+  expect(promoted.body.linkedIds.applicationId).toBeNull();
+  return { leadId };
+}
 
 async function createProfileTestApp(): Promise<INestApplication> {
   const { AppModule } = await import('../../src/app.module');
@@ -60,9 +76,9 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
     }
   });
 
-  it('APIC-060: sales-lite qualifies Application directly and blocks Reservation progression', async () => {
+  it('APIC-060: sales-lite changes Lead status without Application prerequisites (QA-REQ-067)', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
-    const fixture = await createLeadAndApplication(
+    const fixture = await createLeadInWork(
       app,
       login.accessToken,
       uniqueSeed('APIC060'),
@@ -86,12 +102,9 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
 
     expect(qualified.body.stage).toBe('completed');
 
-    const applicationAfterQualification = await prisma.application.findUniqueOrThrow({
-      where: { id: fixture.applicationId },
-    });
-    expect(applicationAfterQualification.stage).toBe('completed');
-    expect(applicationAfterQualification.isActive).toBe(false);
-    expect(applicationAfterQualification.completedAt).toBeInstanceOf(Date);
+    expect(qualified.body.id).toBe(fixture.leadId);
+    expect(qualified.body.clientId).toBeNull();
+    expect(await prisma.application.count({ where: { leadId: fixture.leadId } })).toBe(0);
 
     const stageLog = await prisma.activityLogEntry.findFirst({
       where: {
@@ -115,7 +128,7 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
 
   it('APIC-063: persists marketing qualification across API, filters, counters, audit and idempotent conversion outbox', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
-    const fixture = await createLeadAndApplication(
+    const fixture = await createLeadInWork(
       app,
       login.accessToken,
       uniqueSeed('APIC063'),
@@ -153,7 +166,7 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
       .post(`/api/v1/leads/${fixture.leadId}/stage`)
       .set('Authorization', authHeader(login.accessToken))
       .send({ stage: 'marketing_qualified' })
-      .expect(400);
+      .expect(201);
 
     let conversions = await prisma.metrikaConversion.findMany({
       where: { leadId: fixture.leadId },
@@ -199,7 +212,7 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
 
   it('APIC-064: does not enqueue Metrika conversion for an unqualified lead', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
-    const fixture = await createLeadAndApplication(
+    const fixture = await createLeadInWork(
       app,
       login.accessToken,
       uniqueSeed('APIC064'),
@@ -216,9 +229,91 @@ describe('API Contract - Sales-lite workflow profile (QA-REQ-054..056, 060, 063,
     ).toBe(0);
   });
 
+  it('APIC-067: one Lead retains calls, comments and attribution through all statuses and rollback (QA-REQ-067)', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const { leadId } = await createLeadInWork(app, login.accessToken, uniqueSeed('APIC067'));
+    const header = authHeader(login.accessToken);
+    await request(app.getHttpServer()).patch(`/api/v1/leads/${leadId}`)
+      .set('Authorization', header).send({ comment: 'QA: исходный комментарий' }).expect(200);
+    const recording = await prisma.activityLogEntry.create({ data: {
+      entityType: 'lead', entityId: leadId, action: 'note_added', summary: 'QA: входящий звонок Mango',
+      payload: { telephony: { recordingUrl: 'https://example.test/qa-recording.mp3' } },
+    } });
+    const attribution = await prisma.leadAttribution.create({ data: {
+      leadId, integrationEventId: `QA-${leadId}`, submissionId: `QA-${leadId}`,
+      metrikaClientId: 'qa-local-only', yclid: 'qa-click', utmSource: 'qa', capturedAt: new Date(),
+    } });
+    for (const stage of ['marketing_qualified', 'completed', 'application', 'marketing_qualified', 'completed', 'unqualified', 'lead']) {
+      const result = await request(app.getHttpServer()).post(`/api/v1/leads/${leadId}/stage`)
+        .set('Authorization', header).send({ stage, reason: 'QA: проверка' }).expect(201);
+      expect(result.body).toMatchObject({ id: leadId, stage, managerId: login.user.id, comment: 'QA: исходный комментарий' });
+      expect(result.body.attributions).toEqual(expect.arrayContaining([expect.objectContaining({ id: attribution.id })]));
+      expect(result.body.linkedIds.applicationId).toBeNull();
+    }
+    const outbox = await prisma.metrikaConversion.findMany({ where: { leadId } });
+    expect(outbox.map((row) => row.target).sort()).toEqual(['MARKETING_QUAL', 'SALES_QUAL']);
+    // Concurrent retries must neither duplicate an audit transition nor create an Application.
+    await Promise.all(Array.from({ length: 4 }, () => request(app.getHttpServer())
+      .post(`/api/v1/leads/${leadId}/stage`).set('Authorization', header)
+      .send({ stage: 'marketing_qualified' }).expect(201)));
+    expect(await prisma.activityLogEntry.count({ where: {
+      entityType: 'lead', entityId: leadId, action: 'stage_changed',
+      payload: { path: ['from'], equals: 'lead' }, summary: 'Стадия: lead → marketing_qualified',
+    } })).toBe(1);
+    for (const expected of ['application', 'lead']) {
+      const rollback = await request(app.getHttpServer()).post(`/api/v1/leads/${leadId}/rollback`)
+        .set('Authorization', header).send({ reason: 'QA: rollback' }).expect(201);
+      expect(rollback.body.stage).toBe(expected);
+    }
+    expect(await prisma.application.count({ where: { leadId } })).toBe(0);
+    expect((await prisma.metrikaConversion.findMany({ where: { leadId } })).map((row) => row.id).sort())
+      .toEqual(outbox.map((row) => row.id).sort());
+    const history = await request(app.getHttpServer()).get(`/api/v1/leads/${leadId}/activity?take=1`)
+      .set('Authorization', header).expect(200);
+    expect(history.body).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: recording.id }),
+      expect.objectContaining({ summary: 'QA: исходный комментарий' }),
+    ]));
+  });
+
+  it('APIC-068: legacy Application history resolves to Lead, remains intact and is owner-scoped (QA-REQ-067)', async () => {
+    const login = await loginByPassword(app, TEST_MANAGER);
+    const { leadId } = await createLeadInWork(app, login.accessToken, uniqueSeed('APIC068'));
+    const client = await prisma.client.create({ data: { name: 'QA legacy client', phone: '000', phoneNormalized: '000' } });
+    const legacy = await prisma.application.create({ data: {
+      number: uniqueSeed('QA-LEGACY'), leadId, clientId: client.id, responsibleManagerId: login.user.id,
+      comment: 'QA legacy comment',
+    } });
+    const note = await prisma.activityLogEntry.create({ data: {
+      entityType: 'application', entityId: legacy.id, action: 'note_added', summary: legacy.comment!,
+    } });
+    const foreign = await prisma.lead.create({ data: {
+      contactName: 'QA foreign', contactPhone: '000', phoneNormalized: '000',
+    } });
+    const foreignNote = await prisma.activityLogEntry.create({ data: {
+      entityType: 'lead', entityId: foreign.id, action: 'note_added', summary: 'QA private',
+    } });
+    const header = authHeader(login.accessToken);
+    await request(app.getHttpServer()).post(`/api/v1/leads/${leadId}/stage`)
+      .set('Authorization', header).send({ stage: 'marketing_qualified' }).expect(201);
+    await request(app.getHttpServer()).post(`/api/v1/leads/${leadId}/rollback`)
+      .set('Authorization', header).send({}).expect(201);
+    const history = await request(app.getHttpServer()).get(`/api/v1/leads/${leadId}/activity`)
+      .set('Authorization', header).expect(200);
+    expect(history.body).toEqual(expect.arrayContaining([expect.objectContaining({ id: note.id })]));
+    expect(history.body).not.toEqual(expect.arrayContaining([expect.objectContaining({ id: foreignNote.id })]));
+    expect(await prisma.application.findUnique({ where: { id: legacy.id } })).toEqual(legacy);
+    const link = await request(app.getHttpServer()).get('/api/v1/navigation/deep-link')
+      .query({ entityType: 'application', entityId: legacy.id }).set('Authorization', header).expect(200);
+    expect(link.body.canonical).toEqual({ secondaryId: 'leads', entityType: 'lead', entityId: leadId });
+    await request(app.getHttpServer()).get(`/api/v1/leads/${foreign.id}/activity`).set('Authorization', header).expect(403);
+    await request(app.getHttpServer()).post(`/api/v1/leads/${foreign.id}/stage`)
+      .set('Authorization', header).send({ stage: 'application' }).expect(403);
+  });
+
   it('APIC-066: retries a transient Metrika upload and marks the same outbox row sent (QA-REQ-065)', async () => {
     const login = await loginByPassword(app, TEST_MANAGER);
-    const fixture = await createLeadAndApplication(
+    const fixture = await createLeadInWork(
       app,
       login.accessToken,
       uniqueSeed('APIC066'),

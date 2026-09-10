@@ -10,7 +10,7 @@ import { LeadsToolbar, applyLeadsFilters } from '../shell/LeadsToolbar';
 import { DEFAULT_LEADS_FILTERS, LeadsFiltersState } from '../shell/filterTypes';
 import { LeadDetailModal } from '../detail/LeadDetailModal';
 import { ClientWorkspace } from '../client/ClientWorkspace';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { useLayout } from '../shell/layoutStore';
 import { LeadsListView } from '../views/LeadsListView';
 import { LeadsTableView } from '../views/LeadsTableView';
@@ -202,14 +202,14 @@ export function LeadsKanbanPage() {
 
   const serverQueryParams = useMemo<LeadListParams>(() => {
     const params: LeadListParams = {
-      scope: filters.scope === 'my' ? 'mine' : 'all',
+      scope: filters.scope === 'my' || ['my-leads', 'my-applications'].includes(activeSecondaryNav) ? 'mine' : 'all',
       query: query.trim() || undefined,
     };
 
     const aliasStage =
       activeSecondaryNav === 'view-to-application'
         ? 'lead'
-        : activeSecondaryNav === 'view-needs-reservation'
+        : activeSecondaryNav === 'view-needs-reservation' || (IS_SALES_LITE && ['applications', 'my-applications'].includes(activeSecondaryNav))
           ? 'application'
           : undefined;
 
@@ -320,13 +320,14 @@ export function LeadsKanbanPage() {
     selectedLead?.stage === 'application' || selectedLead?.stage === 'marketing_qualified'
       ? { leadId: selectedLead.id, scope: 'all' }
       : {},
-    USE_API
+    USE_API && !IS_SALES_LITE
       && isDetailOpen
       && (selectedLead?.stage === 'application' || selectedLead?.stage === 'marketing_qualified'),
   );
   const selectedApplication = useMemo(() => {
     if (
       !USE_API
+      || IS_SALES_LITE
       || (selectedLead?.stage !== 'application' && selectedLead?.stage !== 'marketing_qualified')
     ) return undefined;
     const apiApp = selectedApplicationQuery.data?.items?.[0];
@@ -522,7 +523,7 @@ export function LeadsKanbanPage() {
     query.length > 0;
 
   const validateStageDrop = (lead: Lead, target: StageType): string | null => {
-    if (lead.stage === 'lead' && target === 'application') {
+    if (!IS_SALES_LITE && lead.stage === 'lead' && target === 'application') {
       const missing: string[] = [];
       if (!lead.address?.trim()) missing.push('адрес');
       if (!lead.date) missing.push('дата');
@@ -552,7 +553,7 @@ export function LeadsKanbanPage() {
       markLeadAsOpened(lead.id);
     }
 
-    if (IS_SALES_LITE && (lead.stage === 'completed' || lead.stage === 'unqualified')) {
+    if (IS_SALES_LITE) {
       setSelectedLead(lead);
       setActiveEntityRoute('lead', lead.id);
       setIsDetailOpen(true);
@@ -805,6 +806,8 @@ export function LeadsKanbanPage() {
         }}
       >
         <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+          <DialogTitle className="sr-only">Карточка лида</DialogTitle>
+          <DialogDescription className="sr-only">Данные, статус, звонки и история лида</DialogDescription>
           {selectedLead ? (
             <LeadDetailModal
               lead={selectedLead}

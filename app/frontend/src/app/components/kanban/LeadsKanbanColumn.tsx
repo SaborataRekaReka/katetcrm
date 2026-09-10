@@ -8,6 +8,7 @@ import { CompletedKanbanCard } from './CompletedKanbanCard';
 import { UnqualifiedKanbanCard } from './UnqualifiedKanbanCard';
 import { KanbanAddCard } from './KanbanAddCard';
 import { cn } from '../ui/utils';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 type Props = {
   title: string;
@@ -59,6 +60,7 @@ export function LeadsKanbanColumn({
       onClick: () => onCardClick?.(lead),
       ...dragProps(lead),
     };
+    if (IS_SALES_LITE) return <LeadKanbanCard key={lead.id} {...props} />;
     switch (stage) {
       case 'lead':
         return <LeadKanbanCard key={lead.id} {...props} />;

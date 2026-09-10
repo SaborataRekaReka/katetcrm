@@ -5,7 +5,7 @@ import { IS_SALES_LITE } from './featureFlags';
  *
  * In full profile the legacy flow is lead -> application -> reservation ->
  * departure -> completed/unqualified. In sales-lite the same persisted enum is
- * displayed as Не обработан -> В работе -> Маркетинговый квал ->
+ * displayed as Новый лид -> В работе -> Маркетинговый квал ->
  * Квалифицированный/Не квалифицированный.
  */
 
@@ -50,7 +50,7 @@ const FULL_STAGE_LABEL: Record<PipelineStage, string> = {
 };
 
 const SALES_LITE_STAGE_LABEL: Record<PipelineStage, string> = {
-  lead: 'Не обработан',
+  lead: 'Новый лид',
   application: 'В работе',
   marketing_qualified: 'Маркетинговый квал',
   reservation: 'Бронь',
@@ -75,7 +75,7 @@ const FULL_STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
 };
 
 const SALES_LITE_STAGE_LABEL_SHORT: Record<PipelineStage, string> = {
-  lead: 'Не обработан',
+  lead: 'Новый лид',
   application: 'В работе',
   marketing_qualified: 'Марк. квал',
   reservation: 'Брони',

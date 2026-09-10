@@ -6,6 +6,19 @@ This file tracks executed tests, real outcomes, identified bugs, and required fi
 
 ## Run Log
 
+### 2026-09-10 — lead-only sales funnel (QA-REQ-067)
+
+Scope: one Lead across the five sales-lite statuses, no Application/Client auto-creation, optional address/date, status-only rollback, legacy notes/calls, links, work views and Metrika deduplication.
+
+- Backend typecheck/build and sales-lite frontend build: PASS.
+- Sales-lite API suite: 7/7 PASS, including four concurrent identical transitions, preserved Lead/attribution/comment/call IDs, no Applications, stable two-target outbox, legacy Application retention, owner-scoped timeline/deep links, and mocked 503-to-200 Metrika retry on the same outbox row.
+- Frontend unit tests: 29/29 PASS.
+- Full-profile compatibility: happy-path and service-token suites PASS; combined with domain invariants 35/36 PASS. INT-003 has an existing contract mismatch: it expects an `undecided` sourcing item to be ready, but the unchanged Application service (also in pre-change HEAD) rejects that. This unrelated full-workflow rule was not modified.
+- Browser against an isolated local PostgreSQL database: PASS for next-stage buttons, explicit return to Новый лид, unqualification with reason, reload persistence, list/table opening and a historical Application URL resolving to the original Lead. Comments and the recording link remain present, as does marketing attribution. Local recording URLs are synthetic fixtures: this verifies retention, not live Mango playback. Local Metrika credentials are disabled; no test conversions were sent externally.
+- No schema migration or deletion of existing CRM records. Unrelated in-progress Mango routing changes are excluded from this release.
+
+Changed surfaces: Leads service/controller, navigation resolver, manager work counter, Lead detail, board/list/table, work-route dispatch, legacy overlay handling, activity client and query invalidation. Full workflow domain entities and RBAC remain separated.
+
 | Date | Layer | Command | Cases touched | Result | Bug detected | Fix required / status |
 |---|---|---|---|---|---|---|
 | 2026-05-06 | API contract | npm --prefix c:\projects\dev\katet-crm-2\app\backend run test:api-contract | APIC-001..APIC-012 (implemented subset) | Failed | APIC-008 test scenario tried to add new item into already completed application, got 400 by domain rule (application inactive). | Fix test isolation by splitting completed and cancelled branches into separate fixtures. Status: fixed. |

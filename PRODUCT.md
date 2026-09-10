@@ -1,5 +1,7 @@
 # PRODUCT
 
+Production sales-lite clarification (2026-09-10, QA-REQ-067): the sales funnel uses a single Lead card from Новый лид through qualification/unqualification. Taking a lead into work changes its status only; it does not create a new Application/Client or require address/date. Calls, comments and marketing attribution stay with the Lead. The operations rules below apply to the full workflow profile.
+
 ## 1. Product definition
 
 Katet CRM is a niche CRM for equipment rental operations in Moscow/MO. The system is built for fast intake, reservation reliability, and manager-friendly execution.

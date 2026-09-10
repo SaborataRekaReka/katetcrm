@@ -6,7 +6,7 @@ import {
   toCompletionLeadFromCompletion,
   toDepartureLead,
 } from '../../lib/departureAdapter';
-import { USE_API } from '../../lib/featureFlags';
+import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
 import { useApplicationQuery } from '../../hooks/useApplicationsQuery';
 import { useCompletionQuery } from '../../hooks/useCompletionsQuery';
 import { useDepartureQuery } from '../../hooks/useDeparturesQuery';
@@ -17,7 +17,7 @@ import { ReservationWorkspace } from '../reservation/ReservationWorkspace';
 import { DepartureWorkspace } from '../departure/DepartureWorkspace';
 import { CompletionWorkspace } from '../completion/CompletionWorkspace';
 import { ClientWorkspace } from '../client/ClientWorkspace';
-import { Dialog, DialogContent } from '../ui/dialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../ui/dialog';
 import { useLayout } from './layoutStore';
 import type { RouteEntityType } from './routeSync';
 
@@ -51,6 +51,10 @@ function entityHandledByCurrentSecondary(
   secondaryId: string,
   entityType: RouteEntityType,
 ): boolean {
+  if (IS_SALES_LITE) {
+    if (entityType === 'application') return false;
+    if (entityType === 'lead' && ['applications', 'my-applications'].includes(secondaryId)) return true;
+  }
   return SECONDARY_IDS_BY_ENTITY[entityType].has(secondaryId);
 }
 
@@ -256,6 +260,8 @@ export function GlobalEntityOverlayHost() {
       }}
     >
       <DialogContent className="!max-w-none w-[calc(100vw-1rem)] h-[calc(100dvh-1rem)] sm:w-[96vw] sm:h-[92vh] p-0 gap-0 rounded-lg overflow-hidden [&>button]:hidden">
+        <DialogTitle className="sr-only">Карточка CRM</DialogTitle>
+        <DialogDescription className="sr-only">Данные и история выбранной записи</DialogDescription>
         {renderOverlayBody()}
       </DialogContent>
     </Dialog>

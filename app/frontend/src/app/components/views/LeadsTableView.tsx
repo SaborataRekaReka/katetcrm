@@ -21,15 +21,17 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { PhoneLink } from '../detail/ContactAtoms';
+import { STAGE_LABEL } from '../../lib/stageTokens';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 const STAGE_META: Record<StageType, { title: string; color: string }> = {
-  lead: { title: 'Лид', color: 'bg-[#7B68EE]' },
-  application: { title: 'Заявка', color: 'bg-[#4A90E2]' },
-  marketing_qualified: { title: 'Маркетинговый квал', color: 'bg-[#14B8A6]' },
-  reservation: { title: 'Бронь', color: 'bg-[#F5A623]' },
-  departure: { title: 'Выезд', color: 'bg-[#50C878]' },
-  completed: { title: 'Завершено', color: 'bg-[#9B9B9B]' },
-  unqualified: { title: 'Некачественный', color: 'bg-[#E74C3C]' },
+  lead: { title: STAGE_LABEL.lead, color: 'bg-[#7B68EE]' },
+  application: { title: STAGE_LABEL.application, color: 'bg-[#4A90E2]' },
+  marketing_qualified: { title: STAGE_LABEL.marketing_qualified, color: 'bg-[#14B8A6]' },
+  reservation: { title: STAGE_LABEL.reservation, color: 'bg-[#F5A623]' },
+  departure: { title: STAGE_LABEL.departure, color: 'bg-[#50C878]' },
+  completed: { title: STAGE_LABEL.completed, color: 'bg-[#9B9B9B]' },
+  unqualified: { title: STAGE_LABEL.unqualified, color: 'bg-[#E74C3C]' },
   cancelled: { title: 'Отменено', color: 'bg-[#64748B]' },
 };
 
@@ -178,7 +180,7 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
               <Copy className="h-2.5 w-2.5" /> Дубль
             </span>
           ) : null}
-          {l.missingFields && l.missingFields.length > 0 ? (
+          {!IS_SALES_LITE && l.missingFields && l.missingFields.length > 0 ? (
             <span className={cn(badgeBase, badgeTones.caution)} title="Не хватает данных">
               <AlertTriangle className="h-2.5 w-2.5" />
             </span>
@@ -228,7 +230,7 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
       stickyRight: true,
       hideable: false,
       cell: (l) => {
-        const canConvert = l.stage === 'lead' && !(l.missingFields && l.missingFields.length > 0);
+        const canConvert = l.stage === 'lead' && (IS_SALES_LITE || !(l.missingFields && l.missingFields.length > 0));
         return (
           <div className="flex w-full justify-end">
             <DropdownMenu>
@@ -247,7 +249,7 @@ export function LeadsTableView({ leads, onRowClick, onConvertToApplication, isFi
                 <DropdownMenuItem onSelect={() => onRowClick(l)}>Открыть</DropdownMenuItem>
                 {canConvert && onConvertToApplication ? (
                   <DropdownMenuItem onSelect={() => onConvertToApplication(l)}>
-                    <ArrowRightCircle className="mr-1 h-3.5 w-3.5" /> Перевести в заявку
+                    <ArrowRightCircle className="mr-1 h-3.5 w-3.5" /> {IS_SALES_LITE ? 'Перевести в работу' : 'Перевести в заявку'}
                   </DropdownMenuItem>
                 ) : null}
                 <DropdownMenuItem>

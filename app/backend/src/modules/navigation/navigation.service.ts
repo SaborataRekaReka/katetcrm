@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { UserRole } from '@prisma/client';
 import { projectApplication } from '../../common/projections/application.projection';
 import { projectCompletion } from '../../common/projections/completion.projection';
@@ -43,6 +44,7 @@ export class NavigationService {
     private readonly reservations: ReservationsService,
     private readonly departures: DeparturesService,
     private readonly completions: CompletionsService,
+    private readonly config: ConfigService,
   ) {}
 
   async resolve(
@@ -58,6 +60,10 @@ export class NavigationService {
       }
       case 'application': {
         const application = await this.applications.get(entityId, actor);
+        if (this.config.get<string>('CRM_WORKFLOW_PROFILE') === 'sales-lite') {
+          const lead = projectLead(await this.leads.get(application.leadId, actor));
+          return this.toResponse('lead', lead.id, lead.linkedIds);
+        }
         const projected = projectApplication(application);
         return this.toResponse('application', projected.id, projected.linkedIds);
       }

@@ -51,6 +51,16 @@ export class LeadsController {
     return projectLead(lead);
   }
 
+  @Get(':id/activity')
+  getActivity(
+    @Param('id') id: string,
+    @CurrentUser() user: JwtPayload,
+    @Query('take') take?: string,
+  ) {
+    const limit = Math.max(1, Math.min(Number.parseInt(take ?? '', 10) || 100, 500));
+    return this.leads.getActivity(id, { id: user.sub, role: user.role }, limit);
+  }
+
   @Post()
   @ServiceApiScopes('leads:create')
   async create(@Body() dto: CreateLeadDto, @CurrentUser() user: JwtPayload) {

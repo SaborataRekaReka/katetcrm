@@ -97,7 +97,7 @@ import { LifecycleRollbackActions } from './LifecycleRollbackActions';
 import { useAuth } from '../../auth/AuthProvider';
 import { readStoredAccessToken } from '../../lib/authApi';
 import type { LeadApi } from '../../lib/leadsApi';
-import { STAGE_LABEL } from '../../lib/stageTokens';
+import { STAGE_LABEL, STAGE_ORDER } from '../../lib/stageTokens';
 import { MarketingAttributionSection } from './MarketingAttributionSection';
 
 type LeadPatch = Parameters<typeof updateLeadApi>[1];
@@ -190,6 +190,12 @@ function getPrimaryCTA(
   isLead: boolean,
   hasLinkedApplication = false,
 ): { label: string; secondary?: string } {
+  if (IS_SALES_LITE) {
+    if (stage === 'lead') return { label: 'Перевести в работу', secondary: 'Не квалифицированный' };
+    if (stage === 'application') return { label: 'Маркетинговый квал', secondary: 'Не квалифицированный' };
+    if (stage === 'marketing_qualified') return { label: 'Квалифицировать', secondary: 'Не квалифицированный' };
+    return { label: stage === 'completed' ? 'Квалифицированный' : 'Не квалифицированный' };
+  }
   if (isLead) {
     const canMarkUnqualified =
       stage !== 'completed' && stage !== 'unqualified' && stage !== 'cancelled';
@@ -201,13 +207,6 @@ function getPrimaryCTA(
         ? (IS_SALES_LITE ? 'Не квалифицированный' : 'Пометить некачественным')
         : undefined,
     };
-  }
-
-  if (IS_SALES_LITE) {
-    if (stage === 'application') return { label: 'Маркетинговый квал', secondary: 'Не квалифицировать' };
-    if (stage === 'marketing_qualified') return { label: 'Квалифицировать', secondary: 'Не квалифицировать' };
-    if (stage === 'completed') return { label: 'Квалифицированный' };
-    if (stage === 'cancelled' || stage === 'unqualified') return { label: 'Не квалифицированный' };
   }
 
   switch (stage) {
@@ -643,7 +642,27 @@ function PositionCard({
   );
 }
 
-export function LeadDetailModal({
+// Historical application links resolve to the same lead card in sales-lite.
+// Keep the old application data intact for full-workflow compatibility.
+function LegacySalesLeadCard(props: LeadDetailModalProps) {
+  const leadQuery = useLeadQuery(props.application?.leadId, USE_API);
+  const { setActiveEntityRoute } = useLayout();
+  const leadId = leadQuery.data?.id;
+  useEffect(() => {
+    if (leadId) setActiveEntityRoute('lead', leadId);
+  }, [leadId]);
+  if (leadQuery.isError) return <div role="alert" className="p-6">Не удалось открыть исходный лид.</div>;
+  if (!leadQuery.data) return <div className="p-6">Загрузка лида…</div>;
+  return <LeadDetailContent {...props} application={undefined} lead={toKanbanLead(leadQuery.data)} />;
+}
+
+export function LeadDetailModal(props: LeadDetailModalProps) {
+  return IS_SALES_LITE && !props.lead && props.application?.leadId
+    ? <LegacySalesLeadCard {...props} />
+    : <LeadDetailContent {...props} />;
+}
+
+function LeadDetailContent({
   lead: initialLead,
   application: initialApplication,
   onClose,
@@ -697,7 +716,7 @@ export function LeadDetailModal({
   const isLead = !!lead;
   const leadApplicationsQuery = useApplicationsQuery(
     { leadId: lead?.id, scope: 'mine' },
-    USE_API && isLead && !!lead?.id,
+    USE_API && !IS_SALES_LITE && isLead && !!lead?.id,
   );
   const linkedLeadQuery = useLeadQuery(
     application?.leadId,
@@ -798,7 +817,7 @@ export function LeadDetailModal({
   const promoteTargetLabel = IS_SALES_LITE ? 'работу' : 'заявку';
   const promoteActionLabel = IS_SALES_LITE ? 'Перевести в работу' : 'Перевести в заявку';
   const openApplicationLabel = IS_SALES_LITE ? 'Открыть в работе' : 'Открыть заявку';
-  const missingFieldHint = IS_SALES_LITE ? 'нужно для работы' : 'нужно для заявки';
+  const missingFieldHint = IS_SALES_LITE ? 'необязательно' : 'нужно для заявки';
   const entityType = isLead ? 'Лид' : applicationEntityLabel;
   const listName = isLead ? 'Лиды' : applicationListLabel;
   const title = isLead ? lead.client : application!.number;
@@ -822,7 +841,7 @@ export function LeadDetailModal({
     !!applicationEntityId || hasLinkedReservation || !!departureEntityId || !!completionEntityId;
   const hasDownstreamForApplication =
     hasLinkedReservation || !!departureEntityId || !!completionEntityId;
-  const isCurrentStageTail = isLead ? !hasDownstreamForLead : !hasDownstreamForApplication;
+  const isCurrentStageTail = IS_SALES_LITE || (isLead ? !hasDownstreamForLead : !hasDownstreamForApplication);
   const targetLeadIdForUnqualify = leadEntityId;
   const linkedLeadStage = isLead ? lead?.stage : linkedLeadQuery.data?.stage;
   const lifecycleLeadStage = linkedLeadStage ?? (isLead ? lead?.stage : application?.stage);
@@ -832,7 +851,7 @@ export function LeadDetailModal({
   const canMarkChainUnqualified =
     USE_API
     && !!targetLeadIdForUnqualify
-    && linkedLeadStage !== 'completed'
+    && (IS_SALES_LITE || linkedLeadStage !== 'completed')
     && linkedLeadStage !== 'unqualified'
     && linkedLeadStage !== 'cancelled'
     && isCurrentStageTail;
@@ -871,10 +890,7 @@ export function LeadDetailModal({
 
   const openLeadLifecycleStage = (fresh: LeadApi) => {
     const ids = fresh.linkedIds;
-    if (IS_SALES_LITE && (fresh.stage === 'completed' || fresh.stage === 'unqualified')) {
-      openEntitySecondary('leads', 'lead', fresh.id);
-      return;
-    }
+    if (IS_SALES_LITE) return; // Mutations update the current Lead detail cache in place.
     if (
       (fresh.stage === 'application' || fresh.stage === 'marketing_qualified')
       && ids.applicationId
@@ -1136,18 +1152,19 @@ export function LeadDetailModal({
 
   // Готовность лида к переводу в заявку: адрес, дата, телефон.
   const leadMissingFields: string[] = [];
-  if (isLead) {
+  if (isLead && !IS_SALES_LITE) {
     if (!lead!.address) leadMissingFields.push('адрес');
     if (!lead!.date) leadMissingFields.push('дата');
     if (lead!.hasNoContact || !lead!.phone) leadMissingFields.push('контакт');
   }
-  const canPromoteToApplication = isLead && leadMissingFields.length === 0 && USE_API;
+  const canPromoteToApplication = isLead && lead?.stage === 'lead' && leadMissingFields.length === 0 && USE_API;
 
   const handlePromoteToApplication = async () => {
     if (!lead || !canPromoteToApplication) return;
     setStageError(null);
     try {
       await changeStage.mutateAsync({ id: lead.id, stage: 'application' });
+      if (IS_SALES_LITE) return;
       if (onWorkflowNavigate) {
         onWorkflowNavigate('application', { leadId: lead.id });
         return;
@@ -1159,11 +1176,9 @@ export function LeadDetailModal({
   };
 
   const canQualifyApplication =
-    !isLead
-    && IS_SALES_LITE
+    IS_SALES_LITE
     && USE_API
-    && !!application?.leadId
-    && application.stage === 'application'
+    && !!leadEntityId
     && (lifecycleLeadStage === 'application' || lifecycleLeadStage === 'marketing_qualified')
     && isCurrentStageTail;
 
@@ -1175,11 +1190,11 @@ export function LeadDetailModal({
     : 'Маркетинговый квал';
 
   const handleQualifyApplication = async () => {
-    if (!application?.leadId || !canQualifyApplication) return;
+    if (!leadEntityId || !canQualifyApplication) return;
     setStageError(null);
     try {
       const fresh = await changeStage.mutateAsync({
-        id: application.leadId,
+        id: leadEntityId,
         stage: qualificationTarget,
       });
       openLeadLifecycleStage(fresh);
@@ -1304,10 +1319,10 @@ export function LeadDetailModal({
         isLead
           ? lead!.date
             ? new Date(lead!.date).toLocaleDateString('ru-RU')
-            : 'Dates'
+            : 'Дата не указана'
           : application!.requestedDate
             ? new Date(application!.requestedDate).toLocaleDateString('ru-RU')
-            : 'Dates'
+            : 'Дата не указана'
       }
     />,
   ];
@@ -1462,11 +1477,20 @@ export function LeadDetailModal({
     <EntityModalShell className="pb-10 space-y-6">
       <EntityModalHeader
         entityLabel={entityType}
-        entitySwitcherOptions={entitySwitcherOptions}
+        entitySwitcherOptions={IS_SALES_LITE ? undefined : entitySwitcherOptions}
         title={title}
         chips={toolbarChips}
         primaryAction={
-          isLead
+          IS_SALES_LITE && isLead
+            ? canPromoteToApplication || canQualifyApplication
+              ? {
+                  label: changeStage.isPending ? 'Сохраняем…' : cta.label,
+                  icon: <ArrowRight className="w-3 h-3" />,
+                  onClick: canPromoteToApplication ? handlePromoteToApplication : handleQualifyApplication,
+                  disabled: changeStage.isPending,
+                }
+              : undefined
+            : isLead
             ? {
                 label: cta.label,
                 icon: <ArrowRight className="w-3 h-3" />,
@@ -1962,17 +1986,33 @@ export function LeadDetailModal({
       title: 'Статус и мета',
       content: (
         <>
-          <SidebarField label="Этап" value={<span className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>Лид</span>} />
+          <SidebarField label="Этап" value={IS_SALES_LITE ? (
+            <select
+              aria-label="Статус лида"
+              value={lead!.stage}
+              disabled={!USE_API || changeStage.isPending}
+              className="min-w-0 max-w-full rounded border border-gray-200 bg-white p-1 text-[11px]"
+              onChange={async (event) => {
+                const stage = event.target.value as Lead['stage'];
+                if (stage === 'unqualified') { handleOpenUnqualify(); return; }
+                setStageError(null);
+                try { await changeStage.mutateAsync({ id: lead!.id, stage }); }
+                catch (error) { setStageError(error instanceof Error ? error.message : 'Не удалось сменить статус'); }
+              }}
+            >
+              {STAGE_ORDER.map((stage) => <option key={stage} value={stage}>{STAGE_LABEL[stage]}</option>)}
+            </select>
+          ) : <span className={`${sidebarStatusBadgeClass} ${badgeTones.source}`}>Лид</span>} />
           <SidebarField label="Источник" value={<SourceBadge source={lead!.source} channel={lead!.sourceChannel} size="sm" />} />
-          <SidebarField label="Создан" value="21.04.2026" />
+          <SidebarField label="Создан" value={leadDetailQuery.data?.createdAt ? new Date(leadDetailQuery.data.createdAt).toLocaleDateString('ru-RU') : '—'} />
           <SidebarField label="Активность" value={lead!.lastActivity} />
           <SidebarField label="Менеджер" value={lead!.manager} />
           <CallRecordingMiniPlayer recording={latestCallRecording} />
         </>
       ),
     },
-    {
-      title: IS_SALES_LITE ? 'Готовность к работе' : 'Готовность к заявке',
+    ...(!IS_SALES_LITE ? [{
+      title: 'Готовность к заявке',
       content: (
         <>
           {(() => {
@@ -2026,11 +2066,11 @@ export function LeadDetailModal({
           </div>
         </>
       ),
-    },
+    }] : []),
     {
       title: 'Связанные записи',
       content: (
-        <RelatedRecordsFields items={leadRelatedRecordItems} />
+        <RelatedRecordsFields items={IS_SALES_LITE ? leadRelatedRecordItems.filter((item) => item.label !== applicationEntityLabel) : leadRelatedRecordItems} />
       ),
     },
     {
@@ -2308,7 +2348,7 @@ export function LeadDetailModal({
         open={isUnqualOpen}
         onOpenChange={setIsUnqualOpen}
         leadId={targetLeadIdForUnqualify ?? null}
-        onDone={onClose}
+        onDone={IS_SALES_LITE ? undefined : onClose}
       />
     </>
   );

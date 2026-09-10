@@ -478,11 +478,11 @@ Test priority: P0
 
 QA-REQ-055:
 Question: QA-Q-055. How should `В работе` be represented in the sales-lite workflow?
-Answer: The current Application entity can remain the technical representation, but UI should rename it to `В работе` and add confirmed rules before transition to the next stage.
+Answer: Superseded by QA-REQ-067 (2026-09-10): `В работе` is the `application` status of the original Lead; no new Application is created in sales-lite.
 Route surface: /applications, /applications/my
-Domain surface: Application-as-work-in-progress in sales-lite profile.
+Domain surface: Lead-only work-in-progress in sales-lite profile.
 UI surface: Navigation and module metadata display `В работе` instead of generic `Заявки` in sales-lite.
-State/API/audit surface: Existing Application links and one-active-Application-per-Lead invariant remain unless a later decision changes them.
+State/API/audit surface: Historical Applications remain intact; new sales-lite transitions update only Lead status, audit and conversion outbox.
 Test priority: P0
 
 QA-REQ-056:
@@ -496,9 +496,9 @@ Test priority: P0
 
 QA-REQ-060:
 Question: QA-Q-060. Which lifecycle transitions are allowed in sales-lite?
-Answer: Sales-lite allows `lead -> application`, `lead -> unqualified`, `application -> marketing_qualified`, `application -> completed`, `application -> unqualified`, `marketing_qualified -> completed`, and `marketing_qualified -> unqualified`. It does not allow `application -> reservation`, `reservation -> departure`, or any CRM-owned operational progression.
+Answer: Sales-lite permits moves in either direction between `lead`, `application`, `marketing_qualified`, `completed`, and `unqualified`. Same-stage retries are idempotent. Unqualification requires a reason; operational stages are rejected. See QA-REQ-067.
 Route surface: /leads, /applications
-Domain surface: Sales-lite lifecycle `Не обработан -> В работе -> Маркетинговый квал -> Квалифицированный/Не квалифицированный`.
+Domain surface: One Lead in the funnel `Новый лид -> В работе -> Маркетинговый квал -> Квалифицированный/Не квалифицированный`.
 UI surface: Board drag-and-drop and detail actions expose qualification/unqualification instead of reservation/departure actions.
 State/API/audit surface: `POST /api/v1/leads/:id/stage` enforces the profile-specific transition map and writes the usual stage-change activity entry.
 Test priority: P0
@@ -555,6 +555,15 @@ Route surface: `/api/v1/integrations/events/ingest`
 Domain surface: HMAC authentication for site lead ingestion.
 UI surface: None.
 State/API/audit surface: Production readiness may be confirmed with a non-destructive signed probe, but the raw value is exchanged only through an approved secret manager or an equally protected one-to-one channel.
+Test priority: P0
+
+QA-REQ-067:
+Question: QA-Q-067. Should sales-lite transitions create a new Application or open another card?
+Answer: No (confirmed 2026-09-10). One Lead keeps its ID, manager, comments, calls and attribution throughout all five statuses. Address/date are optional for starting work. No Application or Client is created by a transition. Historical Application records are not deleted.
+Route surface: `/leads`, `/applications`, their mine views, `/api/v1/leads/:id/stage`, `/api/v1/leads/:id/rollback`, `/api/v1/leads/:id/activity`.
+Domain surface: Sales-lite is lead-only; full operations workflow is unchanged.
+UI surface: Board/list/table and legacy Application links open the original Lead. Work views query Leads in `application`. Lead detail has a status selector and no application creation/readiness block.
+State/API/audit surface: Per-Lead locking makes status/audit/outbox atomic and concurrent retries idempotent. Rollback changes only status. The owner-checked Lead timeline also includes legacy Application notes/calls, deduplicates Mango callback copies, and keeps notes outside the recent-event window. Conversion deduplication/retry is preserved; no migration or data deletion.
 Test priority: P0
 
 ## 5. Open Questions

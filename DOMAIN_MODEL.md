@@ -1,5 +1,9 @@
 # DOMAIN_MODEL
 
+## Sales-lite exception (QA-REQ-067, confirmed 2026-09-10)
+
+Production sales-lite uses one Lead throughout `lead` (Новый лид), `application` (В работе), `marketing_qualified`, `completed` (Квалифицированный), and `unqualified`. These are statuses, not new entities. Forward/backward moves keep the same Lead and history, with no address/date prerequisite. Historical Applications remain intact and their notes/calls are included in the Lead timeline. The full-profile lifecycle and invariants below remain unchanged.
+
 ## 1. Core entities
 
 ### 1.1 Lead

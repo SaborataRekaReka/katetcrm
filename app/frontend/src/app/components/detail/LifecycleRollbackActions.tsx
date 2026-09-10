@@ -1,6 +1,7 @@
 import { RotateCcw, Trash2 } from 'lucide-react';
 import { useAuth } from '../../auth/AuthProvider';
 import type { LeadApi } from '../../lib/leadsApi';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 import {
   useDeleteLeadChain,
   useRollbackLeadStage,
@@ -89,7 +90,9 @@ export function LifecycleRollbackActions({
           <AlertDialogHeader>
             <AlertDialogTitle>Откатить текущую стадию?</AlertDialogTitle>
             <AlertDialogDescription>
-              Текущее представление будет удалено, цепочка вернется на предыдущий этап. Запись действия останется в журнале.
+              {IS_SALES_LITE
+                ? 'Лид вернётся в предыдущий статус. Карточка, комментарии и записи звонков сохранятся. Действие будет записано в историю.'
+                : 'Текущее представление будет удалено, цепочка вернется на предыдущий этап. Запись действия останется в журнале.'}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

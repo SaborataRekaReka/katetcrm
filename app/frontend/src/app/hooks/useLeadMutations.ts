@@ -21,9 +21,11 @@ type UpdateLeadInput = Parameters<typeof updateLead>[1];
 
 function invalidateLeadQueries(qc: ReturnType<typeof useQueryClient>) {
   qc.invalidateQueries({ queryKey: leadsQueryKeys.all });
+  qc.invalidateQueries({ queryKey: ['stats'] });
 }
 
 function invalidateLifecycleQueries(qc: ReturnType<typeof useQueryClient>) {
+  qc.invalidateQueries({ queryKey: ['stats'] });
   qc.invalidateQueries({ queryKey: leadsQueryKeys.all });
   qc.invalidateQueries({ queryKey: applicationsQueryKeys.all });
   qc.invalidateQueries({ queryKey: reservationsQueryKeys.all });

@@ -55,16 +55,10 @@ const FULL_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
   cancelled: [],
 };
 
-const SALES_LITE_ALLOWED_TRANSITIONS: Record<PipelineStage, PipelineStage[]> = {
-  lead: ['application', 'unqualified'],
-  application: ['marketing_qualified', 'completed', 'unqualified'],
-  marketing_qualified: ['completed', 'unqualified'],
-  reservation: [],
-  departure: [],
-  completed: [],
-  unqualified: [],
-  cancelled: [],
-};
+// In sales-lite these are statuses of ONE Lead, not separate domain records.
+const SALES_LITE_STAGES: PipelineStage[] = [
+  'lead', 'application', 'marketing_qualified', 'completed', 'unqualified',
+];
 
 const ACTIVE_DEPARTURE_STATUSES: DepartureStatus[] = [
   'scheduled',
@@ -851,6 +845,9 @@ export class LeadsService {
   }
 
   async rollbackStage(id: string, dto: LifecycleActionDto, actor: ActorContext) {
+    if (this.getWorkflowProfile() === 'sales-lite') {
+      return this.changeSalesLeadStage(id, undefined, actor, dto.reason);
+    }
     await this.prisma.$transaction(async (tx) => {
       const lead = await this.getLifecycleGraph(tx, id, actor);
       await this.applyLifecycleRollback(tx, lead, dto, actor, 'rollback');
@@ -859,6 +856,10 @@ export class LeadsService {
   }
 
   async deleteCurrentRepresentation(id: string, dto: LifecycleActionDto, actor: ActorContext) {
+    if (this.getWorkflowProfile() === 'sales-lite') {
+      // There is no disposable stage representation in the lead-only funnel.
+      return this.rollbackStage(id, dto, actor);
+    }
     await this.prisma.$transaction(async (tx) => {
       const lead = await this.getLifecycleGraph(tx, id, actor);
       await this.applyLifecycleRollback(tx, lead, dto, actor, 'delete_current');
@@ -990,7 +991,117 @@ export class LeadsService {
     return this.get(id, actor);
   }
 
+  async getActivity(id: string, actor: ActorContext, take = 100) {
+    await this.get(id, actor);
+    if (this.getWorkflowProfile() !== 'sales-lite') {
+      return this.activity.listForEntity('lead', id, take);
+    }
+    // Preserve access to notes/calls made on historical Applications. Do not
+    // copy, delete or reassign those records when a sales status changes.
+    const applications = await this.prisma.application.findMany({
+      where: { leadId: id }, select: { id: true },
+    });
+    const scope: Prisma.ActivityLogEntryWhereInput = {
+      OR: [
+        { entityType: 'lead', entityId: id },
+        { entityType: 'application', entityId: { in: applications.map((item) => item.id) } },
+      ],
+    };
+    const include = { actor: { select: { id: true, fullName: true, email: true } } } as const;
+    const [recent, notes] = await Promise.all([
+      this.prisma.activityLogEntry.findMany({
+        where: scope, orderBy: { createdAt: 'desc' }, take, include,
+      }),
+      // Notes include Mango recordings. Status activity must never push them
+      // out of the card's timeline window.
+      this.prisma.activityLogEntry.findMany({
+        where: { AND: [scope, { action: 'note_added' }] },
+        orderBy: { createdAt: 'desc' }, include,
+      }),
+    ]);
+    const entries = [...new Map([...recent, ...notes].map((entry) => [entry.id, entry])).values()]
+      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    const seenCalls = new Set<string>();
+    return entries.filter((entry) => {
+      const payload = entry.payload as { integration?: { provider?: string; eventId?: string } } | null;
+      const eventId = payload?.integration?.provider === 'mango' ? payload.integration.eventId : undefined;
+      if (!eventId) return true;
+      // Mango historically logs the same callback on both Lead and Application.
+      if (seenCalls.has(eventId)) return false;
+      seenCalls.add(eventId);
+      return true;
+    });
+  }
+
+  private async changeSalesLeadStage(
+    id: string,
+    dto: ChangeStageDto | undefined,
+    actor: ActorContext,
+    rollbackReason?: string,
+  ) {
+    await this.prisma.$transaction(async (tx) => {
+      // Serialize repeat/concurrent changes of this lead. Status, audit and
+      // the unique conversion outbox are committed atomically.
+      await tx.$queryRaw`SELECT id FROM leads WHERE id = ${id} FOR UPDATE`;
+      const lead = await tx.lead.findUnique({ where: { id } });
+      if (!lead) throw new NotFoundException('Лид не найден');
+      if (actor.role === 'manager' && lead.managerId !== actor.id) {
+        throw new ForbiddenException('Нет доступа к лиду');
+      }
+      let target = dto?.stage;
+      if (!dto) {
+        if (lead.stage === 'lead') throw new BadRequestException('Лид уже на первой стадии');
+        const previous = await tx.activityLogEntry.findFirst({
+          where: {
+            entityType: 'lead', entityId: id, action: 'stage_changed',
+            payload: { path: ['to'], equals: lead.stage },
+          },
+          orderBy: { createdAt: 'desc' },
+        });
+        const from = (previous?.payload as { from?: PipelineStage } | null)?.from;
+        target = lead.stage === 'application' ? 'lead'
+          : lead.stage === 'marketing_qualified' ? 'application'
+            : lead.stage === 'completed' ? 'marketing_qualified'
+              : from && from !== 'unqualified' && SALES_LITE_STAGES.includes(from) ? from : 'lead';
+      }
+      if (!SALES_LITE_STAGES.includes(lead.stage) || !target || !SALES_LITE_STAGES.includes(target)) {
+        throw new BadRequestException(`Недопустимый переход ${lead.stage} → ${target}`);
+      }
+      if (lead.stage === target) return;
+      if (dto && target === 'unqualified' && !dto.reason?.trim()) {
+        throw new BadRequestException('reason is required for unqualified stage');
+      }
+      const now = new Date();
+      await tx.lead.update({
+        where: { id },
+        data: {
+          stage: target, lastActivityAt: now,
+          unqualifiedReason: target === 'unqualified'
+            ? dto?.reason?.trim() ?? lead.unqualifiedReason : null,
+        },
+      });
+      await tx.activityLogEntry.create({
+        data: {
+          action: 'stage_changed', entityType: 'lead', entityId: id,
+          actorId: actor.id, createdAt: now,
+          summary: `Стадия: ${lead.stage} → ${target}`,
+          payload: {
+            from: lead.stage, to: target,
+            reason: dto?.reason ?? rollbackReason ?? null,
+            operation: dto ? 'change_stage' : 'rollback',
+          },
+        },
+      });
+      if (dto) await this.metrika.enqueueForStage(tx, id, target, now);
+    });
+    this.metrika.scheduleFlush();
+    return this.get(id, actor);
+  }
+
   async changeStage(id: string, dto: ChangeStageDto, actor: ActorContext) {
+    if (this.getWorkflowProfile() === 'sales-lite') {
+      return this.changeSalesLeadStage(id, dto, actor);
+    }
     const existing = await this.get(id, actor);
     const workflowProfile = this.getWorkflowProfile();
     if (existing.stage === 'lead' && dto.stage === 'application') {
@@ -1013,9 +1124,7 @@ export class LeadsService {
         'Завершение этапа departure выполняется через completion',
       );
     }
-    const allowed = workflowProfile === 'sales-lite'
-      ? SALES_LITE_ALLOWED_TRANSITIONS[existing.stage]
-      : FULL_ALLOWED_TRANSITIONS[existing.stage];
+    const allowed = FULL_ALLOWED_TRANSITIONS[existing.stage];
     if (!allowed.includes(dto.stage)) {
       throw new BadRequestException(
         `Недопустимый переход ${existing.stage} → ${dto.stage}`,

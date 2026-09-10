@@ -1,5 +1,7 @@
 # ROUTES_AND_VIEWS
 
+Sales-lite clarification (2026-09-10, QA-REQ-067): `/leads` board/list/table open `entityType=lead` at every sales stage. `/applications` and `/applications/my` remain work-view URLs but list Leads with `stage=application` (mine scope for the latter). Historical `entityType=application` links resolve to the original Lead card. Status mutations update the open Lead cache without switching cards; full-profile entity routes are unchanged.
+
 ## 1. Route model baseline
 
 This repository currently uses state-driven navigation with partial URL sync and no app-level `react-router`.

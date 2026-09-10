@@ -3,6 +3,7 @@ import { Phone, Calendar, User, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { cn } from '../ui/utils';
 import { SourceBadge } from './SourceBadge';
 import { badgeBase, badgeTones } from './badgeTokens';
+import { IS_SALES_LITE } from '../../lib/featureFlags';
 
 interface LeadKanbanCardProps {
   lead: Lead;
@@ -91,7 +92,7 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
         </div>
 
         {/* Conversion readiness — single slot */}
-        <div>
+        {!IS_SALES_LITE && <div>
           <span className={`${badgeBase} ${badgeTones[readiness.tone]}`}>
             {readiness.icon === 'check' ? (
               <CheckCircle2 className="w-3 h-3" />
@@ -100,7 +101,11 @@ export function LeadKanbanCard({ lead, onClick, draggable, onDragStart, onDragEn
             )}
             {readiness.label}
           </span>
-        </div>
+        </div>}
+
+        {IS_SALES_LITE && lead.stage === 'unqualified' && lead.unqualifiedReason ? (
+          <div className="text-[11px] text-muted-foreground">{lead.unqualifiedReason}</div>
+        ) : null}
 
         {/* Info */}
         <div className="space-y-0.5 text-[11px] text-muted-foreground">

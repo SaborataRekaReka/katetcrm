@@ -4,6 +4,7 @@ import { LeadsKanbanColumn } from './LeadsKanbanColumn';
 import { STAGE_ORDER, STAGE_LABEL, STAGE_BAR } from '../../lib/stageTokens';
 import { useChangeLeadStage } from '../../hooks/useLeadMutations';
 import { IS_SALES_LITE, USE_API } from '../../lib/featureFlags';
+import { UnqualifyLeadDialog } from '../leads/UnqualifyLeadDialog';
 
 type Props = {
   leads: Lead[];
@@ -33,29 +34,20 @@ const FULL_ALLOWED: Record<StageType, StageType[]> = {
   cancelled: [],
 };
 
-const SALES_LITE_ALLOWED: Record<StageType, StageType[]> = {
-  lead: ['application', 'unqualified'],
-  application: ['marketing_qualified', 'completed', 'unqualified'],
-  marketing_qualified: ['completed', 'unqualified'],
-  reservation: [],
-  departure: [],
-  completed: [],
-  unqualified: [],
-  cancelled: [],
-};
-
 export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageDrop }: Props) {
   const changeStage = useChangeLeadStage();
   const [dragging, setDragging] = useState<Lead | null>(null);
   const [dragError, setDragError] = useState<string | null>(null);
+  const [unqualifyLeadId, setUnqualifyLeadId] = useState<string | null>(null);
 
   const byStage = (stage: StageType) => leads.filter((l) => l.stage === stage);
-  const allowed = IS_SALES_LITE ? SALES_LITE_ALLOWED : FULL_ALLOWED;
 
   const isStageTransitionAllowed = (target: StageType): boolean => {
     if (!dragging) return false;
     if (dragging.stage === target) return false;
-    return allowed[dragging.stage]?.includes(target) ?? false;
+    if (IS_SALES_LITE) return STAGE_ORDER.includes(dragging.stage as typeof STAGE_ORDER[number])
+      && STAGE_ORDER.includes(target as typeof STAGE_ORDER[number]);
+    return FULL_ALLOWED[dragging.stage]?.includes(target) ?? false;
   };
 
   const showDragError = (message: string) => {
@@ -75,6 +67,11 @@ export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageD
     const validationError = validateStageDrop?.(lead, target);
     if (validationError) {
       showDragError(validationError);
+      return;
+    }
+
+    if (target === 'unqualified') {
+      setUnqualifyLeadId(lead.id);
       return;
     }
 
@@ -113,6 +110,11 @@ export function LeadsKanbanBoard({ leads, onCardClick, onAddLead, validateStageD
           />
         ))}
       </div>
+      <UnqualifyLeadDialog
+        open={!!unqualifyLeadId}
+        leadId={unqualifyLeadId}
+        onOpenChange={(open) => { if (!open) setUnqualifyLeadId(null); }}
+      />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { apiRequest } from './apiClient';
+import { IS_SALES_LITE } from './featureFlags';
 
 export type ActivityAction =
   | 'created'
@@ -52,6 +53,11 @@ export async function listActivityForEntity(
   entityId: string,
   take = 50,
 ): Promise<ActivityLogEntryApi[]> {
+  if (IS_SALES_LITE && entityType === 'lead') {
+    return apiRequest<ActivityLogEntryApi[]>(`/leads/${encodeURIComponent(entityId)}/activity`, {
+      query: { take },
+    });
+  }
   const params = new URLSearchParams({ entityType, entityId, take: String(take) });
   return apiRequest<ActivityLogEntryApi[]>(`/activity?${params.toString()}`);
 }
